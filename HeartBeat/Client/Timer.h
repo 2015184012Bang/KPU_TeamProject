@@ -3,7 +3,7 @@
 class Timer
 {
 public:
-	static void StaticInit();
+	static void Init();
 	static void Update();
 
 	static float GetDeltaTime() { return sDeltaTime; }

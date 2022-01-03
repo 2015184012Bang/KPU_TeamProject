@@ -5,7 +5,7 @@ UINT64 Timer::sFrequency;
 UINT64 Timer::sPrevCount;
 float Timer::sDeltaTime;
 
-void Timer::StaticInit()
+void Timer::Init()
 {
 	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&sFrequency));
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&sPrevCount));

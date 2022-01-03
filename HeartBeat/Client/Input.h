@@ -11,7 +11,7 @@ enum class KeyState
 class Input
 {
 public:
-	static void StaticInit();
+	static void Init();
 	static void Update();
 
 	static bool IsButtonRepeat(KeyCode key);

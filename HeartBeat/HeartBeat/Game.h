@@ -13,6 +13,14 @@ public:
 	bool ShouldClose() const { return !mIsRunning; }
 	void SetRunning(bool value) { mIsRunning = value; }
 
+	entt::entity CreateEntity();
+	void DestroyEntity(const entt::entity handle);
+
+	entt::registry& GetRegistry() { return mRegistry; }
+
 private:
 	bool mIsRunning;
+	entt::registry mRegistry;
+
+	friend class Entity;
 };

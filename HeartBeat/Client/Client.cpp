@@ -18,8 +18,8 @@ bool Client::Init()
 {
 	HB_LOG("Client::Init");
 
-	Input::StaticInit();
-	Timer::StaticInit();
+	Input::Init();
+	Timer::Init();
 
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();

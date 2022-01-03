@@ -6,7 +6,7 @@
 vector<KeyState> Input::sKeyStates;
 HWND Input::sHwnd;
 
-void Input::StaticInit()
+void Input::Init()
 {
 	sHwnd = Application::GetHwnd();
 	sKeyStates.resize(256, KeyState::None);

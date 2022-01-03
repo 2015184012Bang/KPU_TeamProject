@@ -14,7 +14,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <entt/entt.hpp>
+
 using std::string;
+using std::wstring;
 using std::vector;
 using std::unordered_map;
 using std::array;

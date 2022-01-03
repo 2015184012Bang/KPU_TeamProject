@@ -33,5 +33,14 @@
     <ClInclude Include="KeyCode.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Tags.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

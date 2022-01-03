@@ -9,6 +9,9 @@ public:
 		: mOwner(owner) {}
 	virtual ~Scene() = default;
 
+	Scene(const Scene&) = delete;
+	Scene& operator=(const Scene&) = delete;
+
 	virtual void Enter() = 0;
 	virtual void Exit() = 0;
 	virtual void ProcessInput() {}

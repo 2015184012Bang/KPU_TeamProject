@@ -88,11 +88,14 @@
     <ClCompile Include="PCH.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Components.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
+    <ClInclude Include="Tags.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
