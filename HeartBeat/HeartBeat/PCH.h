@@ -1,6 +1,8 @@
 #pragma once
 
 #pragma warning(disable:4819)
+#pragma comment(lib, "fmt")
+#pragma comment(lib, "spdlog")
 
 #include "Log.h"
 
