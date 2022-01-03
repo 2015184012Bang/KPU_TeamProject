@@ -3,6 +3,7 @@
 class Game
 {
 public:
+	Game();
 	virtual ~Game() = default;
 
 	virtual bool Init() = 0;
@@ -10,8 +11,8 @@ public:
 	virtual void Run() = 0;
 
 	bool ShouldClose() const { return !mIsRunning; }
+	void SetRunning(bool value) { mIsRunning = value; }
 
-protected:
-	bool mIsRunning = true;
+private:
+	bool mIsRunning;
 };
-

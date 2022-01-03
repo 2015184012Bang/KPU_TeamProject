@@ -70,7 +70,7 @@ void Client::ProcessInput()
 
 	if (Input::IsButtonPressed(KeyCode::Escape))
 	{
-		mIsRunning = false;
+		SetRunning(false);
 	}
 
 	if (mActiveScene)
@@ -83,10 +83,10 @@ void Client::Update()
 {
 	Timer::Update();
 
+	float deltaTime = Timer::GetDeltaTime();
+
 	if (mActiveScene)
 	{
-		float deltaTime = Timer::GetDeltaTime();
-
 		mActiveScene->Update(deltaTime);
 	}
 }
