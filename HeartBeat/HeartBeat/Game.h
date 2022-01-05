@@ -2,6 +2,8 @@
 
 class Game
 {
+	friend class Entity;
+
 public:
 	Game();
 	virtual ~Game() = default;
@@ -10,8 +12,8 @@ public:
 	virtual void Shutdown() = 0;
 	virtual void Run() = 0;
 
-	bool ShouldClose() const { return !mIsRunning; }
-	void SetRunning(bool value) { mIsRunning = value; }
+	bool ShouldClose() const { return !mbRunning; }
+	void SetRunning(bool value) { mbRunning = value; }
 
 	entt::entity CreateEntity();
 	void DestroyEntity(const entt::entity handle);
@@ -19,8 +21,6 @@ public:
 	entt::registry& GetRegistry() { return mRegistry; }
 
 private:
-	bool mIsRunning;
+	bool mbRunning;
 	entt::registry mRegistry;
-
-	friend class Entity;
 };

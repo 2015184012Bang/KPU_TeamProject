@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-enum class KeyCode
+enum class eKeyCode
 {
 	Up = VK_UP,
 	Down = VK_DOWN,

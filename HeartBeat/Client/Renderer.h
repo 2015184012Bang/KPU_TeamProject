@@ -12,18 +12,18 @@ public:
 	void EndRender();
 
 private:
-	void LoadPipeline();
-	void LoadAssets();
+	void loadPipeline();
+	void loadAssets();
 
-	void CreateDevice();
-	void CreateCmdQueueAndSwapChain();
-	void CreateRtvHeap();
-	void CreateCmdAllocator();
-	void CreateDsvHeap();
-	void CreateCmdList();
-	void CreateFence();
+	void createDevice();
+	void createCmdQueueAndSwapChain();
+	void createRtvHeap();
+	void createCmdAllocator();
+	void createDsvHeap();
+	void createCmdList();
+	void createFence();
 
-	void WaitForPreviousFrame();
+	void waitForPreviousFrame();
 
 private:
 	static const int BUFFER_COUNT = 2;

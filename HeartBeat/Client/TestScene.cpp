@@ -43,7 +43,7 @@ void TestScene::Exit()
 void TestScene::ProcessInput()
 {
 	//////////////////////////////////////////////////////
-	if (Input::IsButtonPressed(KeyCode::A))
+	if (Input::IsButtonPressed(eKeyCode::A))
 	{
 		auto view = (mOwner->GetRegistry()).view<Foo>();
 	

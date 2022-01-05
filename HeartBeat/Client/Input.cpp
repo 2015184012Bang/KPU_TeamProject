@@ -54,17 +54,17 @@ void Input::Update()
 	}
 }
 
-bool Input::IsButtonRepeat(KeyCode key)
+bool Input::IsButtonRepeat(eKeyCode key)
 {
 	return sKeyStates[static_cast<int>(key)] == KeyState::Repeat;
 }
 
-bool Input::IsButtonPressed(KeyCode key)
+bool Input::IsButtonPressed(eKeyCode key)
 {
 	return sKeyStates[static_cast<int>(key)] == KeyState::Press;
 }
 
-bool Input::IsButtonReleased(KeyCode key)
+bool Input::IsButtonReleased(eKeyCode key)
 {
 	return sKeyStates[static_cast<int>(key)] == KeyState::Release;
 }

@@ -11,7 +11,7 @@ int Application::Run(HINSTANCE hInstance, int nCmdShow, int w /*= 800*/, int h /
 {
 	unique_ptr<Client> client = std::make_unique<Client>();
 
-	InitWindow(hInstance, nCmdShow, w, h);
+	initWindow(hInstance, nCmdShow, w, h);
 
 	bool retval = client->Init();
 
@@ -44,7 +44,7 @@ int Application::Run(HINSTANCE hInstance, int nCmdShow, int w /*= 800*/, int h /
 	return static_cast<char>(msg.wParam);
 }
 
-LRESULT CALLBACK Application::WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Application::windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -56,7 +56,7 @@ LRESULT CALLBACK Application::WindowProc(HWND hwnd, UINT message, WPARAM wParam,
 	return DefWindowProc(hwnd, message, wParam, lParam);
 }
 
-void Application::InitWindow(HINSTANCE hInstance, int nCmdShow, int w, int h)
+void Application::initWindow(HINSTANCE hInstance, int nCmdShow, int w, int h)
 {
 	sScreenWidth = w;
 	sScreenHeight = h;
@@ -64,7 +64,7 @@ void Application::InitWindow(HINSTANCE hInstance, int nCmdShow, int w, int h)
 	WNDCLASSEX windowClass = { 0 };
 	windowClass.cbSize = sizeof(WNDCLASSEX);
 	windowClass.style = CS_HREDRAW | CS_VREDRAW;
-	windowClass.lpfnWndProc = WindowProc;
+	windowClass.lpfnWndProc = windowProc;
 	windowClass.hInstance = hInstance;
 	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	windowClass.lpszClassName = L"HeartBeat";

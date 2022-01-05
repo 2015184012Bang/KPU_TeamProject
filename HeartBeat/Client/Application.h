@@ -12,10 +12,10 @@ public:
 	static int GetScreenHeight() { return sScreenHeight; }
 
 protected:
-	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK windowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
-	static void InitWindow(HINSTANCE hInstance, int nCmdShow, int w, int h);
+	static void initWindow(HINSTANCE hInstance, int nCmdShow, int w, int h);
 
 private:
 	static HWND sHwnd;

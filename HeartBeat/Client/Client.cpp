@@ -47,9 +47,9 @@ void Client::Shutdown()
 
 void Client::Run()
 {
-	ProcessInput();
-	Update();
-	Render();
+	processInput();
+	update();
+	render();
 }
 
 void Client::ChangeScene(Scene* scene)
@@ -64,11 +64,11 @@ void Client::ChangeScene(Scene* scene)
 	mActiveScene->Enter();
 }
 
-void Client::ProcessInput()
+void Client::processInput()
 {
 	Input::Update();
 
-	if (Input::IsButtonPressed(KeyCode::Escape))
+	if (Input::IsButtonPressed(eKeyCode::Escape))
 	{
 		SetRunning(false);
 	}
@@ -79,7 +79,7 @@ void Client::ProcessInput()
 	}
 }
 
-void Client::Update()
+void Client::update()
 {
 	Timer::Update();
 
@@ -91,7 +91,7 @@ void Client::Update()
 	}
 }
 
-void Client::Render()
+void Client::render()
 {
 	mRenderer->BeginRender();
 

@@ -22,12 +22,12 @@ void Renderer::Init()
 {
 	ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED));
 
-	LoadPipeline();
+	loadPipeline();
 }
 
 void Renderer::Shutdown()
 {
-	WaitForPreviousFrame();
+	waitForPreviousFrame();
 
 	CloseHandle(mFenceEvent);
 }
@@ -65,23 +65,23 @@ void Renderer::EndRender()
 
 	ThrowIfFailed(mSwapChain->Present(1, 0));
 
-	WaitForPreviousFrame();
+	waitForPreviousFrame();
 }
 
-void Renderer::LoadPipeline()
+void Renderer::loadPipeline()
 {
-	CreateDevice();
-	CreateCmdQueueAndSwapChain();
-	CreateRtvHeap();
-	CreateCmdAllocator();
+	createDevice();
+	createCmdQueueAndSwapChain();
+	createRtvHeap();
+	createCmdAllocator();
 	//CreateDsvHeap();
-	CreateCmdList();
-	CreateFence();
+	createCmdList();
+	createFence();
 
-	LoadAssets();
+	loadAssets();
 }
 
-void Renderer::CreateDevice()
+void Renderer::createDevice()
 {
 	UINT dxgiFactoryFlags = 0;
 
@@ -102,7 +102,7 @@ void Renderer::CreateDevice()
 	gDevice = mDevice;
 }
 
-void Renderer::CreateCmdQueueAndSwapChain()
+void Renderer::createCmdQueueAndSwapChain()
 {
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -134,7 +134,7 @@ void Renderer::CreateCmdQueueAndSwapChain()
 	mBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
-void Renderer::CreateRtvHeap()
+void Renderer::createRtvHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 	rtvHeapDesc.NumDescriptors = BUFFER_COUNT;
@@ -154,12 +154,12 @@ void Renderer::CreateRtvHeap()
 	}
 }
 
-void Renderer::CreateCmdAllocator()
+void Renderer::createCmdAllocator()
 {
 	ThrowIfFailed(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCmdAllocator)));
 }
 
-void Renderer::CreateDsvHeap()
+void Renderer::createDsvHeap()
 {
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, Application::GetScreenWidth(), Application::GetScreenHeight());
 	desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
@@ -183,7 +183,7 @@ void Renderer::CreateDsvHeap()
 	mDevice->CreateDepthStencilView(mDsvBuffer.Get(), nullptr, mDsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
-void Renderer::CreateCmdList()
+void Renderer::createCmdList()
 {
 	ThrowIfFailed(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
 		mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList)));
@@ -191,7 +191,7 @@ void Renderer::CreateCmdList()
 	// BEWARE!! CommandList is now recording state for loading assets.
 }
 
-void Renderer::CreateFence()
+void Renderer::createFence()
 {
 	ThrowIfFailed(mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)));
 	mFenceValue = 1;
@@ -203,7 +203,7 @@ void Renderer::CreateFence()
 	}
 }
 
-void Renderer::WaitForPreviousFrame()
+void Renderer::waitForPreviousFrame()
 {
 	const UINT64 fenceValue = mFenceValue;
 
@@ -219,7 +219,7 @@ void Renderer::WaitForPreviousFrame()
 	mBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
-void Renderer::LoadAssets()
+void Renderer::loadAssets()
 {
 	// TODO :: load all assets
 
@@ -227,5 +227,5 @@ void Renderer::LoadAssets()
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-	WaitForPreviousFrame();
+	waitForPreviousFrame();
 }

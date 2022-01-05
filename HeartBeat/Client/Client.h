@@ -18,9 +18,9 @@ public:
     void ChangeScene(Scene* scene);
 
 private:
-    void ProcessInput();
-    void Update();
-    void Render();
+    void processInput();
+    void update();
+    void render();
 
 private:
     Scene* mActiveScene;

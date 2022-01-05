@@ -14,9 +14,9 @@ public:
 	static void Init();
 	static void Update();
 
-	static bool IsButtonRepeat(KeyCode key);
-	static bool IsButtonPressed(KeyCode key);
-	static bool IsButtonReleased(KeyCode key);
+	static bool IsButtonRepeat(eKeyCode key);
+	static bool IsButtonPressed(eKeyCode key);
+	static bool IsButtonReleased(eKeyCode key);
 
 private:
 	static const int KEY_COUNT = 256;
