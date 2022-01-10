@@ -17,6 +17,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{1ffabe64-c6ea-418a-8c5a-5306960c33bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Resources">
+      <UniqueIdentifier>{74f6b562-9ae4-41de-a3f1-e14c14726a03}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientPCH.cpp">
@@ -44,6 +47,12 @@
       <Filter>Source Files\Test</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="TablsDescriptorHeap.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -79,6 +88,12 @@
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="TablsDescriptorHeap.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>

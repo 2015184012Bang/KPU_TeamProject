@@ -1,5 +1,7 @@
 #pragma once
 
+class Texture;
+
 class Renderer
 {
 public:
@@ -9,6 +11,7 @@ public:
 	void Shutdown();
 
 	void BeginRender();
+	void OnRender();
 	void EndRender();
 
 private:
@@ -55,10 +58,10 @@ private:
 
 	HANDLE mFenceEvent;
 
-
 	//////////////////////////////////////////////////////////////////////////
 	ComPtr<ID3D12Resource> mVertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
+	Texture* mTestTexture;
 	//////////////////////////////////////////////////////////////////////////
 };
 

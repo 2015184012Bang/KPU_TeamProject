@@ -2,8 +2,15 @@
 #include "Renderer.h"
 
 #include "Application.h"
-
 #include "Vertex.h"
+#include "TablsDescriptorHeap.h"
+
+#include "Texture.h"
+
+ComPtr<ID3D12Device> gDevice;
+ComPtr<ID3D12GraphicsCommandList> gCmdList;
+vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
+TablsDescriptorHeap* gTexDescHeap;
 
 Renderer::Renderer()
 	: mAspectRatio(0.0f)
@@ -35,6 +42,16 @@ void Renderer::Shutdown()
 	waitForPreviousFrame();
 
 	CloseHandle(mFenceEvent);
+
+	if (gTexDescHeap)
+	{
+		delete gTexDescHeap;
+		gTexDescHeap = nullptr;
+	}
+
+	//////////////////////
+	delete mTestTexture;
+	//////////////////////
 }
 
 void Renderer::BeginRender()
@@ -57,9 +74,7 @@ void Renderer::BeginRender()
 	//mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	//mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
 
-	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mCmdList->IASetVertexBuffers(0, 1, &mVertexBufferView);
-	mCmdList->DrawInstanced(3, 1, 0, 0);
+	OnRender();
 }
 
 void Renderer::EndRender()
@@ -96,13 +111,12 @@ void Renderer::createDevice()
 	UINT dxgiFactoryFlags = 0;
 
 #ifdef _DEBUG
+
+	ComPtr<ID3D12Debug> debugController;
+	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
 	{
-		ComPtr<ID3D12Debug> debugController;
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-		{
-			debugController->EnableDebugLayer();
-			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-		}
+		debugController->EnableDebugLayer();
+		dxgiFactoryFlags = DXGI_CREATE_FACTORY_DEBUG;
 	}
 #endif // _DEBUG
 
@@ -110,6 +124,7 @@ void Renderer::createDevice()
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice)));
 
 	gDevice = mDevice;
+	gTexDescHeap = new TablsDescriptorHeap;
 }
 
 void Renderer::createCmdQueueAndSwapChain()
@@ -195,8 +210,16 @@ void Renderer::createDsvHeap()
 
 void Renderer::createPipelineState()
 {
-	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-	rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_DESCRIPTOR_RANGE descRange[1];
+	descRange[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+
+	CD3DX12_ROOT_PARAMETER params[1];
+	params[0].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
+
+	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(params),
+		params, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
@@ -205,7 +228,7 @@ void Renderer::createPipelineState()
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
 	inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-	inputDesc.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+	inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
 	ComPtr<ID3DBlob> vertexShader;
 	ComPtr<ID3DBlob> pixelShader;
@@ -240,6 +263,8 @@ void Renderer::createCmdList()
 {
 	ThrowIfFailed(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
 		mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList)));
+
+	gCmdList = mCmdList;
 }
 
 void Renderer::createFence()
@@ -277,9 +302,9 @@ void Renderer::createTestTriangle()
 	{
 		Vertex triangleVertices[] =
 		{
-			{ { 0.0f, 0.25f * aspectRatio, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-			{ { 0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-			{ { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+			{ { 0.0f, 0.25f * aspectRatio, 0.0f }, { 0.5f, 0.0f } },
+			{ { 0.25f, -0.25f * aspectRatio, 0.0f }, { 1.0f, 1.0f } },
+			{ { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f } }
 		};
 
 		const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -304,6 +329,9 @@ void Renderer::createTestTriangle()
 		mVertexBufferView.StrideInBytes = sizeof(Vertex);
 		mVertexBufferView.SizeInBytes = vertexBufferSize;
 	}
+
+	mTestTexture = new Texture;
+	mTestTexture->Load(L"Assets/Textures/cat.png");
 }
 
 void Renderer::loadAssets()
@@ -317,4 +345,22 @@ void Renderer::loadAssets()
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
 	waitForPreviousFrame();
+
+	for (auto buffer : gUsedUploadBuffers)
+	{
+		buffer = nullptr;
+	}
+	gUsedUploadBuffers.clear();
+}
+
+void Renderer::OnRender()
+{
+	ID3D12DescriptorHeap* ppHeaps[] = { gTexDescHeap->GetHeap().Get() };
+	mCmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+	mCmdList->SetGraphicsRootDescriptorTable(0, mTestTexture->GetGpuHandle());
+
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mCmdList->DrawInstanced(3, 1, 0, 0);
 }

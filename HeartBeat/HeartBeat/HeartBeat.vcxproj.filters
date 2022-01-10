@@ -42,5 +42,8 @@
     <ClInclude Include="Components.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="StringUtils.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
