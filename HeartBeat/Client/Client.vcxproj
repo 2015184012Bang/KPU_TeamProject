@@ -129,11 +129,15 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HeartBeat\HeartBeat.vcxproj">
       <Project>{002230b8-22ec-436d-9a7b-5ead1432075e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="default.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

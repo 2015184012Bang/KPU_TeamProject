@@ -20,16 +20,20 @@ private:
 	void createRtvHeap();
 	void createCmdAllocator();
 	void createDsvHeap();
+	void createPipelineState();
 	void createCmdList();
 	void createFence();
 
 	void waitForPreviousFrame();
+
+	void createTestTriangle();
 
 private:
 	static const int BUFFER_COUNT = 2;
 
 	CD3DX12_VIEWPORT mViewport;
 	CD3DX12_RECT mScissorRect;
+	float mAspectRatio;
 
 	ComPtr<IDXGIFactory4> mFactory;
 	ComPtr<ID3D12Device> mDevice;
@@ -42,11 +46,19 @@ private:
 	ComPtr<ID3D12DescriptorHeap> mDsvHeap;
 	ComPtr<ID3D12GraphicsCommandList> mCmdList;
 	ComPtr<ID3D12Fence> mFence;
+	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mPSO;
 
 	UINT mBackBufferIndex;
 	UINT mRtvDescriptorSize;
 	UINT64 mFenceValue;
 
 	HANDLE mFenceEvent;
+
+
+	//////////////////////////////////////////////////////////////////////////
+	ComPtr<ID3D12Resource> mVertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
+	//////////////////////////////////////////////////////////////////////////
 };
 

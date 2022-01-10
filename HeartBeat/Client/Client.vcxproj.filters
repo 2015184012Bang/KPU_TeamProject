@@ -14,6 +14,9 @@
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{9bb76581-29bf-4061-b240-f340ca43fd41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{1ffabe64-c6ea-418a-8c5a-5306960c33bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientPCH.cpp">
@@ -75,5 +78,13 @@
     <ClInclude Include="d3dHelper.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="default.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

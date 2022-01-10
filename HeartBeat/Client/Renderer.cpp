@@ -3,14 +3,19 @@
 
 #include "Application.h"
 
+#include "Vertex.h"
+
 Renderer::Renderer()
-	: mBackBufferIndex(0)
+	: mAspectRatio(0.0f)
+	, mBackBufferIndex(0)
 	, mRtvDescriptorSize(0)
 	, mFenceValue(0)
 	, mFenceEvent(nullptr)
 {
 	int width = Application::GetScreenWidth();
 	int height = Application::GetScreenHeight();
+
+	mAspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 	mViewport = CD3DX12_VIEWPORT(0.0f, 0.0f,
 		static_cast<float>(width), static_cast<float>(height));
@@ -35,8 +40,9 @@ void Renderer::Shutdown()
 void Renderer::BeginRender()
 {
 	ThrowIfFailed(mCmdAllocator->Reset());
-	ThrowIfFailed(mCmdList->Reset(mCmdAllocator.Get(), nullptr));
+	ThrowIfFailed(mCmdList->Reset(mCmdAllocator.Get(), mPSO.Get()));
 
+	mCmdList->SetGraphicsRootSignature(mRootSignature.Get());
 	mCmdList->RSSetViewports(1, &mViewport);
 	mCmdList->RSSetScissorRects(1, &mScissorRect);
 
@@ -45,12 +51,15 @@ void Renderer::BeginRender()
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE renderTagetView(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), mBackBufferIndex, mRtvDescriptorSize);
 	mCmdList->ClearRenderTargetView(renderTagetView, Colors::CornflowerBlue, 0, nullptr);
-
 	mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, nullptr);
 
 	//D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 	//mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	//mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
+
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mCmdList->DrawInstanced(3, 1, 0, 0);
 }
 
 void Renderer::EndRender()
@@ -75,6 +84,7 @@ void Renderer::loadPipeline()
 	createRtvHeap();
 	createCmdAllocator();
 	//CreateDsvHeap();
+	createPipelineState();
 	createCmdList();
 	createFence();
 
@@ -183,12 +193,53 @@ void Renderer::createDsvHeap()
 	mDevice->CreateDepthStencilView(mDsvBuffer.Get(), nullptr, mDsvHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
+void Renderer::createPipelineState()
+{
+	CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+	rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> signature;
+	ComPtr<ID3DBlob> error;
+	ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+	ThrowIfFailed(mDevice->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&mRootSignature)));
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
+	inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+	inputDesc.push_back({ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+	ComPtr<ID3DBlob> vertexShader;
+	ComPtr<ID3DBlob> pixelShader;
+
+#ifdef _DEBUG
+	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+	UINT compileFlags = 0;
+#endif
+
+	ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
+	ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { inputDesc.data(), static_cast<UINT>(inputDesc.size()) };
+	psoDesc.pRootSignature = mRootSignature.Get();
+	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthEnable = FALSE;
+	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.SampleDesc.Count = 1;
+	ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
+}
+
 void Renderer::createCmdList()
 {
 	ThrowIfFailed(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
 		mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList)));
-
-	// BEWARE!! CommandList is now recording state for loading assets.
 }
 
 void Renderer::createFence()
@@ -219,9 +270,47 @@ void Renderer::waitForPreviousFrame()
 	mBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
+void Renderer::createTestTriangle()
+{
+	float aspectRatio = mAspectRatio;
+
+	{
+		Vertex triangleVertices[] =
+		{
+			{ { 0.0f, 0.25f * aspectRatio, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+			{ { 0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+			{ { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+		};
+
+		const UINT vertexBufferSize = sizeof(triangleVertices);
+
+		const auto hp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		const auto rd = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+		ThrowIfFailed(mDevice->CreateCommittedResource(
+			&hp,
+			D3D12_HEAP_FLAG_NONE,
+			&rd,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&mVertexBuffer)));
+
+		UINT8* pVertexDataBegin;
+		CD3DX12_RANGE readRange(0, 0);
+		ThrowIfFailed(mVertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
+		mVertexBuffer->Unmap(0, nullptr);
+
+		mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
+		mVertexBufferView.StrideInBytes = sizeof(Vertex);
+		mVertexBufferView.SizeInBytes = vertexBufferSize;
+	}
+}
+
 void Renderer::loadAssets()
 {
 	// TODO :: load all assets
+	createTestTriangle();
+	//////////////////////////////////////////////////////////////////////////
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
