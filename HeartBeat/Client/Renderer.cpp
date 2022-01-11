@@ -51,6 +51,7 @@ void Renderer::Shutdown()
 
 	//////////////////////
 	delete mTestTexture;
+	delete mTestTexture2;
 	//////////////////////
 }
 
@@ -67,12 +68,11 @@ void Renderer::BeginRender()
 	mCmdList->ResourceBarrier(1, &toRenderTargetBarrier);
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE renderTagetView(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), mBackBufferIndex, mRtvDescriptorSize);
-	mCmdList->ClearRenderTargetView(renderTagetView, Colors::CornflowerBlue, 0, nullptr);
-	mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, nullptr);
+	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	//D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
-	//mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	//mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
+	mCmdList->ClearRenderTargetView(renderTagetView, Colors::CornflowerBlue, 0, nullptr);
+	mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
 
 	OnRender();
 }
@@ -98,7 +98,7 @@ void Renderer::loadPipeline()
 	createCmdQueueAndSwapChain();
 	createRtvHeap();
 	createCmdAllocator();
-	//createDsvHeap();
+	createDsvHeap();
 	createPipelineState();
 	createCmdList();
 	createFence();
@@ -254,6 +254,7 @@ void Renderer::createPipelineState()
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	psoDesc.SampleDesc.Count = 1;
 	ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
 }
@@ -301,9 +302,9 @@ void Renderer::createTestTriangle()
 	{
 		Vertex triangleVertices[] =
 		{
-			{ { 0.0f, 0.25f * aspectRatio, 0.0f }, { 0.5f, 0.0f } },
-			{ { 0.25f, -0.25f * aspectRatio, 0.0f }, { 1.0f, 1.0f } },
-			{ { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f } }
+			{ { 0.0f, 0.25f * aspectRatio, 0.1f }, { 0.5f, 0.0f } },
+			{ { 0.25f, -0.25f * aspectRatio, 0.1f }, { 1.0f, 1.0f } },
+			{ { -0.25f, -0.25f * aspectRatio, 0.1f }, { 0.0f, 1.0f } }
 		};
 
 		const uint32 vertexBufferSize = sizeof(triangleVertices);
@@ -329,8 +330,42 @@ void Renderer::createTestTriangle()
 		mVertexBufferView.SizeInBytes = vertexBufferSize;
 	}
 
+	{
+		Vertex triangleVertices[] =
+		{
+			{ { -0.25f, 0.25f * aspectRatio, 0.2f }, { 0.5f, 0.0f } },
+			{ { 0.0f, -0.25f * aspectRatio, 0.2f }, { 1.0f, 1.0f } },
+			{ { -0.5f, -0.25f * aspectRatio, 0.2f }, { 0.0f, 1.0f } }
+		};
+
+		const uint32 vertexBufferSize = sizeof(triangleVertices);
+
+		const auto hp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		const auto rd = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+		ThrowIfFailed(mDevice->CreateCommittedResource(
+			&hp,
+			D3D12_HEAP_FLAG_NONE,
+			&rd,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&mVertexBuffer2)));
+
+		uint8* pVertexDataBegin;
+		CD3DX12_RANGE readRange(0, 0);
+		ThrowIfFailed(mVertexBuffer2->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
+		mVertexBuffer2->Unmap(0, nullptr);
+
+		mVertexBufferView2.BufferLocation = mVertexBuffer2->GetGPUVirtualAddress();
+		mVertexBufferView2.StrideInBytes = sizeof(Vertex);
+		mVertexBufferView2.SizeInBytes = vertexBufferSize;
+	}
+
 	mTestTexture = new Texture;
 	mTestTexture->Load(L"Assets/Textures/cat.png");
+
+	mTestTexture2 = new Texture;
+	mTestTexture2->Load(L"Assets/Textures/Brown.png");
 }
 
 void Renderer::loadAssets()
@@ -358,8 +393,12 @@ void Renderer::OnRender()
 	mCmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
 	mCmdList->SetGraphicsRootDescriptorTable(0, mTestTexture->GetGpuHandle());
-
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mCmdList->DrawInstanced(3, 1, 0, 0);
+
+	mCmdList->SetGraphicsRootDescriptorTable(0, mTestTexture2->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mVertexBufferView2);
 	mCmdList->DrawInstanced(3, 1, 0, 0);
 }

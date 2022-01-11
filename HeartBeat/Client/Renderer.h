@@ -62,6 +62,10 @@ private:
 	ComPtr<ID3D12Resource> mVertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
 	Texture* mTestTexture;
+
+	ComPtr<ID3D12Resource> mVertexBuffer2;
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView2;
+	Texture* mTestTexture2;
 	//////////////////////////////////////////////////////////////////////////
 };
 
