@@ -1,11 +1,13 @@
 #pragma once
 
-class Texture
+#include "Resource.h"
+
+class Texture : public IResource
 {
 public:
 	Texture();
 
-	void Load(const wstring& path);
+	virtual void Load(const wstring& path) override;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle() { return mSrvGpuHandle; }
 

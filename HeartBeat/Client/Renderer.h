@@ -1,6 +1,7 @@
 #pragma once
 
 class Texture;
+class Mesh;
 
 class Renderer
 {
@@ -59,13 +60,9 @@ private:
 	HANDLE mFenceEvent;
 
 	//////////////////////////////////////////////////////////////////////////
-	ComPtr<ID3D12Resource> mVertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
-	Texture* mTestTexture;
+	Mesh* mTestMesh;
 
-	ComPtr<ID3D12Resource> mVertexBuffer2;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView2;
-	Texture* mTestTexture2;
+	Texture* mTestTexture;
 	//////////////////////////////////////////////////////////////////////////
 };
 
