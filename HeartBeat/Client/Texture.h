@@ -14,9 +14,9 @@ private:
 	bool createShaderResource();
 
 private:
-	static UINT sNumTextures;
+	static uint32 sNumTextures;
 
-	UINT mTexIndex;
+	uint32 mTexIndex;
 	ScratchImage mRawImage;
 	ComPtr<ID3D12Resource> mTexture;
 	D3D12_GPU_DESCRIPTOR_HANDLE mSrvGpuHandle;

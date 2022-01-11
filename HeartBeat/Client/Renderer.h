@@ -52,8 +52,8 @@ private:
 	ComPtr<ID3D12RootSignature> mRootSignature;
 	ComPtr<ID3D12PipelineState> mPSO;
 
-	UINT mBackBufferIndex;
-	UINT mRtvDescriptorSize;
+	uint32 mBackBufferIndex;
+	uint32 mRtvDescriptorSize;
 	UINT64 mFenceValue;
 
 	HANDLE mFenceEvent;

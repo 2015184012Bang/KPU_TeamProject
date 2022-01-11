@@ -108,7 +108,7 @@ void Renderer::loadPipeline()
 
 void Renderer::createDevice()
 {
-	UINT dxgiFactoryFlags = 0;
+	uint32 dxgiFactoryFlags = 0;
 
 #ifdef _DEBUG
 
@@ -234,16 +234,16 @@ void Renderer::createPipelineState()
 	ComPtr<ID3DBlob> pixelShader;
 
 #ifdef _DEBUG
-	UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	uint32 compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
-	UINT compileFlags = 0;
+	uint32 compileFlags = 0;
 #endif
 
 	ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
 	ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-	psoDesc.InputLayout = { inputDesc.data(), static_cast<UINT>(inputDesc.size()) };
+	psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
 	psoDesc.pRootSignature = mRootSignature.Get();
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
@@ -307,7 +307,7 @@ void Renderer::createTestTriangle()
 			{ { -0.25f, -0.25f * aspectRatio, 0.0f }, { 0.0f, 1.0f } }
 		};
 
-		const UINT vertexBufferSize = sizeof(triangleVertices);
+		const uint32 vertexBufferSize = sizeof(triangleVertices);
 
 		const auto hp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		const auto rd = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);

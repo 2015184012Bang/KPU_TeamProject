@@ -3,7 +3,7 @@
 
 #include "TablsDescriptorHeap.h"
 
-UINT Texture::sNumTextures = 0;
+uint32 Texture::sNumTextures = 0;
 
 Texture::Texture()
 	: mTexIndex(-1)
@@ -72,7 +72,7 @@ bool Texture::createShaderResource()
 		return false;
 	}
 
-	const UINT64 bufferSize = GetRequiredIntermediateSize(mTexture.Get(), 0, static_cast<UINT>(subResources.size()));
+	const UINT64 bufferSize = GetRequiredIntermediateSize(mTexture.Get(), 0, static_cast<uint32>(subResources.size()));
 
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);

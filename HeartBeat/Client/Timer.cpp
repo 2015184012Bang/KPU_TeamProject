@@ -1,8 +1,8 @@
 #include "ClientPCH.h"
 #include "Timer.h"
 
-UINT64 Timer::sFrequency;
-UINT64 Timer::sPrevCount;
+uint64 Timer::sFrequency;
+uint64 Timer::sPrevCount;
 float Timer::sDeltaTime;
 
 void Timer::Init()

@@ -11,7 +11,7 @@ public:
 	ComPtr<ID3D12DescriptorHeap> GetHeap() { return mDescriptorHeap; }
 
 private:
-	UINT mSrvDescriptorSize;
+	uint32 mSrvDescriptorSize;
 
 	ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
 };
