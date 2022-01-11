@@ -6,6 +6,7 @@
 
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "ClientSystems.h"
 
 TestScene* TestScene::sInstance;
 
@@ -30,9 +31,10 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	Entity e = Entity(mOwner->CreateEntity(), mOwner);
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"응애"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
-	e.AddTag<StaticMesh>();
+	mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
+	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"응애"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
+	mTestEntity.AddComponent<TransformComponent>();
+	mTestEntity.AddTag<StaticMesh>();
 }
 
 void TestScene::Exit()
@@ -42,12 +44,16 @@ void TestScene::Exit()
 
 void TestScene::ProcessInput()
 {
-
+	
 }
 
 void TestScene::Update(float deltaTime)
 {
-
+	if (Input::IsButtonRepeat(eKeyCode::Right))
+	{
+		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
+		ClientSystems::Move(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime);
+	}
 }
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)
@@ -58,8 +64,10 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 	{
 		Entity e = Entity(entity, mOwner);
 
-		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+		TransformComponent& transform = e.GetComponent<TransformComponent>();
+		ClientSystems::SetWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer);
 
+		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 	}
 }

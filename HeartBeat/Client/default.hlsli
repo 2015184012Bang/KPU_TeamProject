@@ -1,3 +1,8 @@
+cbuffer cbWorld : register(b0)
+{
+    row_major matrix gWorld;
+}
+
 struct VSInput
 {
     float3 position : POSITION;
@@ -17,7 +22,7 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
     
-    result.position = float4(input.position, 1.0f);
+    result.position = mul(float4(input.position, 1.0f), gWorld);
     result.uv = input.uv;
     
     return result;

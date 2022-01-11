@@ -210,8 +210,9 @@ void Renderer::createPipelineState()
 	CD3DX12_DESCRIPTOR_RANGE descRange[1];
 	descRange[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-	CD3DX12_ROOT_PARAMETER params[1];
-	params[0].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	CD3DX12_ROOT_PARAMETER params[static_cast<uint32>(eRootParameter::End)];
+	params[static_cast<uint32>(eRootParameter::WorldParam)].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(eRootParameter::TexParam)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
@@ -317,7 +318,7 @@ void Renderer::loadAssets()
 
 void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
 {
-	mCmdList->SetGraphicsRootDescriptorTable(0, texture->GetGpuHandle());
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());

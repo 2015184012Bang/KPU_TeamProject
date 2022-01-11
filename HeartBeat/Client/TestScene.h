@@ -20,5 +20,8 @@ private:
 
 private:
     static TestScene* sInstance;
+
+    //////////////////////////////////////////////////////////////////////////
+    Entity mTestEntity;
 };
 

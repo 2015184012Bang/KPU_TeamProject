@@ -20,6 +20,9 @@
     <Filter Include="Source Files\Resources">
       <UniqueIdentifier>{74f6b562-9ae4-41de-a3f1-e14c14726a03}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Components">
+      <UniqueIdentifier>{8a65085e-2fca-4dc3-b379-2139c4316402}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientPCH.cpp">
@@ -60,6 +63,15 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="UploadBuffer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientComponents.cpp">
+      <Filter>Source Files\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSystems.cpp">
+      <Filter>Source Files\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,7 +123,16 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="UploadBuffer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="ClientComponents.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSystems.h">
+      <Filter>Source Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
