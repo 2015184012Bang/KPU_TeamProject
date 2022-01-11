@@ -98,7 +98,7 @@ void Renderer::loadPipeline()
 	createCmdQueueAndSwapChain();
 	createRtvHeap();
 	createCmdAllocator();
-	//CreateDsvHeap();
+	//createDsvHeap();
 	createPipelineState();
 	createCmdList();
 	createFence();
@@ -249,8 +249,7 @@ void Renderer::createPipelineState()
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState.DepthEnable = FALSE;
-	psoDesc.DepthStencilState.StencilEnable = FALSE;
+	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
@@ -281,7 +280,7 @@ void Renderer::createFence()
 
 void Renderer::waitForPreviousFrame()
 {
-	const UINT64 fenceValue = mFenceValue;
+	const uint64 fenceValue = mFenceValue;
 
 	ThrowIfFailed(mCmdQueue->Signal(mFence.Get(), fenceValue));
 	mFenceValue++;
@@ -319,7 +318,7 @@ void Renderer::createTestTriangle()
 			nullptr,
 			IID_PPV_ARGS(&mVertexBuffer)));
 
-		UINT8* pVertexDataBegin;
+		uint8* pVertexDataBegin;
 		CD3DX12_RANGE readRange(0, 0);
 		ThrowIfFailed(mVertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
 		memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));

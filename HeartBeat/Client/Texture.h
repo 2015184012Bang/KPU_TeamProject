@@ -11,7 +11,8 @@ public:
 
 private:
 	bool loadTextureFromFile(const wstring& path);
-	bool createShaderResource();
+	bool uploadTextureData();
+	bool createSRV();
 
 private:
 	static uint32 sNumTextures;

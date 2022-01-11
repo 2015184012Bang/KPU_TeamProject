@@ -54,7 +54,7 @@ private:
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;
-	UINT64 mFenceValue;
+	uint64 mFenceValue;
 
 	HANDLE mFenceEvent;
 

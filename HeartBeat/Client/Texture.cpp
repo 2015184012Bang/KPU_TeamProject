@@ -21,7 +21,15 @@ void Texture::Load(const wstring& path)
 		HB_ASSERT(false, "ASSERTION FAILED");
 	}
 
-	success = createShaderResource();
+	success = uploadTextureData();
+
+	if (!success)
+	{
+		HB_LOG("Failed to upload tex data to default buffer: {0}", ws2s(path));
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
+
+	success = createSRV();
 
 	if (!success)
 	{
@@ -47,7 +55,7 @@ bool Texture::loadTextureFromFile(const wstring& path)
 		LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, nullptr, mRawImage);
 	}
 
-	HRESULT hr = ::CreateTexture(gDevice.Get(), mRawImage.GetMetadata(), &mTexture);
+	HRESULT hr = CreateTexture(gDevice.Get(), mRawImage.GetMetadata(), &mTexture);
 	
 	if (FAILED(hr))
 	{
@@ -57,7 +65,7 @@ bool Texture::loadTextureFromFile(const wstring& path)
 	return true;
 }
 
-bool Texture::createShaderResource()
+bool Texture::uploadTextureData()
 {
 	vector<D3D12_SUBRESOURCE_DATA> subResources;
 
@@ -72,7 +80,7 @@ bool Texture::createShaderResource()
 		return false;
 	}
 
-	const UINT64 bufferSize = GetRequiredIntermediateSize(mTexture.Get(), 0, static_cast<uint32>(subResources.size()));
+	const uint64 bufferSize = GetRequiredIntermediateSize(mTexture.Get(), 0, static_cast<uint32>(subResources.size()));
 
 	D3D12_HEAP_PROPERTIES heapProperty = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
@@ -98,11 +106,16 @@ bool Texture::createShaderResource()
 		static_cast<unsigned int>(subResources.size()),
 		subResources.data());
 
-	const auto toSrvBarrier = CD3DX12_RESOURCE_BARRIER::Transition(mTexture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	gCmdList->ResourceBarrier(1, &toSrvBarrier);
+	const auto toShaderResourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(mTexture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	gCmdList->ResourceBarrier(1, &toShaderResourceBarrier);
 
-	RELEASE_UPLOAD_BUFFER(std::move(textureUploadBuffer));
+	RELEASE_UPLOAD_BUFFER(textureUploadBuffer);
 
+	return true;
+}
+
+bool Texture::createSRV()
+{
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = mRawImage.GetMetadata().format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
@@ -113,7 +126,7 @@ bool Texture::createShaderResource()
 	sNumTextures++;
 
 	gDevice->CreateShaderResourceView(mTexture.Get(), &srvDesc, gTexDescHeap->GetCpuHandle(mTexIndex));
-
 	mSrvGpuHandle = gTexDescHeap->GetGpuHandle(mTexIndex);
+
 	return true;
 }
