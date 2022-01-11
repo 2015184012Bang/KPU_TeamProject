@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientComponents.h" />
     <ClInclude Include="ClientPCH.h" />
     <ClInclude Include="d3dHelper.h" />
     <ClInclude Include="d3dx12.h" />

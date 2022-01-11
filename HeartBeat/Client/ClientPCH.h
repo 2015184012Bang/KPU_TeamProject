@@ -33,6 +33,7 @@ using namespace DirectX::SimpleMath;
 
 #include "d3dx12.h"
 #include "d3dHelper.h"
+#include "ClientComponents.h"
 
 extern ComPtr<ID3D12Device> gDevice;
 extern ComPtr<ID3D12GraphicsCommandList> gCmdList;

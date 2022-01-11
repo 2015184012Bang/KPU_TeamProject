@@ -30,8 +30,9 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	mTestTex = ResourceManager::GetTexture(L"Assets/Textures/cat.png");
-	mTestMesh = ResourceManager::GetMesh(L"응애");
+	Entity e = Entity(mOwner->CreateEntity(), mOwner);
+	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"응애"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
+	e.AddTag<StaticMesh>();
 }
 
 void TestScene::Exit()
@@ -51,5 +52,14 @@ void TestScene::Update(float deltaTime)
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)
 {
-	renderer->Submit(mTestMesh, mTestTex);
+	auto view = (mOwner->GetRegistry()).view<StaticMesh>();
+
+	for (auto entity : view)
+	{
+		Entity e = Entity(entity, mOwner);
+
+		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+
+		renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+	}
 }

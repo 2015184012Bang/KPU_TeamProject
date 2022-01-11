@@ -2,9 +2,6 @@
 
 #include "Scene.h"
 
-class Texture;
-class Mesh;
-
 class TestScene :
     public Scene
 {
@@ -23,10 +20,5 @@ private:
 
 private:
     static TestScene* sInstance;
-
-    //////////////////////////////////////////////////////////////////////////
-    Texture* mTestTex;
-    Mesh* mTestMesh;
-    //////////////////////////////////////////////////////////////////////////
 };
 
