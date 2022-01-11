@@ -58,6 +58,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -103,6 +106,9 @@
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>

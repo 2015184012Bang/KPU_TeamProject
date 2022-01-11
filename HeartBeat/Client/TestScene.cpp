@@ -4,6 +4,9 @@
 #include "Input.h"
 #include "Client.h"
 
+#include "Renderer.h"
+#include "ResourceManager.h"
+
 TestScene* TestScene::sInstance;
 
 TestScene::TestScene(Client* owner)
@@ -26,6 +29,9 @@ TestScene* TestScene::Get()
 void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
+
+	mTestTex = ResourceManager::GetTexture(L"Assets/Textures/cat.png");
+	mTestMesh = ResourceManager::GetMesh(L"¿¿æ÷");
 }
 
 void TestScene::Exit()
@@ -41,4 +47,9 @@ void TestScene::ProcessInput()
 void TestScene::Update(float deltaTime)
 {
 
+}
+
+void TestScene::Render(unique_ptr<Renderer>& renderer)
+{
+	renderer->Submit(mTestMesh, mTestTex);
 }

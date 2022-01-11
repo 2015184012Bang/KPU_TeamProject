@@ -1,6 +1,7 @@
 #pragma once
 
 class Client;
+class Renderer;
 
 class Scene
 {
@@ -16,7 +17,7 @@ public:
 	virtual void Exit() = 0;
 	virtual void ProcessInput() {}
 	virtual void Update(float deltaTime) {}
-	virtual void Render() {}
+	virtual void Render(unique_ptr<Renderer>& renderer) {}
 
 protected:
 	Client* mOwner;

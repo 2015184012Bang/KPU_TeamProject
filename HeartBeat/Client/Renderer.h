@@ -1,7 +1,7 @@
 #pragma once
 
-class Texture;
 class Mesh;
+class Texture;
 
 class Renderer
 {
@@ -12,12 +12,13 @@ public:
 	void Shutdown();
 
 	void BeginRender();
-	void OnRender();
 	void EndRender();
+	void Submit(const Mesh* const mesh, const Texture* const texture);
 
 private:
 	void loadPipeline();
 	void loadAssets();
+	void loadAllAssetsFromFile();
 
 	void createDevice();
 	void createCmdQueueAndSwapChain();
@@ -29,8 +30,6 @@ private:
 	void createFence();
 
 	void waitForPreviousFrame();
-
-	void createTestTriangle();
 
 private:
 	static const int BUFFER_COUNT = 2;
@@ -58,11 +57,5 @@ private:
 	uint64 mFenceValue;
 
 	HANDLE mFenceEvent;
-
-	//////////////////////////////////////////////////////////////////////////
-	Mesh* mTestMesh;
-
-	Texture* mTestTexture;
-	//////////////////////////////////////////////////////////////////////////
 };
 

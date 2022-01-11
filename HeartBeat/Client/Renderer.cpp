@@ -2,11 +2,9 @@
 #include "Renderer.h"
 
 #include "Application.h"
-#include "Vertex.h"
+#include "ResourceManager.h"
 #include "TablsDescriptorHeap.h"
-
-#include "Texture.h"
-#include "Mesh.h"
+#include "Vertex.h"
 
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;
@@ -50,10 +48,7 @@ void Renderer::Shutdown()
 		gTexDescHeap = nullptr;
 	}
 
-	//////////////////////
-	delete mTestTexture;
-	delete mTestMesh;
-	//////////////////////
+	ResourceManager::Shutdown();
 }
 
 void Renderer::BeginRender()
@@ -75,7 +70,8 @@ void Renderer::BeginRender()
 	mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
 
-	OnRender();
+	ID3D12DescriptorHeap* ppHeaps[] = { gTexDescHeap->GetHeap().Get() };
+	mCmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 }
 
 void Renderer::EndRender()
@@ -296,19 +292,15 @@ void Renderer::waitForPreviousFrame()
 	mBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
-void Renderer::createTestTriangle()
+void Renderer::loadAllAssetsFromFile()
 {
-	mTestTexture = new Texture;
-	mTestTexture->Load(L"Assets/Textures/cat.png");
-	mTestMesh = new Mesh;
-	mTestMesh->Load(L"응애");
+	ResourceManager::GetTexture(L"Assets/Textures/cat.png");
+	ResourceManager::GetMesh(L"응애");
 }
 
 void Renderer::loadAssets()
 {
-	// TODO :: load all assets
-	createTestTriangle();
-	//////////////////////////////////////////////////////////////////////////
+	loadAllAssetsFromFile();
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
@@ -323,14 +315,11 @@ void Renderer::loadAssets()
 	gUsedUploadBuffers.clear();
 }
 
-void Renderer::OnRender()
+void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
 {
-	ID3D12DescriptorHeap* ppHeaps[] = { gTexDescHeap->GetHeap().Get() };
-	mCmdList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-
-	mCmdList->SetGraphicsRootDescriptorTable(0, mTestTexture->GetGpuHandle());
+	mCmdList->SetGraphicsRootDescriptorTable(0, texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mCmdList->IASetVertexBuffers(0, 1, &mTestMesh->GetVertexBufferView());
-	mCmdList->IASetIndexBuffer(&mTestMesh->GetIndexBufferView());
-	mCmdList->DrawIndexedInstanced(mTestMesh->GetIndexCount(), 1, 0, 0, 0);
+	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
+	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
+	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
 }

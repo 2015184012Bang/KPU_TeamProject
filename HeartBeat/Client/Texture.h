@@ -9,7 +9,7 @@ public:
 
 	virtual void Load(const wstring& path) override;
 
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle() { return mSrvGpuHandle; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle() const { return mSrvGpuHandle; }
 
 private:
 	bool loadTextureFromFile(const wstring& path);

@@ -95,7 +95,7 @@ void Client::render()
 {
 	mRenderer->BeginRender();
 
-	mActiveScene->Render();
+	mActiveScene->Render(mRenderer);
 
 	mRenderer->EndRender();
 }
