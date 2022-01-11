@@ -4,6 +4,8 @@
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "DirectXTex")
+#pragma comment(lib, "DirectXTK12")
 
 #include "HeartBeat.h"
 

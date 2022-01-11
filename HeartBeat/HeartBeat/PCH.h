@@ -3,8 +3,6 @@
 #pragma warning(disable:4819)
 #pragma comment(lib, "fmt")
 #pragma comment(lib, "spdlog")
-#pragma comment(lib, "DirectXTex")
-#pragma comment(lib, "DirectXTK12")
 
 #include "Log.h"
 
