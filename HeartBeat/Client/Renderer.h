@@ -1,5 +1,8 @@
 #pragma once
 
+class Mesh;
+class Texture;
+
 class Renderer
 {
 public:
@@ -10,16 +13,19 @@ public:
 
 	void BeginRender();
 	void EndRender();
+	void Submit(const Mesh* const mesh, const Texture* const texture);
 
 private:
 	void loadPipeline();
 	void loadAssets();
+	void loadAllAssetsFromFile();
 
 	void createDevice();
 	void createCmdQueueAndSwapChain();
 	void createRtvHeap();
 	void createCmdAllocator();
 	void createDsvHeap();
+	void createPipelineState();
 	void createCmdList();
 	void createFence();
 
@@ -30,6 +36,7 @@ private:
 
 	CD3DX12_VIEWPORT mViewport;
 	CD3DX12_RECT mScissorRect;
+	float mAspectRatio;
 
 	ComPtr<IDXGIFactory4> mFactory;
 	ComPtr<ID3D12Device> mDevice;
@@ -42,10 +49,12 @@ private:
 	ComPtr<ID3D12DescriptorHeap> mDsvHeap;
 	ComPtr<ID3D12GraphicsCommandList> mCmdList;
 	ComPtr<ID3D12Fence> mFence;
+	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> mPSO;
 
-	UINT mBackBufferIndex;
-	UINT mRtvDescriptorSize;
-	UINT64 mFenceValue;
+	uint32 mBackBufferIndex;
+	uint32 mRtvDescriptorSize;
+	uint64 mFenceValue;
 
 	HANDLE mFenceEvent;
 };

@@ -4,6 +4,10 @@
 #include "Input.h"
 #include "Client.h"
 
+#include "Renderer.h"
+#include "ResourceManager.h"
+#include "ClientSystems.h"
+
 TestScene* TestScene::sInstance;
 
 TestScene::TestScene(Client* owner)
@@ -27,12 +31,10 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	//////////////////////////////////////////////////////
-	Entity e = Entity(mOwner->CreateEntity(), mOwner);
-	e.AddComponent<TransformComponent>(3.0f);
-	e.AddComponent<HelloComponent>();
-	e.AddTag<Foo>();
-	//////////////////////////////////////////////////////
+	mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
+	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"¿¿æ÷"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
+	mTestEntity.AddComponent<TransformComponent>();
+	mTestEntity.AddTag<StaticMesh>();
 }
 
 void TestScene::Exit()
@@ -42,37 +44,30 @@ void TestScene::Exit()
 
 void TestScene::ProcessInput()
 {
-	//////////////////////////////////////////////////////
-	if (Input::IsButtonPressed(eKeyCode::A))
-	{
-		auto view = (mOwner->GetRegistry()).view<Foo>();
 	
-		for (auto entity : view)
-		{
-			Entity e = Entity(entity, mOwner);
-
-			e.RemoveComponent<HelloComponent>();
-		}
-	}
-	//////////////////////////////////////////////////////
 }
 
 void TestScene::Update(float deltaTime)
 {
-	//////////////////////////////////////////////////////
-	auto view = (mOwner->GetRegistry()).view<Foo>();
+	if (Input::IsButtonRepeat(eKeyCode::Right))
+	{
+		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
+		ClientSystems::Move(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime);
+	}
+}
+
+void TestScene::Render(unique_ptr<Renderer>& renderer)
+{
+	auto view = (mOwner->GetRegistry()).view<StaticMesh>();
 
 	for (auto entity : view)
 	{
 		Entity e = Entity(entity, mOwner);
-		
-		if (e.HasComponent<HelloComponent>())
-		{
-			HB_LOG("asdad");
-		}
 
-		auto& transform = e.GetComponent<TransformComponent>();
-		HB_LOG("x: {0}", transform.X);
+		TransformComponent& transform = e.GetComponent<TransformComponent>();
+		ClientSystems::SetWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer);
+
+		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+		renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 	}
-	//////////////////////////////////////////////////////
 }

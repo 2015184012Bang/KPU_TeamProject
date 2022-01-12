@@ -107,33 +107,53 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ClientComponents.cpp" />
     <ClCompile Include="ClientPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ClientSystems.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TablsDescriptorHeap.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ClientComponents.h" />
     <ClInclude Include="ClientPCH.h" />
+    <ClInclude Include="ClientSystems.h" />
     <ClInclude Include="d3dHelper.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="TablsDescriptorHeap.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Types.h" />
+    <ClInclude Include="UploadBuffer.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HeartBeat\HeartBeat.vcxproj">
       <Project>{002230b8-22ec-436d-9a7b-5ead1432075e}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="default.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

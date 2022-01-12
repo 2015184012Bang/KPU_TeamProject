@@ -37,6 +37,8 @@ void Client::Shutdown()
 {
 	HB_LOG("Client::Shutdown");
 
+	GetRegistry().clear();
+
 	if (mActiveScene)
 	{
 		mActiveScene->Exit();
@@ -95,7 +97,7 @@ void Client::render()
 {
 	mRenderer->BeginRender();
 
-	mActiveScene->Render();
+	mActiveScene->Render(mRenderer);
 
 	mRenderer->EndRender();
 }

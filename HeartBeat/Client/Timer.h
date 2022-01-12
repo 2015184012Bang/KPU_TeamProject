@@ -9,8 +9,8 @@ public:
 	static float GetDeltaTime() { return sDeltaTime; }
 
 private:
-	static UINT64 sFrequency;
-	static UINT64 sPrevCount;
+	static uint64 sFrequency;
+	static uint64 sPrevCount;
 	static float sDeltaTime;
 };
 

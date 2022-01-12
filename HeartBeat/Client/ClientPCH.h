@@ -4,6 +4,8 @@
 #pragma comment(lib, "dxgi")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "d3dcompiler")
+#pragma comment(lib, "DirectXTex")
+#pragma comment(lib, "DirectXTK12")
 
 #include "HeartBeat.h"
 
@@ -31,5 +33,12 @@ using namespace DirectX::SimpleMath;
 
 #include "d3dx12.h"
 #include "d3dHelper.h"
+#include "ClientComponents.h"
+#include "Types.h"
 
-static ComPtr<ID3D12Device> gDevice;
+extern ComPtr<ID3D12Device> gDevice;
+extern ComPtr<ID3D12GraphicsCommandList> gCmdList;
+extern vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
+extern class TablsDescriptorHeap* gTexDescHeap;
+
+#define RELEASE_UPLOAD_BUFFER(x) gUsedUploadBuffers.push_back(x)
