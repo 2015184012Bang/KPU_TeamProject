@@ -56,7 +56,7 @@ void TestScene::Update(float deltaTime)
 	if (Input::IsButtonRepeat(eKeyCode::Right))
 	{
 		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::Move(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime);
+		ClientSystems::MovePosition(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime, &transform.bDirty);
 	}
 }
 
@@ -73,7 +73,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 		Entity e = Entity(entity, mOwner);
 
 		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer);
+		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
 
 		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);

@@ -3,18 +3,23 @@
 
 #include "Application.h"
 
-void ClientSystems::Move(Vector3* outPosition, const Vector3& velocity, float deltaTime)
+void ClientSystems::MovePosition(Vector3* outPosition, const Vector3& velocity, float deltaTime, bool* outDirty)
 {
 	*outPosition += velocity * deltaTime;
+	*outDirty = true;
 }
 
-void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>& buffer)
+void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotaion, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty)
 {
-	Matrix mat = Matrix::CreateScale(scale);
-	mat *= Matrix::CreateRotationY(XMConvertToRadians(rotation.y));
-	mat *= Matrix::CreateTranslation(position);
+	if (*outDirty)
+	{
+		Matrix mat = Matrix::CreateScale(scale);
+		mat *= Matrix::CreateRotationY(XMConvertToRadians(rotaion.y));
+		mat *= Matrix::CreateTranslation(position);
+		buffer.CopyData(0, mat);
 
-	buffer.CopyData(0, mat);
+		*outDirty = false;
+	}
 
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), buffer.GetVirtualAddress());
 }

@@ -6,6 +6,7 @@ TransformComponent::TransformComponent()
 	, Rotation(Vector3::Zero)
 	, Scale(1.0f)
 	, Buffer(gDevice.Get(), 1, true)
+	, bDirty(true)
 {
 
 }
@@ -15,6 +16,7 @@ TransformComponent::TransformComponent(const Vector3& position, const Vector3& r
 	, Rotation(rotation)
 	, Scale(scale)
 	, Buffer(gDevice.Get(), 1, true)
+	, bDirty(true)
 {
 
 }

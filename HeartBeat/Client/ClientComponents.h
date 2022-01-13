@@ -24,6 +24,7 @@ struct TransformComponent
 	Vector3 Rotation;
 	float Scale;
 	UploadBuffer<Matrix> Buffer;
+	bool bDirty;
 };
 
 struct CameraComponent
