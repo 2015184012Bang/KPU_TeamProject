@@ -25,3 +25,15 @@ struct TransformComponent
 	float Scale;
 	UploadBuffer<Matrix> Buffer;
 };
+
+struct CameraComponent
+{
+	CameraComponent();
+	CameraComponent(const Vector3& position, const Vector3& target, const Vector3& up = Vector3::UnitY, float fov = 90.0f);
+
+	Vector3 Position;
+	Vector3 Target;
+	Vector3 Up;
+	float FOV;
+	UploadBuffer<Matrix> Buffer;
+};
