@@ -36,7 +36,6 @@ private:
 
 	CD3DX12_VIEWPORT mViewport;
 	CD3DX12_RECT mScissorRect;
-	float mAspectRatio;
 
 	ComPtr<IDXGIFactory4> mFactory;
 	ComPtr<ID3D12Device> mDevice;

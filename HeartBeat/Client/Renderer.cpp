@@ -12,16 +12,13 @@ vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
 TablsDescriptorHeap* gTexDescHeap;
 
 Renderer::Renderer()
-	: mAspectRatio(0.0f)
-	, mBackBufferIndex(0)
+	: mBackBufferIndex(0)
 	, mRtvDescriptorSize(0)
 	, mFenceValue(0)
 	, mFenceEvent(nullptr)
 {
 	int width = Application::GetScreenWidth();
 	int height = Application::GetScreenHeight();
-
-	mAspectRatio = static_cast<float>(width) / static_cast<float>(height);
 
 	mViewport = CD3DX12_VIEWPORT(0.0f, 0.0f,
 		static_cast<float>(width), static_cast<float>(height));
@@ -211,7 +208,8 @@ void Renderer::createPipelineState()
 	descRange[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
 	CD3DX12_ROOT_PARAMETER params[static_cast<uint32>(eRootParameter::End)];
-	params[static_cast<uint32>(eRootParameter::WorldParam)].InitAsConstantBufferView(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(eRootParameter::WorldParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B0), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(eRootParameter::ViewProjParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	params[static_cast<uint32>(eRootParameter::TexParam)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);

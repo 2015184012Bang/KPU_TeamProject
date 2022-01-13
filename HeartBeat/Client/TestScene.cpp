@@ -35,6 +35,10 @@ void TestScene::Enter()
 	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"¿¿æ÷"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
 	mTestEntity.AddComponent<TransformComponent>();
 	mTestEntity.AddTag<StaticMesh>();
+
+	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
+	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, 1.0f));
+	mMainCamera.AddTag<Camera>();
 }
 
 void TestScene::Exit()
@@ -52,20 +56,24 @@ void TestScene::Update(float deltaTime)
 	if (Input::IsButtonRepeat(eKeyCode::Right))
 	{
 		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::Move(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime);
+		ClientSystems::MovePosition(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime, &transform.bDirty);
 	}
 }
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)
 {
-	auto view = (mOwner->GetRegistry()).view<StaticMesh>();
+	auto& camera = mMainCamera.GetComponent<CameraComponent>();
 
+	ClientSystems::BindViewProjectionMatrix(camera.Position, 
+		camera.Target, camera.Up, camera.FOV, camera.Buffer);
+
+	auto view = (mOwner->GetRegistry()).view<StaticMesh>();
 	for (auto entity : view)
 	{
 		Entity e = Entity(entity, mOwner);
 
 		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		ClientSystems::SetWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer);
+		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
 
 		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
