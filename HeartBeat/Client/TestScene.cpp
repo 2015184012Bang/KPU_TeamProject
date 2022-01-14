@@ -32,13 +32,13 @@ void TestScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
-	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Models/Crate.gpmesh"), 
-		ResourceManager::GetTexture(L"Assets/Textures/Crate.png"));
+	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Models/Character.gpmesh"), 
+		ResourceManager::GetTexture(L"Assets/Textures/Gray.png"));
 	mTestEntity.AddComponent<TransformComponent>();
 	mTestEntity.AddTag<StaticMesh>();
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
-	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 0.0f, -200.0f), Vector3(0.0f, 0.0f, 0.0f));
+	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 700.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
 }
 

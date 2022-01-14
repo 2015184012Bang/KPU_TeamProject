@@ -295,7 +295,8 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(L"Assets/Models/Crate.gpmesh");
+	ResourceManager::GetMesh(L"Assets/Models/Character.gpmesh");
+	ResourceManager::GetTexture(L"Assets/Textures/Gray.png");
 }
 
 void Renderer::loadAssets()
