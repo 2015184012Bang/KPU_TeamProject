@@ -32,12 +32,13 @@ void TestScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
-	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"¿¿æ÷"), ResourceManager::GetTexture(L"Assets/Textures/cat.png"));
+	mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Models/Crate.gpmesh"), 
+		ResourceManager::GetTexture(L"Assets/Textures/Crate.png"));
 	mTestEntity.AddComponent<TransformComponent>();
 	mTestEntity.AddTag<StaticMesh>();
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
-	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 0.0f, -1.0f), Vector3(0.0f, 0.0f, 1.0f));
+	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 0.0f, -200.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
 }
 
@@ -58,6 +59,9 @@ void TestScene::Update(float deltaTime)
 		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
 		ClientSystems::MovePosition(&transform.Position, Vector3(1.0f, 0.0f, 0.0f), deltaTime, &transform.bDirty);
 	}
+
+	auto& transform = mTestEntity.GetComponent<TransformComponent>();
+	ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
 }
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)

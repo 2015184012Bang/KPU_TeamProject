@@ -9,6 +9,12 @@ void ClientSystems::MovePosition(Vector3* outPosition, const Vector3& velocity, 
 	*outDirty = true;
 }
 
+void ClientSystems::RotateY(Vector3* outRotation, float speed, float deltaTime, bool* outDirty)
+{
+	(*outRotation).y += speed * deltaTime;
+	*outDirty = true;
+}
+
 void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotaion, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty)
 {
 	if (*outDirty)

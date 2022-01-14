@@ -224,7 +224,8 @@ void Renderer::createPipelineState()
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
 	inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
-	inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+	inputDesc.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+	inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 
 	ComPtr<ID3DBlob> vertexShader;
 	ComPtr<ID3DBlob> pixelShader;
@@ -244,6 +245,7 @@ void Renderer::createPipelineState()
 	psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
 	psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;
@@ -293,8 +295,7 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetTexture(L"Assets/Textures/cat.png");
-	ResourceManager::GetMesh(L"¿¿æ÷");
+	ResourceManager::GetMesh(L"Assets/Models/Crate.gpmesh");
 }
 
 void Renderer::loadAssets()

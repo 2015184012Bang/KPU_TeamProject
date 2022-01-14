@@ -1,18 +1,7 @@
 #include "ClientPCH.h"
 #include "Mesh.h"
 
-void CreateTestBuffers(vector<Vertex>* outVertices, vector<uint32>* outIndices)
-{
-	*outVertices =
-	{
-		{ { -0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f } },
-		{ { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
-		{ { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f } },
-		{ { 0.5f, -0.5f, 0.0f }, { 1.0f, 1.0f } },
-	};
-	
-	*outIndices = { 0, 1, 2, 0, 2, 3};
-}
+#include "ResourceManager.h"
 
 Mesh::Mesh()
 	: mVertexBufferView()
@@ -25,83 +14,140 @@ Mesh::Mesh()
 
 void Mesh::Load(const wstring& path)
 {
-	vector<Vertex> vertices;
-	vector<uint32> indices;
+	eMeshType meshType;
+	rapidjson::Document doc = openMeshFile(path, &meshType);
 
-	CreateTestBuffers(&vertices, &indices);
-
-	bool success = createVertexBuffer(vertices);
-
-	if (!success)
+	switch (meshType)
 	{
-		HB_LOG("Failed to create vertex buffer: {0}", ws2s(path));
+	case eMeshType::Static:
+		loadStaticMesh(doc);
+		break;
+	case eMeshType::Skeletal:
+		loadSkeletalMesh(doc);
+		break;
+	default:
 		HB_ASSERT(false, "ASSERTION FAILED");
-	}
-
-	success = createIndexBuffer(indices);
-
-	if (!success)
-	{
-		HB_LOG("Failed to create index buffer: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		break;
 	}
 }
 
-bool Mesh::createVertexBuffer(const vector<Vertex>& vertices)
+rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshType)
 {
-	if (vertices.empty())
+	std::ifstream file(path);
+
+	if (!file.is_open())
 	{
-		return false;
+		HB_LOG("Could not open file: {0}", ws2s(path));
+		HB_ASSERT(false, "ASSERTION FAILED");
 	}
 
-	mVertexCount = static_cast<uint32>(vertices.size());
-	uint32 vertexBufferSize = mVertexCount * sizeof(Vertex);
+	std::stringstream fileStream;
+	fileStream << file.rdbuf();
+	string contents = fileStream.str();
+	rapidjson::StringStream jsonStr(contents.c_str());
+	rapidjson::Document doc;
+	doc.ParseStream(jsonStr);
 
-	ComPtr<ID3D12Resource> vertexUploadBuffer;
-	const CD3DX12_HEAP_PROPERTIES uploadBufferHeapProps(D3D12_HEAP_TYPE_UPLOAD);
-	const CD3DX12_RESOURCE_DESC uploadbufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-	gDevice->CreateCommittedResource(
-		&uploadBufferHeapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&uploadbufferDesc,
-		D3D12_RESOURCE_STATE_GENERIC_READ,
-		nullptr,
-		IID_PPV_ARGS(&vertexUploadBuffer));
+	if (!doc.IsObject())
+	{
+		HB_LOG("{0} is not valid json file!", ws2s(path));
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
 
-	void* mappedData;
-	vertexUploadBuffer->Map(0, nullptr, &mappedData);
-	memcpy(mappedData, vertices.data(), vertexBufferSize);
-	vertexUploadBuffer->Unmap(0, nullptr);
+	const rapidjson::Value& textures = doc["textures"];
 
-	const CD3DX12_HEAP_PROPERTIES defaultBufferHeapProps(D3D12_HEAP_TYPE_DEFAULT);
-	const CD3DX12_RESOURCE_DESC defaultbufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-	gDevice->CreateCommittedResource(
-		&defaultBufferHeapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&defaultbufferDesc,
-		D3D12_RESOURCE_STATE_COPY_DEST,
-		nullptr,
-		IID_PPV_ARGS(&mVertexBuffer));
-
-	gCmdList->CopyResource(mVertexBuffer.Get(), vertexUploadBuffer.Get());
+	for (rapidjson::SizeType i = 0; i < textures.Size(); ++i)
+	{
+		string texName = textures[i].GetString();
+		ResourceManager::GetTexture(s2ws(texName));
+	}
 	
-	const auto toDefaultBarrier = CD3DX12_RESOURCE_BARRIER::Transition(mVertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-	gCmdList->ResourceBarrier(1, &toDefaultBarrier);
+	string vertexFormat = doc["vertexformat"].GetString();
 
-	RELEASE_UPLOAD_BUFFER(vertexUploadBuffer);
+	if (vertexFormat == "PosNormTex")
+	{
+		*outMeshType = eMeshType::Static;
+	}
+	else if (vertexFormat == "PosNormSkinTex")
+	{
+		*outMeshType = eMeshType::Skeletal;
+	}
+	else
+	{
+		HB_LOG("Unknown vertex format: {0}", ws2s(path));
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
 
-	mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
-	mVertexBufferView.SizeInBytes = vertexBufferSize;
-	mVertexBufferView.StrideInBytes = sizeof(Vertex);
-
-	return true;
+	return doc;
 }
 
-bool Mesh::createIndexBuffer(const vector<uint32>& indices)
+void Mesh::loadStaticMesh(const rapidjson::Document& doc)
+{
+	{
+		const rapidjson::Value& vertsJson = doc["vertices"];
+
+		vector<Vertex> vertices;
+		vertices.reserve(vertsJson.Size());
+
+		for (rapidjson::SizeType i = 0; i < vertsJson.Size(); ++i)
+		{
+			const rapidjson::Value& vert = vertsJson[i];
+
+			if (!vert.IsArray() || vert.Size() != 8)
+			{
+				HB_ASSERT(false, "Invalid vertex format");
+			}
+
+			Vertex v;
+			v.Position.x = vert[0].GetFloat();
+			v.Position.y = vert[1].GetFloat();
+			v.Position.z = vert[2].GetFloat();
+			v.Normal.x = vert[3].GetFloat();
+			v.Normal.y = vert[4].GetFloat();
+			v.Normal.z = vert[5].GetFloat();
+			v.UV.x = vert[6].GetFloat();
+			v.UV.y = vert[7].GetFloat();
+
+			vertices.push_back(v);
+		}
+
+		createVertexBuffer<Vertex>(vertices);
+	}
+
+	{
+		const rapidjson::Value& indJson = doc["indices"];
+
+		vector<uint32> indices;
+		indices.reserve(indJson.Size() * 3);
+
+		for (rapidjson::SizeType i = 0; i < indJson.Size(); ++i)
+		{
+			const rapidjson::Value& ind = indJson[i];
+
+			if (!ind.IsArray() || ind.Size() != 3)
+			{
+				HB_ASSERT(false, "Invalid index format");
+			}
+
+			indices.push_back(ind[0].GetUint());
+			indices.push_back(ind[1].GetUint());
+			indices.push_back(ind[2].GetUint());
+		}
+
+		createIndexBuffer(indices);
+	}
+}
+
+void Mesh::loadSkeletalMesh(const rapidjson::Document& doc)
+{
+
+}
+
+void Mesh::createIndexBuffer(const vector<uint32>& indices)
 {
 	if (indices.empty())
 	{
-		return false;
+		HB_ASSERT(false, "Empty index vector")
 	}
 
 	mIndexCount = static_cast<uint32>(indices.size());
@@ -142,6 +188,4 @@ bool Mesh::createIndexBuffer(const vector<uint32>& indices)
 	mIndexBufferView.BufferLocation = mIndexBuffer->GetGPUVirtualAddress();
 	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	mIndexBufferView.SizeInBytes = indexBufferSize;
-
-	return true;
 }
