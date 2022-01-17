@@ -140,7 +140,67 @@ void Mesh::loadStaticMesh(const rapidjson::Document& doc)
 
 void Mesh::loadSkeletalMesh(const rapidjson::Document& doc)
 {
+	{
+		const rapidjson::Value& vertsJson = doc["vertices"];
 
+		vector<SkeletalVertex> vertices;
+		vertices.reserve(vertsJson.Size());
+
+		for (rapidjson::SizeType i = 0; i < vertsJson.Size(); ++i)
+		{
+			const rapidjson::Value& vert = vertsJson[i];
+
+			if (!vert.IsArray() || vert.Size() != 16)
+			{
+				HB_ASSERT(false, "Invalid skinned vertex format");
+			}
+
+			SkeletalVertex v;
+			v.Position.x = vert[0].GetFloat();
+			v.Position.y = vert[1].GetFloat();
+			v.Position.z = vert[2].GetFloat();
+			v.Normal.x = vert[3].GetFloat();
+			v.Normal.y = vert[4].GetFloat();
+			v.Normal.z = vert[5].GetFloat();
+			v.Bone[0] = vert[6].GetUint();
+			v.Bone[1] = vert[7].GetUint();
+			v.Bone[2] = vert[8].GetUint();
+			v.Bone[3] = vert[9].GetUint();
+			v.BoneWeight.x = vert[10].GetFloat() / 255.0f;
+			v.BoneWeight.y = vert[11].GetFloat() / 255.0f;
+			v.BoneWeight.z = vert[12].GetFloat() / 255.0f;
+			v.BoneWeight.w = vert[13].GetFloat() / 255.0f;
+			v.UV.x = vert[14].GetFloat();
+			v.UV.y = vert[15].GetFloat();
+
+			vertices.push_back(v);
+		}
+
+		createVertexBuffer<SkeletalVertex>(vertices);
+	}
+
+	{
+		const rapidjson::Value& indJson = doc["indices"];
+
+		vector<uint32> indices;
+		indices.reserve(indJson.Size() * 3);
+
+		for (rapidjson::SizeType i = 0; i < indJson.Size(); ++i)
+		{
+			const rapidjson::Value& ind = indJson[i];
+
+			if (!ind.IsArray() || ind.Size() != 3)
+			{
+				HB_ASSERT(false, "Invalid index format");
+			}
+
+			indices.push_back(ind[0].GetUint());
+			indices.push_back(ind[1].GetUint());
+			indices.push_back(ind[2].GetUint());
+		}
+
+		createIndexBuffer(indices);
+	}
 }
 
 void Mesh::createIndexBuffer(const vector<uint32>& indices)

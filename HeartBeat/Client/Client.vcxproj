@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="default.hlsli" />
+    <None Include="skeletal.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

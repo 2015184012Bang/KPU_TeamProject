@@ -140,5 +140,8 @@
     <None Include="default.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="skeletal.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
