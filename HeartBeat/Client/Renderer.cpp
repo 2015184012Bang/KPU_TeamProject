@@ -333,6 +333,7 @@ void Renderer::loadAllAssetsFromFile()
 {
 	ResourceManager::GetMesh(L"Assets/Meshes/Character.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/Character_Static.mesh");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character.skel");
 }
 
 void Renderer::loadAssets()
