@@ -60,7 +60,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>..\vendor\include\</AdditionalIncludeDirectories>
@@ -106,6 +106,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SocketAddress.cpp" />
+    <ClCompile Include="SocketUtil.cpp" />
+    <ClCompile Include="TCPSocket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
@@ -115,8 +118,11 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
+    <ClInclude Include="SocketAddress.h" />
+    <ClInclude Include="SocketUtil.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Tags.h" />
+    <ClInclude Include="TCPSocket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

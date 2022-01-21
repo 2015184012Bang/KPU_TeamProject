@@ -16,6 +16,10 @@
 #include <fstream>
 #include <sstream>
 
+#include <Windows.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+
 #include <entt/entt.hpp>
 
 using std::string;
@@ -25,6 +29,7 @@ using std::unordered_map;
 using std::array;
 using std::shared_ptr;
 using std::unique_ptr;
+using std::stringstream;
 
 using int8 = __int8;
 using int16 = __int16;
@@ -36,3 +41,7 @@ using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
 namespace fs = std::filesystem;
+
+#include "SocketAddress.h"
+#include "TCPSocket.h"
+#include "SocketUtil.h"
