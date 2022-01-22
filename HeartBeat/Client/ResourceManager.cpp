@@ -4,6 +4,7 @@
 unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
 unordered_map<wstring, Texture*> ResourceManager::sTextures;
 unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
+unordered_map<wstring, Animation*> ResourceManager::sAnimations;
 
 void ResourceManager::Shutdown()
 {
@@ -71,5 +72,23 @@ Skeleton* ResourceManager::GetSkeleton(const wstring& path)
 		sSkeletons[path] = newSkel;
 
 		return newSkel;
+	}
+}
+
+Animation* ResourceManager::GetAnimation(const wstring& path)
+{
+	auto iter = sAnimations.find(path);
+
+	if (iter != sAnimations.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Animation* newAnim = new Animation;
+		newAnim->Load(path);
+		sAnimations[path] = newAnim;
+
+		return newAnim;
 	}
 }
