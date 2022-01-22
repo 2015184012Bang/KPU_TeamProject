@@ -105,6 +105,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="ClientComponents.cpp" />
@@ -119,6 +120,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TablsDescriptorHeap.cpp" />
@@ -126,7 +128,9 @@
     <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Bone.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientComponents.h" />
     <ClInclude Include="ClientPCH.h" />
@@ -139,6 +143,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
+    <ClInclude Include="Skeleton.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TablsDescriptorHeap.h" />
@@ -154,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="default.hlsli" />
+    <None Include="skeletal.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

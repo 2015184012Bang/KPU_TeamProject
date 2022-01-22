@@ -3,6 +3,9 @@
 #include "Mesh.h"
 #include "Texture.h"
 #include "UploadBuffer.h"
+#include "Bone.h"
+#include "Skeleton.h"
+#include "Animation.h"
 
 struct MeshRendererComponent
 {
@@ -37,4 +40,18 @@ struct CameraComponent
 	Vector3 Up;
 	float FOV;
 	UploadBuffer<Matrix> Buffer;
+};
+
+struct AnimatorComponent
+{
+	AnimatorComponent();
+	AnimatorComponent(Skeleton* skel);
+
+	MatrixPalette Palette;
+	Skeleton* Skel;
+	Animation* Anim;
+	float AnimPlayRate;
+	float AnimTime;
+	bool bLoop;
+	UploadBuffer<MatrixPalette> Buffer;
 };

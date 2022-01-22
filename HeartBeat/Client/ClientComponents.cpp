@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "ClientComponents.h"
 
-TransformComponent::TransformComponent() 
+TransformComponent::TransformComponent()
 	: Position(Vector3::Zero)
 	, Rotation(Vector3::Zero)
 	, Scale(1.0f)
@@ -11,7 +11,7 @@ TransformComponent::TransformComponent()
 
 }
 
-TransformComponent::TransformComponent(const Vector3& position, const Vector3& rotation /*= Vector3::Zero*/, float scale /*= 1.0f*/) 
+TransformComponent::TransformComponent(const Vector3& position, const Vector3& rotation /*= Vector3::Zero*/, float scale /*= 1.0f*/)
 	: Position(position)
 	, Rotation(rotation)
 	, Scale(scale)
@@ -36,6 +36,28 @@ CameraComponent::CameraComponent(const Vector3& position, const Vector3& target,
 	, Target(target)
 	, Up(up)
 	, FOV(XMConvertToRadians(fov))
+	, Buffer(gDevice.Get(), 1, true)
+{
+
+}
+
+AnimatorComponent::AnimatorComponent()
+	: Skel(nullptr)
+	, Anim(nullptr)
+	, AnimPlayRate(0.0f)
+	, AnimTime(0.0f)
+	, bLoop(false)
+	, Buffer(gDevice.Get(), 1, true)
+{
+
+}
+
+AnimatorComponent::AnimatorComponent(Skeleton* skel)
+	: Skel(skel)
+	, Anim(nullptr)
+	, AnimPlayRate(0.0f)
+	, AnimTime(0.0f)
+	, bLoop(false)
 	, Buffer(gDevice.Get(), 1, true)
 {
 

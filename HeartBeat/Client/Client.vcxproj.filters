@@ -73,6 +73,12 @@
     <ClCompile Include="ClientSystems.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Skeleton.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -135,9 +141,21 @@
     <ClInclude Include="Types.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="skeletal.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

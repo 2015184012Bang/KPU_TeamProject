@@ -1,29 +1,31 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
-unordered_map<wstring, Mesh*> ResourceManager::mMeshes;
-unordered_map<wstring, Texture*> ResourceManager::mTextures;
+unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
+unordered_map<wstring, Texture*> ResourceManager::sTextures;
+unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
+unordered_map<wstring, Animation*> ResourceManager::sAnimations;
 
 void ResourceManager::Shutdown()
 {
-	for (auto& [_, mesh]: mMeshes)
+	for (auto& [_, mesh]: sMeshes)
 	{
 		delete mesh;
 	}
-	mMeshes.clear();
+	sMeshes.clear();
 
-	for (auto& [_, texture] : mTextures)
+	for (auto& [_, texture] : sTextures)
 	{
 		delete texture;
 	}
-	mTextures.clear();
+	sTextures.clear();
 }
 
 Mesh* ResourceManager::GetMesh(const wstring& path)
 {
-	auto iter = mMeshes.find(path);
+	auto iter = sMeshes.find(path);
 
-	if (iter != mMeshes.end())
+	if (iter != sMeshes.end())
 	{
 		return iter->second;
 	}
@@ -31,7 +33,7 @@ Mesh* ResourceManager::GetMesh(const wstring& path)
 	{
 		Mesh* newMesh = new Mesh;
 		newMesh->Load(path);
-		mMeshes[path] = newMesh;
+		sMeshes[path] = newMesh;
 
 		return newMesh;
 	}
@@ -39,9 +41,9 @@ Mesh* ResourceManager::GetMesh(const wstring& path)
 
 Texture* ResourceManager::GetTexture(const wstring& path)
 {
-	auto iter = mTextures.find(path);
+	auto iter = sTextures.find(path);
 
-	if (iter != mTextures.end())
+	if (iter != sTextures.end())
 	{
 		return iter->second;
 	}
@@ -49,8 +51,44 @@ Texture* ResourceManager::GetTexture(const wstring& path)
 	{
 		Texture* newTexture = new Texture;
 		newTexture->Load(path);
-		mTextures[path] = newTexture;
+		sTextures[path] = newTexture;
 
 		return newTexture;
+	}
+}
+
+Skeleton* ResourceManager::GetSkeleton(const wstring& path)
+{
+	auto iter = sSkeletons.find(path);
+	
+	if (iter != sSkeletons.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Skeleton* newSkel = new Skeleton;
+		newSkel->Load(path);
+		sSkeletons[path] = newSkel;
+
+		return newSkel;
+	}
+}
+
+Animation* ResourceManager::GetAnimation(const wstring& path)
+{
+	auto iter = sAnimations.find(path);
+
+	if (iter != sAnimations.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Animation* newAnim = new Animation;
+		newAnim->Load(path);
+		sAnimations[path] = newAnim;
+
+		return newAnim;
 	}
 }
