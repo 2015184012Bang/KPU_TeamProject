@@ -8,10 +8,10 @@ cbuffer cbViewProj : register(b1)
     row_major matrix gViewProj;
 }
 
-//cbuffer cbBoneTransform : register(b2)
-//{
-//    row_major matrix gBoneTransform[96];
-//}
+cbuffer cbBoneTransform : register(b2)
+{
+    row_major matrix gBoneTransform[96];
+}
 
 Texture2D tex0 : register(t0);
 SamplerState sam0 : register(s0);
@@ -37,16 +37,14 @@ PSInput VSMain(VSInput input)
 
     float4 pos = float4(input.position, 1.0f);
     
-    //float4 skinnedPos = input.weight.x * mul(pos, gBoneTransform[input.bone.x]);
-    //skinnedPos += input.weight.y * mul(pos, gBoneTransform[input.bone.y]);
-    //skinnedPos += input.weight.z * mul(pos, gBoneTransform[input.bone.z]);
-    //skinnedPos += input.weight.w * mul(pos, gBoneTransform[input.bone.w]);
-    //skinnedPos = mul(skinnedPos, gWorld);
-    //result.position = mul(skinnedPos, gViewProj);
+    float4 skinnedPos = input.weight.x * mul(pos, gBoneTransform[input.bone.x]);
+    skinnedPos += input.weight.y * mul(pos, gBoneTransform[input.bone.y]);
+    skinnedPos += input.weight.z * mul(pos, gBoneTransform[input.bone.z]);
+    skinnedPos += input.weight.w * mul(pos, gBoneTransform[input.bone.w]);
     
-    result.position = mul(float4(input.position, 1.0f), gWorld);
-    result.position = mul(result.position, gViewProj);
+    skinnedPos = mul(skinnedPos, gWorld);
     
+    result.position = mul(skinnedPos, gViewProj);
     result.uv = input.uv;
 
     return result;

@@ -211,6 +211,7 @@ void Renderer::createPipelineState()
 	params[static_cast<uint32>(eRootParameter::WorldParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B0), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	params[static_cast<uint32>(eRootParameter::ViewProjParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	params[static_cast<uint32>(eRootParameter::TexParam)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	params[static_cast<uint32>(eRootParameter::BoneParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B2), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
@@ -332,9 +333,12 @@ void Renderer::waitForPreviousFrame()
 void Renderer::loadAllAssetsFromFile()
 {
 	ResourceManager::GetMesh(L"Assets/Meshes/Character.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/Character_Static.mesh");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character.skel");
-	ResourceManager::GetAnimation(L"Assets/Animations/Character_Walking.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/Walking.anim");
+
+	ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel");
+	ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim");
 }
 
 void Renderer::loadAssets()

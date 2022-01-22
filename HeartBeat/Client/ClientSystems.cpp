@@ -15,12 +15,12 @@ void ClientSystems::RotateY(Vector3* outRotation, float speed, float deltaTime, 
 	*outDirty = true;
 }
 
-void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotaion, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty)
+void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty)
 {
 	if (*outDirty)
 	{
 		Matrix mat = Matrix::CreateScale(scale);
-		mat *= Matrix::CreateRotationY(XMConvertToRadians(rotaion.y));
+		mat *= Matrix::CreateRotationY(XMConvertToRadians(rotation.y));
 		mat *= Matrix::CreateTranslation(position);
 		buffer.CopyData(0, mat);
 
@@ -38,3 +38,58 @@ void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, cons
 	buffer.CopyData(0, viewProjection);
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
 }
+
+void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer)
+{
+	buffer.CopyData(0, palette);
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
+}
+
+void ClientSystems::UpdateAnimation(Animation* anim, Skeleton* skel, 
+	float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime)
+{
+	if (!anim || !skel)
+	{
+		return;
+	}
+
+	*outAnimTime += deltaTime * animPlayRate;
+
+	if (*outAnimTime > anim->GetDuration())
+	{
+		if (bLoop)
+		{
+			*outAnimTime -= anim->GetDuration();
+		}
+	}
+
+	computeMatrixPalette(anim, skel, *outAnimTime, outPalette);
+}
+
+void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* anim, float animPlayRate, bool bLoop)
+{
+	if (!anim)
+	{
+		HB_ASSERT(false, "Invalid animation. ASSERTION FAILED");
+	}
+
+	outAnimator->Anim = anim;
+	outAnimator->AnimPlayRate = animPlayRate;
+	outAnimator->AnimTime = 0.0f;
+	outAnimator->bLoop = bLoop;
+	
+	computeMatrixPalette(anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
+}
+
+void ClientSystems::computeMatrixPalette(Animation* anim, Skeleton* skel, float animTime, MatrixPalette* outPalette)
+{
+	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
+	vector<Matrix> currentPoses;
+	anim->GetGlobalPoseAtTime(&currentPoses, skel, animTime);
+
+	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
+	{
+		outPalette->Entry[i] = globalInvBindPoses[i] * currentPoses[i];
+	}
+}
+

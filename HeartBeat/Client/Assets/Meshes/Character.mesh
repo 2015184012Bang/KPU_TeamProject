@@ -3,7 +3,7 @@
 	"vertexformat":"PosNormSkinTex",
 	"shader":"Skinned",
 	"textures":[
-		"Assets/Textures/Gray.png"
+		"Assets/Textures/Character.png"
 	],
 	"specularPower":100.0,
 	"vertices":[
