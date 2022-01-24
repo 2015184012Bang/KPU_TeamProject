@@ -5,6 +5,7 @@ unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
 unordered_map<wstring, Texture*> ResourceManager::sTextures;
 unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
 unordered_map<wstring, Animation*> ResourceManager::sAnimations;
+unordered_map<wstring, AABB*> ResourceManager::sBoxes;
 
 void ResourceManager::Shutdown()
 {
@@ -102,5 +103,23 @@ Animation* ResourceManager::GetAnimation(const wstring& path)
 		sAnimations[path] = newAnim;
 
 		return newAnim;
+	}
+}
+
+AABB* ResourceManager::GetAABB(const wstring& path)
+{
+	auto iter = sBoxes.find(path);
+
+	if (iter != sBoxes.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		AABB* newBox = new AABB;
+		newBox->Load(path);
+		sBoxes[path] = newBox;
+
+		return newBox;
 	}
 }

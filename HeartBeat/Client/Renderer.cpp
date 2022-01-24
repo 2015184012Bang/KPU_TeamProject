@@ -339,6 +339,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel");
 	ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim");
+	ResourceManager::GetAABB(L"Assets/Boxes/Knight.box");
 }
 
 void Renderer::loadAssets()

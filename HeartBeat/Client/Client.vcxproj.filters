@@ -79,6 +79,9 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -148,6 +151,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Animation.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
   </ItemGroup>

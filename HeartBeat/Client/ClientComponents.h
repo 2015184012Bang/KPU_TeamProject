@@ -6,6 +6,7 @@
 #include "Bone.h"
 #include "Skeleton.h"
 #include "Animation.h"
+#include "AABB.h"
 
 struct MeshRendererComponent
 {
@@ -54,4 +55,13 @@ struct AnimatorComponent
 	float AnimTime;
 	bool bLoop;
 	UploadBuffer<MatrixPalette> Buffer;
+};
+
+struct BoxComponent
+{
+	BoxComponent();
+	BoxComponent(const AABB* Local, const Vector3& position, float yaw);
+	
+	const AABB* Local;
+	AABB World;
 };

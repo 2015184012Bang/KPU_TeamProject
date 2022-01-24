@@ -81,6 +81,36 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* ani
 	computeMatrixPalette(anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
 }
 
+void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)
+{
+	if (!bDirty)
+	{
+		return;
+	}
+
+	*outWorldBox = *localBox;
+
+	outWorldBox->UpdateWorldBox(position, yaw);
+}
+
+bool ClientSystems::Intersects(const AABB& a, const AABB& b)
+{
+	const Vector3& aMin = a.GetMin();
+	const Vector3& aMax = a.GetMax();
+
+	const Vector3& bMin = b.GetMin();
+	const Vector3& bMax = b.GetMax();
+
+	bool no = aMax.x < bMin.x ||
+		aMax.y < bMin.y ||
+		aMax.z < bMin.z ||
+		bMax.x < aMin.x ||
+		bMax.y < aMin.y ||
+		bMax.z < aMin.z;
+
+	return !no;
+}
+
 void ClientSystems::computeMatrixPalette(Animation* anim, Skeleton* skel, float animTime, MatrixPalette* outPalette)
 {
 	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();

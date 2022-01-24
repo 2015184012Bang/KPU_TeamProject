@@ -12,6 +12,8 @@ public:
 	static void BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer);
 	static void UpdateAnimation(Animation* anim, Skeleton* skel, float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime);
 	static void PlayAnimation(AnimatorComponent* outAnimator, Animation* anim, float animPlayRate, bool bLoop);
+	static void UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty);
+	static bool Intersects(const AABB& a, const AABB& b);
 
 private:
 	static void computeMatrixPalette(Animation* anim, Skeleton* skel, float animTime, MatrixPalette* outPalette);
