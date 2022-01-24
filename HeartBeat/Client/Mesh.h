@@ -21,6 +21,7 @@ public:
 	Mesh();
 
 	virtual void Load(const wstring& path) override;
+	void LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
 	const D3D12_INDEX_BUFFER_VIEW& GetIndexBufferView() const { return mIndexBufferView; }

@@ -1,11 +1,8 @@
 {
-	"version":1,
 	"vertexformat":"PosNormTex",
-	"shader":"BasicMesh",
 	"textures":[
 		"Assets/Textures/Crate.png"
 	],
-	"specularPower":100.0,
 	"vertices":[
 		[-55.927696,-25.519901,28.383768,0.000000,0.000000,1.000000,0.018066,0.013298],
 		[-55.927692,24.635864,28.383772,0.000000,0.000000,1.000000,0.018066,0.460938],

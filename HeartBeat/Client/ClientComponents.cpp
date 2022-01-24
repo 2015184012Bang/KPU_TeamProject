@@ -1,6 +1,21 @@
 #include "ClientPCH.h"
 #include "ClientComponents.h"
 
+MeshRendererComponent::MeshRendererComponent()
+	: Mesi(nullptr)
+	, Tex(nullptr)
+{
+
+}
+
+MeshRendererComponent::MeshRendererComponent(const Mesh* mesh, const Texture* texture)
+	: Mesi(mesh)
+	, Tex(texture)
+{
+
+}
+
+
 TransformComponent::TransformComponent()
 	: Position(Vector3::Zero)
 	, Rotation(Vector3::Zero)
@@ -52,7 +67,7 @@ AnimatorComponent::AnimatorComponent()
 
 }
 
-AnimatorComponent::AnimatorComponent(Skeleton* skel)
+AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 	: Skel(skel)
 	, Anim(nullptr)
 	, AnimPlayRate(0.0f)
@@ -62,3 +77,31 @@ AnimatorComponent::AnimatorComponent(Skeleton* skel)
 {
 
 }
+
+BoxComponent::BoxComponent()
+	: Local(nullptr)
+	, World()
+{
+
+}
+
+BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float yaw)
+	: Local(localBox)
+{
+	World = *Local;
+
+	World.UpdateWorldBox(position, yaw);
+}
+
+DebugDrawComponent::DebugDrawComponent()
+	: Mesi(nullptr)
+{
+
+}
+
+DebugDrawComponent::DebugDrawComponent(const Mesh* mesh)
+	: Mesi(mesh)
+{
+
+}
+

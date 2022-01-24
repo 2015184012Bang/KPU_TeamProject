@@ -10,9 +10,11 @@ public:
 	static void BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty);
 	static void BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer);
 	static void BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer);
-	static void UpdateAnimation(Animation* anim, Skeleton* skel, float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime);
+	static void UpdateAnimation(const Animation* anim, const Skeleton* skel, float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime);
 	static void PlayAnimation(AnimatorComponent* outAnimator, Animation* anim, float animPlayRate, bool bLoop);
+	static void UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty);
+	static bool Intersects(const AABB& a, const AABB& b);
 
 private:
-	static void computeMatrixPalette(Animation* anim, Skeleton* skel, float animTime, MatrixPalette* outPalette);
+	static void computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette);
 };

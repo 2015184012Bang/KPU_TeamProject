@@ -6,15 +6,15 @@
 #include "Bone.h"
 #include "Skeleton.h"
 #include "Animation.h"
+#include "AABB.h"
 
 struct MeshRendererComponent
 {
-	MeshRendererComponent(Mesh* mesh, Texture* texture)
-		: Mesi(mesh)
-		, Tex(texture) {}
+	MeshRendererComponent();
+	MeshRendererComponent(const Mesh* mesh, const Texture* texture);
 
-	Mesh* Mesi;
-	Texture* Tex;
+	const Mesh* Mesi;
+	const Texture* Tex;
 };
 
 struct TransformComponent
@@ -45,13 +45,30 @@ struct CameraComponent
 struct AnimatorComponent
 {
 	AnimatorComponent();
-	AnimatorComponent(Skeleton* skel);
+	AnimatorComponent(const Skeleton* skel);
 
 	MatrixPalette Palette;
-	Skeleton* Skel;
-	Animation* Anim;
+	const Skeleton* Skel;
+	const Animation* Anim;
 	float AnimPlayRate;
 	float AnimTime;
 	bool bLoop;
 	UploadBuffer<MatrixPalette> Buffer;
+};
+
+struct BoxComponent
+{
+	BoxComponent();
+	BoxComponent(const AABB* Local, const Vector3& position, float yaw);
+	
+	const AABB* Local;
+	AABB World;
+};
+
+struct DebugDrawComponent
+{
+	DebugDrawComponent();
+	DebugDrawComponent(const Mesh* mesh);
+
+	const Mesh* Mesi;
 };
