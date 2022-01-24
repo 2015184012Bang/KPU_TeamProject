@@ -19,6 +19,18 @@ void ResourceManager::Shutdown()
 		delete texture;
 	}
 	sTextures.clear();
+
+	for (auto& [_, skel] : sSkeletons)
+	{
+		delete skel;
+	}
+	sSkeletons.clear();
+
+	for (auto& [_, anim] : sAnimations)
+	{
+		delete anim;
+	}
+	sAnimations.clear();
 }
 
 Mesh* ResourceManager::GetMesh(const wstring& path)
