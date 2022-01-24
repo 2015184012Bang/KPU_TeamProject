@@ -31,6 +31,66 @@ void Mesh::Load(const wstring& path)
 	}
 }
 
+void Mesh::LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint)
+{
+	std::vector<Vector3> vertices(24);
+
+	// Front Side
+	vertices[0] = Vector3(minPoint.x, minPoint.y, minPoint.z);
+	vertices[1] = Vector3(minPoint.x, maxPoint.y, minPoint.z);
+	vertices[2] = Vector3(maxPoint.x, maxPoint.y, minPoint.z);
+	vertices[3] = Vector3(maxPoint.x, minPoint.y, minPoint.z);
+	// Back Side
+	vertices[4] = Vector3(minPoint.x, minPoint.y, maxPoint.z);
+	vertices[5] = Vector3(maxPoint.x, minPoint.y, maxPoint.z);
+	vertices[6] = Vector3(maxPoint.x, maxPoint.y, maxPoint.z);
+	vertices[7] = Vector3(minPoint.x, maxPoint.y, maxPoint.z);
+	// Up Side
+	vertices[8] = Vector3(minPoint.x, maxPoint.y, minPoint.z);
+	vertices[9] = Vector3(minPoint.x, maxPoint.y, maxPoint.z);
+	vertices[10] = Vector3(maxPoint.x, maxPoint.y, maxPoint.z);
+	vertices[11] = Vector3(maxPoint.x, maxPoint.y, minPoint.z);
+	// Down Side												
+	vertices[12] = Vector3(minPoint.x, minPoint.y, minPoint.z);
+	vertices[13] = Vector3(maxPoint.x, minPoint.y, minPoint.z);
+	vertices[14] = Vector3(maxPoint.x, minPoint.y, maxPoint.z);
+	vertices[15] = Vector3(minPoint.x, minPoint.y, maxPoint.z);
+	// Left Side														
+	vertices[16] = Vector3(minPoint.x, minPoint.y, maxPoint.z);
+	vertices[17] = Vector3(minPoint.x, maxPoint.y, maxPoint.z);
+	vertices[18] = Vector3(minPoint.x, maxPoint.y, minPoint.z);
+	vertices[19] = Vector3(minPoint.x, minPoint.y, minPoint.z);
+	// Right Side														
+	vertices[20] = Vector3(maxPoint.x, minPoint.y, minPoint.z);
+	vertices[21] = Vector3(maxPoint.x, maxPoint.y, minPoint.z);
+	vertices[22] = Vector3(maxPoint.x, maxPoint.y, maxPoint.z);
+	vertices[23] = Vector3(maxPoint.x, minPoint.y, maxPoint.z);
+
+	std::vector<uint32> indices(36);
+
+	// ¾Õ¸é
+	indices[0] = 0; indices[1] = 1; indices[2] = 2;
+	indices[3] = 0; indices[4] = 2; indices[5] = 3;
+	// µÞ¸é
+	indices[6] = 4; indices[7] = 5; indices[8] = 6;
+	indices[9] = 4; indices[10] = 6; indices[11] = 7;
+	// À­¸é
+	indices[12] = 8; indices[13] = 9; indices[14] = 10;
+	indices[15] = 8; indices[16] = 10; indices[17] = 11;
+	// ¾Æ·§¸é
+	indices[18] = 12; indices[19] = 13; indices[20] = 14;
+	indices[21] = 12; indices[22] = 14; indices[23] = 15;
+	// ¿ÞÂÊ¸é
+	indices[24] = 16; indices[25] = 17; indices[26] = 18;
+	indices[27] = 16; indices[28] = 18; indices[29] = 19;
+	// ¿À¸¥ÂÊ¸é
+	indices[30] = 20; indices[31] = 21; indices[32] = 22;
+	indices[33] = 20; indices[34] = 22; indices[35] = 23;
+
+	createVertexBuffer<Vector3>(vertices);
+	createIndexBuffer(indices);
+}
+
 rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshType)
 {
 	std::ifstream file(path);

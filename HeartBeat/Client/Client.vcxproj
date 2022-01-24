@@ -162,6 +162,7 @@
   <ItemGroup>
     <None Include="default.hlsli" />
     <None Include="skeletal.hlsli" />
+    <None Include="wireframe.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

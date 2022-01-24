@@ -41,6 +41,8 @@ void TestScene::Enter()
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim"), 1.0f, true);
 
 		mTestEntity.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
+
+		mTestEntity.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
 	}
 
 	{
@@ -54,6 +56,8 @@ void TestScene::Enter()
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim"), 1.0f, true);
 
 		mKnight.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
+
+		mKnight.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
 	}
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
@@ -96,6 +100,10 @@ void TestScene::Update(float deltaTime)
 		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
 		ClientSystems::MovePosition(&transform.Position, Vector3(0.0f, 0.0f, -300.0f), deltaTime, &transform.bDirty);
 	}
+
+
+	auto& transform = mTestEntity.GetComponent<TransformComponent>();
+	ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
 
 	{
 		auto view = (mOwner->GetRegistry()).view<AnimatorComponent>();
@@ -172,4 +180,21 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}
 	}
+
+#ifdef _DEBUG
+	{
+		gCmdList->SetPipelineState(renderer->GetWireframePSO().Get());
+		auto view = (mOwner->GetRegistry()).view<DebugDrawComponent>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+
+			DebugDrawComponent& debug = e.GetComponent<DebugDrawComponent>();
+			renderer->SubmitDebugMesh(debug.Mesi);
+		}
+	}
+#endif
 }

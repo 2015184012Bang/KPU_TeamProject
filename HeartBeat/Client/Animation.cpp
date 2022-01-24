@@ -78,7 +78,7 @@ void Animation::Load(const wstring& path)
 	}
 }
 
-void Animation::GetGlobalPoseAtTime(vector<Matrix>* outPoses, Skeleton* skeleton, float t) const
+void Animation::GetGlobalPoseAtTime(vector<Matrix>* outPoses, const Skeleton* skeleton, float t) const
 {
 	if ((*outPoses).size() != mNumBones)
 	{

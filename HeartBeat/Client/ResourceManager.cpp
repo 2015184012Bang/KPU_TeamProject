@@ -6,6 +6,7 @@ unordered_map<wstring, Texture*> ResourceManager::sTextures;
 unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
 unordered_map<wstring, Animation*> ResourceManager::sAnimations;
 unordered_map<wstring, AABB*> ResourceManager::sBoxes;
+unordered_map<wstring, Mesh*> ResourceManager::sDebugMeshes;
 
 void ResourceManager::Shutdown()
 {
@@ -32,6 +33,18 @@ void ResourceManager::Shutdown()
 		delete anim;
 	}
 	sAnimations.clear();
+
+	for (auto& [_, box] : sBoxes)
+	{
+		delete box;
+	}
+	sBoxes.clear();
+
+	for (auto& [_, debugMesh] : sDebugMeshes)
+	{
+		delete debugMesh;
+	}
+	sDebugMeshes.clear();
 }
 
 Mesh* ResourceManager::GetMesh(const wstring& path)
@@ -120,6 +133,27 @@ AABB* ResourceManager::GetAABB(const wstring& path)
 		newBox->Load(path);
 		sBoxes[path] = newBox;
 
+		Mesh* newDebugMesh = new Mesh;
+		newDebugMesh->LoadDebugMesh(newBox->GetMin(), newBox->GetMax());
+		sDebugMeshes[path] = newDebugMesh;
+
 		return newBox;
 	}
+}
+
+Mesh* ResourceManager::GetDebugMesh(const wstring& path)
+{
+	auto iter = sDebugMeshes.find(path);
+
+	if (iter != sDebugMeshes.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		HB_LOG("Debug mesh not found: {0}", ws2s(path));
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
+
+	return nullptr;
 }

@@ -14,9 +14,11 @@ public:
 	void BeginRender();
 	void EndRender();
 	void Submit(const Mesh* const mesh, const Texture* const texture);
+	void SubmitDebugMesh(const Mesh* const mesh);
 
 	const ComPtr<ID3D12PipelineState>& GetStaticMeshPSO() const { return mStaticMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetSkeletalMeshPSO() const { return mSkeletalMeshPSO; }
+	const ComPtr<ID3D12PipelineState>& GetWireframePSO() const { return mWireframePSO; }
 
 private:
 	void loadPipeline();
@@ -54,6 +56,7 @@ private:
 	ComPtr<ID3D12RootSignature> mRootSignature;
 	ComPtr<ID3D12PipelineState> mStaticMeshPSO;
 	ComPtr<ID3D12PipelineState> mSkeletalMeshPSO;
+	ComPtr<ID3D12PipelineState> mWireframePSO;
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;

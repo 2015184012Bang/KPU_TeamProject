@@ -45,7 +45,7 @@ void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<Ma
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::UpdateAnimation(Animation* anim, Skeleton* skel, 
+void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel, 
 	float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime)
 {
 	if (!anim || !skel)
@@ -111,7 +111,7 @@ bool ClientSystems::Intersects(const AABB& a, const AABB& b)
 	return !no;
 }
 
-void ClientSystems::computeMatrixPalette(Animation* anim, Skeleton* skel, float animTime, MatrixPalette* outPalette)
+void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette)
 {
 	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
 	vector<Matrix> currentPoses;

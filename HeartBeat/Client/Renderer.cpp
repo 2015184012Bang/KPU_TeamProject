@@ -292,6 +292,36 @@ void Renderer::createPipelineState()
 		psoDesc.SampleDesc.Count = 1;
 		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSkeletalMeshPSO)));
 	}
+
+	{
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
+		inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+		ComPtr<ID3DBlob> vertexShader;
+		ComPtr<ID3DBlob> pixelShader;
+
+		ThrowIfFailed(D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
+		ThrowIfFailed(D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+		psoDesc.RasterizerState.FillMode = D3D12_FILL_MODE_WIREFRAME;
+		psoDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		psoDesc.SampleDesc.Count = 1;
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mWireframePSO)));
+	}
 }
 
 void Renderer::createCmdList()
@@ -362,6 +392,14 @@ void Renderer::loadAssets()
 void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
 {
 	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
+	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
+	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+}
+
+void Renderer::SubmitDebugMesh(const Mesh* const mesh)
+{
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
