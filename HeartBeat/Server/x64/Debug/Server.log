@@ -1,1 +1,6 @@
-﻿  Server.vcxproj -> C:\Study\KPU_TeamProject\HeartBeat\x64\Debug\Server.exe
+﻿  ServerPCH.cpp
+  ClientProxy.cpp
+  Main.cpp
+  Server.cpp
+  코드를 생성하고 있습니다...
+  Server.vcxproj -> C:\Study\KPU_TeamProject\HeartBeat\x64\Debug\Server.exe

@@ -16,6 +16,9 @@
 #include <fstream>
 #include <sstream>
 
+#include <cstdint>
+#include <cstdlib>
+
 #include <Windows.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -42,6 +45,9 @@ using uint64 = unsigned __int64;
 
 namespace fs = std::filesystem;
 
+#include "Timing.h"
 #include "SocketAddress.h"
 #include "TCPSocket.h"
 #include "SocketUtil.h"
+#include "MemoryBitStream.h"
+#include "NetworkManager.h"

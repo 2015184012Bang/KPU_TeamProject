@@ -102,6 +102,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="MemoryBitStream.cpp" />
+    <ClCompile Include="NetworkManager.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -109,6 +111,7 @@
     <ClCompile Include="SocketAddress.cpp" />
     <ClCompile Include="SocketUtil.cpp" />
     <ClCompile Include="TCPSocket.cpp" />
+    <ClCompile Include="Timing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components.h" />
@@ -116,6 +119,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="MemoryBitStream.h" />
+    <ClInclude Include="NetworkManager.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="SocketAddress.h" />
@@ -123,6 +128,7 @@
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Tags.h" />
     <ClInclude Include="TCPSocket.h" />
+    <ClInclude Include="Timing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

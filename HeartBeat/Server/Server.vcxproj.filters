@@ -16,10 +16,22 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClientProxy.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerPCH.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientProxy.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
