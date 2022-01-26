@@ -238,9 +238,29 @@ void Renderer::createPipelineState()
 
 		ComPtr<ID3DBlob> vertexShader;
 		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
 
-		ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-		ThrowIfFailed(D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+		HRESULT hr = D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
@@ -271,9 +291,29 @@ void Renderer::createPipelineState()
 
 		ComPtr<ID3DBlob> vertexShader;
 		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
 
-		ThrowIfFailed(D3DCompileFromFile(L"skeletal.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-		ThrowIfFailed(D3DCompileFromFile(L"skeletal.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+		HRESULT hr = D3DCompileFromFile(L"skeletal.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"skeletal.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
@@ -299,9 +339,29 @@ void Renderer::createPipelineState()
 
 		ComPtr<ID3DBlob> vertexShader;
 		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
 
-		ThrowIfFailed(D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-		ThrowIfFailed(D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+		HRESULT hr = D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"wireframe.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
 
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
@@ -362,9 +422,9 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(L"Assets/Meshes/Character.mesh");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character.skel");
-	ResourceManager::GetAnimation(L"Assets/Animations/Walking.anim");
+	ResourceManager::GetMesh(L"Assets/Meshes/t4.mesh");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/t4.skel");
+	ResourceManager::GetAnimation(L"Assets/Animations/t4.anim");
 
 	ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel");
