@@ -4,4 +4,4 @@
 
 #include "ClientProxy.h"
 #include "Server.h"
-
+#include "NetworkManagerServer.h"

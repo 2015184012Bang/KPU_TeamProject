@@ -6,6 +6,7 @@ Server::Server()
 
 bool Server::Init()
 {
+    InitNetworkManager();
     return false;
 }
 

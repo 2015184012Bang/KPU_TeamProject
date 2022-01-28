@@ -1,11 +1,12 @@
-c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.pch
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\vc142.pdb
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\vc142.idb
-c:\study\kpu_teamproject\heartbeat\server\x64\debug\serverpch.obj
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\main.obj
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\clientproxy.obj
-c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.ilk
+c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.pch
+c:\study\kpu_teamproject\heartbeat\server\x64\debug\serverpch.obj
+c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.obj
 c:\study\kpu_teamproject\heartbeat\x64\debug\server.exe
+c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.ilk
 c:\study\kpu_teamproject\heartbeat\x64\debug\server.pdb
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.tlog\cl.command.1.tlog
 c:\study\kpu_teamproject\heartbeat\server\x64\debug\server.tlog\cl.read.1.tlog

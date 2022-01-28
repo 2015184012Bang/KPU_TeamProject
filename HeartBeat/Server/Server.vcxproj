@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="ClientProxy.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NetworkManagerServer.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientProxy.h" />
+    <ClInclude Include="NetworkManagerServer.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerPCH.h" />
   </ItemGroup>
