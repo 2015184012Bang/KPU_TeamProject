@@ -8,6 +8,8 @@
 #include "ResourceManager.h"
 #include "ClientSystems.h"
 
+#include "CharacterMovement.h"
+
 TestScene* TestScene::sInstance;
 
 TestScene::TestScene(Client* owner)
@@ -44,6 +46,8 @@ void TestScene::Enter()
 		mTestEntity.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
 
 		mTestEntity.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
+
+		mTestEntity.AddComponent<ScriptComponent>(new CharacterMovement(mTestEntity));
 	}
 
 	{
@@ -78,30 +82,22 @@ void TestScene::ProcessInput()
 
 void TestScene::Update(float deltaTime)
 {
-	if (Input::IsButtonRepeat(eKeyCode::Right))
 	{
-		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::MovePosition(&transform.Position, Vector3(300.0f, 0.0f, 0.0f), deltaTime, &transform.bDirty);
-	}
+		auto view = (mOwner->GetRegistry()).view<ScriptComponent>();
 
-	if (Input::IsButtonRepeat(eKeyCode::Left))
-	{
-		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::MovePosition(&transform.Position, Vector3(-300.0f, 0.0f, 0.0f), deltaTime, &transform.bDirty);
-	}
+		for (auto entity : view)
+		{
+			auto& script = view.get<ScriptComponent>(entity);
 
-	if (Input::IsButtonRepeat(eKeyCode::Up))
-	{
-		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::MovePosition(&transform.Position, Vector3(0.0f, 0.0f, 300.0f), deltaTime, &transform.bDirty);
-	}
+			if (!script.bInitialized)
+			{
+				script.NativeScript->Start();
+				script.bInitialized = true;
+			}
 
-	if (Input::IsButtonRepeat(eKeyCode::Down))
-	{
-		TransformComponent& transform = mTestEntity.GetComponent<TransformComponent>();
-		ClientSystems::MovePosition(&transform.Position, Vector3(0.0f, 0.0f, -300.0f), deltaTime, &transform.bDirty);
+			script.NativeScript->Update(deltaTime);
+		}
 	}
-
 
 	auto& transform = mTestEntity.GetComponent<TransformComponent>();
 	ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
