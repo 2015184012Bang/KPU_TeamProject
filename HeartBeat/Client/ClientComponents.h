@@ -7,6 +7,7 @@
 #include "Skeleton.h"
 #include "Animation.h"
 #include "AABB.h"
+#include "Script.h"
 
 struct MeshRendererComponent
 {
@@ -71,4 +72,14 @@ struct DebugDrawComponent
 	DebugDrawComponent(const Mesh* mesh);
 
 	const Mesh* Mesi;
+};
+
+struct ScriptComponent
+{
+	ScriptComponent();
+	ScriptComponent(Script* s);
+	~ScriptComponent();
+
+	Script* NativeScript;
+	bool bInitialized;
 };

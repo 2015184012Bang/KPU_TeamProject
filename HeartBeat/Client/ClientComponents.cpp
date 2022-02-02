@@ -105,3 +105,25 @@ DebugDrawComponent::DebugDrawComponent(const Mesh* mesh)
 
 }
 
+ScriptComponent::ScriptComponent()
+	: NativeScript(nullptr)
+	, bInitialized(false)
+{
+
+}
+
+ScriptComponent::ScriptComponent(Script* s)
+	: NativeScript(s)
+	, bInitialized(false)
+{
+
+}
+
+ScriptComponent::~ScriptComponent()
+{
+	if (NativeScript)
+	{
+		delete NativeScript;
+		NativeScript = nullptr;
+	}
+}
