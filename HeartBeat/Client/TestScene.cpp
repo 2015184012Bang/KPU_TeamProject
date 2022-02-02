@@ -35,13 +35,12 @@ void TestScene::Enter()
 
 	{
 		mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
-		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/t4.mesh"),
-			ResourceManager::GetTexture(L"Assets/Textures/tt.png"));
+		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/Enemy.mesh"),
+			ResourceManager::GetTexture(L"Assets/Textures/Enemy.png"));
 		auto& transform = mTestEntity.AddComponent<TransformComponent>();
-		//transform.Scale = 10.0f;
 		mTestEntity.AddTag<SkeletalMesh>();
-		auto& animator = mTestEntity.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/t4.skel"));
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/t4.anim"), 1.0f, true);
+		auto& animator = mTestEntity.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/Enemy.skel"));
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Running.anim"), 1.0f, true);
 
 		mTestEntity.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
 

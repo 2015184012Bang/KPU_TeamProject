@@ -422,9 +422,11 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(L"Assets/Meshes/t4.mesh");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/t4.skel");
-	ResourceManager::GetAnimation(L"Assets/Animations/t4.anim");
+	ResourceManager::GetMesh(L"Assets/Meshes/Enemy.mesh");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Enemy.skel");
+	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Idle.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Walking.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Running.anim");
 
 	ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel");
