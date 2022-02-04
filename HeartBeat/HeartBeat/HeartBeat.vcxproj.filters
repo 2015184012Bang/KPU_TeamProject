@@ -16,6 +16,9 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCH.h">
@@ -43,6 +46,9 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="StringUtils.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

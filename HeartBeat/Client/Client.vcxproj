@@ -126,7 +126,6 @@
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TablsDescriptorHeap.cpp" />
-    <ClCompile Include="Timer.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -152,7 +151,6 @@
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TablsDescriptorHeap.h" />
-    <ClInclude Include="Timer.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Vertex.h" />
