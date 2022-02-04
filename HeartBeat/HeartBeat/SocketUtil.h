@@ -7,7 +7,6 @@ class SocketUtil
 public:
 	static void Init();
 	static void Shutdown();
-	static void ReportError(const char* desc);
-	static int GetLastError();
+	static void ReportError(const wstring& desc);
 	static TCPSocketPtr CreateTCPSocket();
 };

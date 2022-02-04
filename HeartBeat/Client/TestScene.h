@@ -26,5 +26,7 @@ private:
     Entity mKnight;
     Entity mMainCamera;
     //////////////////////////////////////////////////////////////////////////
+
+    TCPSocketPtr clientSocket;
 };
 

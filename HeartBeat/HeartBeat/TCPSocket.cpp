@@ -14,7 +14,7 @@ int TCPSocket::Bind(const SocketAddress& addr)
 
 	if (error == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError("TCPSocket::Bind");
+		SocketUtil::ReportError(L"TCPSocket::Bind");
 		return SOCKET_ERROR;
 	}
 
@@ -27,7 +27,7 @@ int TCPSocket::Listen(int backlog /*= SOMAXCONN*/)
 
 	if (error == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError("TCPSocket::Listen");
+		SocketUtil::ReportError(L"TCPSocket::Listen");
 		return SOCKET_ERROR;
 	}
 
@@ -40,7 +40,7 @@ int TCPSocket::Connect(const SocketAddress& addr)
 
 	if (error == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError("TCPSocket::Connect");
+		SocketUtil::ReportError(L"TCPSocket::Connect");
 		return SOCKET_ERROR;
 	}
 
@@ -55,7 +55,7 @@ TCPSocketPtr TCPSocket::Accept(SocketAddress* outAddr)
 
 	if (newSock == INVALID_SOCKET)
 	{
-		SocketUtil::ReportError("TCPSocket::Accept");
+		SocketUtil::ReportError(L"TCPSocket::Accept");
 		return nullptr;
 	}
 
@@ -68,7 +68,7 @@ int TCPSocket::Send(const void* data, int len, int flags /*= 0*/)
 
 	if (sent == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError("TCPSocket::Send");
+		SocketUtil::ReportError(L"TCPSocket::Send");
 		return SOCKET_ERROR;
 	}
 
@@ -81,7 +81,7 @@ int TCPSocket::Recv(void* outData, int len, int flags /*= 0*/)
 
 	if (read == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError("TCPSocket::Recv");
+		SocketUtil::ReportError(L"TCPSocket::Recv");
 		return SOCKET_ERROR;
 	}
 
