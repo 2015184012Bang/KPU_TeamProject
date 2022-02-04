@@ -23,7 +23,13 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="SocketAddress.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="TCPSocket.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketUtil.cpp">
+      <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +64,12 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="SocketAddress.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPSocket.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketUtil.h">
       <Filter>Source Files\Network</Filter>
     </ClInclude>
   </ItemGroup>

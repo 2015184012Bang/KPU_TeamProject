@@ -4,6 +4,8 @@ using SocketAddressPtr = shared_ptr<class SocketAddress>;
 
 class SocketAddress
 {
+	friend class TCPSocket;
+
 public:
 	SocketAddress()
 	{
