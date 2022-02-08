@@ -11,6 +11,7 @@
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #endif
 
 #include <Windows.h>
@@ -31,7 +32,6 @@ using namespace Microsoft::WRL;
 using namespace DirectX::PackedVector;
 using namespace DirectX::SimpleMath;
 
-#include "d3dx12.h"
 #include "d3dHelper.h"
 #include "ClientComponents.h"
 #include "Types.h"

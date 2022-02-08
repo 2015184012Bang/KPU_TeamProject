@@ -116,7 +116,7 @@
     </ClCompile>
     <ClCompile Include="ClientSystems.cpp" />
     <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ClientMain.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
