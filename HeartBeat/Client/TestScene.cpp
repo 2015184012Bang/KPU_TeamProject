@@ -33,6 +33,8 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
+	SocketUtil::Init();
+
 	{
 		mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
 		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/Enemy.mesh"),
@@ -67,11 +69,25 @@ void TestScene::Enter()
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
+
+	//// TCP connection test //////////////////////////////////////////////////////////////////////////
+	clientSocket = SocketUtil::CreateTCPSocket();
+
+	SocketAddress serveraddr("127.0.0.1", 9000);
+
+	int error = clientSocket->Connect(serveraddr);
+	
+	if (error == SOCKET_ERROR)
+	{
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
 }
 
 void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
+
+	SocketUtil::Shutdown();
 }
 
 void TestScene::ProcessInput()

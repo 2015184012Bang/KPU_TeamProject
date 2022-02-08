@@ -1,4 +1,4 @@
-#include "ClientPCH.h"
+#include "PCH.h"
 #include "Timer.h"
 
 uint64 Timer::sFrequency;
@@ -22,8 +22,6 @@ void Timer::Update()
 	{
 		sDeltaTime = 0.05f;
 	}
-	
+
 	sPrevCount = currentCount;
 }
-
-

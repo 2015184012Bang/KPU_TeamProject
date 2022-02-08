@@ -43,9 +43,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="TestScene.cpp">
       <Filter>Source Files\Test</Filter>
     </ClCompile>
@@ -100,9 +97,6 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="TestScene.h">

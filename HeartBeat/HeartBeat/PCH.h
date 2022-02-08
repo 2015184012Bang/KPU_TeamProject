@@ -3,8 +3,11 @@
 #pragma warning(disable:4819)
 #pragma comment(lib, "fmt")
 #pragma comment(lib, "spdlog")
+#pragma comment(lib, "ws2_32")
 
-#include "Log.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <string>
 #include <vector>
@@ -15,8 +18,13 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <Windows.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
 #include <entt/entt.hpp>
+
+#include "Log.h"
 
 using std::string;
 using std::wstring;

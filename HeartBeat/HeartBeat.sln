@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HeartBeat", "HeartBeat\Hear
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{5EEA8994-CB5B-48D1-A626-A3730D1DC476}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{C4C86D3D-72E8-4DB4-846C-AF2020DB70C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{5EEA8994-CB5B-48D1-A626-A3730D1DC476}.Debug|x64.Build.0 = Debug|x64
 		{5EEA8994-CB5B-48D1-A626-A3730D1DC476}.Release|x64.ActiveCfg = Release|x64
 		{5EEA8994-CB5B-48D1-A626-A3730D1DC476}.Release|x64.Build.0 = Release|x64
+		{C4C86D3D-72E8-4DB4-846C-AF2020DB70C9}.Debug|x64.ActiveCfg = Debug|x64
+		{C4C86D3D-72E8-4DB4-846C-AF2020DB70C9}.Debug|x64.Build.0 = Debug|x64
+		{C4C86D3D-72E8-4DB4-846C-AF2020DB70C9}.Release|x64.ActiveCfg = Release|x64
+		{C4C86D3D-72E8-4DB4-846C-AF2020DB70C9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
