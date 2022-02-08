@@ -82,9 +82,6 @@
     <ClCompile Include="Script.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="HBID.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -161,9 +158,6 @@
     </ClInclude>
     <ClInclude Include="CharacterMovement.h">
       <Filter>Source Files\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="HBID.h">
-      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
