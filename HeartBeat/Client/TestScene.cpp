@@ -49,6 +49,8 @@ void TestScene::Enter()
 		mTestEntity.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
 
 		mTestEntity.AddComponent<ScriptComponent>(new CharacterMovement(mTestEntity));
+
+		mTestEntity.AddComponent<IDComponent>();
 	}
 
 	{
@@ -64,23 +66,13 @@ void TestScene::Enter()
 		mKnight.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
 
 		mKnight.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
+
+		mKnight.AddComponent<IDComponent>();
 	}
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
-
-	//// TCP connection test //////////////////////////////////////////////////////////////////////////
-	clientSocket = SocketUtil::CreateTCPSocket();
-
-	SocketAddress serveraddr("127.0.0.1", 9000);
-
-	int error = clientSocket->Connect(serveraddr);
-	
-	if (error == SOCKET_ERROR)
-	{
-		HB_ASSERT(false, "ASSERTION FAILED");
-	}
 }
 
 void TestScene::Exit()

@@ -8,6 +8,7 @@
 #include "Animation.h"
 #include "AABB.h"
 #include "Script.h"
+#include "HBID.h"
 
 struct MeshRendererComponent
 {
@@ -82,4 +83,11 @@ struct ScriptComponent
 
 	Script* NativeScript;
 	bool bInitialized;
+};
+
+struct IDComponent
+{
+	IDComponent();
+
+	HBID ID;
 };
