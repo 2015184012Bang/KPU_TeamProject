@@ -182,3 +182,11 @@
 [예정]
 > 캐릭터 표정 애니메이션 제작, Idle, Walking, Running 
 > 송수신 패킷 직렬화
+
+** 2.23(수) **
+[수행]
+> 캐릭터 표정 애니메이션 제작, Idle, Walking, Running 애니메이션 제작
+> 아군 NPC 캐릭터 모델링 및 맵핑, 텍스쳐 제작
+
+[예정]
+> 아군 NPC 캐릭터 애니메이션 제작 (Idle, Running, Rest, Digging, Attacking)
