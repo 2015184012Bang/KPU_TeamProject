@@ -57,6 +57,17 @@ void TestScene::Enter()
 		transform.Rotation.y = 180.0f;
 	}
 
+	{
+		mPlayer = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/03_Character_Pink.mesh", L"Assets/Textures/03_Character_Pink.png",
+			L"Assets/Skeletons/03_Character_Pink.skel", L"Assets/Boxes/01_Character.box");
+
+		auto& animator = mPlayer.GetComponent<AnimatorComponent>();
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/901_Idle_Pink.anim"), 1.0f, true);
+
+		auto& transform = mPlayer.GetComponent<TransformComponent>();
+		transform.Position.x = -300.0f;
+	}
+
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
@@ -93,17 +104,17 @@ void TestScene::Update(float deltaTime)
 		}
 	}
 
-	//{
-	//	auto view = (mOwner->GetRegistry().view<SkeletalMesh>());
-	//	for (auto entity : view)
-	//	{
-	//		Entity e = Entity(entity, mOwner);
+	{
+		auto view = (mOwner->GetRegistry().view<SkeletalMesh>());
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
 
-	//		auto& transform = e.GetComponent<TransformComponent>();
+			auto& transform = e.GetComponent<TransformComponent>();
 
-	//		ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
-	//	}
-	//}
+			ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
+		}
+	}
 
 	{
 		auto view = (mOwner->GetRegistry()).view<AnimatorComponent>();
