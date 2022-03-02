@@ -37,12 +37,12 @@ void TestScene::Enter()
 
 	{
 		mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
-		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/Enemy.mesh"),
-			ResourceManager::GetTexture(L"Assets/Textures/Enemy.png"));
+		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh"),
+			ResourceManager::GetTexture(L"Assets/Textures/21_HEnemy.png"));
 		auto& transform = mTestEntity.AddComponent<TransformComponent>();
 		mTestEntity.AddTag<SkeletalMesh>();
-		auto& animator = mTestEntity.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/Enemy.skel"));
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Running.anim"), 1.0f, true);
+		auto& animator = mTestEntity.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/21_HEnemy.skel"));
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f, true);
 
 		mTestEntity.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
 
@@ -51,23 +51,6 @@ void TestScene::Enter()
 		mTestEntity.AddComponent<ScriptComponent>(new CharacterMovement(mTestEntity));
 
 		mTestEntity.AddComponent<IDComponent>();
-	}
-
-	{
-		mKnight = Entity(mOwner->CreateEntity(), mOwner);
-		mKnight.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh"),
-			ResourceManager::GetTexture(L"Assets/Textures/Knight.png"));
-		auto& transform = mKnight.AddComponent<TransformComponent>();
-		transform.Position = Vector3(500.0f, 0.0f, 0.0f);
-		mKnight.AddTag<SkeletalMesh>();
-		auto& animator = mKnight.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel"));
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim"), 1.0f, true);
-
-		mKnight.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
-
-		mKnight.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
-
-		mKnight.AddComponent<IDComponent>();
 	}
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
@@ -133,6 +116,7 @@ void TestScene::Update(float deltaTime)
 		}
 	}
 
+	/*
 	{
 		auto& box1 = mTestEntity.GetComponent<BoxComponent>();
 		auto& box2 = mKnight.GetComponent<BoxComponent>();
@@ -144,6 +128,7 @@ void TestScene::Update(float deltaTime)
 			HB_LOG("Collision dectected!!");
 		}
 	}
+	*/
 }
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)

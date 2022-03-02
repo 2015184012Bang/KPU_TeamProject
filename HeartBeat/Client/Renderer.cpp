@@ -422,15 +422,17 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(L"Assets/Meshes/Enemy.mesh");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/Enemy.skel");
-	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Idle.anim");
-	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Walking.anim");
-	ResourceManager::GetAnimation(L"Assets/Animations/Enemy_Running.anim");
+	ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/11_Cell_Base.mesh");
 
-	ResourceManager::GetMesh(L"Assets/Meshes/Knight.mesh");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/Knight.skel");
-	ResourceManager::GetAnimation(L"Assets/Animations/Knight_Run.anim");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/21_HEnemy.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/11_Cell_Base.skel");
+
+	ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/923_Walking.anim");
+	ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim");
+
 	ResourceManager::GetAABB(L"Assets/Boxes/Knight.box");
 }
 
