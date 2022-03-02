@@ -434,6 +434,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim");
 
 	ResourceManager::GetAABB(L"Assets/Boxes/Knight.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/11_Cell_Base.box");
 }
 
 void Renderer::loadAssets()

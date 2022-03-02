@@ -53,6 +53,20 @@ void TestScene::Enter()
 		mTestEntity.AddComponent<IDComponent>();
 	}
 
+	{
+		mCell = Entity(mOwner->CreateEntity(), mOwner);
+		mCell.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/11_Cell_Base.mesh"), 
+			ResourceManager::GetTexture(L"Assets/Textures/11_Cell_Red.png"));
+		auto& transform = mCell.AddComponent<TransformComponent>();
+		transform.Position.x = 300.0f;
+		mCell.AddTag<SkeletalMesh>();
+		auto& animator = mCell.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/11_Cell_Base.skel"));
+
+		mCell.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/11_Cell_Base.box"), transform.Position, transform.Rotation.y);
+		mCell.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/11_Cell_Base.box"));
+		mCell.AddComponent<IDComponent>();
+	}
+
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
@@ -89,8 +103,17 @@ void TestScene::Update(float deltaTime)
 		}
 	}
 
-	auto& transform = mTestEntity.GetComponent<TransformComponent>();
-	ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
+	{
+		auto view = (mOwner->GetRegistry().view<SkeletalMesh>());
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			auto& transform = e.GetComponent<TransformComponent>();
+
+			ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
+		}
+	}
 
 	{
 		auto view = (mOwner->GetRegistry()).view<AnimatorComponent>();
@@ -116,10 +139,9 @@ void TestScene::Update(float deltaTime)
 		}
 	}
 
-	/*
 	{
 		auto& box1 = mTestEntity.GetComponent<BoxComponent>();
-		auto& box2 = mKnight.GetComponent<BoxComponent>();
+		auto& box2 = mCell.GetComponent<BoxComponent>();
 
 		bool collides = ClientSystems::Intersects(box1.World, box2.World);
 
@@ -128,7 +150,6 @@ void TestScene::Update(float deltaTime)
 			HB_LOG("Collision dectected!!");
 		}
 	}
-	*/
 }
 
 void TestScene::Render(unique_ptr<Renderer>& renderer)
