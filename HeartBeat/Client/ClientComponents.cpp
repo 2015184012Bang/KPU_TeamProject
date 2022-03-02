@@ -127,9 +127,3 @@ ScriptComponent::~ScriptComponent()
 		NativeScript = nullptr;
 	}
 }
-
-IDComponent::IDComponent()
-	: ID()
-{
-	HB_LOG("My ID: {0}", ID);
-}
