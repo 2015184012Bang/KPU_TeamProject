@@ -36,35 +36,21 @@ void TestScene::Enter()
 	SocketUtil::Init();
 
 	{
-		mTestEntity = Entity(mOwner->CreateEntity(), mOwner);
-		mTestEntity.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh"),
-			ResourceManager::GetTexture(L"Assets/Textures/21_HEnemy.png"));
-		auto& transform = mTestEntity.AddComponent<TransformComponent>();
-		mTestEntity.AddTag<SkeletalMesh>();
-		auto& animator = mTestEntity.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/21_HEnemy.skel"));
+		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
+			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/Knight.box");
+
+		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f, true);
 
-		mTestEntity.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/Knight.box"), transform.Position, transform.Rotation.y);
-
-		mTestEntity.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/Knight.box"));
-
-		mTestEntity.AddComponent<ScriptComponent>(new CharacterMovement(mTestEntity));
-
-		mTestEntity.AddComponent<IDComponent>();
+		mEnemy.AddComponent<ScriptComponent>(new CharacterMovement(mEnemy));
 	}
 
 	{
-		mCell = Entity(mOwner->CreateEntity(), mOwner);
-		mCell.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(L"Assets/Meshes/11_Cell_Base.mesh"), 
-			ResourceManager::GetTexture(L"Assets/Textures/11_Cell_Red.png"));
-		auto& transform = mCell.AddComponent<TransformComponent>();
+		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell_Base.mesh", L"Assets/Textures/11_Cell_Red.png", 
+			L"Assets/Skeletons/11_Cell_Base.skel", L"Assets/Boxes/11_Cell_Base.box");
+		
+		auto& transform = mCell.GetComponent<TransformComponent>();
 		transform.Position.x = 300.0f;
-		mCell.AddTag<SkeletalMesh>();
-		auto& animator = mCell.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(L"Assets/Skeletons/11_Cell_Base.skel"));
-
-		mCell.AddComponent<BoxComponent>(ResourceManager::GetAABB(L"Assets/Boxes/11_Cell_Base.box"), transform.Position, transform.Rotation.y);
-		mCell.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(L"Assets/Boxes/11_Cell_Base.box"));
-		mCell.AddComponent<IDComponent>();
 	}
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
@@ -140,7 +126,7 @@ void TestScene::Update(float deltaTime)
 	}
 
 	{
-		auto& box1 = mTestEntity.GetComponent<BoxComponent>();
+		auto& box1 = mEnemy.GetComponent<BoxComponent>();
 		auto& box2 = mCell.GetComponent<BoxComponent>();
 
 		bool collides = ClientSystems::Intersects(box1.World, box2.World);

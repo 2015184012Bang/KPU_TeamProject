@@ -3,9 +3,9 @@
 
 #include "Input.h"
 #include "Timer.h"
-
 #include "Renderer.h"
 #include "TestScene.h"
+#include "ResourceManager.h"
 
 Client::Client()
 	: Game()
@@ -64,6 +64,43 @@ void Client::ChangeScene(Scene* scene)
 	mActiveScene->Exit();
 	mActiveScene = scene;
 	mActiveScene->Enter();
+}
+
+Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile)
+{
+	Entity e = Entity(CreateEntity(), this);
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<SkeletalMesh>();
+	e.AddComponent<IDComponent>();
+	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
+
+	return e;
+}
+
+Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile)
+{
+	Entity e = Entity(CreateEntity(), this);
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<StaticMesh>();
+	e.AddComponent<IDComponent>();
+	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
+
+	return e;
 }
 
 void Client::processInput()

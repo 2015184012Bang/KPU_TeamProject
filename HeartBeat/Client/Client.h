@@ -17,6 +17,9 @@ public:
 
     void ChangeScene(Scene* scene);
 
+    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
+    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
+
 private:
     void processInput();
     void update();
