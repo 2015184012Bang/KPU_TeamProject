@@ -138,7 +138,6 @@
     <ClInclude Include="ClientPCH.h" />
     <ClInclude Include="ClientSystems.h" />
     <ClInclude Include="d3dHelper.h" />
-    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />

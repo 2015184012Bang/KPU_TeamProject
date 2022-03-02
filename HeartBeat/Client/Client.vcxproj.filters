@@ -105,9 +105,6 @@
     <ClInclude Include="Renderer.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>Source Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="d3dHelper.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
