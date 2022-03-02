@@ -37,7 +37,7 @@ void TestScene::Enter()
 
 	{
 		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
-			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/Knight.box");
+			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/21_HEnemy.box");
 
 		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f, true);
@@ -46,11 +46,26 @@ void TestScene::Enter()
 	}
 
 	{
-		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell_Base.mesh", L"Assets/Textures/11_Cell_Red.png", 
-			L"Assets/Skeletons/11_Cell_Base.skel", L"Assets/Boxes/11_Cell_Base.box");
+		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell.mesh", L"Assets/Textures/11_Cell_Red.png", 
+			L"Assets/Skeletons/11_Cell.skel", L"Assets/Boxes/11_Cell.box");
+
+		auto& animator = mCell.GetComponent<AnimatorComponent>();
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/912_Running.anim"), 1.0f, true);
 		
 		auto& transform = mCell.GetComponent<TransformComponent>();
 		transform.Position.x = 300.0f;
+		transform.Rotation.y = 180.0f;
+	}
+
+	{
+		mPlayer = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/03_Character_Pink.mesh", L"Assets/Textures/03_Character_Pink.png",
+			L"Assets/Skeletons/03_Character_Pink.skel", L"Assets/Boxes/01_Character.box");
+
+		auto& animator = mPlayer.GetComponent<AnimatorComponent>();
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/901_Idle_Pink.anim"), 1.0f, true);
+
+		auto& transform = mPlayer.GetComponent<TransformComponent>();
+		transform.Position.x = -300.0f;
 	}
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
