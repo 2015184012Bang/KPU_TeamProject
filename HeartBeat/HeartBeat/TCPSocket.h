@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SocketAddress.h"
+#include "MemoryBitStream.h"
 
 using TCPSocketPtr = shared_ptr<class TCPSocket>;
 

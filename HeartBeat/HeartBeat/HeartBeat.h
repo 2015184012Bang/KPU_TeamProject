@@ -9,7 +9,9 @@
 #include "Components.h"
 #include "StringUtils.h"
 #include "Timer.h"
+#include "MemoryBitStream.h"
 
 #include "SocketUtil.h"
 #include "SocketAddress.h"
 #include "TCPSocket.h"
+#include "Packets.h"

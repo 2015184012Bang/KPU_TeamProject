@@ -102,6 +102,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="MemoryBitStream.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -117,6 +118,8 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="MemoryBitStream.h" />
+    <ClInclude Include="Packets.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="SocketAddress.h" />

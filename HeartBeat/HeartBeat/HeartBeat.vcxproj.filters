@@ -31,6 +31,9 @@
     <ClCompile Include="SocketUtil.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
+    <ClCompile Include="MemoryBitStream.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCH.h">
@@ -70,6 +73,12 @@
       <Filter>Source Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="SocketUtil.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryBitStream.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Packets.h">
       <Filter>Source Files\Network</Filter>
     </ClInclude>
   </ItemGroup>

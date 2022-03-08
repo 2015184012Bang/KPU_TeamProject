@@ -11,6 +11,8 @@
 
 #include <string>
 #include <vector>
+#include <queue>
+#include <list>
 #include <unordered_map>
 #include <array>
 #include <memory>
@@ -29,6 +31,8 @@
 using std::string;
 using std::wstring;
 using std::vector;
+using std::queue;
+using std::list;
 using std::unordered_map;
 using std::array;
 using std::shared_ptr;

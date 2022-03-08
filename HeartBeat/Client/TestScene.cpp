@@ -81,6 +81,14 @@ void TestScene::Enter()
 	{
 		HB_ASSERT(false, "ASSERTION FAILED");
 	}
+
+	// Serialization test
+	static const uint32 kHelloCC = 'HELO';
+
+	OutputMemoryBitStream helloPacket;
+	helloPacket.Write(kHelloCC);
+	SendPacket(helloPacket);
+
 }
 
 void TestScene::Exit()
@@ -209,4 +217,36 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 		}
 	}
 #endif
+}
+
+void TestScene::RecvPacket(InputMemoryBitStream& inInputStream)
+{
+	if (clientSocket == nullptr)
+	{
+		return;
+	}
+
+	int retval = clientSocket->Recv(inInputStream.GetBufferPtr(), inInputStream.GetRemainingBitCount());
+
+	if (retval == SOCKET_ERROR || retval == 0)
+	{
+		HB_LOG("Client::RecvPacketFromServer");
+		
+	}
+}
+
+void TestScene::SendPacket(const OutputMemoryBitStream& inOutputStream)
+{
+	if (clientSocket == nullptr)
+	{
+		return;
+	}
+
+	int retval = clientSocket->Send(inOutputStream.GetBufferPtr(), inOutputStream.GetBitLength());
+
+	if (retval == SOCKET_ERROR || retval == 0)
+	{
+		HB_LOG("Client::SendPacketToServer");
+
+	}
 }

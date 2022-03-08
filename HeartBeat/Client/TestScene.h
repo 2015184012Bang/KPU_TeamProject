@@ -15,6 +15,9 @@ public:
     virtual void Update(float deltaTime) override;
     virtual void Render(unique_ptr<Renderer>& renderer) override;
 
+    void RecvPacket(InputMemoryBitStream& inInputStream);
+    void SendPacket(const OutputMemoryBitStream& inOutputStream);
+
 private:
     TestScene(Client* owner);
 
