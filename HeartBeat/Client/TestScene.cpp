@@ -33,7 +33,16 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	SocketUtil::Init();
+	{
+		mClientSocket = SocketUtil::CreateTCPSocket();
+
+		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
+
+		if (mClientSocket->Connect(serveraddr) == SOCKET_ERROR)
+		{
+			HB_ASSERT(false, "ASSERTION FAILED");
+		}
+	}
 
 	{
 		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
@@ -77,12 +86,18 @@ void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	SocketUtil::Shutdown();
+	mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
+	if (Input::IsButtonPressed(eKeyCode::Return))
+	{
+		MemoryStream buffer;
 
+		buffer.WriteVector3(Vector3(1.0f, 2.0f, 3.0f));
+		mClientSocket->Send(&buffer, sizeof(buffer));
+	}
 }
 
 void TestScene::Update(float deltaTime)
