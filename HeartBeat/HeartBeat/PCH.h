@@ -67,3 +67,5 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace DirectX::PackedVector;
 using namespace DirectX::SimpleMath;
+
+#define SERVER_PORT 9000

@@ -14,30 +14,7 @@ bool Server::Init()
 
 	SocketUtil::Init();
 
-	TCPSocketPtr listenSock = SocketUtil::CreateTCPSocket();
-	SocketAddress serveraddr(9000);
-
-	if (listenSock->Bind(serveraddr) == SOCKET_ERROR)
-	{
-		HB_ASSERT(false, "ASSERTION FAILED");
-	}
-
-	if (listenSock->Listen() == SOCKET_ERROR)
-	{
-		HB_ASSERT(false, "ASSERTION FAILED");
-	}
-
-	SocketAddress clientaddr;
-	int clientNum = 0;
-
-	while (clientNum != 1)
-	{
-		TCPSocketPtr clientSocket = listenSock->Accept(&clientaddr);
-		
-		HB_LOG("클라이언트 접속: {0}", clientaddr.ToString());
-
-		clientNum++;
-	}
+	waitPlayers();
 
 	return true;
 }
@@ -47,12 +24,52 @@ void Server::Shutdown()
 	HB_LOG("SERVER SHUTDOWN");
 
 	SocketUtil::Shutdown();
+
+	for (auto& t : mClientThreads)
+	{
+		t.join();
+	}
 }
 
 void Server::Run()
 {
 	while (true)
 	{
-		//HB_LOG("SERVER RUN");
+		
 	}
+}
+
+void Server::waitPlayers()
+{
+	TCPSocketPtr listenSocket = SocketUtil::CreateTCPSocket();
+	SocketAddress serveraddr(SERVER_PORT);
+
+	if (listenSocket->Bind(serveraddr) == SOCKET_ERROR)
+	{
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
+
+	if (listenSocket->Listen() == SOCKET_ERROR)
+	{
+		HB_ASSERT(false, "ASSERTION FAILED");
+	}
+
+	SocketAddress clientAddr;
+	int clientNum = 0;
+
+	while (clientNum < MAX_PLAYER_NUM)
+	{
+		TCPSocketPtr clientSocket = listenSocket->Accept(&clientAddr);
+		
+		HB_LOG("Client Connected: {0}", clientAddr.ToString());
+
+		mClientThreads.emplace_back(&Server::clientThreadFunc, this, clientSocket, clientNum);
+		mClientSockets.push_back(clientSocket);
+		++clientNum;
+	}
+}
+
+void Server::clientThreadFunc(const TCPSocketPtr& clientSocket, int clientNum)
+{
+	HB_LOG("Client Thread : {0}", clientNum);
 }

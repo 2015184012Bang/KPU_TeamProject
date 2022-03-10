@@ -34,6 +34,17 @@ void TestScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	SocketUtil::Init();
+	
+	{
+		clientSocket = SocketUtil::CreateTCPSocket();
+
+		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
+
+		if (clientSocket->Connect(serveraddr) == SOCKET_ERROR)
+		{
+			HB_ASSERT(false, "ASSERTION FAILED");
+		}
+	}
 
 	{
 		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
