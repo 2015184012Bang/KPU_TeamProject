@@ -17,10 +17,12 @@ private:
 	void waitPlayers();
 	void clientThreadFunc(const TCPSocketPtr& clientSocket, int clientNum);
 
-
 private:
 	static const int MAX_PLAYER_NUM = 1;
 
 	vector<std::thread> mClientThreads;
 	vector<TCPSocketPtr> mClientSockets;
+	deque<MemoryStream> mPackets;
+
+	CRITICAL_SECTION mCS;
 };

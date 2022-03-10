@@ -198,3 +198,9 @@ void MemoryStream::ReadVector3(Vector3* outData)
 	memcpy(outData, mBuffer + mLength, sizeof(Vector3));
 	mLength += sizeof(Vector3);
 }
+
+void MemoryStream::Reset()
+{
+	memset(mBuffer, 0, PACKET_SIZE);
+	mLength = 0;
+}

@@ -4,6 +4,7 @@
 
 
 Server::Server()
+	: mCS()
 {
 
 }
@@ -13,6 +14,7 @@ bool Server::Init()
 	HB_LOG("SERVER INIT");
 
 	SocketUtil::Init();
+	InitializeCriticalSection(&mCS);
 
 	waitPlayers();
 
@@ -23,6 +25,7 @@ void Server::Shutdown()
 {
 	HB_LOG("SERVER SHUTDOWN");
 
+	DeleteCriticalSection(&mCS);
 	SocketUtil::Shutdown();
 
 	for (auto& t : mClientThreads)
@@ -35,7 +38,21 @@ void Server::Run()
 {
 	while (true)
 	{
-		
+		if (!mPackets.empty())
+		{
+			EnterCriticalSection(&mCS);
+			MemoryStream packet = mPackets.front();
+			mPackets.pop_front();
+			LeaveCriticalSection(&mCS);
+
+			uint16 totalDataLength = packet.GetLength();
+			packet.SetLength(0);
+
+			Vector3 data; 
+			packet.ReadVector3(&data);
+
+			HB_LOG("Data Received: {0} {1} {2}", data.x, data.y, data.z);
+		}
 	}
 }
 
@@ -90,11 +107,16 @@ void Server::clientThreadFunc(const TCPSocketPtr& clientSocket, int clientNum)
 			break;
 		}
 
-		uint16 totalDataLength = buffer.GetLength();
-		buffer.SetLength(0);
-		uint32 foo = 0;
-		buffer.ReadUInt(&foo);
-		HB_LOG("Buffer read: {0}", foo);
-		HB_LOG("Buffer length: {0}", buffer.GetLength());
+		EnterCriticalSection(&mCS);
+		mPackets.push_back(buffer);
+		LeaveCriticalSection(&mCS);
+
+		buffer.Reset();
+	}
+
+	auto iter = std::find(mClientSockets.begin(), mClientSockets.end(), clientSocket);
+	if (iter != mClientSockets.end())
+	{
+		mClientSockets.erase(iter);
 	}
 }

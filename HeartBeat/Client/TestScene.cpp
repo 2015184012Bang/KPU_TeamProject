@@ -95,7 +95,7 @@ void TestScene::ProcessInput()
 	{
 		MemoryStream buffer;
 
-		buffer.WriteUInt(12345678);
+		buffer.WriteVector3(Vector3(1.0f, 2.0f, 3.0f));
 		mClientSocket->Send(&buffer, sizeof(buffer));
 	}
 }
