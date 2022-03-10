@@ -33,6 +33,9 @@ public:
 	void ReadVector2(Vector2* outData);
 	void ReadVector3(Vector3* outData);
 
+	uint16 GetLength() const { return mLength; }
+	void SetLength(uint16 len) { mLength = len; }
+
 private:
 	uint8 mBuffer[PACKET_SIZE];
 	uint16 mLength;

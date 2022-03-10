@@ -33,14 +33,12 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	SocketUtil::Init();
-	
 	{
-		clientSocket = SocketUtil::CreateTCPSocket();
+		mClientSocket = SocketUtil::CreateTCPSocket();
 
 		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
 
-		if (clientSocket->Connect(serveraddr) == SOCKET_ERROR)
+		if (mClientSocket->Connect(serveraddr) == SOCKET_ERROR)
 		{
 			HB_ASSERT(false, "ASSERTION FAILED");
 		}
@@ -88,12 +86,18 @@ void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	SocketUtil::Shutdown();
+	mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
+	if (Input::IsButtonPressed(eKeyCode::Return))
+	{
+		MemoryStream buffer;
 
+		buffer.WriteUInt(12345678);
+		mClientSocket->Send(&buffer, sizeof(buffer));
+	}
 }
 
 void TestScene::Update(float deltaTime)

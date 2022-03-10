@@ -20,6 +20,7 @@ bool Client::Init()
 
 	Input::Init();
 	Timer::Init();
+	SocketUtil::Init();
 
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
@@ -45,6 +46,7 @@ void Client::Shutdown()
 	}
 
 	mRenderer->Shutdown();
+	SocketUtil::Shutdown();
 }
 
 void Client::Run()

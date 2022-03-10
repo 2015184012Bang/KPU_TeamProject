@@ -9,7 +9,9 @@ MemoryStream::MemoryStream()
 
 void MemoryStream::WriteByte(int8 data)
 {
-	HB_ASSERT(mLength + sizeof(int8) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(int8)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(int8));
 	mLength += sizeof(int8);
@@ -17,7 +19,9 @@ void MemoryStream::WriteByte(int8 data)
 
 void MemoryStream::WriteShort(int16 data)
 {
-	HB_ASSERT(mLength + sizeof(int16) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(int16)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(int16));
 	mLength += sizeof(int16);
@@ -25,7 +29,9 @@ void MemoryStream::WriteShort(int16 data)
 
 void MemoryStream::WriteInt(int32 data)
 {
-	HB_ASSERT(mLength + sizeof(int32) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(int32)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(int32));
 	mLength += sizeof(int32);
@@ -33,7 +39,9 @@ void MemoryStream::WriteInt(int32 data)
 
 void MemoryStream::WriteInt64(int64 data)
 {
-	HB_ASSERT(mLength + sizeof(int64) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(int64)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(int64));
 	mLength += sizeof(int64);
@@ -41,7 +49,9 @@ void MemoryStream::WriteInt64(int64 data)
 
 void MemoryStream::WriteUByte(uint8 data)
 {
-	HB_ASSERT(mLength + sizeof(uint8) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(uint8)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(uint8));
 	mLength += sizeof(uint8);
@@ -49,7 +59,9 @@ void MemoryStream::WriteUByte(uint8 data)
 
 void MemoryStream::WriteUShort(uint16 data)
 {
-	HB_ASSERT(mLength + sizeof(uint16) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(uint16)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(uint16));
 	mLength += sizeof(uint16);
@@ -57,7 +69,9 @@ void MemoryStream::WriteUShort(uint16 data)
 
 void MemoryStream::WriteUInt(uint32 data)
 {
-	HB_ASSERT(mLength + sizeof(uint32) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(uint32)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(uint32));
 	mLength += sizeof(uint32);
@@ -65,7 +79,9 @@ void MemoryStream::WriteUInt(uint32 data)
 
 void MemoryStream::WriteUInt64(uint64 data)
 {
-	HB_ASSERT(mLength + sizeof(uint64) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(uint64)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(uint64));
 	mLength += sizeof(uint64);
@@ -73,7 +89,9 @@ void MemoryStream::WriteUInt64(uint64 data)
 
 void MemoryStream::WriteBool(bool data)
 {
-	HB_ASSERT(mLength + sizeof(bool) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(bool)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(bool));
 	mLength += sizeof(bool);
@@ -81,7 +99,9 @@ void MemoryStream::WriteBool(bool data)
 
 void MemoryStream::WriteFloat(float data)
 {
-	HB_ASSERT(mLength + sizeof(float) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(float)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(float));
 	mLength += sizeof(float);
@@ -89,7 +109,9 @@ void MemoryStream::WriteFloat(float data)
 
 void MemoryStream::WriteVector2(const Vector2& data)
 {
-	HB_ASSERT(mLength + sizeof(Vector2) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(Vector2)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(Vector2));
 	mLength += sizeof(Vector2);
@@ -97,7 +119,9 @@ void MemoryStream::WriteVector2(const Vector2& data)
 
 void MemoryStream::WriteVector3(const Vector3& data)
 {
-	HB_ASSERT(mLength + sizeof(Vector3) <= PACKET_SIZE, "MemoryStream is full.");
+	bool isSizeUnder = (mLength + sizeof(Vector3)) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
 
 	memcpy(mBuffer + mLength, &data, sizeof(Vector3));
 	mLength += sizeof(Vector3);
