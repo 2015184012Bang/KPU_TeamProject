@@ -47,18 +47,19 @@ void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<Ma
 
 void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 {
-	if (!outAnimator->Anim || !outAnimator->Skel)
+	if (!outAnimator->CurAnim || !outAnimator->Skel)
 	{
 		return;
 	}
 
-	outAnimator->AnimTime += deltaTime * outAnimator->AnimPlayRate;
+	outAnimator->CurAnimTime += deltaTime * outAnimator->AnimPlayRate;
+	outAnimator->PrevAnimTime += deltaTime * outAnimator->AnimPlayRate;
 
-	if (outAnimator->AnimTime > outAnimator->Anim->GetDuration())
+	if (outAnimator->CurAnimTime > outAnimator->CurAnim->GetDuration())
 	{
-		if (outAnimator->Anim->IsLoop())
+		if (outAnimator->CurAnim->IsLoop())
 		{
-			outAnimator->AnimTime -= outAnimator->Anim->GetDuration();
+			outAnimator->CurAnimTime -= outAnimator->CurAnim->GetDuration();
 		}
 		else
 		{
@@ -66,27 +67,50 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 		}
 	}
 
-	computeMatrixPalette(outAnimator->Anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
+	if (outAnimator->PrevAnimTime > outAnimator->PrevAnim->GetDuration())
+	{
+		outAnimator->PrevAnimTime -= outAnimator->PrevAnim->GetDuration();
+	}
+
+	if (outAnimator->BlendingTime > 0.0f)
+	{
+		computeBlendingMatrixPalette(outAnimator->PrevAnim, outAnimator->CurAnim, outAnimator->Skel, outAnimator->PrevAnimTime, outAnimator->CurAnimTime,
+			 0.5f, &outAnimator->Palette);
+
+		outAnimator->BlendingTime -= deltaTime * outAnimator->AnimPlayRate;
+	}
+	else
+	{
+		computeMatrixPalette(outAnimator->CurAnim, outAnimator->Skel, outAnimator->CurAnimTime, &outAnimator->Palette);
+	}
 }
 
 void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)
 {
-	if (!toAnim)
-	{
-		HB_ASSERT(false, "Invalid animation. ASSERTION FAILED");
-	}
-
-	if (outAnimator->Anim == toAnim)
+	if (outAnimator->CurAnim == toAnim)
 	{
 		HB_LOG("Self transition is not allowed!");
 		return;
 	}
 
-	outAnimator->Anim = toAnim;
+	if (outAnimator->CurAnim == nullptr)
+	{
+		outAnimator->PrevAnim = toAnim;
+		outAnimator->PrevAnimTime = 0.0f;
+		outAnimator->BlendingTime = 0.0f;
+	}
+	else
+	{
+		outAnimator->PrevAnim = outAnimator->CurAnim;
+		outAnimator->PrevAnimTime = outAnimator->CurAnimTime;
+		//outAnimator->BlendingTime = toAnim->GetDuration() * 0.05f;
+		outAnimator->BlendingTime = 0.2f;
+		HB_LOG("Blending Time : {0}", outAnimator->BlendingTime);
+	}
+
+	outAnimator->CurAnim = toAnim;
 	outAnimator->AnimPlayRate = animPlayRate;
-	outAnimator->AnimTime = 0.0f;
-	
-	computeMatrixPalette(toAnim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
+	outAnimator->CurAnimTime = 0.0f;
 }
 
 void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)
@@ -128,6 +152,22 @@ void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* 
 	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
 	{
 		outPalette->Entry[i] = globalInvBindPoses[i] * currentPoses[i];
+	}
+}
+
+void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, const Animation* toAnim, const Skeleton* skel, float fromAnimTime, float toAnimTime, float t, MatrixPalette* outPalette)
+{
+	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
+
+	vector<Matrix> fromPoses;
+	fromAnim->GetGlobalPoseAtTime(&fromPoses, skel, fromAnimTime);
+
+	vector<Matrix> toPoses;
+	toAnim->GetGlobalPoseAtTime(&toPoses, skel, toAnimTime);
+
+	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
+	{
+		outPalette->Entry[i] = globalInvBindPoses[i] * Matrix::Lerp(fromPoses[i], toPoses[i], t);
 	}
 }
 
