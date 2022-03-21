@@ -10,6 +10,7 @@ Animation::Animation()
 	, mNumFrames(0)
 	, mDuration(0.0f)
 	, mFrameDuration(0.0f)
+	, mbLoop(true)
 {
 
 }
@@ -116,5 +117,47 @@ void Animation::GetGlobalPoseAtTime(vector<Matrix>* outPoses, const Skeleton* sk
 
 		mat *= (*outPoses)[bones[bone].Parent];
 		(*outPoses)[bone] = mat;
+	}
+}
+
+Animation* Animation::FindNextAnimation(const string& triggerName) const
+{
+	auto iter = mTransitions.find(triggerName);
+
+	if (iter != mTransitions.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void Animation::AddTransition(const string& triggerName, Animation* anim)
+{
+	auto iter = mTransitions.find(triggerName);
+
+	if (iter == mTransitions.end())
+	{
+		mTransitions.emplace(triggerName, anim);
+	}
+	else
+	{
+		HB_ASSERT("Trigger name[{0}] already exists!", triggerName);
+	}
+}
+
+void Animation::RemoveTransition(const string& triggerName)
+{
+	auto iter = mTransitions.find(triggerName);
+
+	if (iter == mTransitions.end())
+	{
+		HB_ASSERT("Trigger name[{0}] does not exist!", triggerName);
+	}
+	else
+	{
+		mTransitions.erase(iter);
 	}
 }

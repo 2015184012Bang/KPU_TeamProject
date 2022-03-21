@@ -45,40 +45,48 @@ void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<Ma
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel, 
-	float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime)
+void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 {
-	if (!anim || !skel)
+	if (!outAnimator->Anim || !outAnimator->Skel)
 	{
 		return;
 	}
 
-	*outAnimTime += deltaTime * animPlayRate;
+	outAnimator->AnimTime += deltaTime * outAnimator->AnimPlayRate;
 
-	if (*outAnimTime > anim->GetDuration())
+	if (outAnimator->AnimTime > outAnimator->Anim->GetDuration())
 	{
-		if (bLoop)
+		if (outAnimator->Anim->IsLoop())
 		{
-			*outAnimTime -= anim->GetDuration();
+			outAnimator->AnimTime -= outAnimator->Anim->GetDuration();
+		}
+		else
+		{
+			outAnimator->SetTrigger("WhenEnd");
 		}
 	}
 
-	computeMatrixPalette(anim, skel, *outAnimTime, outPalette);
+	computeMatrixPalette(outAnimator->Anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
 }
 
-void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* anim, float animPlayRate, bool bLoop)
+void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)
 {
-	if (!anim)
+	if (!toAnim)
 	{
 		HB_ASSERT(false, "Invalid animation. ASSERTION FAILED");
 	}
 
-	outAnimator->Anim = anim;
+	if (outAnimator->Anim == toAnim)
+	{
+		HB_LOG("Self transition is not allowed!");
+		return;
+	}
+
+	outAnimator->Anim = toAnim;
 	outAnimator->AnimPlayRate = animPlayRate;
 	outAnimator->AnimTime = 0.0f;
-	outAnimator->bLoop = bLoop;
 	
-	computeMatrixPalette(anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
+	computeMatrixPalette(toAnim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
 }
 
 void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)

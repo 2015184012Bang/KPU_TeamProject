@@ -19,12 +19,22 @@ public:
 
 	void GetGlobalPoseAtTime(vector<Matrix>* outPoses, const Skeleton* skeleton, float t) const;
 
+	void SetLoop(bool value) { mbLoop = value; }
+	bool IsLoop() const { return mbLoop; }
+
+	Animation* FindNextAnimation(const string& triggerName) const;
+
+	void AddTransition(const string& triggerName, Animation* anim);
+	void RemoveTransition(const string& triggerName);
+
 private:
 	uint32 mNumBones;
 	uint32 mNumFrames;
 	float mDuration;
 	float mFrameDuration;
+	bool mbLoop;
 
 	vector<vector<BoneTransform>> mTracks;
+	unordered_map<string, Animation*> mTransitions;
 };
 

@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "ClientComponents.h"
 
+#include "ClientSystems.h"
+
 MeshRendererComponent::MeshRendererComponent()
 	: Mesi(nullptr)
 	, Tex(nullptr)
@@ -61,7 +63,6 @@ AnimatorComponent::AnimatorComponent()
 	, Anim(nullptr)
 	, AnimPlayRate(0.0f)
 	, AnimTime(0.0f)
-	, bLoop(false)
 	, Buffer(gDevice.Get(), 1, true)
 {
 
@@ -72,10 +73,21 @@ AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 	, Anim(nullptr)
 	, AnimPlayRate(0.0f)
 	, AnimTime(0.0f)
-	, bLoop(false)
 	, Buffer(gDevice.Get(), 1, true)
 {
 
+}
+
+void AnimatorComponent::SetTrigger(const string& triggerName)
+{
+	Animation* nextAnim = Anim->FindNextAnimation(triggerName);
+
+	if (nextAnim == nullptr)
+	{
+		return;
+	}
+
+	ClientSystems::PlayAnimation(this, nextAnim, 1.0f);
 }
 
 BoxComponent::BoxComponent()

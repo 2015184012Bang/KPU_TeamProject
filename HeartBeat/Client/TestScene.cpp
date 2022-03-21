@@ -34,22 +34,22 @@ void TestScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	{
-		mClientSocket = SocketUtil::CreateTCPSocket();
-
-		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-
-		if (mClientSocket->Connect(serveraddr) == SOCKET_ERROR)
-		{
-			HB_ASSERT(false, "ASSERTION FAILED");
-		}
-	}
-
-	{
 		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
 			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/21_HEnemy.box");
 
 		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f, true);
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f);
+
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim");
+		idleAnim->AddTransition("Walking", ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"));
+		idleAnim->AddTransition("Attacking", ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim"));
+
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim");
+		runningAnim->AddTransition("Idle", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
+
+		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim");
+		attackingAnim->SetLoop(false);
+		attackingAnim->AddTransition("WhenEnd", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
 
 		mEnemy.AddComponent<ScriptComponent>(new CharacterMovement(mEnemy));
 	}
@@ -59,7 +59,7 @@ void TestScene::Enter()
 			L"Assets/Skeletons/11_Cell.skel", L"Assets/Boxes/11_Cell.box");
 
 		auto& animator = mCell.GetComponent<AnimatorComponent>();
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/912_Running.anim"), 1.0f, true);
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/912_Running.anim"), 1.0f);
 		
 		auto& transform = mCell.GetComponent<TransformComponent>();
 		transform.Position.x = 300.0f;
@@ -71,7 +71,7 @@ void TestScene::Enter()
 			L"Assets/Skeletons/03_Character_Pink.skel", L"Assets/Boxes/01_Character.box");
 
 		auto& animator = mPlayer.GetComponent<AnimatorComponent>();
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/901_Idle_Pink.anim"), 1.0f, true);
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/901_Idle_Pink.anim"), 1.0f);
 
 		auto& transform = mPlayer.GetComponent<TransformComponent>();
 		transform.Position.x = -300.0f;
@@ -86,18 +86,12 @@ void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	mClientSocket = nullptr;
+	//mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
-	if (Input::IsButtonPressed(eKeyCode::Return))
-	{
-		MemoryStream buffer;
 
-		buffer.WriteVector3(Vector3(1.0f, 2.0f, 3.0f));
-		mClientSocket->Send(&buffer, sizeof(buffer));
-	}
 }
 
 void TestScene::Update(float deltaTime)
@@ -137,8 +131,7 @@ void TestScene::Update(float deltaTime)
 		{
 			auto& animator = view.get<AnimatorComponent>(entity);
 
-			ClientSystems::UpdateAnimation(animator.Anim, animator.Skel,
-				&animator.AnimTime, animator.AnimPlayRate, animator.bLoop, &animator.Palette, deltaTime);
+			ClientSystems::UpdateAnimation(&animator, deltaTime);
 		}
 	}
 
