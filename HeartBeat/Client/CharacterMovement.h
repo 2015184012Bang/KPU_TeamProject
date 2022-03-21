@@ -23,6 +23,11 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
+		if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+		{
+			animator->SetTrigger("Attacking");
+		}
+
 		bool bMove = false;
 
 		if (Input::IsButtonRepeat(eKeyCode::Right))

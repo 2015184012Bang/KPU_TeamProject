@@ -45,25 +45,28 @@ void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<Ma
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel, 
-	float* outAnimTime, float animPlayRate, MatrixPalette* outPalette, float deltaTime)
+void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 {
-	if (!anim || !skel)
+	if (!outAnimator->Anim || !outAnimator->Skel)
 	{
 		return;
 	}
 
-	*outAnimTime += deltaTime * animPlayRate;
+	outAnimator->AnimTime += deltaTime * outAnimator->AnimPlayRate;
 
-	if (*outAnimTime > anim->GetDuration())
+	if (outAnimator->AnimTime > outAnimator->Anim->GetDuration())
 	{
-		if (anim->IsLoop())
+		if (outAnimator->Anim->IsLoop())
 		{
-			*outAnimTime -= anim->GetDuration();
+			outAnimator->AnimTime -= outAnimator->Anim->GetDuration();
+		}
+		else
+		{
+			outAnimator->SetTrigger("WhenEnd");
 		}
 	}
 
-	computeMatrixPalette(anim, skel, *outAnimTime, outPalette);
+	computeMatrixPalette(outAnimator->Anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
 }
 
 void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)

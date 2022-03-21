@@ -42,9 +42,14 @@ void TestScene::Enter()
 
 		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim");
 		idleAnim->AddTransition("Walking", ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"));
+		idleAnim->AddTransition("Attacking", ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim"));
 
 		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim");
 		runningAnim->AddTransition("Idle", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
+
+		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim");
+		attackingAnim->SetLoop(false);
+		attackingAnim->AddTransition("WhenEnd", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
 
 		mEnemy.AddComponent<ScriptComponent>(new CharacterMovement(mEnemy));
 	}
@@ -126,8 +131,7 @@ void TestScene::Update(float deltaTime)
 		{
 			auto& animator = view.get<AnimatorComponent>(entity);
 
-			ClientSystems::UpdateAnimation(animator.Anim, animator.Skel,
-				&animator.AnimTime, animator.AnimPlayRate, &animator.Palette, deltaTime);
+			ClientSystems::UpdateAnimation(&animator, deltaTime);
 		}
 	}
 
