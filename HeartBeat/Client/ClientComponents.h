@@ -48,12 +48,13 @@ struct AnimatorComponent
 	AnimatorComponent();
 	AnimatorComponent(const Skeleton* skel);
 
+	void SetTrigger(const string& triggerName);
+
 	MatrixPalette Palette;
 	const Skeleton* Skel;
 	const Animation* Anim;
 	float AnimPlayRate;
 	float AnimTime;
-	bool bLoop;
 	UploadBuffer<MatrixPalette> Buffer;
 };
 

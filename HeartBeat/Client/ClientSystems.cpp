@@ -46,7 +46,7 @@ void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<Ma
 }
 
 void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel, 
-	float* outAnimTime, float animPlayRate, bool bLoop, MatrixPalette* outPalette, float deltaTime)
+	float* outAnimTime, float animPlayRate, MatrixPalette* outPalette, float deltaTime)
 {
 	if (!anim || !skel)
 	{
@@ -57,7 +57,7 @@ void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel,
 
 	if (*outAnimTime > anim->GetDuration())
 	{
-		if (bLoop)
+		if (anim->IsLoop())
 		{
 			*outAnimTime -= anim->GetDuration();
 		}
@@ -66,19 +66,24 @@ void ClientSystems::UpdateAnimation(const Animation* anim, const Skeleton* skel,
 	computeMatrixPalette(anim, skel, *outAnimTime, outPalette);
 }
 
-void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* anim, float animPlayRate, bool bLoop)
+void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)
 {
-	if (!anim)
+	if (!toAnim)
 	{
 		HB_ASSERT(false, "Invalid animation. ASSERTION FAILED");
 	}
 
-	outAnimator->Anim = anim;
+	if (outAnimator->Anim == toAnim)
+	{
+		HB_LOG("Self transition is not allowed!");
+		return;
+	}
+
+	outAnimator->Anim = toAnim;
 	outAnimator->AnimPlayRate = animPlayRate;
 	outAnimator->AnimTime = 0.0f;
-	outAnimator->bLoop = bLoop;
 	
-	computeMatrixPalette(anim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
+	computeMatrixPalette(toAnim, outAnimator->Skel, outAnimator->AnimTime, &outAnimator->Palette);
 }
 
 void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)
