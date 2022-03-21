@@ -60,9 +60,12 @@ CameraComponent::CameraComponent(const Vector3& position, const Vector3& target,
 
 AnimatorComponent::AnimatorComponent()
 	: Skel(nullptr)
-	, Anim(nullptr)
+	, CurAnim(nullptr)
+	, PrevAnim(nullptr)
 	, AnimPlayRate(0.0f)
-	, AnimTime(0.0f)
+	, CurAnimTime(0.0f)
+	, PrevAnimTime(0.0f)
+	, BlendingTime(0.0f)
 	, Buffer(gDevice.Get(), 1, true)
 {
 
@@ -70,9 +73,12 @@ AnimatorComponent::AnimatorComponent()
 
 AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 	: Skel(skel)
-	, Anim(nullptr)
+	, CurAnim(nullptr)
+	, PrevAnim(nullptr)
 	, AnimPlayRate(0.0f)
-	, AnimTime(0.0f)
+	, CurAnimTime(0.0f)
+	, PrevAnimTime(0.0f)
+	, BlendingTime(0.0f)
 	, Buffer(gDevice.Get(), 1, true)
 {
 
@@ -80,7 +86,7 @@ AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 
 void AnimatorComponent::SetTrigger(const string& triggerName)
 {
-	Animation* nextAnim = Anim->FindNextAnimation(triggerName);
+	Animation* nextAnim = CurAnim->FindNextAnimation(triggerName);
 
 	if (nextAnim == nullptr)
 	{

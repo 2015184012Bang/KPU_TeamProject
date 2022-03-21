@@ -52,9 +52,12 @@ struct AnimatorComponent
 
 	MatrixPalette Palette;
 	const Skeleton* Skel;
-	const Animation* Anim;
+	const Animation* CurAnim;
+	const Animation* PrevAnim;
 	float AnimPlayRate;
-	float AnimTime;
+	float CurAnimTime;
+	float PrevAnimTime;
+	float BlendingTime;
 	UploadBuffer<MatrixPalette> Buffer;
 };
 
