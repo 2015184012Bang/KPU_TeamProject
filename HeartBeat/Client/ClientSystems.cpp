@@ -66,11 +66,6 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 		}
 	}
 
-	if (outAnimator->PrevAnimTime > outAnimator->PrevAnim->GetDuration())
-	{
-		outAnimator->PrevAnimTime -= outAnimator->PrevAnim->GetDuration();
-	}
-
 	if (outAnimator->BlendingTime > 0.0f)
 	{
 		float f = 1.0f - ((kAnimBlendTime - outAnimator->BlendingTime) / kAnimBlendTime);
@@ -104,6 +99,12 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 	{
 		outAnimator->PrevAnim = outAnimator->CurAnim;
 		outAnimator->PrevAnimTime = outAnimator->CurAnimTime;
+
+		if (outAnimator->PrevAnimTime > outAnimator->PrevAnim->GetDuration())
+		{
+			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration();
+		}
+
 		outAnimator->BlendingTime = kAnimBlendTime;
 	}
 
