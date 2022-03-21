@@ -30,7 +30,7 @@ void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rota
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget, 
+void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
 	const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer)
 {
 	Matrix viewProjection = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
@@ -53,7 +53,6 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 	}
 
 	outAnimator->CurAnimTime += deltaTime * outAnimator->AnimPlayRate;
-	outAnimator->PrevAnimTime += deltaTime * outAnimator->AnimPlayRate;
 
 	if (outAnimator->CurAnimTime > outAnimator->CurAnim->GetDuration())
 	{
@@ -74,8 +73,10 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 
 	if (outAnimator->BlendingTime > 0.0f)
 	{
+		float f = 1.0f - ((kAnimBlendTime - outAnimator->BlendingTime) / kAnimBlendTime);
+
 		computeBlendingMatrixPalette(outAnimator->PrevAnim, outAnimator->CurAnim, outAnimator->Skel, outAnimator->PrevAnimTime, outAnimator->CurAnimTime,
-			 0.5f, &outAnimator->Palette);
+			f, &outAnimator->Palette);
 
 		outAnimator->BlendingTime -= deltaTime * outAnimator->AnimPlayRate;
 	}
@@ -103,9 +104,7 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 	{
 		outAnimator->PrevAnim = outAnimator->CurAnim;
 		outAnimator->PrevAnimTime = outAnimator->CurAnimTime;
-		//outAnimator->BlendingTime = toAnim->GetDuration() * 0.05f;
-		outAnimator->BlendingTime = 0.2f;
-		HB_LOG("Blending Time : {0}", outAnimator->BlendingTime);
+		outAnimator->BlendingTime = kAnimBlendTime;
 	}
 
 	outAnimator->CurAnim = toAnim;
@@ -167,7 +166,7 @@ void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, cons
 
 	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
 	{
-		outPalette->Entry[i] = globalInvBindPoses[i] * Matrix::Lerp(fromPoses[i], toPoses[i], t);
+		outPalette->Entry[i] = globalInvBindPoses[i] * Matrix::Lerp(toPoses[i], fromPoses[i], t);
 	}
 }
 

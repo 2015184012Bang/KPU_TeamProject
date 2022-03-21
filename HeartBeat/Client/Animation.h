@@ -5,6 +5,8 @@
 
 class Skeleton;
 
+constexpr float kAnimBlendTime = 0.2f;
+
 class Animation : public IResource
 {
 public:
