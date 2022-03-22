@@ -3,13 +3,13 @@
 
 #include "Application.h"
 #include "ResourceManager.h"
-#include "TablsDescriptorHeap.h"
+#include "TableDescriptorHeap.h"
 #include "Vertex.h"
 
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;
 vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
-TablsDescriptorHeap* gTexDescHeap;
+TableDescriptorHeap* gTexDescHeap;
 
 Renderer::Renderer()
 	: mBackBufferIndex(0)
@@ -118,7 +118,7 @@ void Renderer::createDevice()
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice)));
 
 	gDevice = mDevice;
-	gTexDescHeap = new TablsDescriptorHeap;
+	gTexDescHeap = new TableDescriptorHeap;
 }
 
 void Renderer::createCmdQueueAndSwapChain()
