@@ -4,8 +4,17 @@
 
 #include "Game.h"
 
+constexpr int NUM_MAX_PLAYER = 1;
+
 class Server : public Game
 {
+	struct Connection
+	{
+		bool bConnect;
+		TCPSocketPtr ClientSocket;
+		SocketAddress ClientAddr;
+	};
+
 public:
 	Server();
 
@@ -15,14 +24,8 @@ public:
 
 private:
 	void waitPlayers();
-	void clientThreadFunc(const TCPSocketPtr& clientSocket, int clientNum);
+	void processPacket(MemoryStream* outPacket);
 
 private:
-	static const int MAX_PLAYER_NUM = 1;
-
-	vector<std::thread> mClientThreads;
-	vector<TCPSocketPtr> mClientSockets;
-	deque<MemoryStream> mPackets;
-
-	CRITICAL_SECTION mCS;
+	vector<Connection> mConnections;
 };

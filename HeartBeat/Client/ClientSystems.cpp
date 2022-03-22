@@ -68,7 +68,7 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 
 	if (outAnimator->BlendingTime > 0.0f)
 	{
-		float f = 1.0f - ((kAnimBlendTime - outAnimator->BlendingTime) / kAnimBlendTime);
+		float f = 1.0f - ((ANIM_BLEND_TIME - outAnimator->BlendingTime) / ANIM_BLEND_TIME);
 
 		computeBlendingMatrixPalette(outAnimator->PrevAnim, outAnimator->CurAnim, outAnimator->Skel, outAnimator->PrevAnimTime, outAnimator->CurAnimTime,
 			f, &outAnimator->Palette);
@@ -105,7 +105,7 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration();
 		}
 
-		outAnimator->BlendingTime = kAnimBlendTime;
+		outAnimator->BlendingTime = ANIM_BLEND_TIME;
 	}
 
 	outAnimator->CurAnim = toAnim;

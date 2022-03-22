@@ -28,6 +28,6 @@ private:
     Entity mMainCamera;
     //////////////////////////////////////////////////////////////////////////
 
-    //TCPSocketPtr mClientSocket;
+    TCPSocketPtr mClientSocket;
 };
 

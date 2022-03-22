@@ -4,7 +4,6 @@
 
 
 Server::Server()
-	: mCS()
 {
 
 }
@@ -14,7 +13,6 @@ bool Server::Init()
 	HB_LOG("SERVER INIT");
 
 	SocketUtil::Init();
-	InitializeCriticalSection(&mCS);
 
 	waitPlayers();
 
@@ -25,34 +23,39 @@ void Server::Shutdown()
 {
 	HB_LOG("SERVER SHUTDOWN");
 
-	DeleteCriticalSection(&mCS);
 	SocketUtil::Shutdown();
-
-	for (auto& t : mClientThreads)
-	{
-		t.join();
-	}
 }
 
 void Server::Run()
 {
 	while (true)
 	{
-		if (!mPackets.empty())
+		MemoryStream buf;
+
+		for (auto& c : mConnections)
 		{
-			EnterCriticalSection(&mCS);
-			MemoryStream packet = mPackets.front();
-			mPackets.pop_front();
-			LeaveCriticalSection(&mCS);
+			buf.Reset();
 
-			uint16 totalDataLength = packet.GetLength();
-			packet.SetLength(0);
+			int retVal = (c.ClientSocket)->Recv(&buf, sizeof(MemoryStream));
 
-			Vector3 data; 
-			packet.ReadVector3(&data);
-
-			HB_LOG("Data Received: {0} {1} {2}", data.x, data.y, data.z);
+			if (retVal == SOCKET_ERROR)
+			{
+				continue;
+			}
+			else if (retVal == 0)
+			{
+				HB_LOG("Client[{0}] disconnected.", c.ClientAddr.ToString());
+				c.bConnect = false;
+			}
+			else
+			{
+				processPacket(&buf);
+			}
 		}
+
+		mConnections.erase(std::remove_if(mConnections.begin(), mConnections.end(), [](const Connection& c) {
+			return c.bConnect == false;
+			}), mConnections.end());
 	}
 }
 
@@ -74,49 +77,33 @@ void Server::waitPlayers()
 	SocketAddress clientAddr;
 	int clientNum = 0;
 
-	while (clientNum < MAX_PLAYER_NUM)
+	while (clientNum < NUM_MAX_PLAYER)
 	{
 		TCPSocketPtr clientSocket = listenSocket->Accept(&clientAddr);
+		clientSocket->SetNonBlockingMode(true);
 		
 		HB_LOG("Client Connected: {0}", clientAddr.ToString());
 
-		mClientThreads.emplace_back(&Server::clientThreadFunc, this, clientSocket, clientNum);
-		mClientSockets.push_back(clientSocket);
+		Connection c;
+		c.bConnect = true;
+		c.ClientSocket = clientSocket;
+		c.ClientAddr = clientAddr;
+
+		mConnections.push_back(c);
 		++clientNum;
 	}
 }
 
-void Server::clientThreadFunc(const TCPSocketPtr& clientSocket, int clientNum)
+void Server::processPacket(MemoryStream* outPacket)
 {
-	HB_LOG("Client Thread : {0}", clientNum);
+	uint16 totalLen = outPacket->GetLength();
+	outPacket->SetLength(0);
 
-	MemoryStream buffer;
-
-	while (true)
+	while (outPacket->GetLength() < totalLen)
 	{
-		int retVal = clientSocket->Recv(&buffer, sizeof(buffer));
+		uint64 id = 0;
+		outPacket->ReadUInt64(&id);
 
-		if (retVal == 0)
-		{
-			HB_LOG("Client num({0}) disconnected.", clientNum);
-			break;
-		}
-		else if (retVal == SOCKET_ERROR)
-		{
-			HB_LOG("Client num({0}) error");
-			break;
-		}
-
-		EnterCriticalSection(&mCS);
-		mPackets.push_back(buffer);
-		LeaveCriticalSection(&mCS);
-
-		buffer.Reset();
-	}
-
-	auto iter = std::find(mClientSockets.begin(), mClientSockets.end(), clientSocket);
-	if (iter != mClientSockets.end())
-	{
-		mClientSockets.erase(iter);
+		HB_LOG("Client sent : {0}", id);
 	}
 }
