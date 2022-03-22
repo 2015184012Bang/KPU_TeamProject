@@ -34,6 +34,19 @@ void TestScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	{
+		mClientSocket = SocketUtil::CreateTCPSocket();
+		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
+		
+		int retVal = SOCKET_ERROR;
+		do 
+		{
+			retVal = mClientSocket->Connect(serveraddr);
+		} while (retVal == SOCKET_ERROR);
+
+		mClientSocket->SetNonBlockingMode(true);
+	}
+
+	{
 		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
 			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/21_HEnemy.box");
 
@@ -86,12 +99,24 @@ void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	//mClientSocket = nullptr;
+	mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
+	MemoryStream buf;
 
+	mClientSocket->Recv(&buf, sizeof(MemoryStream));
+
+	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
+	{
+		buf.Reset();
+
+		buf.WriteUInt64(1234);
+		buf.WriteUInt64(5678);
+
+		mClientSocket->Send(&buf, sizeof(MemoryStream));
+	}
 }
 
 void TestScene::Update(float deltaTime)

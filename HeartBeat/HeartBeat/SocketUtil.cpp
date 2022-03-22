@@ -32,6 +32,19 @@ void SocketUtil::ReportError(const wstring& desc)
 	LocalFree(lpMsgBuf);
 }
 
+void SocketUtil::ReportError(const wstring& desc, int err)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, err,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	wstring msg((wchar_t*)lpMsgBuf);
+	HB_LOG("Error {0}: {1}", ws2s(desc), ws2s(msg));
+	LocalFree(lpMsgBuf);
+}
+
 TCPSocketPtr SocketUtil::CreateTCPSocket()
 {
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);

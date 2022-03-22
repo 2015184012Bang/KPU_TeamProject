@@ -81,9 +81,21 @@ int TCPSocket::Recv(void* outData, int len, int flags /*= 0*/)
 
 	if (read == SOCKET_ERROR)
 	{
-		SocketUtil::ReportError(L"TCPSocket::Recv");
+		int err = WSAGetLastError();
+
+		if (err != WSAEWOULDBLOCK)
+		{
+			SocketUtil::ReportError(L"TCPSocket::Recv", err);
+		}
+	
 		return SOCKET_ERROR;
 	}
 
 	return read;
+}
+
+void TCPSocket::SetNonBlockingMode(bool value)
+{
+	u_long mode = value ? 1 : 0;
+	ioctlsocket(mSocket, FIONBIO, &mode);
 }

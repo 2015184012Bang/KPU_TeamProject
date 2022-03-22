@@ -18,6 +18,8 @@ public:
 	int Send(const void* data, int len, int flags = 0);
 	int Recv(void* outData, int len, int flags = 0);
 
+	void SetNonBlockingMode(bool value);
+
 private:
 	TCPSocket(SOCKET sock)
 		: mSocket(sock) {}
