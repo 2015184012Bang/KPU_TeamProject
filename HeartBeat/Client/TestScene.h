@@ -26,8 +26,10 @@ private:
     Entity mCell;
     Entity mPlayer;
     Entity mMainCamera;
+
+    Entity mSprite;
     //////////////////////////////////////////////////////////////////////////
 
-    TCPSocketPtr mClientSocket;
+    //TCPSocketPtr mClientSocket;
 };
 

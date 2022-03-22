@@ -33,17 +33,21 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	{
-		mClientSocket = SocketUtil::CreateTCPSocket();
-		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-		
-		int retVal = SOCKET_ERROR;
-		do 
-		{
-			retVal = mClientSocket->Connect(serveraddr);
-		} while (retVal == SOCKET_ERROR);
+	//{
+	//	mClientSocket = SocketUtil::CreateTCPSocket();
+	//	SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
+	//	
+	//	int retVal = SOCKET_ERROR;
+	//	do 
+	//	{
+	//		retVal = mClientSocket->Connect(serveraddr);
+	//	} while (retVal == SOCKET_ERROR);
 
-		mClientSocket->SetNonBlockingMode(true);
+	//	mClientSocket->SetNonBlockingMode(true);
+	//}
+
+	{
+		mSprite = mOwner->CreateSpriteEntity(L"Assets/Meshes/sprite.mesh", L"Assets/Textures/Smile.png");
 	}
 
 	{
@@ -99,24 +103,24 @@ void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	mClientSocket = nullptr;
+	//mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
-	MemoryStream buf;
+	//MemoryStream buf;
 
-	mClientSocket->Recv(&buf, sizeof(MemoryStream));
+	//mClientSocket->Recv(&buf, sizeof(MemoryStream));
 
-	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
-	{
-		buf.Reset();
+	//if (Input::IsButtonPressed(eKeyCode::MouseRButton))
+	//{
+	//	buf.Reset();
 
-		buf.WriteUInt64(1234);
-		buf.WriteUInt64(5678);
+	//	buf.WriteUInt64(1234);
+	//	buf.WriteUInt64(5678);
 
-		mClientSocket->Send(&buf, sizeof(MemoryStream));
-	}
+	//	mClientSocket->Send(&buf, sizeof(MemoryStream));
+	//}
 }
 
 void TestScene::Update(float deltaTime)
@@ -241,4 +245,19 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 		}
 	}
 #endif
+
+	{
+		gCmdList->SetPipelineState(renderer->GetSpritePSO().Get());
+		auto view = (mOwner->GetRegistry()).view<Sprite>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
 }

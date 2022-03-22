@@ -19,6 +19,7 @@ public:
 	const ComPtr<ID3D12PipelineState>& GetStaticMeshPSO() const { return mStaticMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetSkeletalMeshPSO() const { return mSkeletalMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetWireframePSO() const { return mWireframePSO; }
+	const ComPtr<ID3D12PipelineState>& GetSpritePSO() const { return mSpritePSO; }
 
 private:
 	void loadPipeline();
@@ -57,6 +58,7 @@ private:
 	ComPtr<ID3D12PipelineState> mStaticMeshPSO;
 	ComPtr<ID3D12PipelineState> mSkeletalMeshPSO;
 	ComPtr<ID3D12PipelineState> mWireframePSO;
+	ComPtr<ID3D12PipelineState> mSpritePSO;
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;
