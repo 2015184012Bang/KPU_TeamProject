@@ -26,6 +26,7 @@ private:
     Entity mCell;
     Entity mPlayer;
     Entity mMainCamera;
+    Entity m2dCamera;
 
     Entity mSprite;
     //////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,14 @@ void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, cons
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
 }
 
+void ClientSystems::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
+{
+	Matrix viewProjection = Matrix::Identity;
+	viewProjection *= XMMatrixOrthographicLH(static_cast<float>(Application::GetScreenWidth()), static_cast<float>(Application::GetScreenHeight()), 0.0f, 1.0f);
+	buffer.CopyData(0, viewProjection);
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
+}
+
 void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer)
 {
 	buffer.CopyData(0, palette);

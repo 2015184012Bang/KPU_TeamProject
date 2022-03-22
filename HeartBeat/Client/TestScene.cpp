@@ -48,6 +48,8 @@ void TestScene::Enter()
 
 	{
 		mSprite = mOwner->CreateSpriteEntity(L"Assets/Meshes/sprite.mesh", L"Assets/Textures/Smile.png");
+
+		auto& transform = mSprite.GetComponent<TransformComponent>();
 	}
 
 	{
@@ -72,12 +74,12 @@ void TestScene::Enter()
 	}
 
 	{
-		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell.mesh", L"Assets/Textures/11_Cell_Red.png", 
+		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell.mesh", L"Assets/Textures/11_Cell_Red.png",
 			L"Assets/Skeletons/11_Cell.skel", L"Assets/Boxes/11_Cell.box");
 
 		auto& animator = mCell.GetComponent<AnimatorComponent>();
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/912_Running.anim"), 1.0f);
-		
+
 		auto& transform = mCell.GetComponent<TransformComponent>();
 		transform.Position.x = 300.0f;
 		transform.Rotation.y = 180.0f;
@@ -97,6 +99,10 @@ void TestScene::Enter()
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
+
+	m2dCamera = Entity(mOwner->CreateEntity(), mOwner);
+	m2dCamera.AddComponent<CameraComponent>();
+	m2dCamera.AddTag<Camera>();
 }
 
 void TestScene::Exit()
@@ -246,6 +252,8 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 	}
 #endif
 
+	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
+	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 	{
 		gCmdList->SetPipelineState(renderer->GetSpritePSO().Get());
 		auto view = (mOwner->GetRegistry()).view<Sprite>();
