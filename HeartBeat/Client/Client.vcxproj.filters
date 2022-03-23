@@ -52,7 +52,7 @@
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="TablsDescriptorHeap.cpp">
+    <ClCompile Include="TableDescriptorHeap.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
@@ -114,7 +114,7 @@
     <ClInclude Include="Texture.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="TablsDescriptorHeap.h">
+    <ClInclude Include="TableDescriptorHeap.h">
       <Filter>Source Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -165,6 +165,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="wireframe.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="sprite.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

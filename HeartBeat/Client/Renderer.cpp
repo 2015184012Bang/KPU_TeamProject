@@ -3,13 +3,13 @@
 
 #include "Application.h"
 #include "ResourceManager.h"
-#include "TablsDescriptorHeap.h"
+#include "TableDescriptorHeap.h"
 #include "Vertex.h"
 
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;
 vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
-TablsDescriptorHeap* gTexDescHeap;
+TableDescriptorHeap* gTexDescHeap;
 
 Renderer::Renderer()
 	: mBackBufferIndex(0)
@@ -118,7 +118,7 @@ void Renderer::createDevice()
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice)));
 
 	gDevice = mDevice;
-	gTexDescHeap = new TablsDescriptorHeap;
+	gTexDescHeap = new TableDescriptorHeap;
 }
 
 void Renderer::createCmdQueueAndSwapChain()
@@ -228,6 +228,57 @@ void Renderer::createPipelineState()
 #else
 	uint32 compileFlags = 0;
 #endif
+
+	// PSO for sprite
+	{
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
+		inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+		ComPtr<ID3DBlob> vertexShader;
+		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
+
+		HRESULT hr = D3DCompileFromFile(L"sprite.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"sprite.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState.DepthEnable = FALSE;
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		psoDesc.SampleDesc.Count = 1;
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSpritePSO)));
+	}
 
 	// PSO for static mesh
 	{
@@ -437,6 +488,8 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAABB(L"Assets/Boxes/01_Character.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/11_Cell.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
+
+	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
 }
 
 void Renderer::loadAssets()
@@ -456,7 +509,7 @@ void Renderer::loadAssets()
 	gUsedUploadBuffers.clear();
 }
 
-void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
+void Renderer::Submit(const Mesh* mesh, const Texture* texture)
 {
 	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -465,10 +518,18 @@ void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
 	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
 }
 
-void Renderer::SubmitDebugMesh(const Mesh* const mesh)
+void Renderer::SubmitDebugMesh(const Mesh* mesh)
 {
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
 	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+}
+
+void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
+{
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
+	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
 }

@@ -33,17 +33,21 @@ void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	{
-		mClientSocket = SocketUtil::CreateTCPSocket();
-		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-		
-		int retVal = SOCKET_ERROR;
-		do 
-		{
-			retVal = mClientSocket->Connect(serveraddr);
-		} while (retVal == SOCKET_ERROR);
+	//{
+	//	mClientSocket = SocketUtil::CreateTCPSocket();
+	//	SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
+	//	
+	//	int retVal = SOCKET_ERROR;
+	//	do 
+	//	{
+	//		retVal = mClientSocket->Connect(serveraddr);
+	//	} while (retVal == SOCKET_ERROR);
 
-		mClientSocket->SetNonBlockingMode(true);
+	//	mClientSocket->SetNonBlockingMode(true);
+	//}
+
+	{
+		mSprite = mOwner->CreateSpriteEntity(400, 200, L"Assets/Textures/Smile.png");
 	}
 
 	{
@@ -68,12 +72,12 @@ void TestScene::Enter()
 	}
 
 	{
-		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell.mesh", L"Assets/Textures/11_Cell_Red.png", 
+		mCell = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/11_Cell.mesh", L"Assets/Textures/11_Cell_Red.png",
 			L"Assets/Skeletons/11_Cell.skel", L"Assets/Boxes/11_Cell.box");
 
 		auto& animator = mCell.GetComponent<AnimatorComponent>();
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/912_Running.anim"), 1.0f);
-		
+
 		auto& transform = mCell.GetComponent<TransformComponent>();
 		transform.Position.x = 300.0f;
 		transform.Rotation.y = 180.0f;
@@ -93,30 +97,34 @@ void TestScene::Enter()
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Camera>();
+
+	m2dCamera = Entity(mOwner->CreateEntity(), mOwner);
+	m2dCamera.AddComponent<CameraComponent>();
+	m2dCamera.AddTag<Camera>();
 }
 
 void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
 
-	mClientSocket = nullptr;
+	//mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
-	MemoryStream buf;
+	//MemoryStream buf;
 
-	mClientSocket->Recv(&buf, sizeof(MemoryStream));
+	//mClientSocket->Recv(&buf, sizeof(MemoryStream));
 
-	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
-	{
-		buf.Reset();
+	//if (Input::IsButtonPressed(eKeyCode::MouseRButton))
+	//{
+	//	buf.Reset();
 
-		buf.WriteUInt64(1234);
-		buf.WriteUInt64(5678);
+	//	buf.WriteUInt64(1234);
+	//	buf.WriteUInt64(5678);
 
-		mClientSocket->Send(&buf, sizeof(MemoryStream));
-	}
+	//	mClientSocket->Send(&buf, sizeof(MemoryStream));
+	//}
 }
 
 void TestScene::Update(float deltaTime)
@@ -200,7 +208,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
 			ClientSystems::BindBoneMatrix(animator.Palette, animator.Buffer);
@@ -218,7 +226,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
@@ -234,11 +242,28 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			DebugDrawComponent& debug = e.GetComponent<DebugDrawComponent>();
 			renderer->SubmitDebugMesh(debug.Mesi);
 		}
 	}
 #endif
+
+	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
+	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
+	{
+		gCmdList->SetPipelineState(renderer->GetSpritePSO().Get());
+		auto view = (mOwner->GetRegistry()).view<Sprite>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
+			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+
+			SpriteRendererComponent& spriteRenderer = e.GetComponent<SpriteRendererComponent>();
+			renderer->SubmitSprite(spriteRenderer.Mesi, spriteRenderer.Tex);
+		}
+	}
 }

@@ -18,6 +18,16 @@ struct MeshRendererComponent
 	const Texture* Tex;
 };
 
+struct SpriteRendererComponent
+{
+	SpriteRendererComponent();
+	SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture);
+	~SpriteRendererComponent();
+
+	SpriteMesh* Mesi;
+	const Texture* Tex;
+};
+
 struct TransformComponent
 {
 	TransformComponent();
@@ -27,6 +37,18 @@ struct TransformComponent
 	Vector3 Position;
 	Vector3 Rotation;
 	float Scale;
+	UploadBuffer<Matrix> Buffer;
+	bool bDirty;
+};
+
+struct RectTransformComponent
+{
+	RectTransformComponent();
+	RectTransformComponent(const Vector2& position, int width, int height);
+
+	Vector2 Position;
+	int Width;
+	int Height;
 	UploadBuffer<Matrix> Buffer;
 	bool bDirty;
 };

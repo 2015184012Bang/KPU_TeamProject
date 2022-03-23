@@ -1,9 +1,9 @@
 #pragma once
 
-class TablsDescriptorHeap
+class TableDescriptorHeap
 {
 public:
-	TablsDescriptorHeap();
+	TableDescriptorHeap();
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle(int index);
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle(int index);

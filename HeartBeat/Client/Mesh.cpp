@@ -309,3 +309,68 @@ void Mesh::createIndexBuffer(const vector<uint32>& indices)
 	mIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	mIndexBufferView.SizeInBytes = indexBufferSize;
 }
+
+SpriteMesh::SpriteMesh(int width, int height)
+	: mVertexBufferView()
+	, mVertexCount(6)
+{
+	createVertexBuffer(width, height);
+}
+
+void SpriteMesh::createVertexBuffer(int width, int height)
+{
+	vector<SpriteVertex> vertices;
+	vertices.reserve(mVertexCount);
+	
+	uint32 vertexBufferSize = mVertexCount * sizeof(SpriteVertex);
+
+	float left = 0.0f;
+	float right = static_cast<float>(width);
+	float up = 0.0f;
+	float down = static_cast<float>(-height);
+
+	SpriteVertex v;
+	v.Position = Vector3::Zero;
+	v.UV = Vector2::Zero;
+	vertices.push_back(v);
+
+	v.Position = Vector3(right, down, 0.0f);
+	v.UV = Vector2(1.0f, 1.0f);
+	vertices.push_back(v);
+
+	v.Position = Vector3(right, up, 0.0f);
+	v.UV = Vector2(1.0f, 0.0f);
+	vertices.push_back(v);
+
+	v.Position = Vector3(right, down, 0.0f);
+	v.UV = Vector2(1.0f, 1.0f);
+	vertices.push_back(v);
+
+	v.Position = Vector3::Zero;
+	v.UV = Vector2::Zero;
+	vertices.push_back(v);
+
+	v.Position = Vector3(left, down, 0.0f);
+	v.UV = Vector2(0.0f, 1.0f);
+	vertices.push_back(v);
+
+
+	const CD3DX12_HEAP_PROPERTIES uploadBufferHeapProps(D3D12_HEAP_TYPE_UPLOAD);
+	const CD3DX12_RESOURCE_DESC uploadbufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
+	gDevice->CreateCommittedResource(
+		&uploadBufferHeapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&uploadbufferDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&mVertexBuffer));
+
+	void* mappedData;
+	mVertexBuffer->Map(0, nullptr, &mappedData);
+	memcpy(mappedData, vertices.data(), vertexBufferSize);
+	mVertexBuffer->Unmap(0, nullptr);
+
+	mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
+	mVertexBufferView.SizeInBytes = vertexBufferSize;
+	mVertexBufferView.StrideInBytes = sizeof(SpriteVertex);
+}

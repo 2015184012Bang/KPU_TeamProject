@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
-#include "TablsDescriptorHeap.h"
+#include "TableDescriptorHeap.h"
 
-TablsDescriptorHeap::TablsDescriptorHeap()
+TableDescriptorHeap::TableDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 	heapDesc.NumDescriptors = 100;
@@ -13,12 +13,12 @@ TablsDescriptorHeap::TablsDescriptorHeap()
 	gDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mDescriptorHeap));
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE TablsDescriptorHeap::GetCpuHandle(int index)
+D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCpuHandle(int index)
 {
 	return CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), index * mSrvDescriptorSize);
 }
 
-D3D12_GPU_DESCRIPTOR_HANDLE TablsDescriptorHeap::GetGpuHandle(int index)
+D3D12_GPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetGpuHandle(int index)
 {
 	return CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetGPUDescriptorHandleForHeapStart(), index * mSrvDescriptorSize);
 }

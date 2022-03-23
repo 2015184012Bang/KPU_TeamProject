@@ -17,3 +17,9 @@ struct SkeletalVertex
 	Vector4 BoneWeight;
 	Vector2 UV;
 };
+
+struct SpriteVertex
+{
+	Vector3 Position;
+	Vector2 UV;
+};

@@ -125,7 +125,7 @@
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TablsDescriptorHeap.cpp" />
+    <ClCompile Include="TableDescriptorHeap.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -149,7 +149,7 @@
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Texture.h" />
-    <ClInclude Include="TablsDescriptorHeap.h" />
+    <ClInclude Include="TableDescriptorHeap.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Vertex.h" />
@@ -162,6 +162,7 @@
   <ItemGroup>
     <None Include="default.hlsli" />
     <None Include="skeletal.hlsli" />
+    <None Include="sprite.hlsli" />
     <None Include="wireframe.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

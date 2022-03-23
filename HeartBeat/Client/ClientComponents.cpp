@@ -38,6 +38,28 @@ TransformComponent::TransformComponent(const Vector3& position, const Vector3& r
 
 }
 
+
+RectTransformComponent::RectTransformComponent()
+	: Position(Vector2::Zero)
+	, Width(0)
+	, Height(0)
+	, Buffer(gDevice.Get(), 1, true)
+	, bDirty(true)
+{
+
+}
+
+RectTransformComponent::RectTransformComponent(const Vector2& position, int width, int height)
+	: Position(position)
+	, Width(width)
+	, Height(height)
+	, Buffer(gDevice.Get(), 1, true)
+	, bDirty(true)
+{
+
+}
+
+
 CameraComponent::CameraComponent()
 	: FOV(XMConvertToRadians(90.0f))
 	, Position(Vector3::Zero)
@@ -143,5 +165,28 @@ ScriptComponent::~ScriptComponent()
 	{
 		delete NativeScript;
 		NativeScript = nullptr;
+	}
+}
+
+SpriteRendererComponent::SpriteRendererComponent()
+	: Mesi(nullptr)
+	, Tex(nullptr)
+{
+
+}
+
+SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture)
+	: Mesi(mesh)
+	, Tex(texture)
+{
+
+}
+
+SpriteRendererComponent::~SpriteRendererComponent()
+{
+	if (Mesi)
+	{
+		delete Mesi;
+		Mesi = nullptr;
 	}
 }

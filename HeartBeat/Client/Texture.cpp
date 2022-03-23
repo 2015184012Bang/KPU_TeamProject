@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "Texture.h"
 
-#include "TablsDescriptorHeap.h"
+#include "TableDescriptorHeap.h"
 
 uint32 Texture::sNumTextures = 0;
 
