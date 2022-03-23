@@ -109,7 +109,7 @@ Entity Client::CreateSpriteEntity(const wstring& meshFile, const wstring& texFil
 {
 	Entity e = Entity(CreateEntity(), this);
 
-	e.AddComponent<TransformComponent>();
+	e.AddComponent<RectTransformComponent>();
 	e.AddTag<Sprite>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));

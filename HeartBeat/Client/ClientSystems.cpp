@@ -15,19 +15,24 @@ void ClientSystems::RotateY(Vector3* outRotation, float speed, float deltaTime, 
 	*outDirty = true;
 }
 
-void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>& buffer, bool* outDirty)
+void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
 {
 	if (*outDirty)
 	{
 		Matrix mat = Matrix::CreateScale(scale);
 		mat *= Matrix::CreateRotationY(XMConvertToRadians(rotation.y));
 		mat *= Matrix::CreateTranslation(position);
-		buffer.CopyData(0, mat);
+		outBuffer->CopyData(0, mat);
 
 		*outDirty = false;
 	}
 
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), buffer.GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outBuffer->GetVirtualAddress());
+}
+
+void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
+{
+	BindWorldMatrix(Vector3(position.x, position.y, 0.0f), Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
 
 void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,

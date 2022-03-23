@@ -48,8 +48,6 @@ void TestScene::Enter()
 
 	{
 		mSprite = mOwner->CreateSpriteEntity(L"Assets/Meshes/sprite.mesh", L"Assets/Textures/Smile.png");
-
-		auto& transform = mSprite.GetComponent<TransformComponent>();
 	}
 
 	{
@@ -210,7 +208,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
 			ClientSystems::BindBoneMatrix(animator.Palette, animator.Buffer);
@@ -228,7 +226,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
@@ -244,7 +242,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			Entity e = Entity(entity, mOwner);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 			DebugDrawComponent& debug = e.GetComponent<DebugDrawComponent>();
 			renderer->SubmitDebugMesh(debug.Mesi);
@@ -261,8 +259,8 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 		{
 			Entity e = Entity(entity, mOwner);
 
-			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, transform.Buffer, &transform.bDirty);
+			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
+			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);

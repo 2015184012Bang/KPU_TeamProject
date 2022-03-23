@@ -31,6 +31,18 @@ struct TransformComponent
 	bool bDirty;
 };
 
+struct RectTransformComponent
+{
+	RectTransformComponent();
+	RectTransformComponent(const Vector2& position, int width, int height);
+
+	Vector2 Position;
+	int Width;
+	int Height;
+	UploadBuffer<Matrix> Buffer;
+	bool bDirty;
+};
+
 struct CameraComponent
 {
 	CameraComponent();
