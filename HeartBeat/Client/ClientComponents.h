@@ -18,6 +18,16 @@ struct MeshRendererComponent
 	const Texture* Tex;
 };
 
+struct SpriteRendererComponent
+{
+	SpriteRendererComponent();
+	SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture);
+	~SpriteRendererComponent();
+
+	SpriteMesh* Mesi;
+	const Texture* Tex;
+};
+
 struct TransformComponent
 {
 	TransformComponent();

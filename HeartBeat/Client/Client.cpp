@@ -105,14 +105,14 @@ Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& te
 	return e;
 }
 
-Entity Client::CreateSpriteEntity(const wstring& meshFile, const wstring& texFile)
+Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile)
 {
 	Entity e = Entity(CreateEntity(), this);
 
 	e.AddComponent<RectTransformComponent>();
 	e.AddTag<Sprite>();
 	e.AddComponent<IDComponent>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile));
 
 	return e;
 }

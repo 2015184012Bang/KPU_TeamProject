@@ -167,3 +167,26 @@ ScriptComponent::~ScriptComponent()
 		NativeScript = nullptr;
 	}
 }
+
+SpriteRendererComponent::SpriteRendererComponent()
+	: Mesi(nullptr)
+	, Tex(nullptr)
+{
+
+}
+
+SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture)
+	: Mesi(mesh)
+	, Tex(texture)
+{
+
+}
+
+SpriteRendererComponent::~SpriteRendererComponent()
+{
+	if (Mesi)
+	{
+		delete Mesi;
+		Mesi = nullptr;
+	}
+}

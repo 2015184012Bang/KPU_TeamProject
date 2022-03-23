@@ -47,7 +47,7 @@ void TestScene::Enter()
 	//}
 
 	{
-		mSprite = mOwner->CreateSpriteEntity(L"Assets/Meshes/sprite.mesh", L"Assets/Textures/Smile.png");
+		mSprite = mOwner->CreateSpriteEntity(400, 200, L"Assets/Textures/Smile.png");
 	}
 
 	{
@@ -262,8 +262,8 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
 			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 
-			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
-			renderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+			SpriteRendererComponent& spriteRenderer = e.GetComponent<SpriteRendererComponent>();
+			renderer->SubmitSprite(spriteRenderer.Mesi, spriteRenderer.Tex);
 		}
 	}
 }

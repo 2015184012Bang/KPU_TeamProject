@@ -479,7 +479,6 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(L"Assets/Meshes/03_Character_Pink.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/11_Cell.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/sprite.mesh");
 
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/01_Character_Red.skel");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/02_Character_Green.skel");
@@ -490,6 +489,8 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAABB(L"Assets/Boxes/01_Character.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/11_Cell.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
+
+	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
 }
 
 void Renderer::loadAssets()
@@ -509,7 +510,7 @@ void Renderer::loadAssets()
 	gUsedUploadBuffers.clear();
 }
 
-void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
+void Renderer::Submit(const Mesh* mesh, const Texture* texture)
 {
 	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -518,10 +519,18 @@ void Renderer::Submit(const Mesh* const mesh, const Texture* const texture)
 	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
 }
 
-void Renderer::SubmitDebugMesh(const Mesh* const mesh)
+void Renderer::SubmitDebugMesh(const Mesh* mesh)
 {
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
 	mCmdList->DrawIndexedInstanced(mesh->GetIndexCount(), 1, 0, 0, 0);
+}
+
+void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
+{
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
+	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
 }

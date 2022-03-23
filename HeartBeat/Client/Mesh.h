@@ -95,3 +95,19 @@ private:
 	uint32 mIndexCount;
 };
 
+class SpriteMesh
+{
+public:
+	SpriteMesh(int width, int height);
+
+	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
+	uint32 GetVertexCount() const { return mVertexCount; }
+
+private:
+	void createVertexBuffer(int width, int height);
+
+private:
+	ComPtr<ID3D12Resource> mVertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
+	uint32 mVertexCount;
+};
