@@ -44,7 +44,7 @@ struct TransformComponent
 struct RectTransformComponent
 {
 	RectTransformComponent();
-	RectTransformComponent(const Vector2& position, int width, int height);
+	RectTransformComponent(int width, int height, const Vector2& position = Vector2::Zero);
 
 	Vector2 Position;
 	int Width;

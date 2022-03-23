@@ -47,7 +47,11 @@ void TestScene::Enter()
 	//}
 
 	{
-		mSprite = mOwner->CreateSpriteEntity(400, 200, L"Assets/Textures/Smile.png");
+		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
+
+		auto& rect = mSprite.GetComponent<RectTransformComponent>();
+
+		rect.Position = Vector2(0.0f, 300.0f);
 	}
 
 	{

@@ -40,25 +40,24 @@ TransformComponent::TransformComponent(const Vector3& position, const Vector3& r
 
 
 RectTransformComponent::RectTransformComponent()
-	: Position(Vector2::Zero)
-	, Width(0)
+	: Width(0)
 	, Height(0)
+	, Position(Vector2::Zero)
 	, Buffer(gDevice.Get(), 1, true)
 	, bDirty(true)
 {
 
 }
 
-RectTransformComponent::RectTransformComponent(const Vector2& position, int width, int height)
-	: Position(position)
-	, Width(width)
+RectTransformComponent::RectTransformComponent(int width, int height, const Vector2& position /*= Vector2::Zero*/)
+	: Width(width)
 	, Height(height)
+	, Position(position)
 	, Buffer(gDevice.Get(), 1, true)
 	, bDirty(true)
 {
 
 }
-
 
 CameraComponent::CameraComponent()
 	: FOV(XMConvertToRadians(90.0f))

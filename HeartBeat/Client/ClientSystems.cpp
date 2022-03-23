@@ -32,7 +32,9 @@ void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rota
 
 void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
 {
-	BindWorldMatrix(Vector3(position.x, position.y, 0.0f), Vector3::Zero, 1.0f, outBuffer, outDirty);
+	Vector3 converted = screenToClip(position);
+
+	BindWorldMatrix(converted, Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
 
 void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
@@ -182,5 +184,15 @@ void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, cons
 	{
 		outPalette->Entry[i] = globalInvBindPoses[i] * Matrix::Lerp(toPoses[i], fromPoses[i], t);
 	}
+}
+
+Vector3 ClientSystems::screenToClip(const Vector2& coord)
+{
+	Vector3 v;
+	v.x = -(Application::GetScreenWidth() / 2) + coord.x;
+	v.y = (Application::GetScreenHeight() / 2) - coord.y;
+	v.z = 0.0f;
+
+	return v;
 }
 
