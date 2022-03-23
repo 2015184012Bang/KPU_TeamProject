@@ -319,45 +319,38 @@ SpriteMesh::SpriteMesh(int width, int height)
 
 void SpriteMesh::createVertexBuffer(int width, int height)
 {
-	vector<Vertex> vertices;
+	vector<SpriteVertex> vertices;
 	vertices.reserve(mVertexCount);
 	
-	uint32 vertexBufferSize = mVertexCount * sizeof(Vertex);
-
+	uint32 vertexBufferSize = mVertexCount * sizeof(SpriteVertex);
 
 	float left = 0.0f;
 	float right = static_cast<float>(width);
 	float up = 0.0f;
 	float down = static_cast<float>(-height);
 
-	Vertex v;
+	SpriteVertex v;
 	v.Position = Vector3::Zero;
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2::Zero;
 	vertices.push_back(v);
 
 	v.Position = Vector3(right, down, 0.0f);
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2(1.0f, 1.0f);
 	vertices.push_back(v);
 
 	v.Position = Vector3(right, up, 0.0f);
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2(1.0f, 0.0f);
 	vertices.push_back(v);
 
 	v.Position = Vector3(right, down, 0.0f);
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2(1.0f, 1.0f);
 	vertices.push_back(v);
 
 	v.Position = Vector3::Zero;
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2::Zero;
 	vertices.push_back(v);
 
 	v.Position = Vector3(left, down, 0.0f);
-	v.Normal = Vector3::Zero;
 	v.UV = Vector2(0.0f, 1.0f);
 	vertices.push_back(v);
 
@@ -379,5 +372,5 @@ void SpriteMesh::createVertexBuffer(int width, int height)
 
 	mVertexBufferView.BufferLocation = mVertexBuffer->GetGPUVirtualAddress();
 	mVertexBufferView.SizeInBytes = vertexBufferSize;
-	mVertexBufferView.StrideInBytes = sizeof(Vertex);
+	mVertexBufferView.StrideInBytes = sizeof(SpriteVertex);
 }
