@@ -16,6 +16,7 @@ public:
 	static void PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate);
 	static void UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty);
 	static bool Intersects(const AABB& a, const AABB& b);
+	static bool Intersects(const Vector2& position, int w, int h);
 
 private:
 	static void computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette);

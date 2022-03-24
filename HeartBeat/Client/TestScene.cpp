@@ -116,19 +116,22 @@ void TestScene::Exit()
 
 void TestScene::ProcessInput()
 {
-	//MemoryStream buf;
+	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
+	{
+		auto view = (mOwner->GetRegistry()).view<RectTransformComponent>();
 
-	//mClientSocket->Recv(&buf, sizeof(MemoryStream));
+		for (auto entity : view)
+		{
+			auto& rectTransform = view.get<RectTransformComponent>(entity);
 
-	//if (Input::IsButtonPressed(eKeyCode::MouseRButton))
-	//{
-	//	buf.Reset();
+			bool res = ClientSystems::Intersects(rectTransform.Position, rectTransform.Width, rectTransform.Height);
 
-	//	buf.WriteUInt64(1234);
-	//	buf.WriteUInt64(5678);
-
-	//	mClientSocket->Send(&buf, sizeof(MemoryStream));
-	//}
+			if (res)
+			{
+				HB_LOG("UI intersects!");
+			}
+		}
+	}
 }
 
 void TestScene::Update(float deltaTime)

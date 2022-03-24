@@ -158,6 +158,18 @@ bool ClientSystems::Intersects(const AABB& a, const AABB& b)
 	return !no;
 }
 
+bool ClientSystems::Intersects(const Vector2& position, int w, int h)
+{
+	POINT p;
+	GetCursorPos(&p);
+	ScreenToClient(Application::GetHwnd(), &p);
+
+	bool contains = (p.x >= position.x) && (p.x <= position.x + w)
+		&& (p.y >= position.y) && (p.y <= position.y + h);
+
+	return contains;
+}
+
 void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette)
 {
 	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
