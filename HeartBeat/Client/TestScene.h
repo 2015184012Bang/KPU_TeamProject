@@ -29,6 +29,7 @@ private:
     Entity m2dCamera;
 
     Entity mSprite;
+    Entity mSprite2;
     //////////////////////////////////////////////////////////////////////////
 
     //TCPSocketPtr mClientSocket;

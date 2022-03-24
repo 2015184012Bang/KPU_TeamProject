@@ -158,6 +158,27 @@ ScriptComponent::ScriptComponent(Script* s)
 
 }
 
+ScriptComponent::ScriptComponent(ScriptComponent&& other) noexcept
+{
+	NativeScript = other.NativeScript;
+	bInitialized = other.bInitialized;
+
+	other.NativeScript = nullptr;
+}
+
+ScriptComponent& ScriptComponent::operator=(ScriptComponent&& other) noexcept
+{
+	if (this != &other)
+	{
+		NativeScript = other.NativeScript;
+		bInitialized = other.bInitialized;
+
+		other.NativeScript = nullptr;
+	}
+
+	return *this;
+}
+
 ScriptComponent::~ScriptComponent()
 {
 	if (NativeScript)
@@ -170,15 +191,42 @@ ScriptComponent::~ScriptComponent()
 SpriteRendererComponent::SpriteRendererComponent()
 	: Mesi(nullptr)
 	, Tex(nullptr)
+	, DrawOrder(100)
 {
 
 }
 
-SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture)
+SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture, int drawOrder /*= 100*/)
 	: Mesi(mesh)
 	, Tex(texture)
+	, DrawOrder(drawOrder)
 {
 
+}
+
+SpriteRendererComponent::SpriteRendererComponent(SpriteRendererComponent&& other) noexcept
+{
+	Mesi = other.Mesi;
+	Tex = other.Tex;
+	DrawOrder = other.DrawOrder;
+
+	other.Mesi = nullptr;
+	other.Tex = nullptr;
+}
+
+SpriteRendererComponent& SpriteRendererComponent::operator=(SpriteRendererComponent&& other) noexcept
+{
+	if (this != &other)
+	{
+		Mesi = other.Mesi;
+		Tex = other.Tex;
+		DrawOrder = other.DrawOrder;
+
+		other.Mesi = nullptr;
+		other.Tex = nullptr;
+	}
+
+	return *this;
 }
 
 SpriteRendererComponent::~SpriteRendererComponent()

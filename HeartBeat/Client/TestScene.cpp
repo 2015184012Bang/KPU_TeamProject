@@ -48,10 +48,19 @@ void TestScene::Enter()
 
 	{
 		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
+		mSprite2 = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/21_HEnemy.png");
 
-		auto& rect = mSprite.GetComponent<RectTransformComponent>();
+		auto& spriteRenderer = mSprite2.GetComponent<SpriteRendererComponent>();
+		spriteRenderer.DrawOrder = 10;
 
-		rect.Position = Vector2(0.0f, 300.0f);
+		auto& rect = mSprite2.GetComponent<RectTransformComponent>();
+		rect.Position.x = 50.0f;
+
+		// Sort SpriteRendererComponent when sprite adds.
+		(mOwner->GetRegistry()).sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
+			{
+				return lhs.DrawOrder < rhs.DrawOrder;
+			});
 	}
 
 	{
@@ -261,7 +270,9 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 	{
 		gCmdList->SetPipelineState(renderer->GetSpritePSO().Get());
-		auto view = (mOwner->GetRegistry()).view<Sprite>();
+
+		auto view = (mOwner->GetRegistry()).view<SpriteRendererComponent>();
+
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);

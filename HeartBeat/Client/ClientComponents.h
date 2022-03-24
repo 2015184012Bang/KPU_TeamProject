@@ -21,11 +21,14 @@ struct MeshRendererComponent
 struct SpriteRendererComponent
 {
 	SpriteRendererComponent();
-	SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture);
+	SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture, int drawOrder = 100);
 	~SpriteRendererComponent();
+	SpriteRendererComponent(SpriteRendererComponent&& other) noexcept;
+	SpriteRendererComponent& operator=(SpriteRendererComponent&& other) noexcept;
 
 	SpriteMesh* Mesi;
 	const Texture* Tex;
+	int DrawOrder;
 };
 
 struct TransformComponent
@@ -105,6 +108,8 @@ struct ScriptComponent
 	ScriptComponent();
 	ScriptComponent(Script* s);
 	~ScriptComponent();
+	ScriptComponent(ScriptComponent&& other) noexcept;
+	ScriptComponent& operator=(ScriptComponent&& other) noexcept;
 
 	Script* NativeScript;
 	bool bInitialized;
