@@ -40,25 +40,24 @@ TransformComponent::TransformComponent(const Vector3& position, const Vector3& r
 
 
 RectTransformComponent::RectTransformComponent()
-	: Position(Vector2::Zero)
-	, Width(0)
+	: Width(0)
 	, Height(0)
+	, Position(Vector2::Zero)
 	, Buffer(gDevice.Get(), 1, true)
 	, bDirty(true)
 {
 
 }
 
-RectTransformComponent::RectTransformComponent(const Vector2& position, int width, int height)
-	: Position(position)
-	, Width(width)
+RectTransformComponent::RectTransformComponent(int width, int height, const Vector2& position /*= Vector2::Zero*/)
+	: Width(width)
 	, Height(height)
+	, Position(position)
 	, Buffer(gDevice.Get(), 1, true)
 	, bDirty(true)
 {
 
 }
-
 
 CameraComponent::CameraComponent()
 	: FOV(XMConvertToRadians(90.0f))
@@ -159,6 +158,27 @@ ScriptComponent::ScriptComponent(Script* s)
 
 }
 
+ScriptComponent::ScriptComponent(ScriptComponent&& other) noexcept
+{
+	NativeScript = other.NativeScript;
+	bInitialized = other.bInitialized;
+
+	other.NativeScript = nullptr;
+}
+
+ScriptComponent& ScriptComponent::operator=(ScriptComponent&& other) noexcept
+{
+	if (this != &other)
+	{
+		NativeScript = other.NativeScript;
+		bInitialized = other.bInitialized;
+
+		other.NativeScript = nullptr;
+	}
+
+	return *this;
+}
+
 ScriptComponent::~ScriptComponent()
 {
 	if (NativeScript)
@@ -171,15 +191,42 @@ ScriptComponent::~ScriptComponent()
 SpriteRendererComponent::SpriteRendererComponent()
 	: Mesi(nullptr)
 	, Tex(nullptr)
+	, DrawOrder(100)
 {
 
 }
 
-SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture)
+SpriteRendererComponent::SpriteRendererComponent(SpriteMesh* mesh, const Texture* texture, int drawOrder /*= 100*/)
 	: Mesi(mesh)
 	, Tex(texture)
+	, DrawOrder(drawOrder)
 {
 
+}
+
+SpriteRendererComponent::SpriteRendererComponent(SpriteRendererComponent&& other) noexcept
+{
+	Mesi = other.Mesi;
+	Tex = other.Tex;
+	DrawOrder = other.DrawOrder;
+
+	other.Mesi = nullptr;
+	other.Tex = nullptr;
+}
+
+SpriteRendererComponent& SpriteRendererComponent::operator=(SpriteRendererComponent&& other) noexcept
+{
+	if (this != &other)
+	{
+		Mesi = other.Mesi;
+		Tex = other.Tex;
+		DrawOrder = other.DrawOrder;
+
+		other.Mesi = nullptr;
+		other.Tex = nullptr;
+	}
+
+	return *this;
 }
 
 SpriteRendererComponent::~SpriteRendererComponent()
@@ -189,4 +236,15 @@ SpriteRendererComponent::~SpriteRendererComponent()
 		delete Mesi;
 		Mesi = nullptr;
 	}
+}
+
+ButtonComponent::ButtonComponent()
+{
+
+}
+
+ButtonComponent::ButtonComponent(std::function<void(void)> f)
+	: CallbackFunc(f)
+{
+
 }

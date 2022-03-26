@@ -109,9 +109,9 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile)
 {
 	Entity e = Entity(CreateEntity(), this);
 
-	e.AddComponent<RectTransformComponent>();
 	e.AddTag<Sprite>();
 	e.AddComponent<IDComponent>();
+	e.AddComponent<RectTransformComponent>(width, height);
 	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile));
 
 	return e;

@@ -9,6 +9,8 @@
 #include "ClientSystems.h"
 
 #include "CharacterMovement.h"
+#include "UIButtonTest.h"
+#include "UIButtonTest2.h"
 
 TestScene* TestScene::sInstance;
 
@@ -47,7 +49,26 @@ void TestScene::Enter()
 	//}
 
 	{
-		mSprite = mOwner->CreateSpriteEntity(400, 200, L"Assets/Textures/Smile.png");
+		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
+		mSprite.AddComponent<ButtonComponent>();
+		mSprite.AddComponent<ScriptComponent>(new UIButtonTest2(mSprite));
+
+		mSprite2 = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/21_HEnemy.png");
+
+		auto& spriteRenderer = mSprite2.GetComponent<SpriteRendererComponent>();
+		spriteRenderer.DrawOrder = 10;
+
+		auto& rect = mSprite2.GetComponent<RectTransformComponent>();
+		rect.Position.x = 100.0f;
+
+		mSprite2.AddComponent<ButtonComponent>();
+		mSprite2.AddComponent<ScriptComponent>(new UIButtonTest(mSprite2));
+
+		// Sort SpriteRendererComponent when sprite adds.
+		(mOwner->GetRegistry()).sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
+			{
+				return lhs.DrawOrder < rhs.DrawOrder;
+			});
 	}
 
 	{
@@ -112,19 +133,25 @@ void TestScene::Exit()
 
 void TestScene::ProcessInput()
 {
-	//MemoryStream buf;
+	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
+	{
+		auto view = (mOwner->GetRegistry()).view<Sprite>();
 
-	//mClientSocket->Recv(&buf, sizeof(MemoryStream));
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
 
-	//if (Input::IsButtonPressed(eKeyCode::MouseRButton))
-	//{
-	//	buf.Reset();
+			auto& rectTransform = e.GetComponent<RectTransformComponent>();
 
-	//	buf.WriteUInt64(1234);
-	//	buf.WriteUInt64(5678);
+			bool res = ClientSystems::Intersects(rectTransform.Position, rectTransform.Width, rectTransform.Height);
 
-	//	mClientSocket->Send(&buf, sizeof(MemoryStream));
-	//}
+			if (res)
+			{
+				auto& button = e.GetComponent<ButtonComponent>();
+				button.CallbackFunc();
+			}
+		}
+	}
 }
 
 void TestScene::Update(float deltaTime)
@@ -254,7 +281,9 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 	{
 		gCmdList->SetPipelineState(renderer->GetSpritePSO().Get());
-		auto view = (mOwner->GetRegistry()).view<Sprite>();
+
+		auto view = (mOwner->GetRegistry()).view<SpriteRendererComponent>();
+
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
