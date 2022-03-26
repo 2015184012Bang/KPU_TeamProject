@@ -237,3 +237,14 @@ SpriteRendererComponent::~SpriteRendererComponent()
 		Mesi = nullptr;
 	}
 }
+
+ButtonComponent::ButtonComponent()
+{
+
+}
+
+ButtonComponent::ButtonComponent(std::function<void(void)> f)
+	: CallbackFunc(f)
+{
+
+}

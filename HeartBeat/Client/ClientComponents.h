@@ -114,3 +114,11 @@ struct ScriptComponent
 	Script* NativeScript;
 	bool bInitialized;
 };
+
+struct ButtonComponent
+{
+	ButtonComponent();
+	ButtonComponent(std::function<void(void)> f);
+
+	std::function<void(void)> CallbackFunc;
+};

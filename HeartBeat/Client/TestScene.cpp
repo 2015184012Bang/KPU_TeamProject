@@ -9,6 +9,8 @@
 #include "ClientSystems.h"
 
 #include "CharacterMovement.h"
+#include "UIButtonTest.h"
+#include "UIButtonTest2.h"
 
 TestScene* TestScene::sInstance;
 
@@ -48,13 +50,19 @@ void TestScene::Enter()
 
 	{
 		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
+		mSprite.AddComponent<ButtonComponent>();
+		mSprite.AddComponent<ScriptComponent>(new UIButtonTest2(mSprite));
+
 		mSprite2 = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/21_HEnemy.png");
 
 		auto& spriteRenderer = mSprite2.GetComponent<SpriteRendererComponent>();
 		spriteRenderer.DrawOrder = 10;
 
 		auto& rect = mSprite2.GetComponent<RectTransformComponent>();
-		rect.Position.x = 50.0f;
+		rect.Position.x = 100.0f;
+
+		mSprite2.AddComponent<ButtonComponent>();
+		mSprite2.AddComponent<ScriptComponent>(new UIButtonTest(mSprite2));
 
 		// Sort SpriteRendererComponent when sprite adds.
 		(mOwner->GetRegistry()).sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
@@ -127,17 +135,20 @@ void TestScene::ProcessInput()
 {
 	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
 	{
-		auto view = (mOwner->GetRegistry()).view<RectTransformComponent>();
+		auto view = (mOwner->GetRegistry()).view<Sprite>();
 
 		for (auto entity : view)
 		{
-			auto& rectTransform = view.get<RectTransformComponent>(entity);
+			Entity e = Entity(entity, mOwner);
+
+			auto& rectTransform = e.GetComponent<RectTransformComponent>();
 
 			bool res = ClientSystems::Intersects(rectTransform.Position, rectTransform.Width, rectTransform.Height);
 
 			if (res)
 			{
-				HB_LOG("UI intersects!");
+				auto& button = e.GetComponent<ButtonComponent>();
+				button.CallbackFunc();
 			}
 		}
 	}
