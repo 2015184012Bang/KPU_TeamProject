@@ -6,6 +6,8 @@
 #include "TableDescriptorHeap.h"
 #include "Vertex.h"
 
+#include "Text.h"
+
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;
 vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;

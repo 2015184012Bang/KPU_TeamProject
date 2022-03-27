@@ -2,6 +2,7 @@
 #include "ClientSystems.h"
 
 #include "Application.h"
+#include "ClientComponents.h"
 
 void ClientSystems::MovePosition(Vector3* outPosition, const Vector3& velocity, float deltaTime, bool* outDirty)
 {

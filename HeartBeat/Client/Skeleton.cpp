@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "Skeleton.h"
 
+#include <rapidjson/document.h>
+
 void Skeleton::Load(const wstring& path)
 {
 	std::ifstream file(path);

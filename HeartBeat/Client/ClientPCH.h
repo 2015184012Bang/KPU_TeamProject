@@ -3,7 +3,6 @@
 #include "HeartBeat.h"
 
 #include "d3dHelper.h"
-#include "ClientComponents.h"
 #include "Types.h"
 
 extern ComPtr<ID3D12Device> gDevice;

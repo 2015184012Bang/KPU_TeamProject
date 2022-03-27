@@ -1,6 +1,10 @@
 #pragma once
 
-class Font;
+#include "Font.h"
+
+class Texture;
+
+constexpr int TEXT_INPUT_LIMIT = 24;
 
 class Text
 {

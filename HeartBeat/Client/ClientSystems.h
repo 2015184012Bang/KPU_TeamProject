@@ -1,6 +1,12 @@
 #pragma once
 
 #include "UploadBuffer.h"
+#include "Bone.h"
+
+struct AnimatorComponent;
+class Animation;
+class AABB;
+class Skeleton;
 
 class ClientSystems
 {

@@ -6,6 +6,7 @@
 #include "Renderer.h"
 #include "TestScene.h"
 #include "ResourceManager.h"
+#include "ClientComponents.h"
 
 Client::Client()
 	: Game()
