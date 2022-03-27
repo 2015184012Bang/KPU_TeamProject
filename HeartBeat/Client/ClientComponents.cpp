@@ -1,7 +1,13 @@
 #include "ClientPCH.h"
 #include "ClientComponents.h"
 
+#include "Animation.h"
 #include "ClientSystems.h"
+#include "Mesh.h"
+#include "Skeleton.h"
+#include "Script.h"
+#include "Texture.h"
+#include "Text.h"
 
 MeshRendererComponent::MeshRendererComponent()
 	: Mesi(nullptr)

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Mesh.h"
-#include "Texture.h"
-#include "Skeleton.h"
-#include "Animation.h"
-#include "AABB.h"
-#include "Font.h"
+class Mesh;
+class Texture;
+class Skeleton;
+class Animation;
+class AABB;
+class Font;
 
 class ResourceManager
 {

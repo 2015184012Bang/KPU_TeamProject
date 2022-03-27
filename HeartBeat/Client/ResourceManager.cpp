@@ -1,6 +1,13 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
+#include "AABB.h"
+#include "Animation.h"
+#include "Font.h"
+#include "Mesh.h"
+#include "Skeleton.h"
+#include "Texture.h"
+
 unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
 unordered_map<wstring, Texture*> ResourceManager::sTextures;
 unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;

@@ -1,15 +1,17 @@
 #pragma once
 
-#include "Mesh.h"
-#include "Texture.h"
 #include "UploadBuffer.h"
 #include "Bone.h"
-#include "Skeleton.h"
-#include "Animation.h"
 #include "AABB.h"
-#include "Script.h"
-#include "Font.h"
-#include "Text.h"
+
+class Mesh;
+class Texture;
+class SpriteMesh;
+class Skeleton;
+class Animation;
+class Script;
+class Text;
+
 
 struct MeshRendererComponent
 {

@@ -1,7 +1,6 @@
 #include "ClientPCH.h"
 #include "Text.h"
 
-#include "ClientSystems.h"
 #include "Vertex.h"
 
 Text::Text(const Font* font, const string& sentence)
@@ -25,7 +24,7 @@ void Text::createVertexBuffer()
 
 	mVertexCount = static_cast<int>(vertices.size());
 
-	int vertexLimit = TEXT_INPUT_LIMIT * 6;
+	uint32 vertexLimit = TEXT_INPUT_LIMIT * 6;
 
 	if (mVertexCount > vertexLimit)
 	{

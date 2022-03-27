@@ -1,12 +1,13 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
-#include "Input.h"
-#include "Timer.h"
-#include "Renderer.h"
-#include "TestScene.h"
-#include "ResourceManager.h"
 #include "ClientComponents.h"
+#include "Input.h"
+#include "Mesh.h"
+#include "Renderer.h"
+#include "ResourceManager.h"
+#include "Timer.h"
+#include "TestScene.h"
 
 Client::Client()
 	: Game()

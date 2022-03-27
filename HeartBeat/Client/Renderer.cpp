@@ -2,11 +2,13 @@
 #include "Renderer.h"
 
 #include "Application.h"
+#include "Mesh.h"
 #include "ResourceManager.h"
 #include "TableDescriptorHeap.h"
+#include "Text.h"
+#include "Texture.h"
 #include "Vertex.h"
 
-#include "Text.h"
 
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;

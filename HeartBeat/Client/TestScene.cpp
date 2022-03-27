@@ -1,12 +1,13 @@
 #include "ClientPCH.h"
 #include "TestScene.h"
 
-#include "Input.h"
+#include "Animation.h"
 #include "Client.h"
-
+#include "ClientSystems.h"
+#include "Input.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "ClientSystems.h"
+#include "Text.h"
 
 #include "CharacterMovement.h"
 #include "UIButtonTest.h"
