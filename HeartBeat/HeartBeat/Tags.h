@@ -1,7 +1,7 @@
 #pragma once
 
-struct StaticMesh {};
-struct SkeletalMesh {};
-struct Camera {};
-struct Sprite {};
-struct Txt {};
+struct Tag_StaticMesh {};
+struct Tag_SkeletalMesh {};
+struct Tag_Camera {};
+struct Tag_Sprite {};
+struct Tag_Text {};

@@ -128,11 +128,11 @@ void TestScene::Enter()
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
-	mMainCamera.AddTag<Camera>();
+	mMainCamera.AddTag<Tag_Camera>();
 
 	m2dCamera = Entity(mOwner->CreateEntity(), mOwner);
 	m2dCamera.AddComponent<CameraComponent>();
-	m2dCamera.AddTag<Camera>();
+	m2dCamera.AddTag<Tag_Camera>();
 }
 
 void TestScene::Exit()
@@ -146,7 +146,7 @@ void TestScene::ProcessInput()
 {
 	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
 	{
-		auto view = (mOwner->GetRegistry()).view<Sprite>();
+		auto view = (mOwner->GetRegistry()).view<Tag_Sprite>();
 
 		for (auto entity : view)
 		{
@@ -185,7 +185,7 @@ void TestScene::Update(float deltaTime)
 	}
 
 	{
-		auto view = (mOwner->GetRegistry().view<SkeletalMesh>());
+		auto view = (mOwner->GetRegistry().view<Tag_SkeletalMesh>());
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -240,7 +240,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 	{
 		gCmdList->SetPipelineState(renderer->GetSkeletalMeshPSO().Get());
-		auto view = (mOwner->GetRegistry()).view<SkeletalMesh>();
+		auto view = (mOwner->GetRegistry()).view<Tag_SkeletalMesh>();
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -258,7 +258,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 	{
 		gCmdList->SetPipelineState(renderer->GetStaticMeshPSO().Get());
-		auto view = (mOwner->GetRegistry()).view<StaticMesh>();
+		auto view = (mOwner->GetRegistry()).view<Tag_StaticMesh>();
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -308,7 +308,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 	}
 
 	{
-		auto view = (mOwner->GetRegistry()).view<Txt>();
+		auto view = (mOwner->GetRegistry()).view<Tag_Text>();
 
 		for (auto entity : view)
 		{

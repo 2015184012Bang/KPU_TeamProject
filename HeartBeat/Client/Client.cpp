@@ -75,7 +75,7 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	Entity e = Entity(CreateEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
-	e.AddTag<SkeletalMesh>();
+	e.AddTag<Tag_SkeletalMesh>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
 	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
@@ -94,7 +94,7 @@ Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& te
 	Entity e = Entity(CreateEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
-	e.AddTag<StaticMesh>();
+	e.AddTag<Tag_StaticMesh>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
 
@@ -111,7 +111,7 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile)
 {
 	Entity e = Entity(CreateEntity(), this);
 
-	e.AddTag<Sprite>();
+	e.AddTag<Tag_Sprite>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(width, height);
 	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile));
@@ -123,7 +123,7 @@ Entity Client::CreateTextEntity()
 {
 	Entity e = Entity(CreateEntity(), this);
 
-	e.AddTag<Txt>();
+	e.AddTag<Tag_Text>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
 	e.AddComponent<TextComponent>();
