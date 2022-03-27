@@ -7,6 +7,7 @@ unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
 unordered_map<wstring, Animation*> ResourceManager::sAnimations;
 unordered_map<wstring, AABB*> ResourceManager::sBoxes;
 unordered_map<wstring, Mesh*> ResourceManager::sDebugMeshes;
+unordered_map<wstring, Font*> ResourceManager::sFonts;
 
 void ResourceManager::Shutdown()
 {
@@ -156,4 +157,22 @@ Mesh* ResourceManager::GetDebugMesh(const wstring& path)
 	}
 
 	return nullptr;
+}
+
+Font* ResourceManager::GetFont(const wstring& path)
+{
+	auto iter = sFonts.find(path);
+
+	if (iter != sFonts.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Font* newFont = new Font;
+		newFont->Load(path);
+		sFonts[path] = newFont;
+
+		return newFont;
+	}
 }

@@ -20,6 +20,14 @@ struct SkeletalVertex
 
 struct SpriteVertex
 {
+	SpriteVertex()
+		: Position(Vector3::Zero)
+		, UV(Vector2::Zero) {}
+
+	SpriteVertex(float x, float y, float z, float u, float v)
+		: Position(x, y, z)
+		, UV(u, v) {}
+
 	Vector3 Position;
 	Vector2 UV;
 };

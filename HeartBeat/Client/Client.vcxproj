@@ -115,6 +115,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ClientSystems.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="ClientMain.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="ClientPCH.h" />
     <ClInclude Include="ClientSystems.h" />
     <ClInclude Include="d3dHelper.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />

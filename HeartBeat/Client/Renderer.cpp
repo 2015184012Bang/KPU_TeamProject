@@ -490,6 +490,9 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
 
 	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
+
+	Font* font = ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt");
+	font->SetTexture(ResourceManager::GetTexture(L"Assets/Fonts/font.dds"));
 }
 
 void Renderer::loadAssets()

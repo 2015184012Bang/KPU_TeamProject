@@ -1,0 +1,35 @@
+#pragma once
+#include "Resource.h"
+
+class Texture;
+
+constexpr int ASCII_CHAR_COUNT = 95;
+
+class Font :
+	public IResource
+{
+	struct FontType
+	{
+		float Left;
+		float Right;
+		int Size;
+	};
+
+public:
+	Font();
+
+	virtual void Load(const wstring& path) override;
+	void SetTexture(const Texture* texture) { mTexture = texture; }
+	const Texture* GetTexture() const { HB_ASSERT(mTexture, "Texture not set!");  return mTexture; }
+
+	void MakeVertices(vector<SpriteVertex>* outVertices, const string& sentence, const Vector3& drawOffset);
+
+private:
+	void loadFontFile(const wstring& path);
+
+
+private:
+	vector<FontType> mChars;
+	const Texture* mTexture;
+};
+
