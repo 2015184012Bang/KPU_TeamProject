@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "Timer.h"
 #include "TestScene.h"
+#include "Text.h"
 
 Client::Client()
 	: Game()
@@ -119,14 +120,14 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile)
 	return e;
 }
 
-Entity Client::CreateTextEntity()
+Entity Client::CreateTextEntity(const wstring& fontFile)
 {
 	Entity e = Entity(CreateEntity(), this);
 
 	e.AddTag<Tag_Text>();
 	e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>();
+	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt")));
 
 	return e;
 }

@@ -53,6 +53,12 @@ void ResourceManager::Shutdown()
 		delete debugMesh;
 	}
 	sDebugMeshes.clear();
+
+	for (auto& [_, font] : sFonts)
+	{
+		delete font;
+	}
+	sFonts.clear();
 }
 
 Mesh* ResourceManager::GetMesh(const wstring& path)

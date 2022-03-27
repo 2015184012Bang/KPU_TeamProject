@@ -9,17 +9,21 @@ constexpr int TEXT_INPUT_LIMIT = 24;
 class Text
 {
 public:
-	Text(const Font* font, const string& sentence);
+	Text();
+	Text(const Font* font);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
 	uint32 GetVertexCount() const { return mVertexCount; }
 
+	void SetFont(const Font* font) { mFont = font; }
 	void SetSentence(const string& sentence);
 
 	const Texture* GetTexture() const { return mFont->GetTexture(); }
+	const string& GetSentence() const { return mSentence; }
 
 private:
 	void createVertexBuffer();
+	void updateVertexBuffer();
 
 private:
 	const Font* mFont;

@@ -20,7 +20,7 @@ public:
     Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
     Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
     Entity CreateSpriteEntity(int width, int height, const wstring& texFile);
-    Entity CreateTextEntity();
+    Entity CreateTextEntity(const wstring& fontFile);
 
 private:
     void processInput();
