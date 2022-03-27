@@ -2,6 +2,9 @@
 
 class Mesh;
 class Texture;
+class Font;
+class SpriteMesh;
+class Text;
 
 class Renderer
 {
@@ -16,6 +19,7 @@ public:
 	void Submit(const Mesh* mesh, const Texture* texture);
 	void SubmitDebugMesh(const Mesh* mesh);
 	void SubmitSprite(const SpriteMesh* mesh, const Texture* texture);
+	void SubmitText(const Text* text);
 
 	const ComPtr<ID3D12PipelineState>& GetStaticMeshPSO() const { return mStaticMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetSkeletalMeshPSO() const { return mSkeletalMeshPSO; }

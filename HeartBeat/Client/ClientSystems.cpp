@@ -32,7 +32,7 @@ void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rota
 
 void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
 {
-	Vector3 converted = screenToClip(position);
+	Vector3 converted = ScreenToClip(position);
 
 	BindWorldMatrix(converted, Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
@@ -198,7 +198,7 @@ void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, cons
 	}
 }
 
-Vector3 ClientSystems::screenToClip(const Vector2& coord)
+Vector3 ClientSystems::ScreenToClip(const Vector2& coord)
 {
 	Vector3 v;
 	v.x = -(Application::GetScreenWidth() / 2) + coord.x;

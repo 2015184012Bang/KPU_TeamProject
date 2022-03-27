@@ -8,6 +8,8 @@
 #include "Animation.h"
 #include "AABB.h"
 #include "Script.h"
+#include "Font.h"
+#include "Text.h"
 
 struct MeshRendererComponent
 {
@@ -121,4 +123,15 @@ struct ButtonComponent
 	ButtonComponent(std::function<void(void)> f);
 
 	std::function<void(void)> CallbackFunc;
+};
+
+struct TextComponent
+{
+	TextComponent();
+	TextComponent(Text* text);
+	~TextComponent();
+	TextComponent(TextComponent&& other) noexcept;
+	TextComponent& operator=(TextComponent&& other) noexcept;
+
+	Text* Txt;
 };

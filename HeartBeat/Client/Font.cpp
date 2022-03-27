@@ -12,7 +12,7 @@ void Font::Load(const wstring& path)
 	loadFontFile(path);
 }
 
-void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentence, const Vector3& drawOffset)
+void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentence) const
 {
 	int numLetters = static_cast<int>(sentence.size());
 
@@ -26,8 +26,8 @@ void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentenc
 	int numVertices = numLetters * 6;
 	outVertices->reserve(numVertices);
 
-	float drawX = drawOffset.x;
-	float drawY = drawOffset.y;
+	float drawX = 0.0f;
+	float drawY = 0.0f;
 
 	int letter = 0;
 	for (int i = 0; i < numLetters; ++i)
@@ -41,12 +41,12 @@ void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentenc
 		else
 		{
 			outVertices->emplace_back(drawX, drawY, 0.0f, mChars[letter].Left, 0.0f); // Top-Left
-			outVertices->emplace_back(drawX + mChars[letter].Size, (drawY - 16.0f), 0.0f, mChars[letter].Right, 1.0f); // Bottom-Right
 			outVertices->emplace_back(drawX, (drawY - 16.0f), 0.0f, mChars[letter].Left, 1.0f); // Bottom-Left
+			outVertices->emplace_back(drawX + mChars[letter].Size, (drawY - 16.0f), 0.0f, mChars[letter].Right, 1.0f); // Bottom-Right
 
 			outVertices->emplace_back(drawX, drawY, 0.0f, mChars[letter].Left, 0.0f); // Top-Left
-			outVertices->emplace_back(drawX + mChars[letter].Size, drawY, 0.0f, mChars[letter].Right, 0.0f); // Top-Right
 			outVertices->emplace_back(drawX + mChars[letter].Size, (drawY - 16.0f), 0.0f, mChars[letter].Right, 1.0f); // Bottom-Right
+			outVertices->emplace_back(drawX + mChars[letter].Size, drawY, 0.0f, mChars[letter].Right, 0.0f); // Top-Right
 		}
 
 		drawX += mChars[letter].Size + 1.0f;

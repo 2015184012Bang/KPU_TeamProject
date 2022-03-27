@@ -30,6 +30,8 @@ private:
 
     Entity mSprite;
     Entity mSprite2;
+
+    Entity mText;
     //////////////////////////////////////////////////////////////////////////
 
     //TCPSocketPtr mClientSocket;

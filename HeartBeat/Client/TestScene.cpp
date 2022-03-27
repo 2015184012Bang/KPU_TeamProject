@@ -49,6 +49,16 @@ void TestScene::Enter()
 	//}
 
 	{
+		mText = mOwner->CreateTextEntity();
+
+		auto& t = mText.GetComponent<TextComponent>();
+		t.Txt = new Text(ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt"), "Hello!");
+
+		auto& rect = mText.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2(400.0f, 300.0f);
+	}
+
+	{
 		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
 		mSprite.AddComponent<ButtonComponent>();
 		mSprite.AddComponent<ScriptComponent>(new UIButtonTest2(mSprite));
@@ -293,6 +303,21 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 			SpriteRendererComponent& spriteRenderer = e.GetComponent<SpriteRendererComponent>();
 			renderer->SubmitSprite(spriteRenderer.Mesi, spriteRenderer.Tex);
+		}
+	}
+
+	{
+		auto view = (mOwner->GetRegistry()).view<Txt>();
+
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
+			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+
+			TextComponent& t = e.GetComponent<TextComponent>();
+			renderer->SubmitText(t.Txt);
 		}
 	}
 }

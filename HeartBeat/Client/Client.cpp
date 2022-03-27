@@ -117,6 +117,18 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile)
 	return e;
 }
 
+Entity Client::CreateTextEntity()
+{
+	Entity e = Entity(CreateEntity(), this);
+
+	e.AddTag<Txt>();
+	e.AddComponent<IDComponent>();
+	e.AddComponent<RectTransformComponent>(0, 0);
+	e.AddComponent<TextComponent>();
+
+	return e;
+}
+
 void Client::processInput()
 {
 	Input::Update();

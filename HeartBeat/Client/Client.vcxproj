@@ -125,6 +125,7 @@
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
     <ClInclude Include="Types.h" />

@@ -536,3 +536,13 @@ void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
 }
+
+void Renderer::SubmitText(const Text* text)
+{
+	const Texture* texture = text->GetTexture();
+
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &text->GetVertexBufferView());
+	mCmdList->DrawInstanced(text->GetVertexCount(), 1, 0, 0);
+}
