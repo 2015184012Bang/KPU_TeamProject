@@ -28,7 +28,7 @@ private:
     void render();
 
 private:
-    Scene* mActiveScene;
+    unique_ptr<Scene> mActiveScene;
     
     unique_ptr<Renderer> mRenderer;
 };

@@ -29,8 +29,7 @@ bool Client::Init()
 	mRenderer->Init();
 
 	//////////////////////////////////////////////////////////////////////////
-	TestScene::StaticCreate(this);
-	mActiveScene = TestScene::Get();
+	mActiveScene = std::make_unique<TestScene>(this);
 	mActiveScene->Enter();
 	//////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +66,8 @@ void Client::ChangeScene(Scene* scene)
 	}
 
 	mActiveScene->Exit();
-	mActiveScene = scene;
+	mActiveScene = nullptr;
+	mActiveScene = unique_ptr<Scene>(scene);
 	mActiveScene->Enter();
 }
 

@@ -13,6 +13,10 @@
 #include "UIButtonTest.h"
 #include "UIButtonTest2.h"
 
+/// <summary>
+#include "LoginScene.h"
+/// </summary>
+
 TestScene* TestScene::sInstance;
 
 TestScene::TestScene(Client* owner)
@@ -21,33 +25,9 @@ TestScene::TestScene(Client* owner)
 
 }
 
-void TestScene::StaticCreate(Client* owner)
-{
-	static TestScene instance(owner);
-	sInstance = &instance;
-}
-
-TestScene* TestScene::Get()
-{
-	return sInstance;
-}
-
 void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
-
-	//{
-	//	mClientSocket = SocketUtil::CreateTCPSocket();
-	//	SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-	//	
-	//	int retVal = SOCKET_ERROR;
-	//	do 
-	//	{
-	//		retVal = mClientSocket->Connect(serveraddr);
-	//	} while (retVal == SOCKET_ERROR);
-
-	//	mClientSocket->SetNonBlockingMode(true);
-	//}
 
 	{
 		mText = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
@@ -138,8 +118,6 @@ void TestScene::Enter()
 void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
-
-	//mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
@@ -168,6 +146,11 @@ void TestScene::ProcessInput()
 	{
 		auto& text = mText.GetComponent<TextComponent>();
 		text.Txt->SetSentence("Myung kyu god");
+	}
+
+	if (Input::IsButtonPressed(eKeyCode::D))
+	{
+		mOwner->ChangeScene(new LoginScene(mOwner));
 	}
 }
 
