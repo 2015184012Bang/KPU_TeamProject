@@ -1,13 +1,17 @@
 #pragma once
 
-#include "Mesh.h"
-#include "Texture.h"
 #include "UploadBuffer.h"
 #include "Bone.h"
-#include "Skeleton.h"
-#include "Animation.h"
 #include "AABB.h"
-#include "Script.h"
+
+class Mesh;
+class Texture;
+class SpriteMesh;
+class Skeleton;
+class Animation;
+class Script;
+class Text;
+
 
 struct MeshRendererComponent
 {
@@ -121,4 +125,15 @@ struct ButtonComponent
 	ButtonComponent(std::function<void(void)> f);
 
 	std::function<void(void)> CallbackFunc;
+};
+
+struct TextComponent
+{
+	TextComponent();
+	TextComponent(Text* text);
+	~TextComponent();
+	TextComponent(TextComponent&& other) noexcept;
+	TextComponent& operator=(TextComponent&& other) noexcept;
+
+	Text* Txt;
 };

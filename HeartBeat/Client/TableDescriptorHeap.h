@@ -1,5 +1,7 @@
 #pragma once
 
+constexpr int MAX_TEX_DESCRIPTORS = 100;
+
 class TableDescriptorHeap
 {
 public:

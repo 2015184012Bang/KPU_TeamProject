@@ -2,9 +2,13 @@
 #include "Renderer.h"
 
 #include "Application.h"
+#include "Mesh.h"
 #include "ResourceManager.h"
 #include "TableDescriptorHeap.h"
+#include "Text.h"
+#include "Texture.h"
 #include "Vertex.h"
+
 
 ComPtr<ID3D12Device> gDevice;
 ComPtr<ID3D12GraphicsCommandList> gCmdList;
@@ -81,7 +85,7 @@ void Renderer::EndRender()
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-	ThrowIfFailed(mSwapChain->Present(1, 0));
+	ThrowIfFailed(mSwapChain->Present(0, 0));
 
 	waitForPreviousFrame();
 }
@@ -269,6 +273,11 @@ void Renderer::createPipelineState()
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.BlendState.AlphaToCoverageEnable = FALSE;
+		psoDesc.BlendState.IndependentBlendEnable = FALSE;
+		psoDesc.BlendState.RenderTarget[0].BlendEnable = TRUE;
+		psoDesc.BlendState.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+		psoDesc.BlendState.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
 		psoDesc.SampleMask = UINT_MAX;
@@ -490,6 +499,9 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
 
 	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
+
+	Font* font = ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt");
+	font->SetTexture(ResourceManager::GetTexture(L"Assets/Fonts/font.dds"));
 }
 
 void Renderer::loadAssets()
@@ -532,4 +544,14 @@ void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
+}
+
+void Renderer::SubmitText(const Text* text)
+{
+	const Texture* texture = text->GetTexture();
+
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mCmdList->IASetVertexBuffers(0, 1, &text->GetVertexBufferView());
+	mCmdList->DrawInstanced(text->GetVertexCount(), 1, 0, 0);
 }

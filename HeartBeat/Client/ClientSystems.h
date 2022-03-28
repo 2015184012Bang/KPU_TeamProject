@@ -1,6 +1,12 @@
 #pragma once
 
 #include "UploadBuffer.h"
+#include "Bone.h"
+
+struct AnimatorComponent;
+class Animation;
+class AABB;
+class Skeleton;
 
 class ClientSystems
 {
@@ -17,9 +23,9 @@ public:
 	static void UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty);
 	static bool Intersects(const AABB& a, const AABB& b);
 	static bool Intersects(const Vector2& position, int w, int h);
+	static Vector3 ScreenToClip(const Vector2& coord);
 
 private:
 	static void computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette);
 	static void computeBlendingMatrixPalette(const Animation* fromAnim, const Animation* toAnim, const Skeleton* skel, float fromAnimTime, float toAnimTime, float t, MatrixPalette* outPalette);
-	static Vector3 screenToClip(const Vector2& coord);
 };

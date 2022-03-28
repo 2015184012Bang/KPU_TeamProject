@@ -115,8 +115,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ClientSystems.cpp" />
+    <ClCompile Include="Font.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="ClientMain.cpp" />
+    <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -124,6 +126,7 @@
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
@@ -138,7 +141,9 @@
     <ClInclude Include="ClientPCH.h" />
     <ClInclude Include="ClientSystems.h" />
     <ClInclude Include="d3dHelper.h" />
+    <ClInclude Include="Font.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="LoginScene.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
@@ -148,6 +153,7 @@
     <ClInclude Include="CharacterMovement.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="TestScene.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
     <ClInclude Include="Types.h" />

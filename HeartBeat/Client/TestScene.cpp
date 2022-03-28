@@ -1,16 +1,21 @@
 #include "ClientPCH.h"
 #include "TestScene.h"
 
-#include "Input.h"
+#include "Animation.h"
 #include "Client.h"
-
+#include "ClientSystems.h"
+#include "Input.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "ClientSystems.h"
+#include "Text.h"
 
 #include "CharacterMovement.h"
 #include "UIButtonTest.h"
 #include "UIButtonTest2.h"
+
+/// <summary>
+#include "LoginScene.h"
+/// </summary>
 
 TestScene* TestScene::sInstance;
 
@@ -20,33 +25,19 @@ TestScene::TestScene(Client* owner)
 
 }
 
-void TestScene::StaticCreate(Client* owner)
-{
-	static TestScene instance(owner);
-	sInstance = &instance;
-}
-
-TestScene* TestScene::Get()
-{
-	return sInstance;
-}
-
 void TestScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	//{
-	//	mClientSocket = SocketUtil::CreateTCPSocket();
-	//	SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-	//	
-	//	int retVal = SOCKET_ERROR;
-	//	do 
-	//	{
-	//		retVal = mClientSocket->Connect(serveraddr);
-	//	} while (retVal == SOCKET_ERROR);
+	{
+		mText = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
 
-	//	mClientSocket->SetNonBlockingMode(true);
-	//}
+		auto& t = mText.GetComponent<TextComponent>();
+		t.Txt->SetSentence("Hello, world!");
+
+		auto& rect = mText.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2(400.0f, 300.0f);
+	}
 
 	{
 		mSprite = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Smile.png");
@@ -117,25 +108,23 @@ void TestScene::Enter()
 
 	mMainCamera = Entity(mOwner->CreateEntity(), mOwner);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
-	mMainCamera.AddTag<Camera>();
+	mMainCamera.AddTag<Tag_Camera>();
 
 	m2dCamera = Entity(mOwner->CreateEntity(), mOwner);
 	m2dCamera.AddComponent<CameraComponent>();
-	m2dCamera.AddTag<Camera>();
+	m2dCamera.AddTag<Tag_Camera>();
 }
 
 void TestScene::Exit()
 {
 	HB_LOG("TestScene::Exit");
-
-	//mClientSocket = nullptr;
 }
 
 void TestScene::ProcessInput()
 {
 	if (Input::IsButtonPressed(eKeyCode::MouseRButton))
 	{
-		auto view = (mOwner->GetRegistry()).view<Sprite>();
+		auto view = (mOwner->GetRegistry()).view<Tag_Sprite>();
 
 		for (auto entity : view)
 		{
@@ -151,6 +140,17 @@ void TestScene::ProcessInput()
 				button.CallbackFunc();
 			}
 		}
+	}
+
+	if (Input::IsButtonPressed(eKeyCode::Return))
+	{
+		auto& text = mText.GetComponent<TextComponent>();
+		text.Txt->SetSentence("Myung kyu god");
+	}
+
+	if (Input::IsButtonPressed(eKeyCode::D))
+	{
+		mOwner->ChangeScene(new LoginScene(mOwner));
 	}
 }
 
@@ -174,7 +174,7 @@ void TestScene::Update(float deltaTime)
 	}
 
 	{
-		auto view = (mOwner->GetRegistry().view<SkeletalMesh>());
+		auto view = (mOwner->GetRegistry().view<Tag_SkeletalMesh>());
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -229,7 +229,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 	{
 		gCmdList->SetPipelineState(renderer->GetSkeletalMeshPSO().Get());
-		auto view = (mOwner->GetRegistry()).view<SkeletalMesh>();
+		auto view = (mOwner->GetRegistry()).view<Tag_SkeletalMesh>();
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -247,7 +247,7 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 	{
 		gCmdList->SetPipelineState(renderer->GetStaticMeshPSO().Get());
-		auto view = (mOwner->GetRegistry()).view<StaticMesh>();
+		auto view = (mOwner->GetRegistry()).view<Tag_StaticMesh>();
 		for (auto entity : view)
 		{
 			Entity e = Entity(entity, mOwner);
@@ -293,6 +293,21 @@ void TestScene::Render(unique_ptr<Renderer>& renderer)
 
 			SpriteRendererComponent& spriteRenderer = e.GetComponent<SpriteRendererComponent>();
 			renderer->SubmitSprite(spriteRenderer.Mesi, spriteRenderer.Tex);
+		}
+	}
+
+	{
+		auto view = (mOwner->GetRegistry()).view<Tag_Text>();
+
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
+
+			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
+			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+
+			TextComponent& t = e.GetComponent<TextComponent>();
+			renderer->SubmitText(t.Txt);
 		}
 	}
 }

@@ -6,17 +6,13 @@ class TestScene :
     public Scene
 {
 public:
-    static void StaticCreate(Client* owner);
-    static TestScene* Get();
-
+    TestScene(Client* owner);
+    
     virtual void Enter() override;
     virtual void Exit() override;
     virtual void ProcessInput() override;
     virtual void Update(float deltaTime) override;
     virtual void Render(unique_ptr<Renderer>& renderer) override;
-
-private:
-    TestScene(Client* owner);
 
 private:
     static TestScene* sInstance;
@@ -30,8 +26,8 @@ private:
 
     Entity mSprite;
     Entity mSprite2;
-    //////////////////////////////////////////////////////////////////////////
 
-    //TCPSocketPtr mClientSocket;
+    Entity mText;
+    //////////////////////////////////////////////////////////////////////////
 };
 
