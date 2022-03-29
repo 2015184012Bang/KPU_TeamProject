@@ -15,6 +15,6 @@ public:
 	virtual void Render(unique_ptr<Renderer>& renderer) override;
 
 private:
-	
+	TCPSocketPtr mClientSocket;
 };
 

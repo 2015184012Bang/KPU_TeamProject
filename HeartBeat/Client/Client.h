@@ -22,6 +22,8 @@ public:
     Entity CreateSpriteEntity(int width, int height, const wstring& texFile);
     Entity CreateTextEntity(const wstring& fontFile);
 
+    TCPSocketPtr GetClientSocket() { return mClientSocket; }
+
 private:
     void processInput();
     void update();
@@ -31,5 +33,7 @@ private:
     unique_ptr<Scene> mActiveScene;
     
     unique_ptr<Renderer> mRenderer;
+
+    TCPSocketPtr mClientSocket;
 };
 

@@ -4,6 +4,7 @@
 #include "ClientComponents.h"
 #include "Input.h"
 #include "Mesh.h"
+#include "LoginScene.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Timer.h"
@@ -28,8 +29,10 @@ bool Client::Init()
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
 
+	mClientSocket = SocketUtil::CreateTCPSocket();
+
 	//////////////////////////////////////////////////////////////////////////
-	mActiveScene = std::make_unique<TestScene>(this);
+	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
 	//////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +44,8 @@ void Client::Shutdown()
 	HB_LOG("Client::Shutdown");
 
 	GetRegistry().clear();
+
+	mClientSocket = nullptr;
 
 	if (mActiveScene)
 	{
