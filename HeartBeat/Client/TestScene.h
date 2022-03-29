@@ -15,8 +15,6 @@ public:
     virtual void Render(unique_ptr<Renderer>& renderer) override;
 
 private:
-    static TestScene* sInstance;
-
     //////////////////////////////////////////////////////////////////////////
     Entity mEnemy;
     Entity mCell;

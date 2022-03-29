@@ -17,8 +17,6 @@
 #include "LoginScene.h"
 /// </summary>
 
-TestScene* TestScene::sInstance;
-
 TestScene::TestScene(Client* owner)
 	: Scene(owner)
 {

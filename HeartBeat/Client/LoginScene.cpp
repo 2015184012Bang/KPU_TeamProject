@@ -3,7 +3,7 @@
 
 #include "Client.h"
 #include "Input.h"
-#include "TestScene.h"
+#include "LobbyScene.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -44,7 +44,7 @@ void LoginScene::Update(float deltaTime)
 
 		mClientSocket->SetNonBlockingMode(true);
 
-		mOwner->ChangeScene(new TestScene(mOwner));
+		mOwner->ChangeScene(new LobbyScene(mOwner));
 	}
 }
 

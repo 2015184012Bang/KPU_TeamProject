@@ -502,6 +502,8 @@ void Renderer::loadAllAssetsFromFile()
 
 	Font* font = ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt");
 	font->SetTexture(ResourceManager::GetTexture(L"Assets/Fonts/font.dds"));
+
+	ResourceManager::GetTexture(L"Assets/Textures/RedBox.png");
 }
 
 void Renderer::loadAssets()

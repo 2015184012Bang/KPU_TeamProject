@@ -2,6 +2,7 @@
 #include "Client.h"
 
 #include "ClientComponents.h"
+#include "ClientSystems.h"
 #include "Input.h"
 #include "Mesh.h"
 #include "LoginScene.h"
@@ -10,6 +11,7 @@
 #include "Timer.h"
 #include "TestScene.h"
 #include "Text.h"
+#include "LobbyScene.h"
 
 Client::Client()
 	: Game()
@@ -31,8 +33,16 @@ bool Client::Init()
 
 	mClientSocket = SocketUtil::CreateTCPSocket();
 
+	mMainCamera = Entity(CreateEntity(), this);
+	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
+	mMainCamera.AddTag<Tag_Camera>();
+
+	m2dCamera = Entity(CreateEntity(), this);
+	m2dCamera.AddComponent<CameraComponent>();
+	m2dCamera.AddTag<Tag_Camera>();
+
 	//////////////////////////////////////////////////////////////////////////
-	mActiveScene = std::make_unique<LoginScene>(this);
+	mActiveScene = std::make_unique<LobbyScene>(this);
 	mActiveScene->Enter();
 	//////////////////////////////////////////////////////////////////////////
 
@@ -167,6 +177,47 @@ void Client::update()
 void Client::render()
 {
 	mRenderer->BeginRender();
+
+	auto& camera = mMainCamera.GetComponent<CameraComponent>();
+	ClientSystems::BindViewProjectionMatrix(camera.Position,
+		camera.Target, camera.Up, camera.FOV, camera.Buffer);
+
+	{
+		gCmdList->SetPipelineState(mRenderer->GetSkeletalMeshPSO().Get());
+		auto view = GetRegistry().view<Tag_SkeletalMesh>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, this);
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+
+			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
+			ClientSystems::BindBoneMatrix(animator.Palette, animator.Buffer);
+
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
+
+	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
+	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
+	{
+		gCmdList->SetPipelineState(mRenderer->GetSpritePSO().Get());
+
+		auto view = (GetRegistry()).view<SpriteRendererComponent>();
+
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, this);
+
+			RectTransformComponent& rect = e.GetComponent<RectTransformComponent>();
+			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+
+			SpriteRendererComponent& spriteRenderer = e.GetComponent<SpriteRendererComponent>();
+			mRenderer->SubmitSprite(spriteRenderer.Mesi, spriteRenderer.Tex);
+		}
+	}
 
 	mActiveScene->Render(mRenderer);
 

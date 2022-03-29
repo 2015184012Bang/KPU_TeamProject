@@ -35,5 +35,8 @@ private:
     unique_ptr<Renderer> mRenderer;
 
     TCPSocketPtr mClientSocket;
+
+    Entity mMainCamera;
+    Entity m2dCamera;
 };
 
