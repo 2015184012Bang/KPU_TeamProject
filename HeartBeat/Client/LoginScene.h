@@ -1,10 +1,9 @@
 #pragma once
+
 #include "Scene.h"
 
-class LoginScene :
-	public Scene
+class LoginScene : public Scene
 {
-
 public:
 	LoginScene(Client* owner);
 
@@ -15,6 +14,6 @@ public:
 	virtual void Render(unique_ptr<Renderer>& renderer) override;
 
 private:
-	
+
 };
 

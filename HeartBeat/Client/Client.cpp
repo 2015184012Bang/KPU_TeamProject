@@ -4,17 +4,18 @@
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"
+#include "LoginScene.h"
 #include "Mesh.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Script.h"
 #include "Timer.h"
-#include "TestScene.h"
 #include "Text.h"
 
 Client::Client()
 	: Game()
 	, mActiveScene(nullptr)
+	, mMySocket(nullptr)
 {
 
 }
@@ -27,15 +28,15 @@ bool Client::Init()
 	Timer::Init();
 	SocketUtil::Init();
 
+	mMySocket = SocketUtil::CreateTCPSocket();
+
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
 
 	createCameraEntity();
 
-	//////////////////////////////////////////////////////////////////////////
-	mActiveScene = std::make_unique<TestScene>(this);
+	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
-	//////////////////////////////////////////////////////////////////////////
 
 	return true;
 }
@@ -50,6 +51,8 @@ void Client::Shutdown()
 	{
 		mActiveScene->Exit();
 	}
+
+	mMySocket = nullptr;
 
 	mRenderer->Shutdown();
 	SocketUtil::Shutdown();

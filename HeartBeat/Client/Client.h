@@ -24,6 +24,8 @@ public:
 
     Entity& GetMainCamera() { return mMainCamera; }
 
+    TCPSocketPtr GetMySocket() { return mMySocket; }
+
 private:
     void processInput();
     void update();
@@ -43,10 +45,11 @@ private:
 
 private:
     unique_ptr<Scene> mActiveScene;
-    
     unique_ptr<Renderer> mRenderer;
 
     Entity mMainCamera;
     Entity m2dCamera;
+
+    TCPSocketPtr mMySocket;
 };
 
