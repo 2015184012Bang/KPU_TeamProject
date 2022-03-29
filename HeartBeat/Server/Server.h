@@ -8,7 +8,7 @@ constexpr int NUM_MAX_PLAYER = 1;
 
 class Server : public Game
 {
-	struct Connection
+	struct Session
 	{
 		bool bConnect;
 		TCPSocketPtr ClientSocket;
@@ -27,5 +27,5 @@ private:
 	void processPacket(MemoryStream* outPacket);
 
 private:
-	vector<Connection> mConnections;
+	vector<Session> mConnections;
 };

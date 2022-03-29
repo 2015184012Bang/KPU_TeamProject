@@ -38,6 +38,7 @@ void LoginScene::ProcessInput()
 		else
 		{
 			mOwner->ChangeScene(new TestScene(mOwner));
+			sock->SetNonBlockingMode(true);
 		}
 	}
 }

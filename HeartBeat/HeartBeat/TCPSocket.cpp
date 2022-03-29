@@ -11,40 +11,19 @@ TCPSocket::~TCPSocket()
 int TCPSocket::Bind(const SocketAddress& addr)
 {
 	int error = bind(mSocket, &addr.mSockAddr, addr.GetSize());
-
-	if (error == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"TCPSocket::Bind");
-		return SOCKET_ERROR;
-	}
-
-	return NO_ERROR;
+	return error;
 }
 
 int TCPSocket::Listen(int backlog /*= SOMAXCONN*/)
 {
 	int error = listen(mSocket, backlog);
-
-	if (error == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"TCPSocket::Listen");
-		return SOCKET_ERROR;
-	}
-
-	return NO_ERROR;
+	return error;
 }
 
 int TCPSocket::Connect(const SocketAddress& addr)
 {
 	int error = connect(mSocket, &addr.mSockAddr, addr.GetSize());
-
-	if (error == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"TCPSocket::Connect");
-		return SOCKET_ERROR;
-	}
-
-	return NO_ERROR;
+	return error;
 }
 
 TCPSocketPtr TCPSocket::Accept(SocketAddress* outAddr)
@@ -65,32 +44,12 @@ TCPSocketPtr TCPSocket::Accept(SocketAddress* outAddr)
 int TCPSocket::Send(const void* data, int len, int flags /*= 0*/)
 {
 	int sent = send(mSocket, static_cast<const char*>(data), len, flags);
-
-	if (sent == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"TCPSocket::Send");
-		return SOCKET_ERROR;
-	}
-
 	return sent;
 }
 
 int TCPSocket::Recv(void* outData, int len, int flags /*= 0*/)
 {
 	int read = recv(mSocket, static_cast<char*>(outData), len, flags);
-
-	if (read == SOCKET_ERROR)
-	{
-		int err = WSAGetLastError();
-
-		if (err != WSAEWOULDBLOCK)
-		{
-			SocketUtil::ReportError(L"TCPSocket::Recv", err);
-		}
-	
-		return SOCKET_ERROR;
-	}
-
 	return read;
 }
 

@@ -53,7 +53,7 @@ void Server::Run()
 			}
 		}
 
-		mConnections.erase(std::remove_if(mConnections.begin(), mConnections.end(), [](const Connection& c) {
+		mConnections.erase(std::remove_if(mConnections.begin(), mConnections.end(), [](const Session& c) {
 			return c.bConnect == false;
 			}), mConnections.end());
 	}
@@ -66,12 +66,14 @@ void Server::waitPlayers()
 
 	if (listenSocket->Bind(serveraddr) == SOCKET_ERROR)
 	{
-		HB_ASSERT(false, "ASSERTION FAILED");
+		SocketUtil::ReportError(L"Server::waitPlayers()");
+		HB_ASSERT(false, "");
 	}
 
 	if (listenSocket->Listen() == SOCKET_ERROR)
 	{
-		HB_ASSERT(false, "ASSERTION FAILED");
+		SocketUtil::ReportError(L"Server::waitPlayers()");
+		HB_ASSERT(false, "");
 	}
 
 	SocketAddress clientAddr;
@@ -84,7 +86,7 @@ void Server::waitPlayers()
 		
 		HB_LOG("Client Connected: {0}", clientAddr.ToString());
 
-		Connection c;
+		Session c;
 		c.bConnect = true;
 		c.ClientSocket = clientSocket;
 		c.ClientAddr = clientAddr;
