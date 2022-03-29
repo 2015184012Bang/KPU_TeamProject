@@ -26,8 +26,11 @@ Text::Text(const Font* font)
 
 void Text::SetSentence(const string& sentence)
 {
-	mSentence = sentence;
-	updateVertexBuffer();
+	if (mSentence != sentence)
+	{
+		mSentence = sentence;
+		updateVertexBuffer();
+	}
 }
 
 void Text::createVertexBuffer()
