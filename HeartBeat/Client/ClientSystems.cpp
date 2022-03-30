@@ -41,6 +41,17 @@ void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix
 	BindWorldMatrix(converted, Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
 
+void ClientSystems::BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment)
+{
+	Matrix mat = attachment->ParentPalette->CurrentPoses[attachment->BoneIndex]; 
+	mat *= Matrix::CreateScale(outTransform->Scale);
+	mat *= Matrix::CreateRotationY(XMConvertToRadians(outTransform->Rotation.y));
+	mat *= Matrix::CreateTranslation(outTransform->Position);
+	outTransform->Buffer.CopyData(0, mat);
+
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outTransform->Buffer.GetVirtualAddress());
+}
+
 void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
 	const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer)
 {
@@ -182,6 +193,7 @@ void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* 
 
 	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
 	{
+		outPalette->CurrentPoses[i] = currentPoses[i];
 		outPalette->Entry[i] = globalInvBindPoses[i] * currentPoses[i];
 	}
 }
@@ -198,7 +210,8 @@ void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, cons
 
 	for (uint32 i = 0; i < skel->GetNumBones(); ++i)
 	{
-		outPalette->Entry[i] = globalInvBindPoses[i] * Matrix::Lerp(toPoses[i], fromPoses[i], t);
+		outPalette->CurrentPoses[i] = Matrix::Lerp(toPoses[i], fromPoses[i], t);
+		outPalette->Entry[i] = globalInvBindPoses[i] * outPalette->CurrentPoses[i];
 	}
 }
 
@@ -212,3 +225,14 @@ Vector3 ClientSystems::ScreenToClip(const Vector2& coord)
 	return v;
 }
 
+void ClientSystems::SetBoneAttachment(Entity& parent, Entity& child, const string& boneName)
+{
+	// Add AttachmentComponent to child
+	auto& parentAnimator = parent.GetComponent<AnimatorComponent>();
+	uint32 boneIndex = parentAnimator.Skel->GetBoneIndexByName(boneName);
+	child.AddComponent<AttachmentChildComponent>(&parentAnimator.Palette, boneIndex);
+
+	// Add ChildComponent to parent
+	auto& childId = child.GetComponent<IDComponent>();
+	parent.AddComponent<AttachmentParentComponent>(childId.ID);
+}

@@ -12,3 +12,9 @@ HBID::HBID()
 {
 
 }
+
+HBID::HBID(uint64 id)
+	: mID(id)
+{
+
+}

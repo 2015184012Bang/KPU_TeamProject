@@ -294,3 +294,29 @@ TextComponent::~TextComponent()
 		Txt = nullptr;
 	}
 }
+
+AttachmentChildComponent::AttachmentChildComponent()
+	: ParentPalette(nullptr)
+	, BoneIndex(-1)
+{
+
+}
+
+AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint32 index)
+	: ParentPalette(palette)
+	, BoneIndex(index)
+{
+
+}
+
+AttachmentParentComponent::AttachmentParentComponent()
+	: ChildID(-1)
+{
+
+}
+
+AttachmentParentComponent::AttachmentParentComponent(const HBID& id)
+	: ChildID(id)
+{
+
+}

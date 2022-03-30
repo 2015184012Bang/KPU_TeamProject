@@ -73,11 +73,12 @@ uint32 Skeleton::GetBoneIndexByName(const string& name) const
 
 	if (iter != mBones.end())
 	{
-		return iter - mBones.begin();
+		return static_cast<uint32>(iter - mBones.begin());
 	}
 	else
 	{
 		HB_ASSERT(false, "There is no bone name: {0}", name);
+		return -1;
 	}
 }
 

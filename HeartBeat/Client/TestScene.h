@@ -16,5 +16,7 @@ public:
 
 private:
     Entity mTestText;
+    Entity mPickAx;
+    Entity mEnemy;
 };
 
