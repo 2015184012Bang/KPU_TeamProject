@@ -14,6 +14,6 @@ public:
 	virtual void Render(unique_ptr<Renderer>& renderer) override;
 
 private:
-
+	Entity mBackground;
 };
 
