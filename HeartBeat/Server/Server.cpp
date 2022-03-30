@@ -4,6 +4,8 @@
 
 
 Server::Server()
+	: mListenSocket(nullptr)
+	, mbGameStart(false)
 {
 
 }
@@ -14,38 +16,69 @@ bool Server::Init()
 
 	SocketUtil::Init();
 
-	waitPlayers();
+	mListenSocket = SocketUtil::CreateTCPSocket();
+	SocketAddress serveraddr(SERVER_PORT);
+
+	if (mListenSocket->Bind(serveraddr) == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	if (mListenSocket->Listen() == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	mListenSocket->SetNonBlockingMode(true);
 
 	return true;
 }
 
 void Server::Shutdown()
 {
-	HB_LOG("SERVER SHUTDOWN");
-
 	SocketUtil::Shutdown();
 }
 
 void Server::Run()
 {
-	while (true)
+	while (!ShouldClose())
 	{
+		if (!mbGameStart)
+		{
+			auto numCurUsers = mSessions.size();
+			if (numCurUsers < NUM_MAX_PLAYER)
+			{
+				accpetClients();
+			}
+		}
+
 		MemoryStream buf;
 
-		for (auto& c : mConnections)
+		for (auto& s : mSessions)
 		{
 			buf.Reset();
 
-			int retVal = (c.ClientSocket)->Recv(&buf, sizeof(MemoryStream));
+			int retVal = (s.ClientSocket)->Recv(&buf, sizeof(MemoryStream));
 
 			if (retVal == SOCKET_ERROR)
 			{
-				continue;
+				int error = WSAGetLastError();
+
+				if (error == WSAEWOULDBLOCK)
+				{
+					continue;
+				}
+				else
+				{
+					SocketUtil::ReportError(L"Server::Run");
+				}
 			}
 			else if (retVal == 0)
 			{
-				HB_LOG("Client[{0}] disconnected.", c.ClientAddr.ToString());
-				c.bConnect = false;
+				HB_LOG("Client[{0}] disconnected.", s.ClientAddr.ToString());
+				s.bConnect = false;
 			}
 			else
 			{
@@ -53,59 +86,42 @@ void Server::Run()
 			}
 		}
 
-		mConnections.erase(std::remove_if(mConnections.begin(), mConnections.end(), [](const Session& c) {
-			return c.bConnect == false;
-			}), mConnections.end());
+		mSessions.erase(std::remove_if(mSessions.begin(), mSessions.end(), [](const Session& s) {
+			return s.bConnect == false;
+			}), mSessions.end());
 	}
 }
 
-void Server::waitPlayers()
+void Server::accpetClients()
 {
-	TCPSocketPtr listenSocket = SocketUtil::CreateTCPSocket();
-	SocketAddress serveraddr(SERVER_PORT);
-
-	if (listenSocket->Bind(serveraddr) == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"Server::waitPlayers()");
-		HB_ASSERT(false, "");
-	}
-
-	if (listenSocket->Listen() == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"Server::waitPlayers()");
-		HB_ASSERT(false, "");
-	}
-
 	SocketAddress clientAddr;
-	int clientNum = 0;
 
-	while (clientNum < NUM_MAX_PLAYER)
+	TCPSocketPtr clientSocket = mListenSocket->Accept(&clientAddr);
+
+	if (!clientSocket)
 	{
-		TCPSocketPtr clientSocket = listenSocket->Accept(&clientAddr);
+		int error = WSAGetLastError();
+
+		if (error != WSAEWOULDBLOCK)
+		{
+			SocketUtil::ReportError(L"Server::waitPlayers", error);
+		}
+	}
+	else
+	{
 		clientSocket->SetNonBlockingMode(true);
-		
 		HB_LOG("Client Connected: {0}", clientAddr.ToString());
+		mSessions.emplace_back(true, clientSocket, clientAddr);
 
-		Session c;
-		c.bConnect = true;
-		c.ClientSocket = clientSocket;
-		c.ClientAddr = clientAddr;
-
-		mConnections.push_back(c);
-		++clientNum;
+		auto numCurUsers = mSessions.size();
+		if (numCurUsers == NUM_MAX_PLAYER)
+		{
+			mbGameStart = true;
+		}
 	}
 }
 
 void Server::processPacket(MemoryStream* outPacket)
 {
-	uint16 totalLen = outPacket->GetLength();
-	outPacket->SetLength(0);
-
-	while (outPacket->GetLength() < totalLen)
-	{
-		uint64 id = 0;
-		outPacket->ReadUInt64(&id);
-
-		HB_LOG("Client sent : {0}", id);
-	}
+	
 }

@@ -44,6 +44,7 @@ void Client::Shutdown()
 	if (mActiveScene)
 	{
 		mActiveScene->Exit();
+		mActiveScene = nullptr;
 	}
 
 	GetRegistry().clear();

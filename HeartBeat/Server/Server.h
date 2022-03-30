@@ -10,6 +10,11 @@ class Server : public Game
 {
 	struct Session
 	{
+		Session(bool connect, TCPSocketPtr socket, const SocketAddress& addr)
+			: bConnect(connect)
+			, ClientSocket(socket)
+			, ClientAddr(addr) {}
+
 		bool bConnect;
 		TCPSocketPtr ClientSocket;
 		SocketAddress ClientAddr;
@@ -23,9 +28,13 @@ public:
 	virtual void Run() override;
 
 private:
-	void waitPlayers();
+	void accpetClients();
 	void processPacket(MemoryStream* outPacket);
 
 private:
-	vector<Session> mConnections;
+	TCPSocketPtr mListenSocket;
+
+	vector<Session> mSessions;
+
+	bool mbGameStart;
 };

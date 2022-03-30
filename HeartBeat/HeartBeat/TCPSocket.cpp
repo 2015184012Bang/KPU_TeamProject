@@ -34,7 +34,6 @@ TCPSocketPtr TCPSocket::Accept(SocketAddress* outAddr)
 
 	if (newSock == INVALID_SOCKET)
 	{
-		SocketUtil::ReportError(L"TCPSocket::Accept");
 		return nullptr;
 	}
 
