@@ -487,6 +487,8 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(L"Assets/Meshes/03_Character_Pink.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/11_Cell.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Pickax.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Cube.mesh");
 
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/01_Character_Red.skel");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/02_Character_Green.skel");
@@ -497,6 +499,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetAABB(L"Assets/Boxes/01_Character.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/11_Cell.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/Cube.box");
 
 	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
 

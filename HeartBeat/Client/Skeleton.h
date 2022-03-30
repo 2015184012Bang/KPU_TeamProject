@@ -12,6 +12,7 @@ public:
 
 	uint32 GetNumBones() const { return static_cast<uint32>(mBones.size()); }
 	const Bone& GetBone(uint32 idx) const { return mBones[idx]; }
+	uint32 GetBoneIndexByName(const string& name) const;
 	const vector<Bone>& GetAllBones() const { return mBones; }
 	const vector<Matrix>& GetGlobalInvBindPoses() const { return mGlobalInvBindPoses; }
 

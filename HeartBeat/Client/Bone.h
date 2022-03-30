@@ -37,4 +37,5 @@ struct Bone
 struct MatrixPalette
 {
 	Matrix Entry[MAX_SKELETON_BONES];
+	Matrix CurrentPoses[MAX_SKELETON_BONES];
 };

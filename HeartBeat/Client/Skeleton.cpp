@@ -65,6 +65,22 @@ void Skeleton::Load(const wstring& path)
 	computeGlobalInvBindPose();
 }
 
+uint32 Skeleton::GetBoneIndexByName(const string& name) const
+{
+	auto iter = std::find_if(mBones.begin(), mBones.end(), [&name](const Bone& bone) {
+		return bone.Name == name;
+		});
+
+	if (iter != mBones.end())
+	{
+		return iter - mBones.begin();
+	}
+	else
+	{
+		HB_ASSERT(false, "There is no bone name: {0}", name);
+	}
+}
+
 void Skeleton::computeGlobalInvBindPose()
 {
 	mGlobalInvBindPoses.resize(GetNumBones());
