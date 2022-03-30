@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"Assets/Textures/03_Character_Pink.png"
+		"Assets/Textures/Character_Pink.png"
 	],
 	"vertices":[
 		[-0.000000,70.842690,-5.906178,0.000000,-1.000000,0.000000,2,4,9,2,129,63,63,0,0.561400,0.912166],

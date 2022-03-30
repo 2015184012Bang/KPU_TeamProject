@@ -39,7 +39,7 @@ void TestScene::Enter()
 		sp1.AddComponent<ButtonComponent>();
 		sp1.AddComponent<ScriptComponent>(new UIButtonTest2(sp1));
 
-		Entity sp2 = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/21_HEnemy.png", 120);
+		Entity sp2 = mOwner->CreateSpriteEntity(100, 100, L"Assets/Textures/Virus.png", 120);
 
 		auto& rect = sp2.GetComponent<RectTransformComponent>();
 		rect.Position.x = 50.0f;
@@ -49,29 +49,29 @@ void TestScene::Enter()
 	}
 
 	{
-		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/21_HEnemy.mesh", L"Assets/Textures/21_HEnemy.png",
-			L"Assets/Skeletons/21_HEnemy.skel", L"Assets/Boxes/21_HEnemy.box");
+		mEnemy = mOwner->CreateSkeletalMeshEntity(L"Assets/Meshes/Virus.mesh", L"Assets/Textures/Virus.png",
+			L"Assets/Skeletons/Virus.skel", L"Assets/Boxes/Virus.box");
 
 		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"), 1.0f);
+		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim"), 1.0f);
 
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim");
-		idleAnim->AddTransition("Walking", ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim"));
-		idleAnim->AddTransition("Attacking", ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim"));
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim");
+		idleAnim->AddTransition("Run", ResourceManager::GetAnimation(L"Assets/Animations/Virus_Run.anim"));
+		idleAnim->AddTransition("Attack", ResourceManager::GetAnimation(L"Assets/Animations/Virus_Attack.anim"));
 
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/924_Running.anim");
-		runningAnim->AddTransition("Idle", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Run.anim");
+		runningAnim->AddTransition("Idle", ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim"));
 
-		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/922_Attacking.anim");
+		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Attack.anim");
 		attackingAnim->SetLoop(false);
-		attackingAnim->AddTransition("WhenEnd", ResourceManager::GetAnimation(L"Assets/Animations/921_Idle.anim"));
+		attackingAnim->AddTransition("WhenEnd", ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim"));
 
 		mEnemy.AddComponent<ScriptComponent>(new CharacterMovement(mEnemy));
 	}
 
 	{
 		mPickAx = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Pickax.mesh", L"Assets/Textures/Pickax.png");
-		ClientSystems::SetBoneAttachment(mEnemy, mPickAx, "Bip001 R Hand");
+		ClientSystems::SetBoneAttachment(mEnemy, mPickAx, "Weapon");
 	}
 }
 
