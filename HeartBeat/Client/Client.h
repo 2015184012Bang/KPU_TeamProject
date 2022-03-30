@@ -26,6 +26,9 @@ public:
 
     TCPSocketPtr GetMySocket() { return mMySocket; }
 
+    int GetClientID() const { return mClientID; }
+    void SetClientID(int id) { mClientID = id; }
+
 private:
     void processInput();
     void update();
@@ -51,5 +54,7 @@ private:
     Entity m2dCamera;
 
     TCPSocketPtr mMySocket;
+    
+    int mClientID;
 };
 

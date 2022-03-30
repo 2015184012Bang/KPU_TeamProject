@@ -1,7 +1,5 @@
 #pragma once
 
-#include <thread>
-
 #include "Game.h"
 
 constexpr int NUM_MAX_PLAYER = 1;
@@ -29,7 +27,9 @@ public:
 
 private:
 	void accpetClients();
-	void processPacket(MemoryStream* outPacket);
+
+	void processPacket(MemoryStream* outPacket, TCPSocketPtr& clientSocket);
+	void processLoginRequest(MemoryStream* outPacket, TCPSocketPtr& clientSocket);
 
 private:
 	TCPSocketPtr mListenSocket;

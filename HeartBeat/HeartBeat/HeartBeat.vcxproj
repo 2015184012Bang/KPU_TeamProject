@@ -122,6 +122,7 @@
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="MemoryStream.h" />
+    <ClInclude Include="PacketType.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="SocketAddress.h" />

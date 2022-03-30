@@ -54,13 +54,18 @@ void Server::Run()
 			}
 		}
 
-		MemoryStream buf;
+		MemoryStream packet;
 
 		for (auto& s : mSessions)
 		{
-			buf.Reset();
+			packet.Reset();
 
-			int retVal = (s.ClientSocket)->Recv(&buf, sizeof(MemoryStream));
+			if (s.ClientSocket == nullptr)
+			{
+				HB_LOG("nullptr");
+			}
+
+			int retVal = (s.ClientSocket)->Recv(&packet, sizeof(MemoryStream));
 
 			if (retVal == SOCKET_ERROR)
 			{
@@ -82,7 +87,7 @@ void Server::Run()
 			}
 			else
 			{
-				processPacket(&buf);
+				processPacket(&packet, s.ClientSocket);
 			}
 		}
 
@@ -121,7 +126,42 @@ void Server::accpetClients()
 	}
 }
 
-void Server::processPacket(MemoryStream* outPacket)
+void Server::processPacket(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
 {
-	
+	uint16 totalLen = outPacket->GetLength();
+	outPacket->SetLength(0);
+
+	while (outPacket->GetLength() < totalLen)
+	{
+		int packetType = 0;
+
+		outPacket->ReadInt(&packetType);
+
+		switch (static_cast<CSPacket>(packetType))
+		{
+		case CSPacket::eLoginRequest:
+			processLoginRequest(outPacket, clientSocket);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void Server::processLoginRequest(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
+{
+	int idLen = 0;
+	outPacket->ReadInt(&idLen);
+
+	string id;
+	outPacket->ReadString(&id, idLen);
+
+	MemoryStream packet;
+	int clientID = mSessions.size() - 1;
+	HB_LOG("Client ID: {0}", clientID);
+
+	packet.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
+	packet.WriteInt(clientID);
+	clientSocket->Send(&packet, sizeof(MemoryStream));
 }

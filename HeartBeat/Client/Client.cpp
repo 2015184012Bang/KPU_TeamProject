@@ -16,6 +16,7 @@ Client::Client()
 	: Game()
 	, mActiveScene(nullptr)
 	, mMySocket(nullptr)
+	, mClientID(-1)
 {
 
 }

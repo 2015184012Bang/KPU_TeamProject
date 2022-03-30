@@ -87,5 +87,8 @@
     <ClInclude Include="MemoryStream.h">
       <Filter>Source Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="PacketType.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

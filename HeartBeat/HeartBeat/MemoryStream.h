@@ -19,6 +19,8 @@ public:
 	void WriteFloat(float data);
 	void WriteVector2(const Vector2& data);
 	void WriteVector3(const Vector3& data);
+	void WriteString(const char* data, int size);
+	void WriteString(const string& data);
 
 	void ReadByte(int8* outData);
 	void ReadShort(int16* outData);
@@ -32,6 +34,8 @@ public:
 	void ReadFloat(float* outData);
 	void ReadVector2(Vector2* outData);
 	void ReadVector3(Vector3* outData);
+	void ReadString(char* outData, int size);
+	void ReadString(string* outData, int size);
 
 	void Reset();
 	
