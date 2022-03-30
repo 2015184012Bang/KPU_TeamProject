@@ -482,21 +482,24 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(L"Assets/Meshes/01_Character_Red.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/02_Character_Green.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/03_Character_Pink.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/11_Cell.mesh");
-	ResourceManager::GetMesh(L"Assets/Meshes/21_HEnemy.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Character_Red.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Character_Green.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Character_Pink.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Cell.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Virus.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Pickax.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Cube.mesh");
 
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/01_Character_Red.skel");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/02_Character_Green.skel");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/03_Character_Pink.skel");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/11_Cell.skel");
-	ResourceManager::GetSkeleton(L"Assets/Skeletons/21_HEnemy.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character_Red.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character_Green.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character_Pink.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Cell.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Virus.skel");
 
-	ResourceManager::GetAABB(L"Assets/Boxes/01_Character.box");
-	ResourceManager::GetAABB(L"Assets/Boxes/11_Cell.box");
-	ResourceManager::GetAABB(L"Assets/Boxes/21_HEnemy.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/Character.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/Cell.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/Virus.box");
+	ResourceManager::GetAABB(L"Assets/Boxes/Cube.box");
 
 	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
 

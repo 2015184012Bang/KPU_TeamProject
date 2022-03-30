@@ -25,7 +25,7 @@ public:
 	{
 		if (Input::IsButtonPressed(eKeyCode::MouseLButton))
 		{
-			animator->SetTrigger("Attacking");
+			animator->SetTrigger("Attack");
 		}
 
 		bool bMove = false;
@@ -56,7 +56,7 @@ public:
 
 		if (bMove)
 		{
-			animator->SetTrigger("Walking");
+			animator->SetTrigger("Run");
 		}
 		else
 		{

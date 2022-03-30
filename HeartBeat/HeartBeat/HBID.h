@@ -6,6 +6,7 @@ class HBID
 {
 public:
 	HBID();
+	HBID(uint64 id);
 
 	operator uint64() { return mID; }
 	operator const uint64() const { return mID; }

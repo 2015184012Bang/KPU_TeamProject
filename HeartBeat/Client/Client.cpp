@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "Script.h"
 #include "Timer.h"
+#include "TestScene.h"
 #include "Text.h"
 
 Client::Client()
@@ -35,7 +36,7 @@ bool Client::Init()
 
 	createCameraEntity();
 
-	mActiveScene = std::make_unique<LoginScene>(this);
+	mActiveScene = std::make_unique<TestScene>(this);
 	mActiveScene->Enter();
 
 	return true;
@@ -208,7 +209,7 @@ void Client::render()
 void Client::createCameraEntity()
 {
 	mMainCamera = Entity(CreateEntity(), this);
-	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 0.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
+	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Tag_Camera>();
 
 	m2dCamera = Entity(CreateEntity(), this);
@@ -305,16 +306,32 @@ void Client::drawSkeletalMesh()
 void Client::drawStaticMesh()
 {
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
-	auto view = GetRegistry().view<Tag_StaticMesh>();
-	for (auto entity : view)
+
 	{
-		Entity e = Entity(entity, this);
+		auto view = GetRegistry().view<Tag_StaticMesh>(entt::exclude<AttachmentChildComponent>);
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, this);
 
-		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
 
-		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
-		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+	{
+		auto view = GetRegistry().view<AttachmentChildComponent>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, this);
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
+			ClientSystems::BindWorldMatrixAttached(&transform, &attach);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
 	}
 }
 

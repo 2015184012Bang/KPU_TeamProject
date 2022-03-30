@@ -137,3 +137,21 @@ struct TextComponent
 
 	Text* Txt;
 };
+
+struct AttachmentChildComponent
+{
+	AttachmentChildComponent();
+	AttachmentChildComponent(MatrixPalette* palette, uint32 index, TransformComponent* transform);
+
+	MatrixPalette* ParentPalette;
+	uint32 BoneIndex;
+	TransformComponent* ParentTransform;
+};
+
+struct AttachmentParentComponent
+{
+	AttachmentParentComponent();
+	AttachmentParentComponent(const HBID& id);
+	
+	HBID ChildID;
+};

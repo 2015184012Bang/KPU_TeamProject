@@ -1,9 +1,9 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"Assets/Textures/11_Cell_Red.png",
-		"Assets/Textures/12_Cell_White.png",
-		"Assets/Textures/13_Cell_Yellow.png"
+		"Assets/Textures/Cell_Red.png",
+		"Assets/Textures/Cell_White.png",
+		"Assets/Textures/Cell_Yellow.png"
 	],
 	"vertices":[
 		[11.951035,102.606979,58.146385,0.000000,0.000000,1.000000,5,3,3,3,255,0,0,0,0.026142,0.868690],
