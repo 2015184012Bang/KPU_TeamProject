@@ -10,7 +10,6 @@
 #include "StringUtils.h"
 #include "Timer.h"
 
-#include "PacketType.h"
 #include "SocketUtil.h"
 #include "SocketAddress.h"
 #include "TCPSocket.h"

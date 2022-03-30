@@ -2,7 +2,7 @@
 
 #pragma comment(lib, "DirectXTK12")
 
-#include "HeartBeat.h"
+#include "HeartBeat/HeartBeat.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

@@ -1,11 +1,12 @@
 #include "ServerPCH.h"
 #include "Server.h"
 
-
+#include "HeartBeat/PacketType.h"
 
 Server::Server()
 	: mListenSocket(nullptr)
 	, mbGameStart(false)
+	, mNumCurUsers(0)
 {
 
 }
@@ -38,6 +39,11 @@ bool Server::Init()
 
 void Server::Shutdown()
 {
+	for (auto& s : mSessions)
+	{
+		s.ClientSocket = nullptr;
+	}
+	
 	SocketUtil::Shutdown();
 }
 
@@ -47,8 +53,7 @@ void Server::Run()
 	{
 		if (!mbGameStart)
 		{
-			auto numCurUsers = mSessions.size();
-			if (numCurUsers < NUM_MAX_PLAYER)
+			if (mNumCurUsers < NUM_MAX_PLAYER)
 			{
 				accpetClients();
 			}
@@ -87,7 +92,7 @@ void Server::Run()
 			}
 			else
 			{
-				processPacket(&packet, s.ClientSocket);
+				processPacket(&packet, s);
 			}
 		}
 
@@ -115,18 +120,18 @@ void Server::accpetClients()
 	else
 	{
 		clientSocket->SetNonBlockingMode(true);
-		HB_LOG("Client Connected: {0}", clientAddr.ToString());
-		mSessions.emplace_back(true, clientSocket, clientAddr);
+		HB_LOG("Client[{0}] Connected: {1}", mNumCurUsers, clientAddr.ToString());
+		mSessions.emplace_back(true, clientSocket, clientAddr, mNumCurUsers++);
 
-		auto numCurUsers = mSessions.size();
-		if (numCurUsers == NUM_MAX_PLAYER)
+		if (mNumCurUsers == NUM_MAX_PLAYER)
 		{
 			mbGameStart = true;
+			mListenSocket = nullptr;
 		}
 	}
 }
 
-void Server::processPacket(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
+void Server::processPacket(MemoryStream* outPacket, const Session& session)
 {
 	uint16 totalLen = outPacket->GetLength();
 	outPacket->SetLength(0);
@@ -140,7 +145,7 @@ void Server::processPacket(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
 		switch (static_cast<CSPacket>(packetType))
 		{
 		case CSPacket::eLoginRequest:
-			processLoginRequest(outPacket, clientSocket);
+			processLoginRequest(outPacket, session);
 			break;
 
 		default:
@@ -149,19 +154,42 @@ void Server::processPacket(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
 	}
 }
 
-void Server::processLoginRequest(MemoryStream* outPacket, TCPSocketPtr& clientSocket)
+void Server::processLoginRequest(MemoryStream* outPacket, const Session& session)
 {
-	int idLen = 0;
-	outPacket->ReadInt(&idLen);
+	int nameLen = 0;
+	outPacket->ReadInt(&nameLen);
 
-	string id;
-	outPacket->ReadString(&id, idLen);
+	string nickname;
+	outPacket->ReadString(&nickname, nameLen);
 
+	// Send LoginConfirmed packet to newly connected client
 	MemoryStream packet;
-	int clientID = mSessions.size() - 1;
-	HB_LOG("Client ID: {0}", clientID);
+	int clientID = mNumCurUsers - 1;
+
+	mIdToNickname[clientID] = nickname;
 
 	packet.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
 	packet.WriteInt(clientID);
-	clientSocket->Send(&packet, sizeof(MemoryStream));
+	packet.WriteInt(nameLen);
+	packet.WriteString(nickname);
+	(session.ClientSocket)->Send(&packet, sizeof(MemoryStream));
+
+	packet.Reset();
+	// Send UserConnected packet to the others
+	for (auto& s : mSessions)
+	{
+		packet.WriteInt(static_cast<int>(SCPacket::eUserConnected));
+
+		int clientID = s.ClientID;
+		const string& name = mIdToNickname[clientID];
+
+		packet.WriteInt(clientID);
+		packet.WriteInt(name.size());
+		packet.WriteString(name);
+	}
+
+	for (auto& s : mSessions)
+	{
+		(s.ClientSocket)->Send(&packet, sizeof(MemoryStream));
+	}
 }

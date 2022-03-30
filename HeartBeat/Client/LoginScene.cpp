@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
+#include "HeartBeat/PacketType.h"
+
 #include "Application.h"
 #include "Client.h"
 #include "Input.h"
@@ -21,15 +23,11 @@ void LoginScene::Enter()
 
 	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		L"Assets/Textures/Login_Background.png", 10);
-
-	HB_LOG("LoginScene::Enter - Alive Entity: {0}", mOwner->GetRegistry().alive());
 }
 
 void LoginScene::Exit()
 {
 	mOwner->DestroyEntity(mBackground);
-
-	HB_LOG("LoginScene::Exit - Alive Entity: {0}", mOwner->GetRegistry().alive());
 }
 
 void LoginScene::ProcessInput()
@@ -82,11 +80,6 @@ void LoginScene::ProcessInput()
 				mOwner->SetRunning(false);
 			}
 		}
-		else if(retVal == 0)
-		{
-			HB_LOG("Server Disconnected");
-			mOwner->SetRunning(false);
-		}
 		else
 		{
 			processPacket(&packet);
@@ -117,6 +110,7 @@ void LoginScene::processPacket(MemoryStream* packet)
 
 		default:
 			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
+			packet->SetLength(totalLen);
 			break;
 		}
 	}
@@ -127,6 +121,14 @@ void LoginScene::processLoginConfirmed(MemoryStream* packet)
 	int myClientID = -1;
 	packet->ReadInt(&myClientID);
 	mOwner->SetClientID(myClientID);
+
+	int nickLen = 0;
+	packet->ReadInt(&nickLen);
+
+	string nickname;
+	packet->ReadString(&nickname, nickLen);
+	mOwner->SetNickname(nickname);
+
+	HB_LOG("Client ID[{0}] // Nickname[{1}]", myClientID, nickname);
 	mbChangeScene = true;
-	HB_LOG("My Client ID: {0}", myClientID);
 }

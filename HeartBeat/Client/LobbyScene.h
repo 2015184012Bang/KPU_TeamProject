@@ -12,6 +12,12 @@ public:
 	virtual void ProcessInput() override;
 
 private:
+	void processPacket(MemoryStream* packet);
+	void processUserConnected(MemoryStream* packet);
+
+private:
 	TCPSocketPtr mSocket;
+
+	vector<int> mConnectedID;
 };
 

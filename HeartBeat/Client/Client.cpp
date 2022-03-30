@@ -9,7 +9,6 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Script.h"
-#include "Timer.h"
 #include "Text.h"
 
 Client::Client()
@@ -145,7 +144,7 @@ Entity Client::CreateTextEntity(const wstring& fontFile)
 	e.AddTag<Tag_Text>();
 	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt")));
+	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(fontFile)));
 
 	RegisterEntity(id.ID, e);
 

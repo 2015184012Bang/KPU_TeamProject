@@ -8,4 +8,5 @@ enum class CSPacket
 enum class SCPacket
 {
 	eLoginConfirmed,
+	eUserConnected,
 };

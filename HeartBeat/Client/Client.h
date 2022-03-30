@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game.h"
+#include "HeartBeat/Game.h"
 
 class Scene;
 class Renderer;
@@ -29,6 +29,9 @@ public:
     int GetClientID() const { return mClientID; }
     void SetClientID(int id) { mClientID = id; }
 
+    const string& GetNickname() const { return mNickname; }
+    void SetNickname(const string& nickname) { mNickname = nickname; }
+
 private:
     void processInput();
     void update();
@@ -56,5 +59,6 @@ private:
     TCPSocketPtr mMySocket;
     
     int mClientID;
+    string mNickname;
 };
 
