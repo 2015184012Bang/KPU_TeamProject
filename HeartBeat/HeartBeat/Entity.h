@@ -61,6 +61,9 @@ public:
 		return !(*this == other);
 	}
 
+	operator entt::entity() const { return mHandle; }
+	operator entt::entity() { return mHandle; }
+
 private:
 	entt::entity mHandle;
 	Game* mGame;

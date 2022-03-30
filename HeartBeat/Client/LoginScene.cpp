@@ -1,6 +1,7 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
+#include "Application.h"
 #include "Client.h"
 #include "Input.h"
 #include "TestScene.h"
@@ -14,11 +15,16 @@ LoginScene::LoginScene(Client* owner)
 void LoginScene::Enter()
 {
 	HB_LOG("LoginScene::Enter");
+
+	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
+		L"Assets/Textures/Login_Background.png", 10);
 }
 
 void LoginScene::Exit()
 {
 	HB_LOG("LoginScene::Exit");
+
+	mOwner->DestroyEntity(mBackground);
 }
 
 void LoginScene::ProcessInput()

@@ -5,6 +5,7 @@
 struct IDComponent
 {
 	IDComponent();
+	IDComponent(uint64 id);
 
 	HBID ID;
 };

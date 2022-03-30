@@ -10,7 +10,6 @@
 #include "ResourceManager.h"
 #include "Script.h"
 #include "Timer.h"
-#include "TestScene.h"
 #include "Text.h"
 
 Client::Client()
@@ -36,7 +35,7 @@ bool Client::Init()
 
 	createCameraEntity();
 
-	mActiveScene = std::make_unique<TestScene>(this);
+	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
 
 	return true;
@@ -81,13 +80,15 @@ void Client::ChangeScene(Scene* scene)
 
 Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile)
 {
-	Entity e = Entity(CreateEntity(), this);
+	Entity e = Entity(getNewEntt(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
-	e.AddComponent<IDComponent>();
+	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
 	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
+
+	RegisterEntity(id.ID, e);
 
 	if (boxFile.size() != 0)
 	{
@@ -100,12 +101,14 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 
 Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile)
 {
-	Entity e = Entity(CreateEntity(), this);
+	Entity e = Entity(getNewEntt(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
-	e.AddComponent<IDComponent>();
+	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+
+	RegisterEntity(id.ID, e);
 
 	if (boxFile.size() != 0)
 	{
@@ -118,12 +121,14 @@ Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& te
 
 Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder /*= 100*/)
 {
-	Entity e = Entity(CreateEntity(), this);
+	Entity e = Entity(getNewEntt(), this);
 
 	e.AddTag<Tag_Sprite>();
-	e.AddComponent<IDComponent>();
+	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(width, height);
 	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile), drawOrder);
+
+	RegisterEntity(id.ID, e);
 
 	// Do sorting by draw order when sprite is added
 	GetRegistry().sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
@@ -136,12 +141,14 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile,
 
 Entity Client::CreateTextEntity(const wstring& fontFile)
 {
-	Entity e = Entity(CreateEntity(), this);
+	Entity e = Entity(getNewEntt(), this);
 
 	e.AddTag<Tag_Text>();
-	e.AddComponent<IDComponent>();
+	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
 	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt")));
+
+	RegisterEntity(id.ID, e);
 
 	return e;
 }
@@ -208,13 +215,15 @@ void Client::render()
 
 void Client::createCameraEntity()
 {
-	mMainCamera = Entity(CreateEntity(), this);
+	mMainCamera = Entity(getNewEntt(), this);
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Tag_Camera>();
+	mMainCamera.AddTag<Tag_DontDestroyOnLoad>();
 
-	m2dCamera = Entity(CreateEntity(), this);
+	m2dCamera = Entity(getNewEntt(), this);
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
+	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
 }
 
 void Client::processButton()
