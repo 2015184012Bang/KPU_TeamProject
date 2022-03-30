@@ -141,10 +141,11 @@ struct TextComponent
 struct AttachmentChildComponent
 {
 	AttachmentChildComponent();
-	AttachmentChildComponent(MatrixPalette* palette, uint32 index);
+	AttachmentChildComponent(MatrixPalette* palette, uint32 index, TransformComponent* transform);
 
 	MatrixPalette* ParentPalette;
 	uint32 BoneIndex;
+	TransformComponent* ParentTransform;
 };
 
 struct AttachmentParentComponent

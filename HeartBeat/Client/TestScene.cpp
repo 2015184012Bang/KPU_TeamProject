@@ -69,7 +69,7 @@ void TestScene::Enter()
 		mEnemy.AddComponent<ScriptComponent>(new CharacterMovement(mEnemy));
 	}
 
-	{	
+	{
 		mPickAx = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Pickax.mesh", L"Assets/Textures/Pickax.png");
 		ClientSystems::SetBoneAttachment(mEnemy, mPickAx, "Bip001 R Hand");
 	}
@@ -91,13 +91,7 @@ void TestScene::ProcessInput()
 
 void TestScene::Update(float deltaTime)
 {
-	{
-		auto& transform = mEnemy.GetComponent<TransformComponent>();
-
-		ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
-	}
-
-	auto& transform = mPickAx.GetComponent<TransformComponent>();
+	auto& transform = mEnemy.GetComponent<TransformComponent>();
 	ClientSystems::RotateY(&transform.Rotation, 30.0f, deltaTime, &transform.bDirty);
 }
 

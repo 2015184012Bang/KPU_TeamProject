@@ -43,12 +43,16 @@ void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix
 
 void ClientSystems::BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment)
 {
-	Matrix mat = attachment->ParentPalette->CurrentPoses[attachment->BoneIndex]; 
-	mat *= Matrix::CreateScale(outTransform->Scale);
-	mat *= Matrix::CreateRotationY(XMConvertToRadians(outTransform->Rotation.y));
-	mat *= Matrix::CreateTranslation(outTransform->Position);
-	outTransform->Buffer.CopyData(0, mat);
+	TransformComponent* parentTransform = attachment->ParentTransform;
+	float rotationY = outTransform->Rotation.y + parentTransform->Rotation.y;
+	Vector3 position = outTransform->Position + parentTransform->Position;
 
+	Matrix mat = attachment->ParentPalette->CurrentPoses[attachment->BoneIndex];
+	mat *= Matrix::CreateScale(outTransform->Scale);
+	mat *= Matrix::CreateRotationY(XMConvertToRadians(rotationY));
+	mat *= Matrix::CreateTranslation(position);
+
+	outTransform->Buffer.CopyData(0, mat);
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outTransform->Buffer.GetVirtualAddress());
 }
 
@@ -229,8 +233,9 @@ void ClientSystems::SetBoneAttachment(Entity& parent, Entity& child, const strin
 {
 	// Add AttachmentComponent to child
 	auto& parentAnimator = parent.GetComponent<AnimatorComponent>();
+	auto& parentTransform = parent.GetComponent<TransformComponent>();
 	uint32 boneIndex = parentAnimator.Skel->GetBoneIndexByName(boneName);
-	child.AddComponent<AttachmentChildComponent>(&parentAnimator.Palette, boneIndex);
+	child.AddComponent<AttachmentChildComponent>(&parentAnimator.Palette, boneIndex, &parentTransform);
 
 	// Add ChildComponent to parent
 	auto& childId = child.GetComponent<IDComponent>();

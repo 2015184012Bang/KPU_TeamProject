@@ -298,13 +298,15 @@ TextComponent::~TextComponent()
 AttachmentChildComponent::AttachmentChildComponent()
 	: ParentPalette(nullptr)
 	, BoneIndex(-1)
+	, ParentTransform(nullptr)
 {
 
 }
 
-AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint32 index)
+AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint32 index, TransformComponent* transform)
 	: ParentPalette(palette)
 	, BoneIndex(index)
+	, ParentTransform(transform)
 {
 
 }
