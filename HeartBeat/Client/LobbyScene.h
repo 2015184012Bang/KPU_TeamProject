@@ -19,5 +19,7 @@ private:
 	TCPSocketPtr mSocket;
 
 	vector<int> mConnectedID;
+
+	Entity mReadyButton;
 };
 

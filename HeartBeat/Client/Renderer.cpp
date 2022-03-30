@@ -503,6 +503,7 @@ void Renderer::loadAllAssetsFromFile()
 
 	ResourceManager::GetTexture(L"Assets/Textures/Smile.png");
 	ResourceManager::GetTexture(L"Assets/Textures/Login_Background.png");
+	ResourceManager::GetTexture(L"Assets/Textures/Ready_Button.png");
 
 	Font* font = ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt");
 	font->SetTexture(ResourceManager::GetTexture(L"Assets/Fonts/font.dds"));

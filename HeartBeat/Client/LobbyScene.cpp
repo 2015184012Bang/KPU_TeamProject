@@ -6,7 +6,10 @@
 #include "Application.h"
 #include "Client.h"
 #include "ClientComponents.h"
+#include "ClientSystems.h"
+#include "Input.h"
 #include "Text.h"
+#include "TestScene.h"
 
 LobbyScene::LobbyScene(Client* owner)
 	: Scene(owner)
@@ -18,17 +21,29 @@ void LobbyScene::Enter()
 {
 	mSocket = mOwner->GetMySocket();
 
-	Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
-	auto& text = nickname.GetComponent<TextComponent>();
-	text.Txt->SetSentence(mOwner->GetNickname());
-	auto& transform = nickname.GetComponent<RectTransformComponent>();
-	transform.Position.x = (mOwner->GetClientID() * 200.0f) + 200.0f;
-	transform.Position.y = Application::GetScreenHeight() / 2.0f;
+	{
+		Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+		auto& text = nickname.GetComponent<TextComponent>();
+		text.Txt->SetSentence(mOwner->GetNickname());
+		auto& transform = nickname.GetComponent<RectTransformComponent>();
+		transform.Position.x = (mOwner->GetClientID() * 200.0f) + 200.0f;
+		transform.Position.y = Application::GetScreenHeight() / 2.0f;
+	}
+
+	{
+		mReadyButton = mOwner->CreateSpriteEntity(200, 100, L"Assets/Textures/Ready_Button.png");
+		auto& transform = mReadyButton.GetComponent<RectTransformComponent>();
+		transform.Position.x = Application::GetScreenWidth() / 2.0f;
+		transform.Position.y = Application::GetScreenHeight() - 150.0f;
+
+		mReadyButton.AddComponent<ButtonComponent>([]() {
+			HB_LOG("Ready Button Pressed!"); });
+	}
 }
 
 void LobbyScene::Exit()
 {
-	mOwner->DestroyByComponent<TextComponent>();
+	mOwner->DestroyAll();
 }
 
 void LobbyScene::ProcessInput()
