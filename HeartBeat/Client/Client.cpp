@@ -22,8 +22,6 @@ Client::Client()
 
 bool Client::Init()
 {
-	HB_LOG("Client::Init");
-
 	Input::Init();
 	Timer::Init();
 	SocketUtil::Init();
@@ -43,14 +41,13 @@ bool Client::Init()
 
 void Client::Shutdown()
 {
-	HB_LOG("Client::Shutdown");
-
-	GetRegistry().clear();
-
 	if (mActiveScene)
 	{
 		mActiveScene->Exit();
 	}
+
+	GetRegistry().clear();
+	GetAllEntities().clear();
 
 	mMySocket = nullptr;
 

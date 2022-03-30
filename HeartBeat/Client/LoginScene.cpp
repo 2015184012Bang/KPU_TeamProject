@@ -4,7 +4,7 @@
 #include "Application.h"
 #include "Client.h"
 #include "Input.h"
-#include "TestScene.h"
+#include "LobbyScene.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -14,17 +14,17 @@ LoginScene::LoginScene(Client* owner)
 
 void LoginScene::Enter()
 {
-	HB_LOG("LoginScene::Enter");
-
 	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		L"Assets/Textures/Login_Background.png", 10);
+
+	HB_LOG("LoginScene::Enter - Alive Entity: {0}", mOwner->GetRegistry().alive());
 }
 
 void LoginScene::Exit()
 {
-	HB_LOG("LoginScene::Exit");
-
 	mOwner->DestroyEntity(mBackground);
+
+	HB_LOG("LoginScene::Exit - Alive Entity: {0}", mOwner->GetRegistry().alive());
 }
 
 void LoginScene::ProcessInput()
@@ -43,7 +43,7 @@ void LoginScene::ProcessInput()
 		}
 		else
 		{
-			mOwner->ChangeScene(new TestScene(mOwner));
+			mOwner->ChangeScene(new LobbyScene(mOwner));
 			sock->SetNonBlockingMode(true);
 		}
 	}
