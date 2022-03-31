@@ -127,6 +127,28 @@ void MemoryStream::WriteVector3(const Vector3& data)
 	mLength += sizeof(Vector3);
 }
 
+void MemoryStream::WriteString(const char* data, int size)
+{
+	bool isSizeUnder = (mLength + size) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
+
+	memcpy(mBuffer + mLength, data, size);
+	mLength += size;
+}
+
+void MemoryStream::WriteString(const string& data)
+{
+	int size = static_cast<int>(data.size());
+
+	bool isSizeUnder = (mLength + size) <= PACKET_SIZE;
+
+	HB_ASSERT(isSizeUnder, "MemoryStream is full.");
+
+	memcpy(mBuffer + mLength, data.data(), size);
+	mLength += size;
+}
+
 void MemoryStream::ReadByte(int8* outData)
 {
 	memcpy(outData, mBuffer + mLength, sizeof(int8));
@@ -197,6 +219,18 @@ void MemoryStream::ReadVector3(Vector3* outData)
 {
 	memcpy(outData, mBuffer + mLength, sizeof(Vector3));
 	mLength += sizeof(Vector3);
+}
+
+void MemoryStream::ReadString(char* outData, int size)
+{
+	memcpy(outData, mBuffer + mLength, size);
+	mLength += size;
+}
+
+void MemoryStream::ReadString(string* outData, int size)
+{
+	*outData = string(reinterpret_cast<const char*>(mBuffer + mLength), size);
+	mLength += size;
 }
 
 void MemoryStream::Reset()

@@ -1,11 +1,14 @@
 #include "ServerPCH.h"
 #include "Server.h"
 
-
+#include "HeartBeat/PacketType.h"
 
 Server::Server()
+	: mListenSocket(nullptr)
+	, mbFullUsers(false)
+	, mNumCurUsers(0)
 {
-
+	mUserReadied.fill(false);
 }
 
 bool Server::Init()
@@ -14,98 +17,210 @@ bool Server::Init()
 
 	SocketUtil::Init();
 
-	waitPlayers();
+	mListenSocket = SocketUtil::CreateTCPSocket();
+	SocketAddress serveraddr(SERVER_PORT);
+
+	if (mListenSocket->Bind(serveraddr) == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	if (mListenSocket->Listen() == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	mListenSocket->SetNonBlockingMode(true);
 
 	return true;
 }
 
 void Server::Shutdown()
 {
-	HB_LOG("SERVER SHUTDOWN");
-
+	for (auto& s : mSessions)
+	{
+		s.ClientSocket = nullptr;
+	}
+	
 	SocketUtil::Shutdown();
 }
 
 void Server::Run()
 {
-	while (true)
+	while (!ShouldClose())
 	{
-		MemoryStream buf;
-
-		for (auto& c : mConnections)
+		if (!mbFullUsers)
 		{
-			buf.Reset();
-
-			int retVal = (c.ClientSocket)->Recv(&buf, sizeof(MemoryStream));
-
-			if (retVal == SOCKET_ERROR)
+			if (mNumCurUsers < NUM_MAX_PLAYER)
 			{
-				continue;
-			}
-			else if (retVal == 0)
-			{
-				HB_LOG("Client[{0}] disconnected.", c.ClientAddr.ToString());
-				c.bConnect = false;
-			}
-			else
-			{
-				processPacket(&buf);
+				accpetClients();
 			}
 		}
 
-		mConnections.erase(std::remove_if(mConnections.begin(), mConnections.end(), [](const Session& c) {
-			return c.bConnect == false;
-			}), mConnections.end());
+		MemoryStream packet;
+
+		for (auto& s : mSessions)
+		{
+			packet.Reset();
+
+			int retVal = (s.ClientSocket)->Recv(&packet, sizeof(MemoryStream));
+
+			if (retVal == SOCKET_ERROR)
+			{
+				int error = WSAGetLastError();
+
+				if (error == WSAEWOULDBLOCK)
+				{
+					continue;
+				}
+				else
+				{
+					SocketUtil::ReportError(L"Server::Run");
+					s.bConnect = false;
+				}
+			}
+			else if (retVal == 0)
+			{
+				HB_LOG("Client[{0}] disconnected.", s.ClientAddr.ToString());
+				s.bConnect = false;
+			}
+			else
+			{
+				processPacket(&packet, s);
+			}
+		}
+
+		mSessions.erase(std::remove_if(mSessions.begin(), mSessions.end(), [](const Session& s) {
+			return s.bConnect == false;
+			}), mSessions.end());
 	}
 }
 
-void Server::waitPlayers()
+void Server::accpetClients()
 {
-	TCPSocketPtr listenSocket = SocketUtil::CreateTCPSocket();
-	SocketAddress serveraddr(SERVER_PORT);
-
-	if (listenSocket->Bind(serveraddr) == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"Server::waitPlayers()");
-		HB_ASSERT(false, "");
-	}
-
-	if (listenSocket->Listen() == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"Server::waitPlayers()");
-		HB_ASSERT(false, "");
-	}
-
 	SocketAddress clientAddr;
-	int clientNum = 0;
 
-	while (clientNum < NUM_MAX_PLAYER)
+	TCPSocketPtr clientSocket = mListenSocket->Accept(&clientAddr);
+
+	if (!clientSocket)
 	{
-		TCPSocketPtr clientSocket = listenSocket->Accept(&clientAddr);
+		int error = WSAGetLastError();
+
+		if (error != WSAEWOULDBLOCK)
+		{
+			SocketUtil::ReportError(L"Server::waitPlayers", error);
+		}
+	}
+	else
+	{
 		clientSocket->SetNonBlockingMode(true);
-		
-		HB_LOG("Client Connected: {0}", clientAddr.ToString());
+		HB_LOG("Client[{0}] Connected: {1}", mNumCurUsers, clientAddr.ToString());
+		mSessions.emplace_back(true, clientSocket, clientAddr, mNumCurUsers++);
 
-		Session c;
-		c.bConnect = true;
-		c.ClientSocket = clientSocket;
-		c.ClientAddr = clientAddr;
-
-		mConnections.push_back(c);
-		++clientNum;
+		if (mNumCurUsers == NUM_MAX_PLAYER)
+		{
+			mbFullUsers = true;
+			mListenSocket = nullptr;
+		}
 	}
 }
 
-void Server::processPacket(MemoryStream* outPacket)
+void Server::processPacket(MemoryStream* outPacket, const Session& session)
 {
 	uint16 totalLen = outPacket->GetLength();
 	outPacket->SetLength(0);
 
 	while (outPacket->GetLength() < totalLen)
 	{
-		uint64 id = 0;
-		outPacket->ReadUInt64(&id);
+		int packetType = 0;
 
-		HB_LOG("Client sent : {0}", id);
+		outPacket->ReadInt(&packetType);
+
+		switch (static_cast<CSPacket>(packetType))
+		{
+		case CSPacket::eLoginRequest:
+			processLoginRequest(outPacket, session);
+			break;
+
+		case CSPacket::eImReady:
+			processImReady(outPacket, session);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void Server::processLoginRequest(MemoryStream* outPacket, const Session& session)
+{
+	int nameLen = 0;
+	outPacket->ReadInt(&nameLen);
+
+	string nickname;
+	outPacket->ReadString(&nickname, nameLen);
+
+	// Send LoginConfirmed packet to newly connected client
+	MemoryStream spacket;
+	int clientID = mNumCurUsers - 1;
+
+	mIdToNickname[clientID] = nickname;
+
+	spacket.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
+	spacket.WriteInt(clientID);
+	spacket.WriteInt(nameLen);
+	spacket.WriteString(nickname);
+	(session.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+
+	spacket.Reset();
+	// Send UserConnected packet to the others
+	for (auto& s : mSessions)
+	{
+		spacket.WriteInt(static_cast<int>(SCPacket::eUserConnected));
+
+		int clientID = s.ClientID;
+		const string& name = mIdToNickname[clientID];
+
+		spacket.WriteInt(clientID);
+		spacket.WriteInt(static_cast<int>(name.size()));
+		spacket.WriteString(name);
+	}
+
+	for (auto& s : mSessions)
+	{
+		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+	}
+}
+
+void Server::processImReady(MemoryStream* outPacket, const Session& session)
+{
+	int clientID = -1;
+	outPacket->ReadInt(&clientID);
+
+	if (mUserReadied[clientID])
+	{
+		return;
+	}
+	
+	mUserReadied[clientID] = true;
+	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
+
+	MemoryStream spacket;
+	if (numReadied == mUserReadied.size())
+	{
+		// Send GameStart packet if all players pressed ready button
+		spacket.WriteInt(static_cast<int>(SCPacket::eGameStart));
+	}
+	else
+	{
+		spacket.WriteInt(static_cast<int>(SCPacket::eReadyPressed));
+		spacket.WriteInt(static_cast<int>(numReadied));
+	}
+
+	for (auto& s : mSessions)
+	{
+		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
 	}
 }

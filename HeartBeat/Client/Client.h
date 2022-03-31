@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game.h"
+#include "HeartBeat/Game.h"
 
 class Scene;
 class Renderer;
@@ -25,6 +25,12 @@ public:
     Entity& GetMainCamera() { return mMainCamera; }
 
     TCPSocketPtr GetMySocket() { return mMySocket; }
+
+    int GetClientID() const { return mClientID; }
+    void SetClientID(int id) { mClientID = id; }
+
+    const string& GetNickname() const { return mNickname; }
+    void SetNickname(const string& nickname) { mNickname = nickname; }
 
 private:
     void processInput();
@@ -51,5 +57,8 @@ private:
     Entity m2dCamera;
 
     TCPSocketPtr mMySocket;
+    
+    int mClientID;
+    string mNickname;
 };
 

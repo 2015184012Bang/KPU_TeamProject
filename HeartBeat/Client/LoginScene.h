@@ -10,10 +10,17 @@ public:
 	virtual void Enter() override;
 	virtual void Exit() override;
 	virtual void ProcessInput() override;
-	virtual void Update(float deltaTime) override;
-	virtual void Render(unique_ptr<Renderer>& renderer) override;
+
+private:
+	void processPacket(MemoryStream* packet);
+	void processLoginConfirmed(MemoryStream* packet);
 
 private:
 	Entity mBackground;
+
+	bool mbConnected;
+	bool mbChangeScene;
+
+	TCPSocketPtr mSocket;
 };
 

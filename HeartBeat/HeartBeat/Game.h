@@ -36,6 +36,7 @@ public:
 
 	entt::entity GetEntityByID(const HBID& id);
 	entt::registry& GetRegistry() { return mRegistry; }
+	unordered_map<HBID, entt::entity>& GetAllEntities() { return mEntities; }
 
 protected:
 	entt::entity getNewEntt();

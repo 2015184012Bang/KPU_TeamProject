@@ -1,20 +1,25 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
+#include "HeartBeat/PacketType.h"
+
 #include "Application.h"
 #include "Client.h"
 #include "Input.h"
-#include "TestScene.h"
+#include "LobbyScene.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
+	, mbConnected(false)
+	, mbChangeScene(false)
+	, mSocket(nullptr)
 {
 
 }
 
 void LoginScene::Enter()
 {
-	HB_LOG("LoginScene::Enter");
+	mSocket = mOwner->GetMySocket();
 
 	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		L"Assets/Textures/Login_Background.png", 10);
@@ -22,20 +27,16 @@ void LoginScene::Enter()
 
 void LoginScene::Exit()
 {
-	HB_LOG("LoginScene::Exit");
-
 	mOwner->DestroyEntity(mBackground);
 }
 
 void LoginScene::ProcessInput()
 {
-	if (Input::IsButtonPressed(eKeyCode::Return))
+	if (Input::IsButtonPressed(eKeyCode::Return) && !mbConnected)
 	{
-		TCPSocketPtr sock = mOwner->GetMySocket();
-
 		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
 
-		int retVal = sock->Connect(serveraddr);
+		int retVal = mSocket->Connect(serveraddr);
 
 		if (retVal == SOCKET_ERROR)
 		{
@@ -43,18 +44,91 @@ void LoginScene::ProcessInput()
 		}
 		else
 		{
-			mOwner->ChangeScene(new TestScene(mOwner));
-			sock->SetNonBlockingMode(true);
+			mbConnected = true;
+			mSocket->SetNonBlockingMode(true);
+
+			// Send LoginRequest packet after connect
+			MemoryStream packet;
+
+			string id = "derisan";
+			packet.WriteInt(static_cast<int>(CSPacket::eLoginRequest));
+			packet.WriteInt(static_cast<int>(id.size()));
+			packet.WriteString(id);
+
+			mSocket->Send(&packet, sizeof(MemoryStream));
+			
+		}
+	}
+
+	if (mbConnected)
+	{
+		MemoryStream packet;
+
+		int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
+
+		if (retVal == SOCKET_ERROR)
+		{
+			int error = WSAGetLastError();
+
+			if (error == WSAEWOULDBLOCK)
+			{
+				return;
+			}
+			else
+			{
+				SocketUtil::ReportError(L"LoginScene::ProcessInput", error);
+				mOwner->SetRunning(false);
+			}
+		}
+		else
+		{
+			processPacket(&packet);
+		}
+	}
+
+	if (mbChangeScene)
+	{
+		mOwner->ChangeScene(new LobbyScene(mOwner));
+	}
+}
+
+void LoginScene::processPacket(MemoryStream* packet)
+{
+	int totalLen = packet->GetLength();
+	packet->SetLength(0);
+
+	while (packet->GetLength() < totalLen)
+	{
+		SCPacket packetType;
+		packet->ReadInt(reinterpret_cast<int*>(&packetType));
+
+		switch (packetType)
+		{
+		case SCPacket::eLoginConfirmed:
+			processLoginConfirmed(packet);
+			break;
+
+		default:
+			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
+			packet->SetLength(totalLen);
+			break;
 		}
 	}
 }
 
-void LoginScene::Update(float deltaTime)
+void LoginScene::processLoginConfirmed(MemoryStream* packet)
 {
+	int myClientID = -1;
+	packet->ReadInt(&myClientID);
+	mOwner->SetClientID(myClientID);
 
-}
+	int nickLen = 0;
+	packet->ReadInt(&nickLen);
 
-void LoginScene::Render(unique_ptr<Renderer>& renderer)
-{
+	string nickname;
+	packet->ReadString(&nickname, nickLen);
+	mOwner->SetNickname(nickname);
 
+	HB_LOG("Client ID[{0}] // Nickname[{1}]", myClientID, nickname);
+	mbChangeScene = true;
 }

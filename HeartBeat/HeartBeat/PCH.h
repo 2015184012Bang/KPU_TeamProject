@@ -11,6 +11,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <array>
 #include <deque>
@@ -31,6 +32,7 @@ using std::string;
 using std::wstring;
 using std::vector;
 using std::unordered_map;
+using std::map;
 using std::array;
 using std::deque;
 using std::shared_ptr;

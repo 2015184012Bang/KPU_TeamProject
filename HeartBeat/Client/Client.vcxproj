@@ -65,7 +65,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ClientPCH.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\HeartBeat\;..\vendor\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\vendor\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,7 +91,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>ClientPCH.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\HeartBeat\;..\vendor\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\vendor\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HeartBeat.h"
+#include "HeartBeat/HeartBeat.h"
 
 #include "d3dHelper.h"
 #include "Types.h"

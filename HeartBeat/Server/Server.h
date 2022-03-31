@@ -1,18 +1,24 @@
 #pragma once
 
-#include <thread>
+#include "HeartBeat/Game.h"
 
-#include "Game.h"
-
-constexpr int NUM_MAX_PLAYER = 1;
+constexpr int NUM_MAX_PLAYER = 2;
 
 class Server : public Game
 {
 	struct Session
 	{
+		Session(bool connect, TCPSocketPtr socket, const SocketAddress& addr, int id)
+			: bConnect(connect)
+			, ClientSocket(socket)
+			, ClientAddr(addr)
+			, ClientID(id)
+		{}
+
 		bool bConnect;
 		TCPSocketPtr ClientSocket;
 		SocketAddress ClientAddr;
+		int ClientID;
 	};
 
 public:
@@ -23,9 +29,18 @@ public:
 	virtual void Run() override;
 
 private:
-	void waitPlayers();
-	void processPacket(MemoryStream* outPacket);
+	void accpetClients();
+
+	void processPacket(MemoryStream* outPacket, const Session& session);
+	void processLoginRequest(MemoryStream* outPacket, const Session& session);
+	void processImReady(MemoryStream* outPacket, const Session& session);
 
 private:
-	vector<Session> mConnections;
+	TCPSocketPtr mListenSocket;
+	vector<Session> mSessions;
+	array<bool, NUM_MAX_PLAYER> mUserReadied;
+	map<int, string> mIdToNickname;
+
+	bool mbFullUsers;
+	int mNumCurUsers;
 };

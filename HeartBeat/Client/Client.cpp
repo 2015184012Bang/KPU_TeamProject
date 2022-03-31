@@ -9,21 +9,19 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Script.h"
-#include "Timer.h"
 #include "Text.h"
 
 Client::Client()
 	: Game()
 	, mActiveScene(nullptr)
 	, mMySocket(nullptr)
+	, mClientID(-1)
 {
 
 }
 
 bool Client::Init()
 {
-	HB_LOG("Client::Init");
-
 	Input::Init();
 	Timer::Init();
 	SocketUtil::Init();
@@ -43,14 +41,14 @@ bool Client::Init()
 
 void Client::Shutdown()
 {
-	HB_LOG("Client::Shutdown");
-
-	GetRegistry().clear();
-
 	if (mActiveScene)
 	{
 		mActiveScene->Exit();
+		mActiveScene = nullptr;
 	}
+
+	GetRegistry().clear();
+	GetAllEntities().clear();
 
 	mMySocket = nullptr;
 
@@ -146,7 +144,7 @@ Entity Client::CreateTextEntity(const wstring& fontFile)
 	e.AddTag<Tag_Text>();
 	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(L"Assets/Fonts/fontdata.txt")));
+	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(fontFile)));
 
 	RegisterEntity(id.ID, e);
 
