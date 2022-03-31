@@ -65,11 +65,6 @@ void Server::Run()
 		{
 			packet.Reset();
 
-			if (s.ClientSocket == nullptr)
-			{
-				HB_LOG("nullptr");
-			}
-
 			int retVal = (s.ClientSocket)->Recv(&packet, sizeof(MemoryStream));
 
 			if (retVal == SOCKET_ERROR)
@@ -83,6 +78,7 @@ void Server::Run()
 				else
 				{
 					SocketUtil::ReportError(L"Server::Run");
+					s.bConnect = false;
 				}
 			}
 			else if (retVal == 0)

@@ -8,6 +8,7 @@
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"
+#include "ResourceManager.h"
 #include "Text.h"
 #include "TestScene.h"
 
@@ -20,30 +21,31 @@ LobbyScene::LobbyScene(Client* owner)
 void LobbyScene::Enter()
 {
 	mSocket = mOwner->GetMySocket();
+	int myClientID = mOwner->GetClientID();
+
+	createNicknameText(myClientID);
+	createCharacterMesh(myClientID);
 
 	{
-		Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
-		auto& text = nickname.GetComponent<TextComponent>();
-		text.Txt->SetSentence(mOwner->GetNickname());
-		auto& transform = nickname.GetComponent<RectTransformComponent>();
-		transform.Position.x = (mOwner->GetClientID() * 200.0f) + 200.0f;
-		transform.Position.y = Application::GetScreenHeight() / 2.0f;
-	}
-
-	{
-		mReadyButton = mOwner->CreateSpriteEntity(200, 100, L"Assets/Textures/Ready_Button.png");
-		auto& transform = mReadyButton.GetComponent<RectTransformComponent>();
+		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, L"Assets/Textures/Ready_Button.png");
+		auto& transform = readyButton.GetComponent<RectTransformComponent>();
 		transform.Position.x = Application::GetScreenWidth() / 2.0f;
 		transform.Position.y = Application::GetScreenHeight() - 150.0f;
 
-		mReadyButton.AddComponent<ButtonComponent>([]() {
+		readyButton.AddComponent<ButtonComponent>([]() {
 			HB_LOG("Ready Button Pressed!"); });
 	}
+
+	auto& camera = mOwner->GetMainCamera();
+	auto& cc = camera.GetComponent<CameraComponent>();
+	cc.Position.z = -1000.0f;
 }
 
 void LobbyScene::Exit()
 {
 	mOwner->DestroyAll();
+
+	HB_LOG("Alive entities: {0}", mOwner->GetRegistry().alive());
 }
 
 void LobbyScene::ProcessInput()
@@ -119,13 +121,116 @@ void LobbyScene::processUserConnected(MemoryStream* packet)
 	{
 		return;
 	}
-	
-	mConnectedID.push_back(clientID);
 
-	Entity e = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
-	auto& text = e.GetComponent<TextComponent>();
-	text.Txt->SetSentence(nickname);
-	auto& transform = e.GetComponent<RectTransformComponent>();
-	transform.Position.x = (clientID * 200.0f) + 200.0f;
-	transform.Position.y = Application::GetScreenHeight() / 2.0f;
+	mConnectedID.push_back(clientID);
+	createNicknameText(clientID);
+	createCharacterMesh(clientID);
+}
+
+void LobbyScene::createNicknameText(int clientID)
+{
+	Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+	auto& text = nickname.GetComponent<TextComponent>();
+	text.Txt->SetSentence(mOwner->GetNickname());
+	auto& transform = nickname.GetComponent<RectTransformComponent>();
+	transform.Position.x = 10.0f;
+	transform.Position.y = (clientID * SPACE_BETWEEN_LINES) + SPACE_BETWEEN_LINES;
+}
+
+void LobbyScene::createCharacterMesh(int clientID)
+{
+	wstring meshFile;
+	wstring texFile;
+	wstring skelFile;
+
+	GetCharacterFiles(clientID, &meshFile, &texFile, &skelFile);
+
+	Entity character = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile);
+
+	auto& transform = character.GetComponent<TransformComponent>();
+	transform.Position.x = (clientID * WIDTH_BETWEEN_CHARACTERS) - WIDTH_BETWEEN_CHARACTERS;
+	transform.Rotation.y = 180.0f;
+
+	auto& animator = character.GetComponent<AnimatorComponent>();
+
+	wstring idleAnimFile = GetCharacterAnimation(clientID, CharacterAnimationType::eIdle);
+	Animation* idleAnim = ResourceManager::GetAnimation(idleAnimFile);
+	ClientSystems::PlayAnimation(&animator, idleAnim, 1.0f);
+}
+
+void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+{
+	switch (clientID)
+	{
+	case 0:
+		*outMeshFile = L"Assets/Meshes/Character_Green.mesh";
+		*outTexFile = L"Assets/Textures/Character_Green.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Green.skel";
+		break;
+
+	case 1:
+		*outMeshFile = L"Assets/Meshes/Character_Pink.mesh";
+		*outTexFile = L"Assets/Textures/Character_Pink.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Pink.skel";
+		break;
+
+	case 2:
+		*outMeshFile = L"Assets/Meshes/Character_Red.mesh";
+		*outTexFile = L"Assets/Textures/Character_Red.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Red.skel";
+		break;
+
+	default:
+		HB_ASSERT(false, "Unknown client id: {0}", clientID);
+		break;
+	}
+}
+
+wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
+{
+	wstring animFile;
+
+	switch (clientID)
+	{
+	case 0: // Character_Green
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CG_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CG_Run.anim";
+			break;
+		}
+		break;
+
+	case 1: // Character_Pink
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CP_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CP_Run.anim";
+			break;
+		}
+		break;
+
+	case 2: // Character_Red
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CR_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CR_Run.anim";
+			break;
+		}
+		break;
+	}
+
+	return animFile;
 }
