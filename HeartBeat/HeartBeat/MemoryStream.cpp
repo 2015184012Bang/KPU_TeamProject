@@ -139,7 +139,7 @@ void MemoryStream::WriteString(const char* data, int size)
 
 void MemoryStream::WriteString(const string& data)
 {
-	int size = data.size();
+	int size = static_cast<int>(data.size());
 
 	bool isSizeUnder = (mLength + size) <= PACKET_SIZE;
 

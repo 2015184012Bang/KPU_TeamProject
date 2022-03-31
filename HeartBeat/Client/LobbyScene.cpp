@@ -32,8 +32,21 @@ void LobbyScene::Enter()
 		transform.Position.x = Application::GetScreenWidth() / 2.0f;
 		transform.Position.y = Application::GetScreenHeight() - 150.0f;
 
-		readyButton.AddComponent<ButtonComponent>([]() {
-			HB_LOG("Ready Button Pressed!"); });
+		readyButton.AddComponent<ButtonComponent>([this, myClientID]() {
+			MemoryStream packet;
+			packet.WriteInt(static_cast<int>(CSPacket::eImReady));
+			packet.WriteInt(myClientID);
+			this->mSocket->Send(&packet, sizeof(MemoryStream));
+			});
+	}
+
+	{
+		mReadyText = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+		auto& text = mReadyText.GetComponent<TextComponent>();
+		text.Txt->SetSentence("0 / 3");
+		auto& transform = mReadyText.GetComponent<RectTransformComponent>();
+		transform.Position.x = Application::GetScreenWidth() / 2.0f + 210.0f;
+		transform.Position.y = Application::GetScreenHeight() - 200.0f;
 	}
 
 	auto& camera = mOwner->GetMainCamera();
@@ -87,6 +100,14 @@ void LobbyScene::processPacket(MemoryStream* packet)
 		{
 		case SCPacket::eUserConnected:
 			processUserConnected(packet);
+			break;
+
+		case SCPacket::eReadyPressed:
+			processReadyPressed(packet);
+			break;
+
+		case SCPacket::eGameStart:
+			processGameStart(packet);
 			break;
 
 		default:
@@ -156,6 +177,20 @@ void LobbyScene::createCharacterMesh(int clientID)
 	wstring idleAnimFile = GetCharacterAnimation(clientID, CharacterAnimationType::eIdle);
 	Animation* idleAnim = ResourceManager::GetAnimation(idleAnimFile);
 	ClientSystems::PlayAnimation(&animator, idleAnim, 1.0f);
+}
+
+void LobbyScene::processGameStart(MemoryStream* packet)
+{
+	mOwner->ChangeScene(new TestScene(mOwner));
+}
+
+void LobbyScene::processReadyPressed(MemoryStream* packet)
+{
+	int readyCount = 0;
+	packet->ReadInt(&readyCount);
+
+	auto& text = mReadyText.GetComponent<TextComponent>();
+	text.Txt->SetSentence(std::to_string(readyCount) + " / 3");
 }
 
 void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)

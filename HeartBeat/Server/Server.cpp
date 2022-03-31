@@ -5,10 +5,10 @@
 
 Server::Server()
 	: mListenSocket(nullptr)
-	, mbGameStart(false)
+	, mbFullUsers(false)
 	, mNumCurUsers(0)
 {
-
+	mUserReadied.fill(false);
 }
 
 bool Server::Init()
@@ -51,7 +51,7 @@ void Server::Run()
 {
 	while (!ShouldClose())
 	{
-		if (!mbGameStart)
+		if (!mbFullUsers)
 		{
 			if (mNumCurUsers < NUM_MAX_PLAYER)
 			{
@@ -121,7 +121,7 @@ void Server::accpetClients()
 
 		if (mNumCurUsers == NUM_MAX_PLAYER)
 		{
-			mbGameStart = true;
+			mbFullUsers = true;
 			mListenSocket = nullptr;
 		}
 	}
@@ -144,6 +144,10 @@ void Server::processPacket(MemoryStream* outPacket, const Session& session)
 			processLoginRequest(outPacket, session);
 			break;
 
+		case CSPacket::eImReady:
+			processImReady(outPacket, session);
+			break;
+
 		default:
 			break;
 		}
@@ -159,33 +163,64 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 	outPacket->ReadString(&nickname, nameLen);
 
 	// Send LoginConfirmed packet to newly connected client
-	MemoryStream packet;
+	MemoryStream spacket;
 	int clientID = mNumCurUsers - 1;
 
 	mIdToNickname[clientID] = nickname;
 
-	packet.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
-	packet.WriteInt(clientID);
-	packet.WriteInt(nameLen);
-	packet.WriteString(nickname);
-	(session.ClientSocket)->Send(&packet, sizeof(MemoryStream));
+	spacket.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
+	spacket.WriteInt(clientID);
+	spacket.WriteInt(nameLen);
+	spacket.WriteString(nickname);
+	(session.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
 
-	packet.Reset();
+	spacket.Reset();
 	// Send UserConnected packet to the others
 	for (auto& s : mSessions)
 	{
-		packet.WriteInt(static_cast<int>(SCPacket::eUserConnected));
+		spacket.WriteInt(static_cast<int>(SCPacket::eUserConnected));
 
 		int clientID = s.ClientID;
 		const string& name = mIdToNickname[clientID];
 
-		packet.WriteInt(clientID);
-		packet.WriteInt(name.size());
-		packet.WriteString(name);
+		spacket.WriteInt(clientID);
+		spacket.WriteInt(static_cast<int>(name.size()));
+		spacket.WriteString(name);
 	}
 
 	for (auto& s : mSessions)
 	{
-		(s.ClientSocket)->Send(&packet, sizeof(MemoryStream));
+		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+	}
+}
+
+void Server::processImReady(MemoryStream* outPacket, const Session& session)
+{
+	int clientID = -1;
+	outPacket->ReadInt(&clientID);
+
+	if (mUserReadied[clientID])
+	{
+		return;
+	}
+	
+	mUserReadied[clientID] = true;
+	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
+
+	MemoryStream spacket;
+	if (numReadied == mUserReadied.size())
+	{
+		// Send GameStart packet if all players pressed ready button
+		spacket.WriteInt(static_cast<int>(SCPacket::eGameStart));
+	}
+	else
+	{
+		spacket.WriteInt(static_cast<int>(SCPacket::eReadyPressed));
+		spacket.WriteInt(static_cast<int>(numReadied));
+	}
+
+	for (auto& s : mSessions)
+	{
+		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
 	}
 }

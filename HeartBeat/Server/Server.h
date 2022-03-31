@@ -2,7 +2,7 @@
 
 #include "HeartBeat/Game.h"
 
-constexpr int NUM_MAX_PLAYER = 1;
+constexpr int NUM_MAX_PLAYER = 2;
 
 class Server : public Game
 {
@@ -33,11 +33,14 @@ private:
 
 	void processPacket(MemoryStream* outPacket, const Session& session);
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);
+	void processImReady(MemoryStream* outPacket, const Session& session);
 
 private:
 	TCPSocketPtr mListenSocket;
 	vector<Session> mSessions;
+	array<bool, NUM_MAX_PLAYER> mUserReadied;
 	map<int, string> mIdToNickname;
-	bool mbGameStart;
+
+	bool mbFullUsers;
 	int mNumCurUsers;
 };

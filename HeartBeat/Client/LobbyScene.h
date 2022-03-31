@@ -26,6 +26,8 @@ public:
 private:
 	void processPacket(MemoryStream* packet);
 	void processUserConnected(MemoryStream* packet);
+	void processReadyPressed(MemoryStream* packet);
+	void processGameStart(MemoryStream* packet);
 	
 	void createNicknameText(int clientID);
 	void createCharacterMesh(int clientID);
@@ -34,5 +36,7 @@ private:
 	TCPSocketPtr mSocket;
 
 	vector<int> mConnectedID;
+
+	Entity mReadyText;
 };
 

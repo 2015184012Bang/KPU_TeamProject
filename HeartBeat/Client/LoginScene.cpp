@@ -52,7 +52,7 @@ void LoginScene::ProcessInput()
 
 			string id = "derisan";
 			packet.WriteInt(static_cast<int>(CSPacket::eLoginRequest));
-			packet.WriteInt(id.size());
+			packet.WriteInt(static_cast<int>(id.size()));
 			packet.WriteString(id);
 
 			mSocket->Send(&packet, sizeof(MemoryStream));
