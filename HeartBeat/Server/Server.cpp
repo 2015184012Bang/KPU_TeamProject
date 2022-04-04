@@ -188,6 +188,10 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 		spacket.WriteString(name);
 	}
 
+	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
+	spacket.WriteInt(static_cast<int>(SCPacket::eReadyPressed));
+	spacket.WriteInt(static_cast<int>(numReadied));
+
 	for (auto& s : mSessions)
 	{
 		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
