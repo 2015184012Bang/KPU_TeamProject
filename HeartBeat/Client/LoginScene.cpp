@@ -51,7 +51,7 @@ void LoginScene::ProcessInput()
 			MemoryStream packet;
 
 			string id = "derisan";
-			packet.WriteInt(static_cast<int>(CSPacket::eLoginRequest));
+			packet.WriteUByte(static_cast<int>(CSPacket::eLoginRequest));
 			packet.WriteInt(static_cast<int>(id.size()));
 			packet.WriteString(id);
 
@@ -99,10 +99,10 @@ void LoginScene::processPacket(MemoryStream* packet)
 
 	while (packet->GetLength() < totalLen)
 	{
-		SCPacket packetType;
-		packet->ReadInt(reinterpret_cast<int*>(&packetType));
+		uint8 packetType;
+		packet->ReadUByte(&packetType);
 
-		switch (packetType)
+		switch (static_cast<SCPacket>(packetType))
 		{
 		case SCPacket::eLoginConfirmed:
 			processLoginConfirmed(packet);

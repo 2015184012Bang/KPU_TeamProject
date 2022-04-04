@@ -34,7 +34,7 @@ void LobbyScene::Enter()
 
 		readyButton.AddComponent<ButtonComponent>([this, myClientID]() {
 			MemoryStream packet;
-			packet.WriteInt(static_cast<int>(CSPacket::eImReady));
+			packet.WriteUByte(static_cast<uint8>(CSPacket::eImReady));
 			packet.WriteInt(myClientID);
 			this->mSocket->Send(&packet, sizeof(MemoryStream));
 			});
@@ -93,10 +93,10 @@ void LobbyScene::processPacket(MemoryStream* packet)
 
 	while (packet->GetLength() < totalLen)
 	{
-		SCPacket packetType;
-		packet->ReadInt(reinterpret_cast<int*>(&packetType));
+		uint8 packetType;
+		packet->ReadUByte(&packetType);
 
-		switch (packetType)
+		switch (static_cast<SCPacket>(packetType))
 		{
 		case SCPacket::eUserConnected:
 			processUserConnected(packet);

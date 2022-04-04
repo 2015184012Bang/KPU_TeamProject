@@ -1,12 +1,12 @@
 #pragma once
 
-enum class CSPacket
+enum class CSPacket : uint8
 {
 	eLoginRequest,
 	eImReady,
 };
 
-enum class SCPacket
+enum class SCPacket : uint8
 {
 	eLoginConfirmed,
 	eUserConnected,

@@ -134,9 +134,9 @@ void Server::processPacket(MemoryStream* outPacket, const Session& session)
 
 	while (outPacket->GetLength() < totalLen)
 	{
-		int packetType = 0;
+		uint8 packetType = 0;
 
-		outPacket->ReadInt(&packetType);
+		outPacket->ReadUByte(&packetType);
 
 		switch (static_cast<CSPacket>(packetType))
 		{
@@ -168,7 +168,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 
 	mIdToNickname[clientID] = nickname;
 
-	spacket.WriteInt(static_cast<int>(SCPacket::eLoginConfirmed));
+	spacket.WriteUByte(static_cast<int>(SCPacket::eLoginConfirmed));
 	spacket.WriteInt(clientID);
 	spacket.WriteInt(nameLen);
 	spacket.WriteString(nickname);
@@ -178,7 +178,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 	// Send UserConnected packet to the others
 	for (auto& s : mSessions)
 	{
-		spacket.WriteInt(static_cast<int>(SCPacket::eUserConnected));
+		spacket.WriteUByte(static_cast<int>(SCPacket::eUserConnected));
 
 		int clientID = s.ClientID;
 		const string& name = mIdToNickname[clientID];
@@ -189,7 +189,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 	}
 
 	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
-	spacket.WriteInt(static_cast<int>(SCPacket::eReadyPressed));
+	spacket.WriteUByte(static_cast<int>(SCPacket::eReadyPressed));
 	spacket.WriteInt(static_cast<int>(numReadied));
 
 	for (auto& s : mSessions)
@@ -215,11 +215,11 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 	if (numReadied == mUserReadied.size())
 	{
 		// Send GameStart packet if all players pressed ready button
-		spacket.WriteInt(static_cast<int>(SCPacket::eGameStart));
+		spacket.WriteUByte(static_cast<int>(SCPacket::eGameStart));
 	}
 	else
 	{
-		spacket.WriteInt(static_cast<int>(SCPacket::eReadyPressed));
+		spacket.WriteUByte(static_cast<int>(SCPacket::eReadyPressed));
 		spacket.WriteInt(static_cast<int>(numReadied));
 	}
 
