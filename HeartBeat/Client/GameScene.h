@@ -16,10 +16,12 @@ public:
 private:
     void processPacket(MemoryStream* packet);
     void processCreateCharacter(MemoryStream* packet);
+    void processUpdateTransform(MemoryStream* packet);
 
 private:
     TCPSocketPtr mSocket;
 
     Entity mMyCharacter;
+    HBID mMyEID;
 };
 

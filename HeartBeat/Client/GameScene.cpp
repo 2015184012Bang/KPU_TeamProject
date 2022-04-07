@@ -25,6 +25,11 @@ void GameScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mSocket = mOwner->GetMySocket();
+
+	Entity e = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Cube.mesh", L"Assets/Textures/Cube_Pink.png");
+	auto& trasnform = e.GetComponent<TransformComponent>();
+
+	trasnform.Position.y = -500.0f;
 }
 
 void GameScene::Exit()
@@ -55,7 +60,42 @@ void GameScene::ProcessInput()
 
 void GameScene::Update(float deltaTime)
 {
+	Vector3 direction = Vector3::Zero;
+	bool bMove = false;
 
+	if (Input::IsButtonRepeat(eKeyCode::Up))
+	{
+		direction.z += 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Down))
+	{
+		direction.z -= 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Left))
+	{
+		direction.x -= 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Right))
+	{
+		direction.x += 1.0f;
+		bMove = true;
+	}
+
+	if (bMove)
+	{
+		MemoryStream packet;
+		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserInput));
+		packet.WriteUInt64(mMyEID);
+		packet.WriteVector3(direction);
+
+		mSocket->Send(&packet, sizeof(packet));
+	}
 }
 
 void GameScene::processPacket(MemoryStream* packet)
@@ -72,6 +112,10 @@ void GameScene::processPacket(MemoryStream* packet)
 		{
 		case SCPacket::eCreateCharacter:
 			processCreateCharacter(packet);
+			break;
+
+		case SCPacket::eUpdateTransform:
+			processUpdateTransform(packet);
 			break;
 
 		default:
@@ -110,7 +154,32 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 		{
 			mMyCharacter = e;
 			mMyCharacter.AddComponent<ScriptComponent>(new Character(mMyCharacter));
+			mMyEID = entityID;
 		}
 	}
+}
+
+void GameScene::processUpdateTransform(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+	Vector3 position;
+	packet->ReadVector3(&position);
+
+	float rotationY;
+	packet->ReadFloat(&rotationY);
+
+	auto e = mOwner->GetEntityByID(eid);
+	if (entt::null == e)
+	{
+		HB_ASSERT(false, "Unknown ID: {0}", eid);
+	}
+
+	Entity ent = Entity(e, mOwner);
+
+	auto& transform = ent.GetComponent<TransformComponent>();
+	
+	ClientSystems::UpdatePosition(&transform.Position, position, &transform.bDirty);
+	ClientSystems::UpdateYRotation(&transform.Rotation.y, rotationY, &transform.bDirty);
 }
 

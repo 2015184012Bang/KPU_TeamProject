@@ -4,6 +4,7 @@
 #include "HeartBeat/PacketType.h"
 
 #include "ServerComponents.h"
+#include "ServerSystems.h"
 
 Server::Server()
 	: mListenSocket(nullptr)
@@ -94,9 +95,37 @@ void Server::Run()
 			}
 		}
 
+		// 접속이 끊긴 클라이언트 정리
 		mSessions.erase(std::remove_if(mSessions.begin(), mSessions.end(), [](const Session& s) {
 			return s.bConnect == false;
 			}), mSessions.end());
+
+		{
+			MemoryStream spacket;
+
+			auto view = GetRegistry().view<Tag_UpdateTransform>();
+
+			for (auto e : view)
+			{
+				Entity ent = Entity(e, this);
+				ent.RemoveComponent<Tag_UpdateTransform>();
+				auto& transform = ent.GetComponent<STransformComponent>();
+				auto& id = ent.GetComponent<IDComponent>();
+
+				spacket.WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
+				spacket.WriteUInt64(id.ID);
+				spacket.WriteVector3(transform.Position);
+				spacket.WriteFloat(transform.Rotation.y);
+			}
+
+			if (spacket.GetLength() > 0)
+			{
+				for (auto& s : mSessions)
+				{
+					(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+				}
+			}
+		}
 	}
 }
 
@@ -104,7 +133,9 @@ Entity Server::CreateEntity()
 {
 	Entity e = Entity(getNewEntt(), this);
 	e.AddComponent<STransformComponent>();
-	e.AddComponent<IDComponent>();
+	auto& id = e.AddComponent<IDComponent>();
+
+	RegisterEntity(id.ID, e);
 
 	return e;
 }
@@ -157,6 +188,10 @@ void Server::processPacket(MemoryStream* outPacket, const Session& session)
 
 		case CSPacket::eImReady:
 			processImReady(outPacket, session);
+			break;
+
+		case CSPacket::eUserInput:
+			processUserInput(outPacket);
 			break;
 
 		default:
@@ -264,4 +299,25 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 			(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
 		}
 	}
+}
+
+void Server::processUserInput(MemoryStream* outPacket)
+{
+	uint64 eid = 0;
+	Vector3 direction = Vector3::Zero;
+
+	outPacket->ReadUInt64(&eid);
+	outPacket->ReadVector3(&direction);
+
+	auto e = GetEntityByID(eid);
+	if (entt::null == e)
+	{
+		HB_ASSERT(false, "No entity id: {0}", eid);
+	}
+
+	Entity character(e, this);
+	auto& transform = character.GetComponent<STransformComponent>();
+
+	ServerSystems::UpdatePlayerTransform(&transform.Position, &transform.Rotation.y, direction);
+	character.AddTag<Tag_UpdateTransform>();
 }

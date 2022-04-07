@@ -14,6 +14,8 @@ class ClientSystems
 {
 public:
 	static void MovePosition(Vector3* outPosition, const Vector3& velocity, float deltaTime, bool* outDirty);
+	static void UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty);
+	static void UpdateYRotation(float* outYRotation, const float to, bool* outDirty);
 	static void RotateY(Vector3* outRotation, float speed, float deltaTime, bool* outDirty);
 	static void BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty);
 	static void BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty);

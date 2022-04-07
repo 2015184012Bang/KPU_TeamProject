@@ -8,3 +8,9 @@ struct Tag_Text {};
 struct Tag_DontDestroyOnLoad {};
 
 struct Tag_Player {};
+
+
+
+
+// ¼­¹ö¿ë
+struct Tag_UpdateTransform {};

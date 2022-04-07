@@ -27,25 +27,21 @@ public:
 
 		if (Input::IsButtonRepeat(eKeyCode::Right))
 		{
-			ClientSystems::MovePosition(&transform->Position, Vector3(300.0f, 0.0f, 0.0f), deltaTime, &transform->bDirty);
 			bMove = true;
 		}
 
 		if (Input::IsButtonRepeat(eKeyCode::Left))
 		{
-			ClientSystems::MovePosition(&transform->Position, Vector3(-300.0f, 0.0f, 0.0f), deltaTime, &transform->bDirty);
 			bMove = true;
 		}
 
 		if (Input::IsButtonRepeat(eKeyCode::Up))
 		{
-			ClientSystems::MovePosition(&transform->Position, Vector3(0.0f, 0.0f, 300.0f), deltaTime, &transform->bDirty);
 			bMove = true;
 		}
 
 		if (Input::IsButtonRepeat(eKeyCode::Down))
 		{
-			ClientSystems::MovePosition(&transform->Position, Vector3(0.0f, 0.0f, -300.0f), deltaTime, &transform->bDirty);
 			bMove = true;
 		}
 

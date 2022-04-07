@@ -4,6 +4,7 @@ enum class CSPacket : uint8
 {
 	eLoginRequest,
 	eImReady,
+	eUserInput,
 };
 
 enum class SCPacket : uint8
@@ -13,4 +14,5 @@ enum class SCPacket : uint8
 	eReadyPressed,
 	eGameStart,
 	eCreateCharacter,
+	eUpdateTransform,
 };
