@@ -51,7 +51,7 @@ void LoginScene::ProcessInput()
 			MemoryStream packet;
 
 			string id = "derisan";
-			packet.WriteUByte(static_cast<int>(CSPacket::eLoginRequest));
+			packet.WriteUByte(static_cast<uint8>(CSPacket::eLoginRequest));
 			packet.WriteInt(static_cast<int>(id.size()));
 			packet.WriteString(id);
 

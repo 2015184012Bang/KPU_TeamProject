@@ -126,7 +126,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Skeleton.cpp" />
-    <ClCompile Include="TestScene.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
@@ -137,6 +137,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Bone.h" />
+    <ClInclude Include="Character.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientComponents.h" />
     <ClInclude Include="ClientPCH.h" />
@@ -152,9 +153,9 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Script.h" />
-    <ClInclude Include="CharacterMovement.h" />
+    <ClInclude Include="EnemyMovement.h" />
     <ClInclude Include="Skeleton.h" />
-    <ClInclude Include="TestScene.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TableDescriptorHeap.h" />

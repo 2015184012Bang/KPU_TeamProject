@@ -5,6 +5,15 @@
 class Scene;
 class Renderer;
 
+enum class CharacterAnimationType
+{
+	eIdle,
+	eRun,
+};
+
+void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
+wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
+
 class Client :
     public Game
 {
@@ -18,6 +27,8 @@ public:
     void ChangeScene(Scene* scene);
 
     Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
+    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid);
+
     Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
     Entity CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder = 100);
     Entity CreateTextEntity(const wstring& fontFile);

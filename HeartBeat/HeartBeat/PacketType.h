@@ -12,4 +12,5 @@ enum class SCPacket : uint8
 	eUserConnected,
 	eReadyPressed,
 	eGameStart,
+	eCreateCharacter,
 };

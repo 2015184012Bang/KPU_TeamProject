@@ -2,7 +2,7 @@
 
 #include "HeartBeat/Game.h"
 
-constexpr int NUM_MAX_PLAYER = 1;
+constexpr int NUM_MAX_PLAYER = 3;
 
 class Server : public Game
 {
@@ -13,12 +13,14 @@ class Server : public Game
 			, ClientSocket(socket)
 			, ClientAddr(addr)
 			, ClientID(id)
+			, CharacterID(0)
 		{}
 
 		bool bConnect;
 		TCPSocketPtr ClientSocket;
 		SocketAddress ClientAddr;
 		int ClientID;
+		HBID CharacterID;
 	};
 
 public:
@@ -27,6 +29,8 @@ public:
 	virtual bool Init() override;
 	virtual void Shutdown() override;
 	virtual void Run() override;
+
+	Entity CreateEntity();
 
 private:
 	void acceptClients();

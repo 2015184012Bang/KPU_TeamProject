@@ -6,10 +6,10 @@
 #include "Input.h"
 
 
-class CharacterMovement : public Script
+class EnemyMovement : public Script
 {
 public:
-	CharacterMovement(Entity owner)
+	EnemyMovement(Entity owner)
 		: Script(owner)
 	{
 

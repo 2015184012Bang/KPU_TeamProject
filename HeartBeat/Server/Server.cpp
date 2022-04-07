@@ -3,6 +3,8 @@
 
 #include "HeartBeat/PacketType.h"
 
+#include "ServerComponents.h"
+
 Server::Server()
 	: mListenSocket(nullptr)
 	, mbFullUsers(false)
@@ -98,6 +100,15 @@ void Server::Run()
 	}
 }
 
+Entity Server::CreateEntity()
+{
+	Entity e = Entity(getNewEntt(), this);
+	e.AddComponent<STransformComponent>();
+	e.AddComponent<IDComponent>();
+
+	return e;
+}
+
 void Server::acceptClients()
 {
 	SocketAddress clientAddr;
@@ -168,7 +179,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 
 	mIdToNickname[clientID] = nickname;
 
-	spacket.WriteUByte(static_cast<int>(SCPacket::eLoginConfirmed));
+	spacket.WriteUByte(static_cast<uint8>(SCPacket::eLoginConfirmed));
 	spacket.WriteInt(clientID);
 	spacket.WriteInt(nameLen);
 	spacket.WriteString(nickname);
@@ -178,7 +189,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 	// Send UserConnected packet to the others
 	for (auto& s : mSessions)
 	{
-		spacket.WriteUByte(static_cast<int>(SCPacket::eUserConnected));
+		spacket.WriteUByte(static_cast<uint8>(SCPacket::eUserConnected));
 
 		int clientID = s.ClientID;
 		const string& name = mIdToNickname[clientID];
@@ -189,7 +200,7 @@ void Server::processLoginRequest(MemoryStream* outPacket, const Session& session
 	}
 
 	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
-	spacket.WriteUByte(static_cast<int>(SCPacket::eReadyPressed));
+	spacket.WriteUByte(static_cast<uint8>(SCPacket::eReadyPressed));
 	spacket.WriteInt(static_cast<int>(numReadied));
 
 	for (auto& s : mSessions)
@@ -203,6 +214,7 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 	int clientID = -1;
 	outPacket->ReadInt(&clientID);
 
+	// 이미 레디를 누른 클라이언트인가?
 	if (mUserReadied[clientID])
 	{
 		return;
@@ -212,19 +224,44 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
 
 	MemoryStream spacket;
+
+	bool bAllReady = false;
+	// 모든 유저가 레디를 눌렀는가?
 	if (numReadied == mUserReadied.size())
 	{
-		// Send GameStart packet if all players pressed ready button
-		spacket.WriteUByte(static_cast<int>(SCPacket::eGameStart));
+		// 모든 유저가 레디했다면 게임 시작
+		spacket.WriteUByte(static_cast<uint8>(SCPacket::eGameStart));
+		bAllReady = true;
 	}
 	else
 	{
-		spacket.WriteUByte(static_cast<int>(SCPacket::eReadyPressed));
+		// 그렇지 않다면 레디한 유저 수를 담아 전송
+		spacket.WriteUByte(static_cast<uint8>(SCPacket::eReadyPressed));
 		spacket.WriteInt(static_cast<int>(numReadied));
 	}
 
 	for (auto& s : mSessions)
 	{
 		(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+	}
+
+	if (bAllReady)
+	{
+		spacket.Reset();
+		spacket.WriteUByte(static_cast<uint8>(SCPacket::eCreateCharacter));
+		for (int i = 0; i < mNumCurUsers; ++i)
+		{
+			Entity e = CreateEntity();
+			e.AddTag<Tag_Player>();
+			auto& id = e.GetComponent<IDComponent>();
+			mSessions[i].CharacterID = id.ID;
+			spacket.WriteInt(i);			// 클라이언트 ID
+			spacket.WriteUInt64(id.ID);		// 캐릭터 아이디
+		}
+
+		for (auto& s : mSessions)
+		{
+			(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
+		}
 	}
 }

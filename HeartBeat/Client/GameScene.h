@@ -2,11 +2,11 @@
 
 #include "Scene.h"
 
-class TestScene :
+class GameScene :
     public Scene
 {
 public:
-    TestScene(Client* owner);
+    GameScene(Client* owner);
     
     virtual void Enter() override;
     virtual void Exit() override;
@@ -15,8 +15,11 @@ public:
 
 private:
     void processPacket(MemoryStream* packet);
+    void processCreateCharacter(MemoryStream* packet);
 
 private:
     TCPSocketPtr mSocket;
+
+    Entity mMyCharacter;
 };
 

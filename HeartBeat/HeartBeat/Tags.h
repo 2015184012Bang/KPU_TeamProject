@@ -6,3 +6,5 @@ struct Tag_Camera {};
 struct Tag_Sprite {};
 struct Tag_Text {};
 struct Tag_DontDestroyOnLoad {};
+
+struct Tag_Player {};
