@@ -1,6 +1,7 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
+#include "Animation.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"
@@ -10,6 +11,7 @@
 #include "ResourceManager.h"
 #include "Script.h"
 #include "Text.h"
+#include "TestScene.h"
 
 Client::Client()
 	: Game()
@@ -32,6 +34,7 @@ bool Client::Init()
 	mRenderer->Init();
 
 	createCameraEntity();
+	createAnimationTransitions();
 
 	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
@@ -222,6 +225,58 @@ void Client::createCameraEntity()
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
+}
+
+void Client::createAnimationTransitions()
+{
+	// 바이러스 애니메이션 트랜지션 설정
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim");
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Run.anim");
+		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Attack.anim");
+		attackingAnim->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		attackingAnim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 캐릭터_그린
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CG_Idle.anim");
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CG_Run.anim");
+		idleAnim->AddTransition("Run", runningAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+	}
+
+	// 캐릭터_핑크
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CP_Idle.anim");
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CP_Run.anim");
+		idleAnim->AddTransition("Run", runningAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+	}
+
+	// 캐릭터_레드
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CR_Idle.anim");
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CR_Run.anim");
+		idleAnim->AddTransition("Run", runningAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+	}
+
+	// NPC(세포)
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Idle.anim");
+		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Run.anim");
+		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Attack.anim");
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackingAnim);
+	}
 }
 
 void Client::processButton()

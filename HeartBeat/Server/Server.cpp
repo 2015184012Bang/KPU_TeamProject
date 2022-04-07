@@ -55,7 +55,7 @@ void Server::Run()
 		{
 			if (mNumCurUsers < NUM_MAX_PLAYER)
 			{
-				accpetClients();
+				acceptClients();
 			}
 		}
 
@@ -98,7 +98,7 @@ void Server::Run()
 	}
 }
 
-void Server::accpetClients()
+void Server::acceptClients()
 {
 	SocketAddress clientAddr;
 

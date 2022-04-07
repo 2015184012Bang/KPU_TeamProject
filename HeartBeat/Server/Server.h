@@ -2,7 +2,7 @@
 
 #include "HeartBeat/Game.h"
 
-constexpr int NUM_MAX_PLAYER = 2;
+constexpr int NUM_MAX_PLAYER = 1;
 
 class Server : public Game
 {
@@ -29,7 +29,7 @@ public:
 	virtual void Run() override;
 
 private:
-	void accpetClients();
+	void acceptClients();
 
 	void processPacket(MemoryStream* outPacket, const Session& session);
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);

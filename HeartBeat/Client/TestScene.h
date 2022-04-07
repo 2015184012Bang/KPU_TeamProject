@@ -12,11 +12,11 @@ public:
     virtual void Exit() override;
     virtual void ProcessInput() override;
     virtual void Update(float deltaTime) override;
-    virtual void Render(unique_ptr<Renderer>& renderer) override;
 
 private:
-    Entity mTestText;
-    Entity mPickAx;
-    Entity mEnemy;
+    void processPacket(MemoryStream* packet);
+
+private:
+    TCPSocketPtr mSocket;
 };
 
