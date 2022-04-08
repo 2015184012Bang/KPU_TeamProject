@@ -189,3 +189,134 @@ Font* ResourceManager::GetFont(const wstring& path)
 		return newFont;
 	}
 }
+
+
+void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+{
+	switch (clientID)
+	{
+	case 0:
+		*outMeshFile = L"Assets/Meshes/Character_Green.mesh";
+		*outTexFile = L"Assets/Textures/Character_Green.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Green.skel";
+		break;
+
+	case 1:
+		*outMeshFile = L"Assets/Meshes/Character_Pink.mesh";
+		*outTexFile = L"Assets/Textures/Character_Pink.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Pink.skel";
+		break;
+
+	case 2:
+		*outMeshFile = L"Assets/Meshes/Character_Red.mesh";
+		*outTexFile = L"Assets/Textures/Character_Red.png";
+		*outSkelFile = L"Assets/Skeletons/Character_Red.skel";
+		break;
+
+	default:
+		HB_ASSERT(false, "Unknown client id: {0}", clientID);
+		break;
+	}
+}
+
+wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
+{
+	wstring animFile;
+
+	switch (clientID)
+	{
+	case 0: // Character_Green
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CG_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CG_Run.anim";
+			break;
+		}
+		break;
+
+	case 1: // Character_Pink
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CP_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CP_Run.anim";
+			break;
+		}
+		break;
+
+	case 2: // Character_Red
+		switch (type)
+		{
+		case CharacterAnimationType::eIdle:
+			animFile = L"Assets/Animations/CR_Idle.anim";
+			break;
+
+		case CharacterAnimationType::eRun:
+			animFile = L"Assets/Animations/CR_Run.anim";
+			break;
+		}
+		break;
+	}
+
+	return animFile;
+}
+
+void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+{
+	switch (enemyType)
+	{
+	case Virus:
+		*outMeshFile = L"Assets/Meshes/Virus.mesh";
+		*outTexFile = L"Assets/Textures/Virus.png";
+		*outSkelFile = L"Assets/Skeletons/Virus.skel";
+		break;
+
+	case Dog:
+		break;
+
+	default:
+		break;
+	}
+}
+
+wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
+{
+	wstring animFile;
+
+	switch (enemyType)
+	{
+	case Virus:
+		switch (animType)
+		{
+		case EnemyAnimationType::eIdle:
+			animFile = L"Assets/Animations/Virus_Idle.anim";
+			break;
+
+		case EnemyAnimationType::eRun:
+			animFile = L"Assets/Animations/Virus_Run.anim";
+			break;
+
+		case EnemyAnimationType::eAttack:
+			animFile = L"Assets/Animations/Virus_Attack.anim";
+			break;
+		}
+		break;
+
+	case Dog:
+		HB_ASSERT(false, "Dog not defined yet");
+		break;
+
+	default:
+		HB_LOG("Unknown enemy animation");
+		break;
+	}
+
+	return animFile;
+}

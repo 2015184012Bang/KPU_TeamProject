@@ -15,4 +15,5 @@ enum class SCPacket : uint8
 	eGameStart,
 	eCreateCharacter,
 	eUpdateTransform,
+	eCreateEnemy,
 };

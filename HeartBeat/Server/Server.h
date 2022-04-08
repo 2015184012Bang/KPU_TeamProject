@@ -8,6 +8,8 @@ using std::queue;
 
 constexpr int NUM_MAX_PLAYER = 1;
 
+class EnemyGenerator;
+
 class Server : public Game
 {
 	struct Session
@@ -36,8 +38,13 @@ public:
 
 	Entity CreateEntity();
 
+	void PushPacket(MemoryStream* packet);
+
 private:
 	void acceptClients();
+	void recvFromClients();
+	void clearIfDisconnected();
+	void flushSendQueue();
 
 	void processPacket(MemoryStream* outPacket, const Session& session);
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);
@@ -45,6 +52,7 @@ private:
 	void processUserInput(MemoryStream* outPacket);
 	
 	void makeUpdateTransformPacket();
+	void makeEnemyCreatePacket();
 
 	void sendToAllSessions(const MemoryStream& packet);
 
@@ -56,6 +64,7 @@ private:
 
 	queue<MemoryStream*> mSendQueue;
 
-	bool mbFullUsers;
 	int mNumCurUsers;
+
+	shared_ptr<EnemyGenerator> mEnemyGenerator;
 };

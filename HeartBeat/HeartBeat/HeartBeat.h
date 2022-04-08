@@ -13,3 +13,4 @@
 #include "SocketAddress.h"
 #include "TCPSocket.h"
 #include "MemoryStream.h"
+#include "Define.h"

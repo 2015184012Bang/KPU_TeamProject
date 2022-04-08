@@ -85,6 +85,10 @@ void GameScene::processPacket(MemoryStream* packet)
 			processUpdateTransform(packet);
 			break;
 
+		case SCPacket::eCreateEnemy:
+			processCreateEnemy(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
 			packet->SetLength(totalLen);
@@ -215,5 +219,33 @@ void GameScene::updateAnimTrigger()
 			e.RemoveComponent<Tag_Moved>();
 		}
 	}
+}
+
+void GameScene::processCreateEnemy(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+
+	uint8 enemyType;
+	packet->ReadUByte(&enemyType);
+
+	Vector3 position;
+	packet->ReadVector3(&position);
+
+	float yRot;
+	packet->ReadFloat(&yRot);
+
+	wstring meshFile;
+	wstring texFile;
+	wstring skelFile;
+
+	GetEnemyFiles(enemyType, &meshFile, &texFile, &skelFile);
+	wstring idleAnimFile = GetEnemyAnimation(enemyType, EnemyAnimationType::eIdle);
+
+	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid);
+	enemy.AddTag<Tag_Enemy>();
+
+	auto& animator = enemy.GetComponent<AnimatorComponent>();
+	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 }
 

@@ -5,15 +5,6 @@
 class Scene;
 class Renderer;
 
-enum class CharacterAnimationType
-{
-	eIdle,
-	eRun,
-};
-
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
-
 class Client :
     public Game
 {

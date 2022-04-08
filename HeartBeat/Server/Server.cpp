@@ -4,13 +4,14 @@
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
 
+#include "EnemyGenerator.h"
 #include "ServerComponents.h"
 #include "ServerSystems.h"
 
 Server::Server()
 	: mListenSocket(nullptr)
-	, mbFullUsers(false)
 	, mNumCurUsers(0)
+	, mEnemyGenerator(nullptr)
 {
 	mUserReadied.fill(false);
 }
@@ -20,6 +21,10 @@ bool Server::Init()
 	HB_LOG("SERVER INIT");
 
 	SocketUtil::Init();
+
+	Timer::Init();
+
+	mEnemyGenerator = std::make_shared<EnemyGenerator>(this);
 
 	mListenSocket = SocketUtil::CreateTCPSocket();
 	SocketAddress serveraddr(SERVER_PORT);
@@ -57,70 +62,14 @@ void Server::Run()
 	{
 		Timer::Update();
 
-		if (!mbFullUsers)
-		{
-			if (mNumCurUsers < NUM_MAX_PLAYER)
-			{
-				acceptClients();
-			}
-		}
-
-		MemoryStream packet;
-
-		for (auto& s : mSessions)
-		{
-			packet.Reset();
-
-			int retVal = (s.ClientSocket)->Recv(&packet, sizeof(MemoryStream));
-
-			if (retVal == SOCKET_ERROR)
-			{
-				int error = WSAGetLastError();
-
-				if (error == WSAEWOULDBLOCK)
-				{
-					continue;
-				}
-				else
-				{
-					SocketUtil::ReportError(L"Server::Run");
-					s.bConnect = false;
-				}
-			}
-			else if (retVal == 0)
-			{
-				HB_LOG("Client[{0}] disconnected.", s.ClientAddr.ToString());
-				s.bConnect = false;
-			}
-			else
-			{
-				processPacket(&packet, s);
-			}
-		}
-
-		// 접속이 끊긴 클라이언트 정리
-		mSessions.erase(std::remove_if(mSessions.begin(), mSessions.end(), [](const Session& s) {
-			return s.bConnect == false;
-			}), mSessions.end());
-
+		acceptClients();
+		recvFromClients();
+		clearIfDisconnected();
+		
 		makeUpdateTransformPacket();
+		makeEnemyCreatePacket();
 
-		static float elapsed = 0.0f;
-
-		elapsed += Timer::GetDeltaTime();
-		if (elapsed > 0.03f)
-		{
-			elapsed = 0.0f;
-
-			while (!mSendQueue.empty())
-			{
-				MemoryStream* packet = mSendQueue.front();
-				mSendQueue.pop();
-
-				sendToAllSessions(*packet);
-				delete packet;
-			}
-		}
+		flushSendQueue();
 	}
 }
 
@@ -135,8 +84,18 @@ Entity Server::CreateEntity()
 	return e;
 }
 
+void Server::PushPacket(MemoryStream* packet)
+{
+	mSendQueue.push(packet);
+}
+
 void Server::acceptClients()
 {
+	if (mNumCurUsers >= NUM_MAX_PLAYER)
+	{
+		return;
+	}
+
 	SocketAddress clientAddr;
 
 	TCPSocketPtr clientSocket = mListenSocket->Accept(&clientAddr);
@@ -158,8 +117,69 @@ void Server::acceptClients()
 
 		if (mNumCurUsers == NUM_MAX_PLAYER)
 		{
-			mbFullUsers = true;
 			mListenSocket = nullptr;
+		}
+	}
+}
+
+void Server::recvFromClients()
+{
+	MemoryStream packet;
+	for (auto& s : mSessions)
+	{
+		packet.Reset();
+
+		int retVal = (s.ClientSocket)->Recv(&packet, sizeof(MemoryStream));
+
+		if (retVal == SOCKET_ERROR)
+		{
+			int error = WSAGetLastError();
+
+			if (error == WSAEWOULDBLOCK)
+			{
+				continue;
+			}
+			else
+			{
+				SocketUtil::ReportError(L"Server::Run");
+				s.bConnect = false;
+			}
+		}
+		else if (retVal == 0)
+		{
+			HB_LOG("Client[{0}] disconnected.", s.ClientAddr.ToString());
+			s.bConnect = false;
+		}
+		else
+		{
+			processPacket(&packet, s);
+		}
+	}
+}
+
+void Server::clearIfDisconnected()
+{
+	// 접속이 끊긴 클라이언트 정리
+	mSessions.erase(std::remove_if(mSessions.begin(), mSessions.end(), [](const Session& s) {
+		return s.bConnect == false;
+		}), mSessions.end());
+}
+
+void Server::flushSendQueue()
+{
+	static float elapsed = 0.0f;
+	elapsed += Timer::GetDeltaTime();
+	if (elapsed > 0.03f)
+	{
+		elapsed = 0.0f;
+
+		while (!mSendQueue.empty())
+		{
+			MemoryStream* packet = mSendQueue.front();
+			mSendQueue.pop();
+
+			sendToAllSessions(*packet);
+			delete packet;
 		}
 	}
 }
@@ -262,6 +282,9 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 		// 모든 유저가 레디했다면 게임 시작
 		spacket.WriteUByte(static_cast<uint8>(SCPacket::eGameStart));
 		bAllReady = true;
+
+		// 적 생성기 작동 시작
+		mEnemyGenerator->SetStart(true);
 	}
 	else
 	{
@@ -348,4 +371,15 @@ void Server::sendToAllSessions(const MemoryStream& packet)
 	{
 		(s.ClientSocket)->Send(&packet, sizeof(MemoryStream));
 	}
+}
+
+void Server::makeEnemyCreatePacket()
+{
+	if (!mEnemyGenerator)
+	{
+		HB_LOG("mEnemyGenerator is nullptr");
+		return;
+	}
+
+	mEnemyGenerator->Update();
 }
