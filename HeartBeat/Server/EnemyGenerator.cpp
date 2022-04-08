@@ -5,7 +5,6 @@
 
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
-#include "HeartBeat/Random.h"
 #include "HeartBeat/Define.h"
 
 #include "CollisionChecker.h"
@@ -95,5 +94,6 @@ uint8 EnemyGenerator::getEnemyType(const string& name)
 	else
 	{
 		HB_ASSERT(false, "No Enemy Type: {0}", name);
+		return -1;
 	}
 }

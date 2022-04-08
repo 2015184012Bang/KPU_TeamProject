@@ -23,29 +23,18 @@ bool Server::Init()
 	HB_LOG("SERVER INIT");
 
 	SocketUtil::Init();
-
 	Timer::Init();
 	Random::Init();
 
 	mCollisionChecker = std::make_shared<CollisionChecker>(this);
 	mEnemyGenerator = std::make_shared<EnemyGenerator>(this);
 
-	mListenSocket = SocketUtil::CreateTCPSocket();
-	SocketAddress serveraddr(SERVER_PORT);
+	int retVal = bindAndListen();
 
-	if (mListenSocket->Bind(serveraddr) == SOCKET_ERROR)
+	if (false == retVal)
 	{
-		SocketUtil::ReportError(L"Server::Init");
 		return false;
 	}
-
-	if (mListenSocket->Listen() == SOCKET_ERROR)
-	{
-		SocketUtil::ReportError(L"Server::Init");
-		return false;
-	}
-
-	mListenSocket->SetNonBlockingMode(true);
 
 	return true;
 }
@@ -70,9 +59,9 @@ void Server::Run()
 		recvFromClients();
 		clearIfDisconnected();
 		
-		makeEnemyCreatePacket();
-		makeUpdateTransformPacket();
-		makeCollisionPacket();
+		updateEnemyGenerator();
+		updateTransforms();
+		updateCollisionChecker();
 
 		flushSendQueue();
 	}
@@ -92,6 +81,29 @@ Entity Server::CreateEntity()
 void Server::PushPacket(MemoryStream* packet)
 {
 	mSendQueue.push(packet);
+}
+
+bool Server::bindAndListen()
+{
+	mListenSocket = SocketUtil::CreateTCPSocket();
+	SocketAddress serveraddr(SERVER_PORT);
+
+	if (mListenSocket->Bind(serveraddr) == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	if (mListenSocket->Listen() == SOCKET_ERROR)
+	{
+		SocketUtil::ReportError(L"Server::Init");
+		return false;
+	}
+
+	mListenSocket->SetReuseAddress(true);
+	mListenSocket->SetNonBlockingMode(true);
+
+	return true;
 }
 
 void Server::acceptClients()
@@ -347,7 +359,7 @@ void Server::processUserInput(MemoryStream* outPacket)
 	character.AddTag<Tag_UpdateTransform>();
 }
 
-void Server::makeUpdateTransformPacket()
+void Server::updateTransforms()
 {
 	auto view = GetRegistry().view<Tag_UpdateTransform>();
 	if (view.size() <= 0)
@@ -380,7 +392,7 @@ void Server::sendToAllSessions(const MemoryStream& packet)
 	}
 }
 
-void Server::makeEnemyCreatePacket()
+void Server::updateEnemyGenerator()
 {
 	if (!mEnemyGenerator)
 	{
@@ -391,7 +403,7 @@ void Server::makeEnemyCreatePacket()
 	mEnemyGenerator->Update();
 }
 
-void Server::makeCollisionPacket()
+void Server::updateCollisionChecker()
 {
 	if (!mCollisionChecker)
 	{

@@ -120,6 +120,7 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="HBID.h" />
@@ -132,7 +133,6 @@
     <ClInclude Include="Random.h" />
     <ClInclude Include="SocketAddress.h" />
     <ClInclude Include="SocketUtil.h" />
-    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Tags.h" />
     <ClInclude Include="TCPSocket.h" />
     <ClInclude Include="Timer.h" />

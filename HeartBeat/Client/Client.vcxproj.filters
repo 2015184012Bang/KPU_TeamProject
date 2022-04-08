@@ -162,12 +162,6 @@
     <ClInclude Include="EnemyMovement.h">
       <Filter>Source Files\Test</Filter>
     </ClInclude>
-    <ClInclude Include="UIButtonTest.h">
-      <Filter>Source Files\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="UIButtonTest2.h">
-      <Filter>Source Files\Test</Filter>
-    </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>

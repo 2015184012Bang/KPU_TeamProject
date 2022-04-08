@@ -10,6 +10,10 @@ using std::queue;
 class EnemyGenerator;
 class CollisionChecker;
 
+/************************************************************************/
+/* Server                                                               */
+/************************************************************************/
+
 class Server : public Game
 {
 	struct Session
@@ -43,6 +47,7 @@ public:
 	shared_ptr<CollisionChecker> GetCollisionChecker() { return mCollisionChecker; }
 
 private:
+	bool bindAndListen();
 	void acceptClients();
 	void recvFromClients();
 	void clearIfDisconnected();
@@ -53,9 +58,9 @@ private:
 	void processImReady(MemoryStream* outPacket, const Session& session);
 	void processUserInput(MemoryStream* outPacket);
 	
-	void makeUpdateTransformPacket();
-	void makeEnemyCreatePacket();
-	void makeCollisionPacket();
+	void updateTransforms();
+	void updateEnemyGenerator();
+	void updateCollisionChecker();
 
 	void sendToAllSessions(const MemoryStream& packet);
 

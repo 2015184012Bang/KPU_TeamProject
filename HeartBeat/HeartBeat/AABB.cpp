@@ -3,7 +3,7 @@
 
 #include <rapidjson/document.h>
 
-#include "StringUtils.h"
+#include "Utils.h"
 
 AABB::AABB()
 	: mMin(FLT_MAX, FLT_MAX, FLT_MAX)

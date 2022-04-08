@@ -158,8 +158,6 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
     <ClInclude Include="Types.h" />
-    <ClInclude Include="UIButtonTest.h" />
-    <ClInclude Include="UIButtonTest2.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
