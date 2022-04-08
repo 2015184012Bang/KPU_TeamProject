@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Resource.h"
-
-class AABB : public IResource
+class AABB
 {
 public:
 	AABB();
+	AABB(const wstring& path);
 
-	virtual void Load(const wstring& path) override;
+	void Load(const wstring& path);
 	void UpdateWorldBox(const Vector3& position, float yaw);
 
 	const Vector3& GetMin() const { return mMin; }
@@ -21,4 +20,3 @@ private:
 	Vector3 mMin;
 	Vector3 mMax;
 };
-

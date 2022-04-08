@@ -1,13 +1,22 @@
-#include "ClientPCH.h"
+#include "PCH.h"
 #include "AABB.h"
 
 #include <rapidjson/document.h>
+
+#include "StringUtils.h"
 
 AABB::AABB()
 	: mMin(FLT_MAX, FLT_MAX, FLT_MAX)
 	, mMax(FLT_MIN, FLT_MIN, FLT_MIN)
 {
 
+}
+
+AABB::AABB(const wstring& path)
+	: mMin(FLT_MAX, FLT_MAX, FLT_MAX)
+	, mMax(FLT_MIN, FLT_MIN, FLT_MIN)
+{
+	Load(path);
 }
 
 void AABB::Load(const wstring& path)

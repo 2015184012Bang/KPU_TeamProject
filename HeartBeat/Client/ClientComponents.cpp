@@ -123,21 +123,6 @@ void AnimatorComponent::SetTrigger(const string& triggerName)
 	ClientSystems::PlayAnimation(this, nextAnim, 1.0f);
 }
 
-BoxComponent::BoxComponent()
-	: Local(nullptr)
-	, World()
-{
-
-}
-
-BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float yaw)
-	: Local(localBox)
-{
-	World = *Local;
-
-	World.UpdateWorldBox(position, yaw);
-}
-
 DebugDrawComponent::DebugDrawComponent()
 	: Mesi(nullptr)
 {

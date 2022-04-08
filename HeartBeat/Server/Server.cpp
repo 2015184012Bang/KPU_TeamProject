@@ -312,7 +312,7 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 			Entity e = CreateEntity();
 			e.AddTag<Tag_Player>();
 			auto& transform = e.GetComponent<STransformComponent>();
-			e.AddComponent<SBoxComponent>(mCollisionChecker->GetLocalBox(L"Character"), transform.Position);
+			e.AddComponent<BoxComponent>(mCollisionChecker->GetLocalBox(L"Character"), transform.Position);
 			auto& id = e.GetComponent<IDComponent>();
 			mSessions[i].CharacterID = id.ID;
 			spacket.WriteInt(i);			// 클라이언트 ID

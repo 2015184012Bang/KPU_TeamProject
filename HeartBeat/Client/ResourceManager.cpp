@@ -3,7 +3,6 @@
 
 #include "HeartBeat/Define.h"
 
-#include "AABB.h"
 #include "Animation.h"
 #include "Font.h"
 #include "Mesh.h"

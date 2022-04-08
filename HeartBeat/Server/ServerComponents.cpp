@@ -15,18 +15,3 @@ STransformComponent::STransformComponent(const Vector3& position, const Vector3&
 {
 
 }
-
-SBoxComponent::SBoxComponent()
-	: LocalBox(nullptr)
-	, MyBox()
-{
-
-}
-
-SBoxComponent::SBoxComponent(const AABB* localBox, const Vector3& position, float yaw /*= 0.0f*/)
-	: LocalBox(localBox)
-	, MyBox()
-{
-	MyBox = *localBox;
-	MyBox.UpdateWorldBox(position, yaw);
-}

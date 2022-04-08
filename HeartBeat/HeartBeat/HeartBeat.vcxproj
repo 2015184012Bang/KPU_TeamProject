@@ -101,6 +101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="HBID.cpp" />
@@ -116,6 +117,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABB.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Entity.h" />
