@@ -279,6 +279,9 @@ void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, w
 		break;
 
 	case Dog:
+		*outMeshFile = L"Assets/Meshes/Dog.mesh";
+		*outTexFile = L"Assets/Textures/Dog.png";
+		*outSkelFile = L"Assets/Skeletons/Dog.skel";
 		break;
 
 	default:
@@ -310,9 +313,21 @@ wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
 		break;
 
 	case Dog:
-		HB_ASSERT(false, "Dog not defined yet");
-		break;
+		switch (animType)
+		{
+		case EnemyAnimationType::eIdle:
+			animFile = L"Assets/Animations/Dog_Idle.anim";
+			break;
 
+		case EnemyAnimationType::eRun:
+			animFile = L"Assets/Animations/Dog_Run.anim";
+			break;
+
+		case EnemyAnimationType::eAttack:
+			animFile = L"Assets/Animations/Dog_Attack.anim";
+			break;
+		}
+		break;
 	default:
 		HB_LOG("Unknown enemy animation");
 		break;

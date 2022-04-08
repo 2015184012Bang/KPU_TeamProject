@@ -245,6 +245,12 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid);
 	enemy.AddTag<Tag_Enemy>();
 
+	if (enemyType == Virus)
+	{
+		Entity pickax = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Pickax.mesh", L"Assets/Textures/Pickax.png");
+		ClientSystems::SetBoneAttachment(enemy, pickax, "Weapon");
+	}
+
 	auto& animator = enemy.GetComponent<AnimatorComponent>();
 	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 }

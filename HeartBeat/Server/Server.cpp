@@ -3,6 +3,7 @@
 
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/Random.h"
 
 #include "EnemyGenerator.h"
 #include "ServerComponents.h"
@@ -23,6 +24,7 @@ bool Server::Init()
 	SocketUtil::Init();
 
 	Timer::Init();
+	Random::Init();
 
 	mEnemyGenerator = std::make_shared<EnemyGenerator>(this);
 

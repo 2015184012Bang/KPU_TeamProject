@@ -487,6 +487,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(L"Assets/Meshes/Character_Pink.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/Cell.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/Virus.mesh");
+	ResourceManager::GetMesh(L"Assets/Meshes/Dog.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/Pickax.mesh");
 	ResourceManager::GetMesh(L"Assets/Meshes/Cube.mesh");
 
@@ -495,6 +496,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Character_Pink.skel");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Cell.skel");
 	ResourceManager::GetSkeleton(L"Assets/Skeletons/Virus.skel");
+	ResourceManager::GetSkeleton(L"Assets/Skeletons/Dog.skel");
 
 	ResourceManager::GetAABB(L"Assets/Boxes/Character.box");
 	ResourceManager::GetAABB(L"Assets/Boxes/Cell.box");

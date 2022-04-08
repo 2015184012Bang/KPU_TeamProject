@@ -3,6 +3,7 @@
 
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/Random.h"
 
 #include "Server.h"
 #include "ServerComponents.h"
@@ -32,15 +33,15 @@ void EnemyGenerator::Update()
 	{
 		mElapsed = 0.0f;
 
-		Entity virus = mServer->CreateEntity();
-		virus.AddTag<Tag_Enemy>();
-		auto& transform = virus.GetComponent<STransformComponent>();
-		auto& id = virus.GetComponent<IDComponent>();
+		Entity enemy = mServer->CreateEntity();
+		enemy.AddTag<Tag_Enemy>();
+		auto& transform = enemy.GetComponent<STransformComponent>();
+		auto& id = enemy.GetComponent<IDComponent>();
 
 		MemoryStream* packet = new MemoryStream;
 		packet->WriteUByte(static_cast<uint8>(SCPacket::eCreateEnemy));
 		packet->WriteUInt64(id.ID);
-		packet->WriteUByte(Virus);
+		packet->WriteUByte(Random::RandInt(0, 1));
 		packet->WriteVector3(transform.Position);
 		packet->WriteFloat(transform.Rotation.y);
 
