@@ -9,3 +9,11 @@ struct IDComponent
 
 	HBID ID;
 };
+
+struct AttachmentParentComponent
+{
+	AttachmentParentComponent();
+	AttachmentParentComponent(const HBID& id);
+
+	HBID ChildID;
+};

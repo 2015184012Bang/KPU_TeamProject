@@ -310,15 +310,3 @@ AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint3
 {
 
 }
-
-AttachmentParentComponent::AttachmentParentComponent()
-	: ChildID(-1)
-{
-
-}
-
-AttachmentParentComponent::AttachmentParentComponent(const HBID& id)
-	: ChildID(id)
-{
-
-}

@@ -12,3 +12,15 @@ IDComponent::IDComponent(uint64 id)
 {
 	HB_LOG("Entity ID: {0}", ID);
 }
+
+AttachmentParentComponent::AttachmentParentComponent()
+	: ChildID(-1)
+{
+
+}
+
+AttachmentParentComponent::AttachmentParentComponent(const HBID& id)
+	: ChildID(id)
+{
+
+}

@@ -147,11 +147,3 @@ struct AttachmentChildComponent
 	uint32 BoneIndex;
 	TransformComponent* ParentTransform;
 };
-
-struct AttachmentParentComponent
-{
-	AttachmentParentComponent();
-	AttachmentParentComponent(const HBID& id);
-	
-	HBID ChildID;
-};

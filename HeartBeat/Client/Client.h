@@ -19,8 +19,8 @@ public:
 
     Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
     Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid);
-
     Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
+    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid);
     Entity CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder = 100);
     Entity CreateTextEntity(const wstring& fontFile);
 

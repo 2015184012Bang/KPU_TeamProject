@@ -47,6 +47,12 @@ void Game::DestroyEntity(const entt::entity handle)
 	auto& idc = e.GetComponent<IDComponent>();
 	removeEntity(idc.ID);
 
+	if (e.HasComponent<AttachmentParentComponent>())
+	{
+		auto& apc = e.GetComponent<AttachmentParentComponent>();
+		DestroyEntityByID(apc.ChildID);
+	}
+
 	mRegistry.destroy(handle);
 }
 

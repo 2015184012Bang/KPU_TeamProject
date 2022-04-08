@@ -137,6 +137,19 @@ Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& te
 	return e;
 }
 
+Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid)
+{
+	Entity e = Entity(getNewEntt(), this);
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<Tag_StaticMesh>();
+	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+	auto& id = e.AddComponent<IDComponent>(eid);
+	RegisterEntity(id.ID, e);
+
+	return e;
+}
+
 Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder /*= 100*/)
 {
 	Entity e = Entity(getNewEntt(), this);
