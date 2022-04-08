@@ -7,6 +7,7 @@
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Random.h"
 
+#include "CollisionChecker.h"
 #include "Server.h"
 #include "ServerComponents.h"
 
@@ -14,12 +15,14 @@
 EnemyGenerator::EnemyGenerator(Server* server)
 	: mServer(server)
 {
-	readStageFile("stage1.csv");
+	readStageFile("../Assets/Stages/stage1.csv");
+
+	mCollsionChecker = server->GetCollisionChecker();
 }
 
 EnemyGenerator::~EnemyGenerator()
 {
-
+	mCollsionChecker = nullptr;
 }
 
 void EnemyGenerator::Update()
@@ -41,6 +44,9 @@ void EnemyGenerator::Update()
 			auto& transform = enemy.GetComponent<STransformComponent>();
 			transform.Position.x = info.X;
 			transform.Position.z = info.Z;
+
+			// TODO: 적의 타입에 따라 다른 박스 설정 필요
+			enemy.AddComponent<SBoxComponent>(mCollsionChecker->GetLocalBox(L"Virus"), transform.Position);
 			auto& id = enemy.GetComponent<IDComponent>();
 
 			MemoryStream* packet = new MemoryStream;

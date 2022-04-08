@@ -5,6 +5,7 @@
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Random.h"
 
+#include "CollisionChecker.h"
 #include "EnemyGenerator.h"
 #include "ServerComponents.h"
 #include "ServerSystems.h"
@@ -26,6 +27,7 @@ bool Server::Init()
 	Timer::Init();
 	Random::Init();
 
+	mCollisionChecker = std::make_shared<CollisionChecker>(this);
 	mEnemyGenerator = std::make_shared<EnemyGenerator>(this);
 
 	mListenSocket = SocketUtil::CreateTCPSocket();
@@ -68,8 +70,9 @@ void Server::Run()
 		recvFromClients();
 		clearIfDisconnected();
 		
-		makeUpdateTransformPacket();
 		makeEnemyCreatePacket();
+		makeUpdateTransformPacket();
+		makeCollisionPacket();
 
 		flushSendQueue();
 	}
@@ -93,7 +96,7 @@ void Server::PushPacket(MemoryStream* packet)
 
 void Server::acceptClients()
 {
-	if (mNumCurUsers >= NUM_MAX_PLAYER)
+	if (mNumCurUsers >= MAX_PLAYER)
 	{
 		return;
 	}
@@ -117,7 +120,7 @@ void Server::acceptClients()
 		HB_LOG("Client[{0}] Connected: {1}", mNumCurUsers, clientAddr.ToString());
 		mSessions.emplace_back(true, clientSocket, clientAddr, mNumCurUsers++);
 
-		if (mNumCurUsers == NUM_MAX_PLAYER)
+		if (mNumCurUsers == MAX_PLAYER)
 		{
 			mListenSocket = nullptr;
 		}
@@ -308,6 +311,8 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 		{
 			Entity e = CreateEntity();
 			e.AddTag<Tag_Player>();
+			auto& transform = e.GetComponent<STransformComponent>();
+			e.AddComponent<SBoxComponent>(mCollisionChecker->GetLocalBox(L"Character"), transform.Position);
 			auto& id = e.GetComponent<IDComponent>();
 			mSessions[i].CharacterID = id.ID;
 			spacket.WriteInt(i);			// 클라이언트 ID
@@ -384,4 +389,15 @@ void Server::makeEnemyCreatePacket()
 	}
 
 	mEnemyGenerator->Update();
+}
+
+void Server::makeCollisionPacket()
+{
+	if (!mCollisionChecker)
+	{
+		HB_LOG("CollisionChecker is nullptr!");
+		return;
+	}
+
+	mCollisionChecker->Update();
 }

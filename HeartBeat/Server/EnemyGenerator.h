@@ -2,6 +2,7 @@
 
 #include <queue>
 
+class CollisionChecker;
 class Server;
 
 class EnemyGenerator
@@ -42,6 +43,7 @@ private:
 	Server* mServer = nullptr;
 	float mElapsed = 0.0f;
 	bool mbStart = false;
+	shared_ptr<CollisionChecker> mCollsionChecker;
 
 	std::priority_queue<SpawnInfo, vector<SpawnInfo>, std::greater<SpawnInfo>> mSpawnInfos;
 };

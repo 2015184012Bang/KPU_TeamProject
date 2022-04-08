@@ -3,6 +3,7 @@
 
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/Define.h"
 
 #include "Animation.h"
 #include "Client.h"
@@ -99,7 +100,7 @@ void GameScene::processPacket(MemoryStream* packet)
 
 void GameScene::processCreateCharacter(MemoryStream* packet)
 {
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
 		int clientID = -1;
 		uint64 entityID = 0;
@@ -113,7 +114,7 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 
 		GetCharacterFiles(clientID, &meshFile, &texFile, &skelFile);
 
-		Entity e = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, entityID);
+		Entity e = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, entityID, L"Assets/Boxes/Character.box");
 		e.AddTag<Tag_Player>();
 		auto& animator = e.GetComponent<AnimatorComponent>();
 
@@ -239,7 +240,7 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	GetEnemyFiles(enemyType, &meshFile, &texFile, &skelFile);
 	wstring idleAnimFile = GetEnemyAnimation(enemyType, EnemyAnimationType::eIdle);
 
-	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid);
+	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid, L"Assets/Boxes/Virus.box");
 	enemy.AddTag<Tag_Enemy>();
 
 	auto& transform = enemy.GetComponent<TransformComponent>();

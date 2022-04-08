@@ -31,6 +31,9 @@
     <ClCompile Include="EnemyGenerator.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionChecker.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerPCH.h">
@@ -46,6 +49,9 @@
       <Filter>Source Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="EnemyGenerator.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionChecker.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

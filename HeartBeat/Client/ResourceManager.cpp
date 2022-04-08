@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
+#include "HeartBeat/Define.h"
+
 #include "AABB.h"
 #include "Animation.h"
 #include "Font.h"

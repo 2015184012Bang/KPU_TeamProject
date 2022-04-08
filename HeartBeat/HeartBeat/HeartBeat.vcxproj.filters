@@ -93,8 +93,10 @@
     <ClInclude Include="PacketType.h">
       <Filter>Source Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Define.h" />
     <ClInclude Include="Random.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,12 +3,12 @@
 #include <queue>
 
 #include "HeartBeat/Game.h"
+#include "HeartBeat/Define.h"
 
 using std::queue;
 
-constexpr int NUM_MAX_PLAYER = 3;
-
 class EnemyGenerator;
+class CollisionChecker;
 
 class Server : public Game
 {
@@ -40,6 +40,8 @@ public:
 
 	void PushPacket(MemoryStream* packet);
 
+	shared_ptr<CollisionChecker> GetCollisionChecker() { return mCollisionChecker; }
+
 private:
 	void acceptClients();
 	void recvFromClients();
@@ -53,13 +55,14 @@ private:
 	
 	void makeUpdateTransformPacket();
 	void makeEnemyCreatePacket();
+	void makeCollisionPacket();
 
 	void sendToAllSessions(const MemoryStream& packet);
 
 private:
 	TCPSocketPtr mListenSocket;
 	vector<Session> mSessions;
-	array<bool, NUM_MAX_PLAYER> mUserReadied;
+	array<bool, MAX_PLAYER> mUserReadied;
 	map<int, string> mIdToNickname;
 
 	queue<MemoryStream*> mSendQueue;
@@ -67,4 +70,5 @@ private:
 	int mNumCurUsers;
 
 	shared_ptr<EnemyGenerator> mEnemyGenerator;
+	shared_ptr<CollisionChecker> mCollisionChecker;
 };

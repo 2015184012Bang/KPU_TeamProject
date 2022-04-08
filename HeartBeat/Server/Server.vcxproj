@@ -106,6 +106,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionChecker.cpp" />
     <ClCompile Include="EnemyGenerator.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerComponents.cpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="ServerSystems.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionChecker.h" />
     <ClInclude Include="EnemyGenerator.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerComponents.h" />

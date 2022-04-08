@@ -102,7 +102,7 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid)
+Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid, const wstring& boxFile /*= L""*/)
 {
 	Entity e = Entity(getNewEntt(), this);
 
@@ -113,6 +113,12 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
 
 	RegisterEntity(id.ID, e);
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
 
 	return e;
 }
