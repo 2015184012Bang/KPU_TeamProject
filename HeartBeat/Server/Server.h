@@ -2,7 +2,7 @@
 
 #include "HeartBeat/Game.h"
 
-constexpr int NUM_MAX_PLAYER = 3;
+constexpr int NUM_MAX_PLAYER = 1;
 
 class Server : public Game
 {

@@ -146,9 +146,9 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 		outAnimator->PrevAnim = outAnimator->CurAnim;
 		outAnimator->PrevAnimTime = outAnimator->CurAnimTime;
 
-		if (outAnimator->PrevAnimTime > outAnimator->PrevAnim->GetDuration())
+		if (outAnimator->PrevAnimTime >= outAnimator->PrevAnim->GetDuration())
 		{
-			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration();
+			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration() - 0.001f;
 		}
 
 		outAnimator->BlendingTime = ANIM_BLEND_TIME;

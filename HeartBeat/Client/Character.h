@@ -23,36 +23,7 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
-		bool bMove = false;
 
-		if (Input::IsButtonRepeat(eKeyCode::Right))
-		{
-			bMove = true;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Left))
-		{
-			bMove = true;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Up))
-		{
-			bMove = true;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Down))
-		{
-			bMove = true;
-		}
-
-		if (bMove)
-		{
-			animator->SetTrigger("Run");
-		}
-		else
-		{
-			animator->SetTrigger("Idle");
-		}
 	}
 
 private:
