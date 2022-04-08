@@ -26,7 +26,11 @@ public:
 	template<typename T>
 	void AddTag()
 	{
-		HB_ASSERT(!HasComponent<T>(), "Entity already has tag.");
+		if (HasComponent<T>())
+		{
+			return;
+		}
+
 		mGame->mRegistry.emplace<T>(mHandle);
 	}
 
@@ -60,6 +64,8 @@ public:
 	{
 		return !(*this == other);
 	}
+
+	operator bool() { return mHandle != entt::null; }
 
 	operator entt::entity() const { return mHandle; }
 	operator entt::entity() { return mHandle; }

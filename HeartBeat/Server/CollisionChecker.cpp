@@ -4,7 +4,6 @@
 #include <rapidjson/document.h>
 
 #include "HeartBeat/Tags.h"
-#include "HeartBeat/Define.h"
 
 #include "Server.h"
 #include "ServerComponents.h"
@@ -57,8 +56,8 @@ void CollisionChecker::Update()
 
 			if (ServerSystems::Intersects(playerBox.World, enemyBox.World))
 			{
-				HB_LOG("Collision!!!");
-				//processCollision(p, e);
+				processCollision(e, p);
+				p.AddTag<Tag_UpdateTransform>();
 			}
 		}
 	}
@@ -104,20 +103,20 @@ void CollisionChecker::processCollision(Entity& a, Entity& b)
 	float dz = abs(dz1) < abs(dz2) ?
 		dz1 : dz2;
 
-	STransformComponent& transform = a.GetComponent<STransformComponent>();
-	
-	if (abs(dx) <= abs(dz))
+	STransformComponent& bTransform = b.GetComponent<STransformComponent>();
+
+	if (abs(dx) <= abs(dy) && abs(dx) <= abs(dz))
 	{
-		transform.Position.x += dx;
+		bTransform.Position.x += dx * 2.0f;
 	}
 	else if (abs(dy) <= abs(dx) && abs(dy) <= abs(dz))
 	{
-		transform.Position.y += dy;
+		bTransform.Position.y += dy;
 	}
 	else
 	{
-		transform.Position.z += dz;
+		bTransform.Position.z += dz * 2.0f;
 	}
 
-	ServerSystems::UpdateBox(aBox.Local, &aBox.World, transform.Position, transform.Rotation.y);
+	ServerSystems::UpdateBox(bBox.Local, &bBox.World, bTransform.Position, bTransform.Rotation.y);
 }

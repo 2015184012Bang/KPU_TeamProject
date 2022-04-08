@@ -2,7 +2,6 @@
 #include "Client.h"
 
 #include "HeartBeat/Tags.h"
-#include "HeartBeat/Define.h"
 
 #include "Animation.h"
 #include "ClientComponents.h"

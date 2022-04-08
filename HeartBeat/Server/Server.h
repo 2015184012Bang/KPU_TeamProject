@@ -58,9 +58,10 @@ private:
 	void processImReady(MemoryStream* outPacket, const Session& session);
 	void processUserInput(MemoryStream* outPacket);
 	
-	void updateTransforms();
 	void updateEnemyGenerator();
 	void updateCollisionChecker();
+	
+	void makePacket();
 
 	void sendToAllSessions(const MemoryStream& packet);
 

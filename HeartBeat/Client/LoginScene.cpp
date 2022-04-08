@@ -2,7 +2,6 @@
 #include "LoginScene.h"
 
 #include "HeartBeat/PacketType.h"
-#include "HeartBeat/Define.h"
 
 #include "Application.h"
 #include "Client.h"

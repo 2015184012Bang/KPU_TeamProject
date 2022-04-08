@@ -60,8 +60,9 @@ void Server::Run()
 		clearIfDisconnected();
 		
 		updateEnemyGenerator();
-		updateTransforms();
 		updateCollisionChecker();
+
+		makePacket();
 
 		flushSendQueue();
 	}
@@ -359,31 +360,6 @@ void Server::processUserInput(MemoryStream* outPacket)
 	character.AddTag<Tag_UpdateTransform>();
 }
 
-void Server::updateTransforms()
-{
-	auto view = GetRegistry().view<Tag_UpdateTransform>();
-	if (view.size() <= 0)
-	{
-		return;
-	}
-
-	MemoryStream* spacket = new MemoryStream;
-	for (auto e : view)
-	{
-		Entity ent = Entity(e, this);
-		ent.RemoveComponent<Tag_UpdateTransform>();
-		auto& transform = ent.GetComponent<STransformComponent>();
-		auto& id = ent.GetComponent<IDComponent>();
-
-		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
-		spacket->WriteUInt64(id.ID);
-		spacket->WriteVector3(transform.Position);
-		spacket->WriteFloat(transform.Rotation.y);
-	}
-
-	mSendQueue.push(spacket);
-}
-
 void Server::sendToAllSessions(const MemoryStream& packet)
 {
 	for (auto& s : mSessions)
@@ -412,4 +388,29 @@ void Server::updateCollisionChecker()
 	}
 
 	mCollisionChecker->Update();
+}
+
+void Server::makePacket()
+{
+	auto view = GetRegistry().view<Tag_UpdateTransform>();
+	if (view.empty())
+	{
+		return;
+	}
+
+	MemoryStream* spacket = new MemoryStream;
+	for (auto e : view)
+	{
+		Entity ent = Entity(e, this);
+		ent.RemoveComponent<Tag_UpdateTransform>();
+		auto& transform = ent.GetComponent<STransformComponent>();
+		auto& id = ent.GetComponent<IDComponent>();
+
+		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
+		spacket->WriteUInt64(id.ID);
+		spacket->WriteVector3(transform.Position);
+		spacket->WriteFloat(transform.Rotation.y);
+	}
+
+	mSendQueue.push(spacket);
 }
