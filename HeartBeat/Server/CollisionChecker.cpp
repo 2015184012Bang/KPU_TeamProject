@@ -44,9 +44,11 @@ void CollisionChecker::Update()
 	auto players = mServer->GetRegistry().view<Tag_Player>();
 	auto enemies = mServer->GetRegistry().view<Tag_Enemy>();
 
+	vector<Entity> plrs;
 	for (auto player : players)
 	{
 		Entity p = Entity(player, mServer);
+		plrs.push_back(p);
 		auto& playerBox = p.GetComponent<BoxComponent>();
 
 		for (auto enemy : enemies)
@@ -58,6 +60,25 @@ void CollisionChecker::Update()
 			{
 				processCollision(e, p);
 				p.AddTag<Tag_UpdateTransform>();
+			}
+		}
+	}
+
+	if (plrs.size() >= 2)
+	{
+		for (int i = 0; i < plrs.size() - 1; ++i)
+		{
+			auto& p1Box = plrs[i].GetComponent<BoxComponent>();
+
+			for (int j = i + 1; j < plrs.size(); ++j)
+			{
+				auto& p2Box = plrs[j].GetComponent<BoxComponent>();
+
+				if (ServerSystems::Intersects(p1Box.World, p2Box.World))
+				{
+					processCollision(plrs[j], plrs[i]);
+					plrs[i].AddTag<Tag_UpdateTransform>();
+				}
 			}
 		}
 	}
@@ -91,27 +112,19 @@ void CollisionChecker::processCollision(Entity& a, Entity& b)
 
 	float dx1 = aMax.x - bMin.x;
 	float dx2 = aMin.x - bMax.x;
-	float dy1 = aMax.y - bMin.y;
-	float dy2 = aMin.y - bMax.y;
 	float dz1 = aMax.z - bMin.z;
 	float dz2 = aMin.z - bMax.z;
 
 	float dx = abs(dx1) < abs(dx2) ?
 		dx1 : dx2;
-	float dy = abs(dy1) < abs(dy2) ?
-		dy1 : dy2;
 	float dz = abs(dz1) < abs(dz2) ?
 		dz1 : dz2;
 
 	STransformComponent& bTransform = b.GetComponent<STransformComponent>();
 
-	if (abs(dx) <= abs(dy) && abs(dx) <= abs(dz))
+	if (abs(dx) <= abs(dz))
 	{
 		bTransform.Position.x += dx * 2.0f;
-	}
-	else if (abs(dy) <= abs(dx) && abs(dy) <= abs(dz))
-	{
-		bTransform.Position.y += dy;
 	}
 	else
 	{
