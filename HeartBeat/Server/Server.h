@@ -1,8 +1,12 @@
 #pragma once
 
+#include <queue>
+
 #include "HeartBeat/Game.h"
 
-constexpr int NUM_MAX_PLAYER = 3;
+using std::queue;
+
+constexpr int NUM_MAX_PLAYER = 1;
 
 class Server : public Game
 {
@@ -39,12 +43,18 @@ private:
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);
 	void processImReady(MemoryStream* outPacket, const Session& session);
 	void processUserInput(MemoryStream* outPacket);
+	
+	void makeUpdateTransformPacket();
+
+	void sendToAllSessions(const MemoryStream& packet);
 
 private:
 	TCPSocketPtr mListenSocket;
 	vector<Session> mSessions;
 	array<bool, NUM_MAX_PLAYER> mUserReadied;
 	map<int, string> mIdToNickname;
+
+	queue<MemoryStream*> mSendQueue;
 
 	bool mbFullUsers;
 	int mNumCurUsers;

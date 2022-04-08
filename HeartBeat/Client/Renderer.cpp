@@ -85,7 +85,7 @@ void Renderer::EndRender()
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
-	ThrowIfFailed(mSwapChain->Present(0, 0));
+	ThrowIfFailed(mSwapChain->Present(1, 0));
 
 	waitForPreviousFrame();
 }

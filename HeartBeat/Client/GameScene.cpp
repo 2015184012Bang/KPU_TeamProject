@@ -95,7 +95,7 @@ void GameScene::processPacket(MemoryStream* packet)
 
 void GameScene::processCreateCharacter(MemoryStream* packet)
 {
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 1; ++i)
 	{
 		int clientID = -1;
 		uint64 entityID = 0;

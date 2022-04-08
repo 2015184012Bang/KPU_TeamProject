@@ -47,7 +47,7 @@ void Server::Shutdown()
 	{
 		s.ClientSocket = nullptr;
 	}
-	
+
 	SocketUtil::Shutdown();
 }
 
@@ -55,6 +55,8 @@ void Server::Run()
 {
 	while (!ShouldClose())
 	{
+		Timer::Update();
+
 		if (!mbFullUsers)
 		{
 			if (mNumCurUsers < NUM_MAX_PLAYER)
@@ -101,30 +103,22 @@ void Server::Run()
 			return s.bConnect == false;
 			}), mSessions.end());
 
+		makeUpdateTransformPacket();
+
+		static float elapsed = 0.0f;
+
+		elapsed += Timer::GetDeltaTime();
+		if (elapsed > 0.03f)
 		{
-			MemoryStream spacket;
+			elapsed = 0.0f;
 
-			auto view = GetRegistry().view<Tag_UpdateTransform>();
-
-			for (auto e : view)
+			while (!mSendQueue.empty())
 			{
-				Entity ent = Entity(e, this);
-				ent.RemoveComponent<Tag_UpdateTransform>();
-				auto& transform = ent.GetComponent<STransformComponent>();
-				auto& id = ent.GetComponent<IDComponent>();
+				MemoryStream* packet = mSendQueue.front();
+				mSendQueue.pop();
 
-				spacket.WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
-				spacket.WriteUInt64(id.ID);
-				spacket.WriteVector3(transform.Position);
-				spacket.WriteFloat(transform.Rotation.y);
-			}
-
-			if (spacket.GetLength() > 0)
-			{
-				for (auto& s : mSessions)
-				{
-					(s.ClientSocket)->Send(&spacket, sizeof(MemoryStream));
-				}
+				sendToAllSessions(*packet);
+				delete packet;
 			}
 		}
 	}
@@ -255,7 +249,7 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 	{
 		return;
 	}
-	
+
 	mUserReadied[clientID] = true;
 	auto numReadied = std::count(mUserReadied.begin(), mUserReadied.end(), true);
 
@@ -321,4 +315,37 @@ void Server::processUserInput(MemoryStream* outPacket)
 
 	ServerSystems::UpdatePlayerTransform(&transform.Position, &transform.Rotation.y, direction);
 	character.AddTag<Tag_UpdateTransform>();
+}
+
+void Server::makeUpdateTransformPacket()
+{
+	auto view = GetRegistry().view<Tag_UpdateTransform>();
+	if (view.size() <= 0)
+	{
+		return;
+	}
+
+	MemoryStream* spacket = new MemoryStream;
+	for (auto e : view)
+	{
+		Entity ent = Entity(e, this);
+		ent.RemoveComponent<Tag_UpdateTransform>();
+		auto& transform = ent.GetComponent<STransformComponent>();
+		auto& id = ent.GetComponent<IDComponent>();
+
+		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
+		spacket->WriteUInt64(id.ID);
+		spacket->WriteVector3(transform.Position);
+		spacket->WriteFloat(transform.Rotation.y);
+	}
+
+	mSendQueue.push(spacket);
+}
+
+void Server::sendToAllSessions(const MemoryStream& packet)
+{
+	for (auto& s : mSessions)
+	{
+		(s.ClientSocket)->Send(&packet, sizeof(MemoryStream));
+	}
 }
