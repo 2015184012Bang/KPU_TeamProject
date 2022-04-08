@@ -2,6 +2,7 @@
 #include "Client.h"
 
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/Define.h"
 
 #include "Animation.h"
 #include "ClientComponents.h"
@@ -267,9 +268,9 @@ void Client::createAnimationTransitions()
 {
 	// 바이러스 애니메이션 트랜지션 설정
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Idle.anim");
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Run.anim");
-		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/Virus_Attack.anim");
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Run.anim"));
+		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Attack.anim"));
 		attackingAnim->SetLoop(false);
 
 		idleAnim->AddTransition("Run", runningAnim);
@@ -280,33 +281,33 @@ void Client::createAnimationTransitions()
 
 	// 캐릭터_그린
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CG_Idle.anim");
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CG_Run.anim");
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CG_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CG_Run.anim"));
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_핑크
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CP_Idle.anim");
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CP_Run.anim");
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CP_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CP_Run.anim"));
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_레드
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/CR_Idle.anim");
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/CR_Run.anim");
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CR_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CR_Run.anim"));
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// NPC(세포)
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Idle.anim");
-		Animation* runningAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Run.anim");
-		Animation* attackingAnim = ResourceManager::GetAnimation(L"Assets/Animations/Cell_Attack.anim");
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Run.anim"));
+		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Attack.anim"));
 
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);

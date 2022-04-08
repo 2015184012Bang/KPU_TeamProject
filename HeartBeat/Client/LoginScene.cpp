@@ -2,6 +2,7 @@
 #include "LoginScene.h"
 
 #include "HeartBeat/PacketType.h"
+#include "HeartBeat/Define.h"
 
 #include "Application.h"
 #include "Client.h"
@@ -22,7 +23,7 @@ void LoginScene::Enter()
 	mSocket = mOwner->GetMySocket();
 
 	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
-		L"Assets/Textures/Login_Background.png", 10);
+		TEXTURE(L"Login_Background.png"), 10);
 }
 
 void LoginScene::Exit()

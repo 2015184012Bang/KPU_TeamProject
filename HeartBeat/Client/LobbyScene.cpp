@@ -2,6 +2,7 @@
 #include "LobbyScene.h"
 
 #include "HeartBeat/PacketType.h"
+#include "HeartBeat/Define.h"
 
 #include "Application.h"
 #include "Client.h"
@@ -27,7 +28,7 @@ void LobbyScene::Enter()
 	createCharacterMesh(myClientID);
 
 	{
-		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, L"Assets/Textures/Ready_Button.png");
+		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, TEXTURE(L"Ready_Button.png"));
 		auto& transform = readyButton.GetComponent<RectTransformComponent>();
 		transform.Position.x = Application::GetScreenWidth() / 2.0f;
 		transform.Position.y = Application::GetScreenHeight() - 150.0f;
@@ -41,7 +42,7 @@ void LobbyScene::Enter()
 	}
 
 	{
-		mReadyText = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+		mReadyText = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
 		auto& text = mReadyText.GetComponent<TextComponent>();
 		text.Txt->SetSentence("0 / 3");
 		auto& transform = mReadyText.GetComponent<RectTransformComponent>();
@@ -150,7 +151,7 @@ void LobbyScene::processUserConnected(MemoryStream* packet)
 
 void LobbyScene::createNicknameText(int clientID)
 {
-	Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+	Entity nickname = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
 	auto& text = nickname.GetComponent<TextComponent>();
 	text.Txt->SetSentence(mOwner->GetNickname());
 	auto& transform = nickname.GetComponent<RectTransformComponent>();

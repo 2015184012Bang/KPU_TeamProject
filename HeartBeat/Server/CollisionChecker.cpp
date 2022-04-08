@@ -4,6 +4,7 @@
 #include <rapidjson/document.h>
 
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/Define.h"
 
 #include "Server.h"
 #include "ServerComponents.h"
@@ -117,10 +118,10 @@ void AABB::UpdateWorldBox(const Vector3& position, float yaw)
 CollisionChecker::CollisionChecker(Server* server)
 	: mServer(server)
 {
-	mLocalBoxes.try_emplace(L"Cell", L"../Assets/Boxes/Cell.box");
-	mLocalBoxes.try_emplace(L"Cube", L"../Assets/Boxes/Cube.box");
-	mLocalBoxes.try_emplace(L"Character", L"../Assets/Boxes/Character.box");
-	mLocalBoxes.try_emplace(L"Virus", L"../Assets/Boxes/Virus.box");
+	mLocalBoxes.try_emplace(L"Cell", BOX(L"Cell.box"));
+	mLocalBoxes.try_emplace(L"Cube", BOX(L"Cube.box"));
+	mLocalBoxes.try_emplace(L"Character", BOX(L"Character.box"));
+	mLocalBoxes.try_emplace(L"Virus", BOX(L"Virus.box"));
 }
 
 CollisionChecker::~CollisionChecker()

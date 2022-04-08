@@ -167,8 +167,7 @@ Mesh* ResourceManager::GetDebugMesh(const wstring& path)
 	}
 	else
 	{
-		HB_LOG("Debug mesh not found: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Debug mesh not found: {0}", ws2s(path));
 	}
 
 	return nullptr;
@@ -198,21 +197,21 @@ void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, 
 	switch (clientID)
 	{
 	case 0:
-		*outMeshFile = L"Assets/Meshes/Character_Green.mesh";
-		*outTexFile = L"Assets/Textures/Character_Green.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Green.skel";
+		*outMeshFile = MESH(L"Character_Green.mesh");
+		*outTexFile = TEXTURE(L"Character_Green.png");
+		*outSkelFile = SKELETON(L"Character_Green.skel");
 		break;
 
 	case 1:
-		*outMeshFile = L"Assets/Meshes/Character_Pink.mesh";
-		*outTexFile = L"Assets/Textures/Character_Pink.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Pink.skel";
+		*outMeshFile = MESH(L"Character_Pink.mesh");
+		*outTexFile = TEXTURE(L"Character_Pink.png");
+		*outSkelFile = SKELETON(L"Character_Pink.skel");
 		break;
 
 	case 2:
-		*outMeshFile = L"Assets/Meshes/Character_Red.mesh";
-		*outTexFile = L"Assets/Textures/Character_Red.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Red.skel";
+		*outMeshFile = MESH(L"Character_Red.mesh");
+		*outTexFile = TEXTURE(L"Character_Red.png");
+		*outSkelFile = SKELETON(L"Character_Red.skel");
 		break;
 
 	default:
@@ -231,11 +230,11 @@ wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CG_Idle.anim";
+			animFile = ANIM(L"CG_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CG_Run.anim";
+			animFile = ANIM(L"CG_Run.anim");
 			break;
 		}
 		break;
@@ -244,11 +243,11 @@ wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CP_Idle.anim";
+			animFile = ANIM(L"CP_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CP_Run.anim";
+			animFile = ANIM(L"CP_Run.anim");
 			break;
 		}
 		break;
@@ -257,11 +256,11 @@ wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CR_Idle.anim";
+			animFile = ANIM(L"CR_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CR_Run.anim";
+			animFile = ANIM(L"CR_Run.anim");
 			break;
 		}
 		break;
@@ -275,15 +274,15 @@ void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, w
 	switch (enemyType)
 	{
 	case Virus:
-		*outMeshFile = L"Assets/Meshes/Virus.mesh";
-		*outTexFile = L"Assets/Textures/Virus.png";
-		*outSkelFile = L"Assets/Skeletons/Virus.skel";
+		*outMeshFile = MESH(L"Virus.mesh");
+		*outTexFile = TEXTURE(L"Virus.png");
+		*outSkelFile = SKELETON(L"Virus.skel");
 		break;
 
 	case Dog:
-		*outMeshFile = L"Assets/Meshes/Dog.mesh";
-		*outTexFile = L"Assets/Textures/Dog.png";
-		*outSkelFile = L"Assets/Skeletons/Dog.skel";
+		*outMeshFile = MESH(L"Dog.mesh");
+		*outTexFile = TEXTURE(L"Dog.png");
+		*outSkelFile = SKELETON(L"Dog.skel");
 		break;
 
 	default:
@@ -301,15 +300,15 @@ wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			animFile = L"Assets/Animations/Virus_Idle.anim";
+			animFile = ANIM(L"Virus_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			animFile = L"Assets/Animations/Virus_Run.anim";
+			animFile = ANIM(L"Virus_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			animFile = L"Assets/Animations/Virus_Attack.anim";
+			animFile = ANIM(L"Virus_Attack.anim");
 			break;
 		}
 		break;
@@ -318,15 +317,15 @@ wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			animFile = L"Assets/Animations/Dog_Idle.anim";
+			animFile = ANIM(L"Dog_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			animFile = L"Assets/Animations/Dog_Run.anim";
+			animFile = ANIM(L"Dog_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			animFile = L"Assets/Animations/Dog_Attack.anim";
+			animFile = ANIM(L"Dog_Attack.anim");
 			break;
 		}
 		break;

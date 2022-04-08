@@ -6,6 +6,7 @@
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Random.h"
+#include "HeartBeat/Define.h"
 
 #include "CollisionChecker.h"
 #include "Server.h"

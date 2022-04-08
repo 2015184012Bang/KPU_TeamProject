@@ -27,11 +27,6 @@ void GameScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mSocket = mOwner->GetMySocket();
-
-	Entity e = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Cube.mesh", L"Assets/Textures/Cube_Pink.png");
-	auto& trasnform = e.GetComponent<TransformComponent>();
-
-	trasnform.Position.y = -500.0f;
 }
 
 void GameScene::Exit()
@@ -114,7 +109,7 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 
 		GetCharacterFiles(clientID, &meshFile, &texFile, &skelFile);
 
-		Entity e = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, entityID, L"Assets/Boxes/Character.box");
+		Entity e = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, entityID, BOX(L"Character.box"));
 		e.AddTag<Tag_Player>();
 		auto& animator = e.GetComponent<AnimatorComponent>();
 
@@ -240,7 +235,7 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	GetEnemyFiles(enemyType, &meshFile, &texFile, &skelFile);
 	wstring idleAnimFile = GetEnemyAnimation(enemyType, EnemyAnimationType::eIdle);
 
-	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid, L"Assets/Boxes/Virus.box");
+	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid, BOX(L"Virus.box"));
 	enemy.AddTag<Tag_Enemy>();
 
 	auto& transform = enemy.GetComponent<TransformComponent>();
@@ -248,7 +243,7 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 
 	if (enemyType == Virus)
 	{
-		Entity pickax = mOwner->CreateStaticMeshEntity(L"Assets/Meshes/Pickax.mesh", L"Assets/Textures/Pickax.png");
+		Entity pickax = mOwner->CreateStaticMeshEntity(MESH(L"Pickax.mesh"), TEXTURE(L"Pickax.png"));
 		ClientSystems::SetBoneAttachment(enemy, pickax, "Weapon");
 	}
 

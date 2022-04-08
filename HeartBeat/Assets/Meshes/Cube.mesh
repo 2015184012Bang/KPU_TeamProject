@@ -1,9 +1,9 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"Assets/Textures/Cube_Pink.png",
-		"Assets/Textures/Cube_Black.png",
-		"Assets/Textures/Cube_SkyBlue.png"
+		"../Assets/Textures/Cube_Pink.png",
+		"../Assets/Textures/Cube_Black.png",
+		"../Assets/Textures/Cube_SkyBlue.png"
 	],
 	"vertices":[
 		[-250.000000,-0.000000,250.000000,0.000000,-1.000000,0.000000,0.022491,0.977051],

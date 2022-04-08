@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"Assets/Textures/Virus.png"
+		"../Assets/Textures/Virus.png"
 	],
 	"vertices":[
 		[-0.000000,352.431030,44.784824,0.000000,-0.826772,0.566929,33,33,33,33,255,0,0,0,0.624940,0.977961],

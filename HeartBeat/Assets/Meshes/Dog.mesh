@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"Assets/Textures/Dog.png"
+		"../Assets/Textures/Dog.png"
 	],
 	"vertices":[
 		[-126.682640,144.277466,-56.716232,0.094488,-0.992126,0.094488,3,28,28,28,255,0,0,0,0.797007,0.584638],
