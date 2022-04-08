@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
+#include "HeartBeat/Tags.h"
+
 #include "Animation.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"

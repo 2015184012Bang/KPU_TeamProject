@@ -1,18 +1,19 @@
 #include "ClientPCH.h"
 #include "GameScene.h"
 
+#include "HeartBeat/PacketType.h"
+#include "HeartBeat/Tags.h"
+
 #include "Animation.h"
 #include "Client.h"
 #include "ClientSystems.h"
+#include "Character.h"
+#include "EnemyMovement.h"
 #include "Input.h"
-#include "HeartBeat/PacketType.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "Text.h"
 #include "Skeleton.h"
-
-#include "Character.h"
-#include "EnemyMovement.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -60,42 +61,8 @@ void GameScene::ProcessInput()
 
 void GameScene::Update(float deltaTime)
 {
-	Vector3 direction = Vector3::Zero;
-	bool bMove = false;
-
-	if (Input::IsButtonRepeat(eKeyCode::Up))
-	{
-		direction.z += 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Down))
-	{
-		direction.z -= 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Left))
-	{
-		direction.x -= 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Right))
-	{
-		direction.x += 1.0f;
-		bMove = true;
-	}
-
-	if (bMove)
-	{
-		MemoryStream packet;
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserInput));
-		packet.WriteUInt64(mMyEID);
-		packet.WriteVector3(direction);
-
-		mSocket->Send(&packet, sizeof(packet));
-	}
+	sendUserInput();
+	updateAnimTrigger();
 }
 
 void GameScene::processPacket(MemoryStream* packet)
@@ -128,7 +95,7 @@ void GameScene::processPacket(MemoryStream* packet)
 
 void GameScene::processCreateCharacter(MemoryStream* packet)
 {
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		int clientID = -1;
 		uint64 entityID = 0;
@@ -184,5 +151,69 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 
 	auto& animator = ent.GetComponent<AnimatorComponent>();
 	animator.SetTrigger("Run");
+	
+	ent.AddTag<Tag_Moved>();
+}
+
+void GameScene::sendUserInput()
+{
+	Vector3 direction = Vector3::Zero;
+	bool bMove = false;
+
+	if (Input::IsButtonRepeat(eKeyCode::Up))
+	{
+		direction.z += 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Down))
+	{
+		direction.z -= 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Left))
+	{
+		direction.x -= 1.0f;
+		bMove = true;
+	}
+
+	if (Input::IsButtonRepeat(eKeyCode::Right))
+	{
+		direction.x += 1.0f;
+		bMove = true;
+	}
+
+	if (bMove)
+	{
+		MemoryStream packet;
+		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserInput));
+		packet.WriteUInt64(mMyEID);
+		packet.WriteVector3(direction);
+
+		mSocket->Send(&packet, sizeof(packet));
+	}
+}
+
+void GameScene::updateAnimTrigger()
+{
+	// Moved 태그가 붙은 엔티티는 서버로부터 위치 갱신을 받은 것들이다.
+	// Moved 태그가 붙지 않았다면 움직이지 않았다는 것이므로 애니메이션을 Idle로 바꾼다.
+
+	auto view = mOwner->GetRegistry().view<Tag_Player>();
+	for (auto entity : view)
+	{
+		Entity e = Entity(entity, mOwner);
+
+		if (!e.HasComponent<Tag_Moved>())
+		{
+			auto& animator = e.GetComponent<AnimatorComponent>();
+			animator.SetTrigger("Idle");
+		}
+		else
+		{
+			e.RemoveComponent<Tag_Moved>();
+		}
+	}
 }
 

@@ -2,6 +2,7 @@
 #include "Server.h"
 
 #include "HeartBeat/PacketType.h"
+#include "HeartBeat/Tags.h"
 
 #include "ServerComponents.h"
 #include "ServerSystems.h"

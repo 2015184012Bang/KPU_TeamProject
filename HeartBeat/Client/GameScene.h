@@ -18,6 +18,9 @@ private:
     void processCreateCharacter(MemoryStream* packet);
     void processUpdateTransform(MemoryStream* packet);
 
+    void sendUserInput();
+    void updateAnimTrigger();
+
 private:
     TCPSocketPtr mSocket;
 
