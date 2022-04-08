@@ -6,7 +6,7 @@
 
 using std::queue;
 
-constexpr int NUM_MAX_PLAYER = 1;
+constexpr int NUM_MAX_PLAYER = 3;
 
 class EnemyGenerator;
 

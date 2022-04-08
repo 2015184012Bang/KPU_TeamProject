@@ -99,7 +99,7 @@ void GameScene::processPacket(MemoryStream* packet)
 
 void GameScene::processCreateCharacter(MemoryStream* packet)
 {
-	for (int i = 0; i < 1; ++i)
+	for (int i = 0; i < 3; ++i)
 	{
 		int clientID = -1;
 		uint64 entityID = 0;
@@ -232,9 +232,6 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	Vector3 position;
 	packet->ReadVector3(&position);
 
-	float yRot;
-	packet->ReadFloat(&yRot);
-
 	wstring meshFile;
 	wstring texFile;
 	wstring skelFile;
@@ -244,6 +241,9 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 
 	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid);
 	enemy.AddTag<Tag_Enemy>();
+
+	auto& transform = enemy.GetComponent<TransformComponent>();
+	transform.Position = position;
 
 	if (enemyType == Virus)
 	{
