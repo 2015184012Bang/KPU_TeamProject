@@ -22,6 +22,7 @@ private:
 
     void sendUserInput();
     void updateAnimTrigger();
+    void updateChildParentAfterDelete();
 
 private:
     TCPSocketPtr mSocket;

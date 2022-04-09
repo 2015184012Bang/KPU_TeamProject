@@ -241,11 +241,44 @@ void GameScene::updateAnimTrigger()
 	}
 }
 
+void GameScene::updateChildParentAfterDelete()
+{
+	// HACK: 엔티티 삭제 시 AttachmentChild 컴포넌트가 오염됨.
+	// entt 내부의 문제로 생각되며 Attachment 컴포넌트를 가진 엔티티들을
+	// 갱신하는 것으로 해결.
+	auto view = mOwner->GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
+
+	for (auto [entity, parent, transform, animator] : view.each())
+	{
+		Entity child{ mOwner->GetEntityByID(parent.ChildID), mOwner };
+		auto& attachmentChild = child.GetComponent<AttachmentChildComponent>();
+
+		attachmentChild.ParentPalette = &animator.Palette;
+		attachmentChild.BoneIndex = animator.Skel->GetBoneIndexByName("Weapon");
+		attachmentChild.ParentTransform = &transform;
+	}
+}
+
 void GameScene::processDeleteEntity(MemoryStream* packet)
 {
 	uint64 eid;
 	packet->ReadUInt64(&eid);
+
+	Entity e{ mOwner->GetEntityByID(eid), mOwner };
+
+	bool hasChild = false;
+	if (e.HasComponent<AttachmentParentComponent>())
+	{
+		hasChild = true;
+	}
+
 	mOwner->DestroyEntityByID(eid);
+
+	// Attachement 컴포넌트가 있다면 갱신한다.
+	if (hasChild)
+	{
+		updateChildParentAfterDelete();
+	}
 }
 
 void GameScene::processCreateEnemy(MemoryStream* packet)
