@@ -33,6 +33,24 @@ public:
 			DestroyEntity(entity);
 		}
 	}
+	
+	template<typename T>
+	vector<entt::entity> FindObjectsWithTag()
+	{
+		auto view = mRegistry.view<T>();
+
+		vector<entt::entity> entts;
+		if (!view.empty())
+		{
+			entts.reserve(view.size());
+			for (auto id : view)
+			{
+				entts.push_back(id);
+			}
+		}
+
+		return entts;
+	}
 
 	entt::entity GetEntityByID(const HBID& id);
 	entt::registry& GetRegistry() { return mRegistry; }

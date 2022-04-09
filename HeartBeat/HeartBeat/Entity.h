@@ -70,6 +70,8 @@ public:
 	operator entt::entity() const { return mHandle; }
 	operator entt::entity() { return mHandle; }
 
+	Game* GetGame() { return mGame; }
+
 private:
 	entt::entity mHandle;
 	Game* mGame;
