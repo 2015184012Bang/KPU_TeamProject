@@ -1,8 +1,18 @@
 #pragma once
 
-#include "HeartBeat/Game.h"
+#include <queue>
 
-constexpr int NUM_MAX_PLAYER = 2;
+#include "HeartBeat/Game.h"
+#include "HeartBeat/Define.h"
+
+using std::queue;
+
+class EnemyGenerator;
+class CollisionChecker;
+
+/************************************************************************/
+/* Server                                                               */
+/************************************************************************/
 
 class Server : public Game
 {
@@ -13,12 +23,14 @@ class Server : public Game
 			, ClientSocket(socket)
 			, ClientAddr(addr)
 			, ClientID(id)
+			, CharacterID(0)
 		{}
 
 		bool bConnect;
 		TCPSocketPtr ClientSocket;
 		SocketAddress ClientAddr;
 		int ClientID;
+		HBID CharacterID;
 	};
 
 public:
@@ -28,19 +40,42 @@ public:
 	virtual void Shutdown() override;
 	virtual void Run() override;
 
+	Entity CreateEntity();
+
+	void PushPacket(MemoryStream* packet);
+
+	shared_ptr<CollisionChecker> GetCollisionChecker() { return mCollisionChecker; }
+
 private:
-	void accpetClients();
+	bool bindAndListen();
+	void acceptClients();
+	void recvFromClients();
+	void clearIfDisconnected();
+	void flushSendQueue();
 
 	void processPacket(MemoryStream* outPacket, const Session& session);
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);
 	void processImReady(MemoryStream* outPacket, const Session& session);
+	void processKeyboardUserInput(MemoryStream* outPacket);
+	void processUserMouseInput(MemoryStream* outPacket);
+	
+	void updateEnemyGenerator();
+	void updateCollisionChecker();
+	
+	void makePacket();
+
+	void sendToAllSessions(const MemoryStream& packet);
 
 private:
 	TCPSocketPtr mListenSocket;
 	vector<Session> mSessions;
-	array<bool, NUM_MAX_PLAYER> mUserReadied;
+	array<bool, MAX_PLAYER> mUserReadied;
 	map<int, string> mIdToNickname;
 
-	bool mbFullUsers;
+	queue<MemoryStream*> mSendQueue;
+
 	int mNumCurUsers;
+
+	shared_ptr<EnemyGenerator> mEnemyGenerator;
+	shared_ptr<CollisionChecker> mCollisionChecker;
 };

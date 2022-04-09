@@ -57,3 +57,8 @@ void TCPSocket::SetNonBlockingMode(bool value)
 	u_long mode = value ? 1 : 0;
 	ioctlsocket(mSocket, FIONBIO, &mode);
 }
+
+void TCPSocket::SetReuseAddress(bool value)
+{
+	setsockopt(mSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&value), sizeof(value));
+}

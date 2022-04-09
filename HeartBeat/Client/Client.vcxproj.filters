@@ -76,9 +76,6 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="AABB.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
@@ -91,7 +88,7 @@
     <ClCompile Include="LoginScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="TestScene.cpp">
+    <ClCompile Include="GameScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="LobbyScene.cpp">
@@ -159,19 +156,10 @@
     <ClInclude Include="Animation.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="AABB.h">
-      <Filter>Source Files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="CharacterMovement.h">
-      <Filter>Source Files\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="UIButtonTest.h">
-      <Filter>Source Files\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="UIButtonTest2.h">
+    <ClInclude Include="Enemy.h">
       <Filter>Source Files\Test</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
@@ -183,11 +171,14 @@
     <ClInclude Include="LoginScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="TestScene.h">
+    <ClInclude Include="GameScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="LobbyScene.h">
       <Filter>Source Files\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Source Files\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

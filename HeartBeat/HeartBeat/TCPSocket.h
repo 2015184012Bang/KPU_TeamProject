@@ -19,6 +19,7 @@ public:
 	int Recv(void* outData, int len, int flags = 0);
 
 	void SetNonBlockingMode(bool value);
+	void SetReuseAddress(bool value);
 
 private:
 	TCPSocket(SOCKET sock)

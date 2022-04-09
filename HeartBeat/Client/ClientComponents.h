@@ -2,7 +2,6 @@
 
 #include "UploadBuffer.h"
 #include "Bone.h"
-#include "AABB.h"
 
 class Mesh;
 class Texture;
@@ -90,14 +89,7 @@ struct AnimatorComponent
 	UploadBuffer<MatrixPalette> Buffer;
 };
 
-struct BoxComponent
-{
-	BoxComponent();
-	BoxComponent(const AABB* Local, const Vector3& position, float yaw);
-	
-	const AABB* Local;
-	AABB World;
-};
+
 
 struct DebugDrawComponent
 {
@@ -146,12 +138,4 @@ struct AttachmentChildComponent
 	MatrixPalette* ParentPalette;
 	uint32 BoneIndex;
 	TransformComponent* ParentTransform;
-};
-
-struct AttachmentParentComponent
-{
-	AttachmentParentComponent();
-	AttachmentParentComponent(const HBID& id);
-	
-	HBID ChildID;
 };

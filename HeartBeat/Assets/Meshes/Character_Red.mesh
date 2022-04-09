@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"Assets/Textures/Character_Red.png"
+		"../Assets/Textures/Character_Red.png"
 	],
 	"specularPower":100.0,
 	"vertices":[

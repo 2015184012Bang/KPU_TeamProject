@@ -1,21 +1,20 @@
 #include "ClientPCH.h"
 #include "ClientSystems.h"
 
-#include "AABB.h"
 #include "Application.h"
 #include "Animation.h"
 #include "ClientComponents.h"
 #include "Skeleton.h"
 
-void ClientSystems::MovePosition(Vector3* outPosition, const Vector3& velocity, float deltaTime, bool* outDirty)
+void ClientSystems::UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty)
 {
-	*outPosition += velocity * deltaTime;
+	*outPosition = to;
 	*outDirty = true;
 }
 
-void ClientSystems::RotateY(Vector3* outRotation, float speed, float deltaTime, bool* outDirty)
+void ClientSystems::UpdateYRotation(float* outYRotation, const float to, bool* outDirty)
 {
-	(*outRotation).y += speed * deltaTime;
+	*outYRotation = to;
 	*outDirty = true;
 }
 
@@ -134,9 +133,9 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 		outAnimator->PrevAnim = outAnimator->CurAnim;
 		outAnimator->PrevAnimTime = outAnimator->CurAnimTime;
 
-		if (outAnimator->PrevAnimTime > outAnimator->PrevAnim->GetDuration())
+		if (outAnimator->PrevAnimTime >= outAnimator->PrevAnim->GetDuration())
 		{
-			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration();
+			outAnimator->PrevAnimTime = outAnimator->PrevAnim->GetDuration() - 0.001f;
 		}
 
 		outAnimator->BlendingTime = ANIM_BLEND_TIME;

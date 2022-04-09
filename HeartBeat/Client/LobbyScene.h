@@ -2,20 +2,12 @@
 
 #include "Scene.h"
 
-constexpr float SPACE_BETWEEN_LINES = 30.0f;
-constexpr float WIDTH_BETWEEN_CHARACTERS = 700.0f;
-
-enum class CharacterAnimationType
-{
-	eIdle,
-	eRun,
-};
-
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
 
 class LobbyScene : public Scene
 {
+	const float SPACE_BETWEEN_LINES = 30.0f;
+	const float WIDTH_BETWEEN_CHARACTERS = 700.0f;
+
 public:
 	LobbyScene(Client* owner);
 

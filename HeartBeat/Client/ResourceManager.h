@@ -29,3 +29,22 @@ private:
 	static unordered_map<wstring, Font*> sFonts;
 };
 
+enum class CharacterAnimationType
+{
+	eIdle,
+	eRun,
+};
+
+enum class EnemyAnimationType
+{
+	eIdle,
+	eRun,
+	eAttack,
+};
+
+void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
+wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
+void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
+wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType);
+
+

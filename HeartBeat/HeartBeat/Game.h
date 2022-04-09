@@ -20,29 +20,39 @@ public:
 	void RegisterEntity(const HBID& id, const entt::entity entity);
 
 	void DestroyAll();
-	void DestroyEntity(const entt::entity handle);
 	void DestroyEntityByID(const HBID& id);
+	void DestroyEntity(const entt::entity entity);
 
 	template<typename T>
 	void DestroyByComponent()
 	{
 		auto view = mRegistry.view<T>();
-		
 		for (auto entity : view)
 		{
 			DestroyEntity(entity);
 		}
 	}
 
+	template<typename T>
+	vector<entt::entity> FindObjectsWithTag()
+	{
+		auto view = mRegistry.view<T>();
+
+		HB_ASSERT((!view.empty()), "0 entities with the tag!");
+
+		vector<entt::entity> entts;
+		entts.reserve(view.size());
+		for (auto id : view)
+		{
+			entts.push_back(id);
+		}
+
+		return entts;
+	}
+
 	entt::entity GetEntityByID(const HBID& id);
 	entt::registry& GetRegistry() { return mRegistry; }
-	unordered_map<HBID, entt::entity>& GetAllEntities() { return mEntities; }
-
-protected:
-	entt::entity getNewEntt();
-
-private:
-	void removeEntity(const HBID& id);
+	entt::entity GetNewEntity();
 
 private:
 	unordered_map<HBID, entt::entity> mEntities;

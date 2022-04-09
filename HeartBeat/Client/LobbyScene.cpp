@@ -10,7 +10,7 @@
 #include "Input.h"
 #include "ResourceManager.h"
 #include "Text.h"
-#include "TestScene.h"
+#include "GameScene.h"
 
 LobbyScene::LobbyScene(Client* owner)
 	: Scene(owner)
@@ -27,7 +27,7 @@ void LobbyScene::Enter()
 	createCharacterMesh(myClientID);
 
 	{
-		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, L"Assets/Textures/Ready_Button.png");
+		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, TEXTURE(L"Ready_Button.png"));
 		auto& transform = readyButton.GetComponent<RectTransformComponent>();
 		transform.Position.x = Application::GetScreenWidth() / 2.0f;
 		transform.Position.y = Application::GetScreenHeight() - 150.0f;
@@ -41,7 +41,7 @@ void LobbyScene::Enter()
 	}
 
 	{
-		mReadyText = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+		mReadyText = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
 		auto& text = mReadyText.GetComponent<TextComponent>();
 		text.Txt->SetSentence("0 / 3");
 		auto& transform = mReadyText.GetComponent<RectTransformComponent>();
@@ -57,8 +57,6 @@ void LobbyScene::Enter()
 void LobbyScene::Exit()
 {
 	mOwner->DestroyAll();
-
-	HB_LOG("Alive entities: {0}", mOwner->GetRegistry().alive());
 }
 
 void LobbyScene::ProcessInput()
@@ -150,7 +148,7 @@ void LobbyScene::processUserConnected(MemoryStream* packet)
 
 void LobbyScene::createNicknameText(int clientID)
 {
-	Entity nickname = mOwner->CreateTextEntity(L"Assets/Fonts/fontdata.txt");
+	Entity nickname = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
 	auto& text = nickname.GetComponent<TextComponent>();
 	text.Txt->SetSentence(mOwner->GetNickname());
 	auto& transform = nickname.GetComponent<RectTransformComponent>();
@@ -181,7 +179,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 
 void LobbyScene::processGameStart(MemoryStream* packet)
 {
-	mOwner->ChangeScene(new TestScene(mOwner));
+	mOwner->ChangeScene(new GameScene(mOwner));
 }
 
 void LobbyScene::processReadyPressed(MemoryStream* packet)
@@ -191,81 +189,4 @@ void LobbyScene::processReadyPressed(MemoryStream* packet)
 
 	auto& text = mReadyText.GetComponent<TextComponent>();
 	text.Txt->SetSentence(std::to_string(readyCount) + " / 3");
-}
-
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
-{
-	switch (clientID)
-	{
-	case 0:
-		*outMeshFile = L"Assets/Meshes/Character_Green.mesh";
-		*outTexFile = L"Assets/Textures/Character_Green.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Green.skel";
-		break;
-
-	case 1:
-		*outMeshFile = L"Assets/Meshes/Character_Pink.mesh";
-		*outTexFile = L"Assets/Textures/Character_Pink.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Pink.skel";
-		break;
-
-	case 2:
-		*outMeshFile = L"Assets/Meshes/Character_Red.mesh";
-		*outTexFile = L"Assets/Textures/Character_Red.png";
-		*outSkelFile = L"Assets/Skeletons/Character_Red.skel";
-		break;
-
-	default:
-		HB_ASSERT(false, "Unknown client id: {0}", clientID);
-		break;
-	}
-}
-
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
-{
-	wstring animFile;
-
-	switch (clientID)
-	{
-	case 0: // Character_Green
-		switch (type)
-		{
-		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CG_Idle.anim";
-			break;
-
-		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CG_Run.anim";
-			break;
-		}
-		break;
-
-	case 1: // Character_Pink
-		switch (type)
-		{
-		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CP_Idle.anim";
-			break;
-
-		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CP_Run.anim";
-			break;
-		}
-		break;
-
-	case 2: // Character_Red
-		switch (type)
-		{
-		case CharacterAnimationType::eIdle:
-			animFile = L"Assets/Animations/CR_Idle.anim";
-			break;
-
-		case CharacterAnimationType::eRun:
-			animFile = L"Assets/Animations/CR_Run.anim";
-			break;
-		}
-		break;
-	}
-
-	return animFile;
 }

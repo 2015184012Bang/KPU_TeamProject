@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"Assets/Textures/Pickax.png"
+		"../Assets/Textures/Pickax.png"
 	],
 	"vertices":[
 		[-4.000003,-42.091759,112.175934,-1.000000,0.000000,0.000000,0.333740,0.494873],

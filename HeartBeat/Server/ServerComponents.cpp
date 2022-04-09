@@ -5,17 +5,25 @@
 STransformComponent::STransformComponent()
 	: Position(Vector3::Zero)
 	, Rotation(Vector3::Zero)
-	, Scale(1.0f)
-	, bDirty(true)
 {
 
 }
 
-STransformComponent::STransformComponent(const Vector3& position, const Vector3& rotation /*= Vector3::Zero*/, float scale /*= 1.0f*/)
+STransformComponent::STransformComponent(const Vector3& position, const Vector3& rotation /*= Vector3::Zero*/)
 	: Position(position)
 	, Rotation(rotation)
-	, Scale(scale)
-	, bDirty(true)
+{
+
+}
+
+SHealthComponent::SHealthComponent()
+	: Health(0)
+{
+
+}
+
+SHealthComponent::SHealthComponent(int32 maxHealth)
+	: Health(maxHealth)
 {
 
 }
