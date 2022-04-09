@@ -15,3 +15,15 @@ STransformComponent::STransformComponent(const Vector3& position, const Vector3&
 {
 
 }
+
+SHealthComponent::SHealthComponent()
+	: Health(0)
+{
+
+}
+
+SHealthComponent::SHealthComponent(int32 maxHealth)
+	: Health(maxHealth)
+{
+
+}

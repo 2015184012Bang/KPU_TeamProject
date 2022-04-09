@@ -15,3 +15,4 @@ struct Tag_Moved {};
 
 // ¼­¹ö¿ë
 struct Tag_UpdateTransform {};
+struct Tag_Dead {};

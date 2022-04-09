@@ -4,6 +4,7 @@
 #include <rapidjson/document.h>
 
 #include "HeartBeat/Tags.h"
+#include "HeartBeat/PacketType.h"
 
 #include "Server.h"
 #include "ServerComponents.h"
@@ -24,7 +25,7 @@ CollisionChecker::CollisionChecker(Server* server)
 	AABB hitBox;
 	hitBox.SetMin(Vector3(-100.0f, 0.0f, 0.0f));
 	hitBox.SetMax(Vector3(100.0f, 500.0f, 200.0f));
-	
+
 	mLocalBoxes.try_emplace(L"HitBox", hitBox);
 }
 
@@ -95,20 +96,56 @@ void CollisionChecker::MakeHitBoxAndCheck(const Vector3& position, float yaw)
 	AABB hitBox;
 	ServerSystems::UpdateBox(&mLocalBoxes[L"HitBox"], &hitBox, position, yaw);
 
-	auto view = mServer->GetRegistry().view<Tag_Enemy>();
-	
-	for (auto id : view)
 	{
-		Entity enemy = Entity(id, mServer);
-
-		auto& boxComp = enemy.GetComponent<BoxComponent>();
-
-		if (ServerSystems::Intersects(hitBox, boxComp.World))
+		auto view = mServer->GetRegistry().view<Tag_Enemy>();
+		for (auto id : view)
 		{
-			// TODO: 충돌 처리
-			HB_LOG("Hitbox collision!");
+			Entity enemy = Entity(id, mServer);
+
+			auto& boxComp = enemy.GetComponent<BoxComponent>();
+
+			if (ServerSystems::Intersects(hitBox, boxComp.World))
+			{
+				HB_LOG("Hitbox collision!");
+
+				auto& health = enemy.GetComponent<SHealthComponent>();
+				health.Health -= 1;
+
+				// 만약 체력이 0이하라면 Dead 태그를 붙여둔다
+				if (health.Health <= 0)
+				{
+					enemy.AddTag<Tag_Dead>();
+				}
+
+				break;
+			}
+		}
+	}
+
+	{
+		auto view = mServer->GetRegistry().view<Tag_Dead>();
+
+		if (view.empty())
+		{
 			return;
 		}
+
+		MemoryStream* packet = new MemoryStream;
+
+		for (auto id : view)
+		{
+			Entity dead = Entity(id, mServer);
+
+			auto& idComponent = dead.GetComponent<IDComponent>();
+
+			packet->WriteUByte(static_cast<uint8>(SCPacket::eDeleteEntity));
+			packet->WriteUInt64(idComponent.ID);
+		}
+
+		mServer->PushPacket(packet);
+
+		// 죽은 개체들을 삭제한다
+		mServer->DestroyByComponent<Tag_Dead>();
 	}
 }
 

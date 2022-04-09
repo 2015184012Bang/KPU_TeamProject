@@ -10,3 +10,11 @@ struct STransformComponent
 	Vector3 Position;
 	Vector3 Rotation;
 };
+
+struct SHealthComponent
+{
+	SHealthComponent();
+	SHealthComponent(int32 maxHealth);
+
+	int32 Health;
+};

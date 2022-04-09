@@ -85,6 +85,10 @@ void GameScene::processPacket(MemoryStream* packet)
 			processCreateEnemy(packet);
 			break;
 
+		case SCPacket::eDeleteEntity:
+			processDeleteEntity(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
 			packet->SetLength(totalLen);
@@ -166,25 +170,25 @@ void GameScene::sendUserInput()
 	bool bMove = false;
 	bool bClicked = false;
 
-	if (Input::IsButtonRepeat(eKeyCode::Up))
+	if (Input::IsButtonRepeat(eKeyCode::W))
 	{
 		direction.z += 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::Down))
+	if (Input::IsButtonRepeat(eKeyCode::S))
 	{
 		direction.z -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::Left))
+	if (Input::IsButtonRepeat(eKeyCode::A))
 	{
 		direction.x -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::Right))
+	if (Input::IsButtonRepeat(eKeyCode::D))
 	{
 		direction.x += 1.0f;
 		bMove = true;
@@ -235,6 +239,13 @@ void GameScene::updateAnimTrigger()
 			e.RemoveComponent<Tag_Moved>();
 		}
 	}
+}
+
+void GameScene::processDeleteEntity(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+	mOwner->DestroyEntityByID(eid);
 }
 
 void GameScene::processCreateEnemy(MemoryStream* packet)

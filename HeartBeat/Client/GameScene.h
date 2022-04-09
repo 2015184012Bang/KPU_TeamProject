@@ -18,6 +18,7 @@ private:
     void processCreateCharacter(MemoryStream* packet);
     void processUpdateTransform(MemoryStream* packet);
     void processCreateEnemy(MemoryStream* packet);
+    void processDeleteEntity(MemoryStream* packet);
 
     void sendUserInput();
     void updateAnimTrigger();
