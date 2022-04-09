@@ -39,3 +39,15 @@ BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float 
 
 	World.UpdateWorldBox(position, yaw);
 }
+
+NameComponent::NameComponent()
+	: Name("default")
+{
+
+}
+
+NameComponent::NameComponent(const string& name)
+	: Name(name)
+{
+
+}

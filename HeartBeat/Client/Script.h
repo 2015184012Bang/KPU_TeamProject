@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HeartBeat/Entity.h"
+#include "HeartBeat/Components.h"
 
 class Script
 {
@@ -17,16 +18,31 @@ public:
 	template<typename T>
 	vector<Entity> FindObjectsWithTag()
 	{
-		vector<entt::entity> ids = mOwner.GetGame()->FindObjectsWithTag<T>();
-		vector<Entity> entts;
-		entts.reserve(ids.size());
+		vector<entt::entity> entities = mOwner.GetGame()->FindObjectsWithTag<T>();
+		vector<Entity> objs;
+		objs.reserve(entities.size());
 		
-		for (auto id : ids)
+		for (auto entity : entities)
 		{
-			entts.emplace_back(id, mOwner.GetGame());
+			objs.emplace_back(entity, mOwner.GetGame());
 		}
 
-		return entts;
+		return objs;
+	}
+
+	Entity Find(const string& targetName)
+	{
+		auto view = mOwner.GetGame()->GetRegistry().view<NameComponent>();
+
+		for (auto [entity, name] : view.each())
+		{
+			if (name.Name == targetName)
+			{
+				return Entity(entity, mOwner.GetGame());
+			}
+		}
+
+		HB_ASSERT(false, "There is no entity named: {0}", targetName);
 	}
 
 	virtual void Start() = 0;

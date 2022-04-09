@@ -27,3 +27,11 @@ struct BoxComponent
 	const AABB* Local;
 	AABB World;
 };
+
+struct NameComponent
+{
+	NameComponent();
+	NameComponent(const string& name);
+
+	string Name;
+};
