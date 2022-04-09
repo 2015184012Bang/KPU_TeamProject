@@ -23,6 +23,7 @@ private:
     void sendUserInput();
     void updateAnimTrigger();
     void updateChildParentAfterDelete();
+    void updateMainCamera();
 
 private:
     TCPSocketPtr mSocket;
@@ -30,4 +31,6 @@ private:
     Entity mMyCharacter;
     HBID mMyCharacterID;
 };
+
+wstring GetTileTex(int type);
 

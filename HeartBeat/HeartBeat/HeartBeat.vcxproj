@@ -104,6 +104,7 @@
     <ClCompile Include="AABB.cpp" />
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="HBID.cpp" />
     <ClCompile Include="MemoryStream.cpp" />
     <ClCompile Include="PCH.cpp">
@@ -120,6 +121,7 @@
     <ClInclude Include="AABB.h" />
     <ClInclude Include="Components.h" />
     <ClInclude Include="Define.h" />
+    <ClInclude Include="GameMap.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />

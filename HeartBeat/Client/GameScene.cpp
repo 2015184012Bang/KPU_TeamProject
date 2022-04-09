@@ -4,6 +4,7 @@
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Define.h"
+#include "HeartBeat/GameMap.h"
 
 #include "Animation.h"
 #include "Client.h"
@@ -27,6 +28,18 @@ void GameScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mSocket = mOwner->GetMySocket();
+
+	const vector<Tile>& gameMap = gGameMap.GetTiles();
+
+	for (const Tile& tile : gameMap)
+	{
+		Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
+		t.AddTag<Tag_Tile>();
+		auto& transform = t.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -TILE_WIDTH;
+		transform.Position.z = tile.Z;
+	}
 }
 
 void GameScene::Exit()
@@ -59,6 +72,7 @@ void GameScene::Update(float deltaTime)
 {
 	sendUserInput();
 	updateAnimTrigger();
+	updateMainCamera();
 }
 
 void GameScene::processPacket(MemoryStream* packet)
@@ -278,6 +292,24 @@ void GameScene::updateChildParentAfterDelete()
 	}
 }
 
+void GameScene::updateMainCamera()
+{
+	if (!mMyCharacter)
+	{
+		return;
+	}
+
+	Entity& mainCamera = mOwner->GetMainCamera();
+
+	auto& camera = mainCamera.GetComponent<CameraComponent>();
+	
+	auto& characterTransform = mMyCharacter.GetComponent<TransformComponent>();
+	auto& characterPosition = characterTransform.Position;
+
+	camera.Target = characterPosition;
+	camera.Position = Vector3(characterPosition.x, 1000.0f, characterPosition.z - 1000.0f);
+}
+
 void GameScene::processDeleteEntity(MemoryStream* packet)
 {
 	uint64 eid;
@@ -333,3 +365,23 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 }
 
+wstring GetTileTex(int type)
+{
+	switch (type)
+	{
+	case 0:
+		return TEXTURE(L"Cube_Pink.png");
+		break;
+	case 1:
+		return TEXTURE(L"Cube_SkyBlue.png");
+		break;
+	case 2:
+		return TEXTURE(L"Cube_Black.png");
+		break;
+	default:
+		HB_ASSERT(false, "Invalid tile type: {0}", type);
+		break;
+	}
+
+	return L"";
+}
