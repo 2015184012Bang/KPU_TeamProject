@@ -151,7 +151,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Script.h" />
-    <ClInclude Include="EnemyMovement.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Text.h" />

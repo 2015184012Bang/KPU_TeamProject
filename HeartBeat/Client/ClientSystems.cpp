@@ -6,12 +6,6 @@
 #include "ClientComponents.h"
 #include "Skeleton.h"
 
-void ClientSystems::MovePosition(Vector3* outPosition, const Vector3& velocity, float deltaTime, bool* outDirty)
-{
-	*outPosition += velocity * deltaTime;
-	*outDirty = true;
-}
-
 void ClientSystems::UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty)
 {
 	*outPosition = to;
@@ -21,12 +15,6 @@ void ClientSystems::UpdatePosition(Vector3* outPosition, const Vector3& to, bool
 void ClientSystems::UpdateYRotation(float* outYRotation, const float to, bool* outDirty)
 {
 	*outYRotation = to;
-	*outDirty = true;
-}
-
-void ClientSystems::RotateY(Vector3* outRotation, float speed, float deltaTime, bool* outDirty)
-{
-	(*outRotation).y += speed * deltaTime;
 	*outDirty = true;
 }
 

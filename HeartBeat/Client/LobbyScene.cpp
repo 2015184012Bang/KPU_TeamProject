@@ -57,8 +57,6 @@ void LobbyScene::Enter()
 void LobbyScene::Exit()
 {
 	mOwner->DestroyAll();
-
-	HB_LOG("Alive entities: {0}", mOwner->GetRegistry().alive());
 }
 
 void LobbyScene::ProcessInput()

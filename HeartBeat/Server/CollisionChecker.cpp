@@ -36,15 +36,10 @@ CollisionChecker::~CollisionChecker()
 
 void CollisionChecker::Update()
 {
-	auto view = mServer->GetRegistry().view<BoxComponent>();
+	auto view = mServer->GetRegistry().view<BoxComponent, STransformComponent>();
 
-	for (auto id : view)
+	for (auto [entity, box, transform] : view.each())
 	{
-		Entity entity = Entity(id, mServer);
-
-		auto& transform = entity.GetComponent<STransformComponent>();
-		auto& box = entity.GetComponent<BoxComponent>();
-
 		ServerSystems::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y);
 	}
 
@@ -52,21 +47,21 @@ void CollisionChecker::Update()
 	auto enemies = mServer->GetRegistry().view<Tag_Enemy>();
 
 	vector<Entity> plrs;
-	for (auto player : players)
+	for (auto pEntity : players)
 	{
-		Entity p = Entity(player, mServer);
-		plrs.push_back(p);
-		auto& playerBox = p.GetComponent<BoxComponent>();
+		Entity player = Entity(pEntity, mServer);
+		plrs.push_back(player);
+		auto& playerBox = player.GetComponent<BoxComponent>();
 
-		for (auto enemy : enemies)
+		for (auto eEntity : enemies)
 		{
-			Entity e = Entity(enemy, mServer);
-			auto& enemyBox = e.GetComponent<BoxComponent>();
+			Entity enemy = Entity(eEntity, mServer);
+			auto& enemyBox = enemy.GetComponent<BoxComponent>();
 
 			if (ServerSystems::Intersects(playerBox.World, enemyBox.World))
 			{
-				processCollision(e, p);
-				p.AddTag<Tag_UpdateTransform>();
+				processCollision(enemy, player);
+				player.AddTag<Tag_UpdateTransform>();
 			}
 		}
 	}
@@ -98,16 +93,14 @@ void CollisionChecker::MakeHitBoxAndCheck(const Vector3& position, float yaw)
 
 	{
 		auto view = mServer->GetRegistry().view<Tag_Enemy>();
-		for (auto id : view)
+		for (auto entity : view)
 		{
-			Entity enemy = Entity(id, mServer);
+			Entity enemy = Entity(entity, mServer);
 
-			auto& boxComp = enemy.GetComponent<BoxComponent>();
+			auto& box = enemy.GetComponent<BoxComponent>();
 
-			if (ServerSystems::Intersects(hitBox, boxComp.World))
+			if (ServerSystems::Intersects(hitBox, box.World))
 			{
-				HB_LOG("Hitbox collision!");
-
 				auto& health = enemy.GetComponent<SHealthComponent>();
 				health.Health -= 1;
 

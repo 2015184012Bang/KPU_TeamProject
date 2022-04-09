@@ -25,7 +25,7 @@ void Game::RegisterEntity(const HBID& id, const entt::entity entity)
 	}
 }
 
-entt::entity Game::getNewEntt()
+entt::entity Game::GetNewEntity()
 {
 	return mRegistry.create();
 }
@@ -36,34 +36,37 @@ void Game::DestroyAll()
 		Entity e(entity, this);
 		if (!e.HasComponent<Tag_DontDestroyOnLoad>())
 		{
-			DestroyEntity(entity);
+			DestroyEntityByID(e.GetComponent<IDComponent>().ID);
 		}
 		});
-}
-
-void Game::DestroyEntity(const entt::entity handle)
-{
-	Entity e(handle, this);
-	auto& idc = e.GetComponent<IDComponent>();
-	removeEntity(idc.ID);
-
-	if (e.HasComponent<AttachmentParentComponent>())
-	{
-		auto& apc = e.GetComponent<AttachmentParentComponent>();
-		DestroyEntityByID(apc.ChildID);
-	}
-
-	mRegistry.destroy(handle);
 }
 
 void Game::DestroyEntityByID(const HBID& id)
 {
 	auto iter = mEntities.find(id);
 
+	Entity e(iter->second, this);
+	if (e.HasComponent<AttachmentParentComponent>())
+	{
+		DestroyEntityByID(e.GetComponent<AttachmentParentComponent>().ChildID);
+	}
+
 	if (iter != mEntities.end())
 	{
-		DestroyEntity(iter->second);
+		HB_LOG("Entity ID[{0}] Deleted!", id);
+		mRegistry.destroy(iter->second);
+		mEntities.erase(iter);
 	}
+	else
+	{
+		HB_LOG("There is no entity id[{0}]!", id);
+	}
+}
+
+void Game::DestroyEntity(const entt::entity entity)
+{
+	Entity e(entity, this);
+	DestroyEntityByID(e.GetComponent<IDComponent>().ID);
 }
 
 entt::entity Game::GetEntityByID(const HBID& id)
@@ -77,20 +80,5 @@ entt::entity Game::GetEntityByID(const HBID& id)
 	else
 	{
 		return entt::null;
-	}
-}
-
-void Game::removeEntity(const HBID& id)
-{
-	auto iter = mEntities.find(id);
-
-	if (iter != mEntities.end())
-	{
-		HB_LOG("Entity ID[{0}] Deleted!", id);
-		mEntities.erase(iter);
-	}
-	else
-	{
-		HB_LOG("There is no entity id[{0}]!", id);
 	}
 }

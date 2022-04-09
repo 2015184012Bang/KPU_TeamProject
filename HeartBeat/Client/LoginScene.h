@@ -16,8 +16,6 @@ private:
 	void processLoginConfirmed(MemoryStream* packet);
 
 private:
-	Entity mBackground;
-
 	bool mbConnected;
 	bool mbChangeScene;
 

@@ -15,7 +15,7 @@
 EnemyGenerator::EnemyGenerator(Server* server)
 	: mServer(server)
 {
-	readStageFile("../Assets/Stages/stage1.csv");
+	readStageFile("../Assets/Stages/Stage1.csv");
 
 	mCollsionChecker = server->GetCollisionChecker();
 }

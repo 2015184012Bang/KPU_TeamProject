@@ -28,6 +28,6 @@ private:
     TCPSocketPtr mSocket;
 
     Entity mMyCharacter;
-    HBID mMyEID;
+    HBID mMyCharacterID;
 };
 

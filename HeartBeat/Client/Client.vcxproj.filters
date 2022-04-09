@@ -159,7 +159,7 @@
     <ClInclude Include="Script.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyMovement.h">
+    <ClInclude Include="Enemy.h">
       <Filter>Source Files\Test</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">

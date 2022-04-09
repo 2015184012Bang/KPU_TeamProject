@@ -4,6 +4,7 @@
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Random.h"
+#include "HeartBeat/Define.h"
 
 #include "CollisionChecker.h"
 #include "EnemyGenerator.h"
@@ -70,7 +71,7 @@ void Server::Run()
 
 Entity Server::CreateEntity()
 {
-	Entity e = Entity(getNewEntt(), this);
+	Entity e = Entity(GetNewEntity(), this);
 	e.AddComponent<STransformComponent>();
 	auto& id = e.AddComponent<IDComponent>();
 

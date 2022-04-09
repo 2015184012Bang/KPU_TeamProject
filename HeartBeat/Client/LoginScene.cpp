@@ -2,6 +2,7 @@
 #include "LoginScene.h"
 
 #include "HeartBeat/PacketType.h"
+#include "HeartBeat/Define.h"
 
 #include "Application.h"
 #include "Client.h"
@@ -21,13 +22,14 @@ void LoginScene::Enter()
 {
 	mSocket = mOwner->GetMySocket();
 
-	mBackground = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
+	// 배경화면 생성
+	mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		TEXTURE(L"Login_Background.png"), 10);
 }
 
 void LoginScene::Exit()
 {
-	mOwner->DestroyEntity(mBackground);
+	mOwner->DestroyAll();
 }
 
 void LoginScene::ProcessInput()
@@ -129,6 +131,5 @@ void LoginScene::processLoginConfirmed(MemoryStream* packet)
 	packet->ReadString(&nickname, nickLen);
 	mOwner->SetNickname(nickname);
 
-	HB_LOG("Client ID[{0}] // Nickname[{1}]", myClientID, nickname);
 	mbChangeScene = true;
 }

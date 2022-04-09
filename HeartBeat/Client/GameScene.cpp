@@ -9,7 +9,7 @@
 #include "Client.h"
 #include "ClientSystems.h"
 #include "Character.h"
-#include "EnemyMovement.h"
+#include "Enemy.h"
 #include "Input.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -125,7 +125,7 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 		{
 			mMyCharacter = e;
 			mMyCharacter.AddComponent<ScriptComponent>(new Character(mMyCharacter));
-			mMyEID = entityID;
+			mMyCharacterID = entityID;
 		}
 	}
 }
@@ -137,8 +137,8 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 	Vector3 position;
 	packet->ReadVector3(&position);
 
-	float rotationY;
-	packet->ReadFloat(&rotationY);
+	float yaw;
+	packet->ReadFloat(&yaw);
 
 	auto e = mOwner->GetEntityByID(eid);
 	if (entt::null == e)
@@ -151,7 +151,7 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 	auto& transform = ent.GetComponent<TransformComponent>();
 	
 	ClientSystems::UpdatePosition(&transform.Position, position, &transform.bDirty);
-	ClientSystems::UpdateYRotation(&transform.Rotation.y, rotationY, &transform.bDirty);
+	ClientSystems::UpdateYRotation(&transform.Rotation.y, yaw, &transform.bDirty);
 
 	auto& animator = ent.GetComponent<AnimatorComponent>();
 	animator.SetTrigger("Run");
@@ -203,14 +203,14 @@ void GameScene::sendUserInput()
 	if (bMove)
 	{
 		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserKeyboardInput));
-		packet.WriteUInt64(mMyEID);
+		packet.WriteUInt64(mMyCharacterID);
 		packet.WriteVector3(direction);
 	}
 
 	if (bClicked)
 	{
 		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserMouseInput));
-		packet.WriteUInt64(mMyEID);
+		packet.WriteUInt64(mMyCharacterID);
 	}
 
 	if (packet.GetLength() > 0)
@@ -223,34 +223,53 @@ void GameScene::updateAnimTrigger()
 {
 	// Moved 태그가 붙은 엔티티는 서버로부터 위치 갱신을 받은 것들이다.
 	// Moved 태그가 붙지 않았다면 움직이지 않았다는 것이므로 애니메이션을 Idle로 바꾼다.
-
-	auto view = mOwner->GetRegistry().view<Tag_Player>();
-	for (auto entity : view)
 	{
-		Entity e = Entity(entity, mOwner);
+		auto view = mOwner->GetRegistry().view<Tag_Player>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, mOwner);
 
-		if (!e.HasComponent<Tag_Moved>())
-		{
-			auto& animator = e.GetComponent<AnimatorComponent>();
-			animator.SetTrigger("Idle");
+			if (!e.HasComponent<Tag_Moved>())
+			{
+				auto& animator = e.GetComponent<AnimatorComponent>();
+				animator.SetTrigger("Idle");
+			}
+			else
+			{
+				e.RemoveComponent<Tag_Moved>();
+			}
 		}
-		else
+	}
+
+	{
+		auto view = mOwner->GetRegistry().view<Tag_Enemy>();
+		for (auto entity : view)
 		{
-			e.RemoveComponent<Tag_Moved>();
+			Entity e = Entity(entity, mOwner);
+
+			if (!e.HasComponent<Tag_Moved>())
+			{
+				auto& animator = e.GetComponent<AnimatorComponent>();
+				animator.SetTrigger("Idle");
+			}
+			else
+			{
+				e.RemoveComponent<Tag_Moved>();
+			}
 		}
 	}
 }
 
 void GameScene::updateChildParentAfterDelete()
 {
-	// HACK: 엔티티 삭제 시 AttachmentChild 컴포넌트가 오염됨.
+	// HACK: 엔티티 삭제 시 AttachmentChild 컴포넌트의 메모리가 오염됨.
 	// entt 내부의 문제로 생각되며 Attachment 컴포넌트를 가진 엔티티들을
 	// 갱신하는 것으로 해결.
 	auto view = mOwner->GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
 
 	for (auto [entity, parent, transform, animator] : view.each())
 	{
-		Entity child{ mOwner->GetEntityByID(parent.ChildID), mOwner };
+		Entity child( mOwner->GetEntityByID(parent.ChildID), mOwner );
 		auto& attachmentChild = child.GetComponent<AttachmentChildComponent>();
 
 		attachmentChild.ParentPalette = &animator.Palette;
@@ -265,7 +284,6 @@ void GameScene::processDeleteEntity(MemoryStream* packet)
 	packet->ReadUInt64(&eid);
 
 	Entity e{ mOwner->GetEntityByID(eid), mOwner };
-
 	bool hasChild = false;
 	if (e.HasComponent<AttachmentParentComponent>())
 	{
