@@ -56,7 +56,8 @@ private:
 	void processPacket(MemoryStream* outPacket, const Session& session);
 	void processLoginRequest(MemoryStream* outPacket, const Session& session);
 	void processImReady(MemoryStream* outPacket, const Session& session);
-	void processUserInput(MemoryStream* outPacket);
+	void processKeyboardUserInput(MemoryStream* outPacket);
+	void processUserMouseInput(MemoryStream* outPacket);
 	
 	void updateEnemyGenerator();
 	void updateCollisionChecker();

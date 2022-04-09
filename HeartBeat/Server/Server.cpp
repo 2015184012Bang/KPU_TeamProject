@@ -58,7 +58,7 @@ void Server::Run()
 		acceptClients();
 		recvFromClients();
 		clearIfDisconnected();
-		
+
 		updateEnemyGenerator();
 		updateCollisionChecker();
 
@@ -223,8 +223,12 @@ void Server::processPacket(MemoryStream* outPacket, const Session& session)
 			processImReady(outPacket, session);
 			break;
 
-		case CSPacket::eUserInput:
-			processUserInput(outPacket);
+		case CSPacket::eUserKeyboardInput:
+			processKeyboardUserInput(outPacket);
+			break;
+
+		case CSPacket::eUserMouseInput:
+			processUserMouseInput(outPacket);
 			break;
 
 		default:
@@ -339,7 +343,7 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 	}
 }
 
-void Server::processUserInput(MemoryStream* outPacket)
+void Server::processKeyboardUserInput(MemoryStream* outPacket)
 {
 	uint64 eid = 0;
 	Vector3 direction = Vector3::Zero;
@@ -359,6 +363,19 @@ void Server::processUserInput(MemoryStream* outPacket)
 	ServerSystems::UpdatePlayerTransform(&transform.Position, &transform.Rotation.y, direction);
 	character.AddTag<Tag_UpdateTransform>();
 }
+
+void Server::processUserMouseInput(MemoryStream* outPacket)
+{
+	uint64 eid = 0;
+	outPacket->ReadUInt64(&eid);
+
+	auto entity = GetEntityByID(eid);
+	HB_ASSERT((entity != entt::null), "No entity id : {0}", eid);
+
+	auto& transform = Entity(entity, this).GetComponent<STransformComponent>();
+	mCollisionChecker->MakeHitBoxAndCheck(transform.Position, transform.Rotation.y);
+}
+
 
 void Server::sendToAllSessions(const MemoryStream& packet)
 {

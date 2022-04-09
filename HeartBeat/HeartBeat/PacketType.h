@@ -4,7 +4,8 @@ enum class CSPacket : uint8
 {
 	eLoginRequest,
 	eImReady,
-	eUserInput,
+	eUserKeyboardInput,
+	eUserMouseInput,
 };
 
 enum class SCPacket : uint8

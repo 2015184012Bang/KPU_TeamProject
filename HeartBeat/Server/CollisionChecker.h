@@ -13,6 +13,7 @@ public:
 	~CollisionChecker();
 
 	void Update();
+	void MakeHitBoxAndCheck(const Vector3& position, float yaw);
 
 	const AABB* GetLocalBox(const wstring& name) const;
 

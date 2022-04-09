@@ -20,6 +20,12 @@ CollisionChecker::CollisionChecker(Server* server)
 	mLocalBoxes.try_emplace(L"Cube", BOX(L"Cube.box"));
 	mLocalBoxes.try_emplace(L"Character", BOX(L"Character.box"));
 	mLocalBoxes.try_emplace(L"Virus", BOX(L"Virus.box"));
+
+	AABB hitBox;
+	hitBox.SetMin(Vector3(-100.0f, 0.0f, 0.0f));
+	hitBox.SetMax(Vector3(100.0f, 500.0f, 200.0f));
+	
+	mLocalBoxes.try_emplace(L"HitBox", hitBox);
 }
 
 CollisionChecker::~CollisionChecker()
@@ -80,6 +86,28 @@ void CollisionChecker::Update()
 					plrs[i].AddTag<Tag_UpdateTransform>();
 				}
 			}
+		}
+	}
+}
+
+void CollisionChecker::MakeHitBoxAndCheck(const Vector3& position, float yaw)
+{
+	AABB hitBox;
+	ServerSystems::UpdateBox(&mLocalBoxes[L"HitBox"], &hitBox, position, yaw);
+
+	auto view = mServer->GetRegistry().view<Tag_Enemy>();
+	
+	for (auto id : view)
+	{
+		Entity enemy = Entity(id, mServer);
+
+		auto& boxComp = enemy.GetComponent<BoxComponent>();
+
+		if (ServerSystems::Intersects(hitBox, boxComp.World))
+		{
+			// TODO: 충돌 처리
+			HB_LOG("Hitbox collision!");
+			return;
 		}
 	}
 }

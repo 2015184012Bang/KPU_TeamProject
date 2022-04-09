@@ -157,8 +157,14 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 
 void GameScene::sendUserInput()
 {
+	if (!mMyCharacter)
+	{
+		return;
+	}
+
 	Vector3 direction = Vector3::Zero;
 	bool bMove = false;
+	bool bClicked = false;
 
 	if (Input::IsButtonRepeat(eKeyCode::Up))
 	{
@@ -184,13 +190,27 @@ void GameScene::sendUserInput()
 		bMove = true;
 	}
 
+	if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+	{
+		bClicked = true;
+	}
+
+	MemoryStream packet;
 	if (bMove)
 	{
-		MemoryStream packet;
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserInput));
+		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserKeyboardInput));
 		packet.WriteUInt64(mMyEID);
 		packet.WriteVector3(direction);
+	}
 
+	if (bClicked)
+	{
+		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserMouseInput));
+		packet.WriteUInt64(mMyEID);
+	}
+
+	if (packet.GetLength() > 0)
+	{
 		mSocket->Send(&packet, sizeof(packet));
 	}
 }
