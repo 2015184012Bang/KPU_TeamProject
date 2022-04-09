@@ -10,7 +10,7 @@ cbuffer cbViewProj : register(b1)
 
 cbuffer cbBoneTransform : register(b2)
 {
-    row_major matrix gBoneTransform[96];
+    row_major matrix gBoneTransform[128];
 }
 
 Texture2D tex0 : register(t0);

@@ -11,6 +11,7 @@ enum class eKeyCode
 	Right = VK_RIGHT,
 	Return = VK_RETURN,
 	Escape = VK_ESCAPE,
+	Space = VK_SPACE,
 
 	W = 'W',
 	A = 'A',

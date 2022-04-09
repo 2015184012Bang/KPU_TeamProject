@@ -9,8 +9,7 @@ void Skeleton::Load(const wstring& path)
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open skeleton file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Could not open skeleton file: {0}", ws2s(path));
 	}
 
 	std::stringstream fileStream;
