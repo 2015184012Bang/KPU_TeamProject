@@ -73,39 +73,9 @@ ScriptComponent::ScriptComponent()
 
 }
 
-ScriptComponent::ScriptComponent(Script* s)
-	: NativeScript(s)
+ScriptComponent::ScriptComponent(shared_ptr<Script>&& script)
+	: NativeScript(std::move(script))
 	, bInitialized(false)
 {
 
-}
-
-ScriptComponent::ScriptComponent(ScriptComponent&& other) noexcept
-{
-	NativeScript = other.NativeScript;
-	bInitialized = other.bInitialized;
-
-	other.NativeScript = nullptr;
-}
-
-ScriptComponent& ScriptComponent::operator=(ScriptComponent&& other) noexcept
-{
-	if (this != &other)
-	{
-		NativeScript = other.NativeScript;
-		bInitialized = other.bInitialized;
-
-		other.NativeScript = nullptr;
-	}
-
-	return *this;
-}
-
-ScriptComponent::~ScriptComponent()
-{
-	if (NativeScript)
-	{
-		delete NativeScript;
-		NativeScript = nullptr;
-	}
 }

@@ -69,8 +69,16 @@ void Server::Run()
 		updateCollisionChecker();
 		updateAIController();
 
-		makePacket();
-		flushSendQueue();
+		static float elapsed = 0.0f;
+		elapsed += Timer::GetDeltaTime();
+
+		if (elapsed > 0.03f)
+		{
+			elapsed = 0.0f;
+			makeUpdateTransformPacket();
+			makeUpdateCollisionPacket();
+			flushSendQueue();
+		}
 	}
 }
 
@@ -191,20 +199,13 @@ void Server::clearIfDisconnected()
 
 void Server::flushSendQueue()
 {
-	static float elapsed = 0.0f;
-	elapsed += Timer::GetDeltaTime();
-	if (elapsed > 0.03f)
+	while (!mSendQueue.empty())
 	{
-		elapsed = 0.0f;
+		MemoryStream* packet = mSendQueue.front();
+		mSendQueue.pop();
 
-		while (!mSendQueue.empty())
-		{
-			MemoryStream* packet = mSendQueue.front();
-			mSendQueue.pop();
-
-			sendToAllSessions(*packet);
-			delete packet;
-		}
+		sendToAllSessions(*packet);
+		delete packet;
 	}
 }
 
@@ -444,36 +445,50 @@ void Server::updateCollisionChecker()
 	mCollisionChecker->Update();
 }
 
-void Server::makePacket()
+void Server::makeUpdateTransformPacket()
 {
-	static float elapsed = 0.0f;
-
-	elapsed += Timer::GetDeltaTime();
-
-	if (elapsed > 0.03f)
+	auto view = GetRegistry().view<Tag_UpdateTransform>();
+	if (view.empty())
 	{
-		elapsed = 0.0f;
-
-		auto view = GetRegistry().view<Tag_UpdateTransform>();
-		if (view.empty())
-		{
-			return;
-		}
-
-		MemoryStream* spacket = new MemoryStream;
-		for (auto e : view)
-		{
-			Entity ent = Entity(e, this);
-			ent.RemoveComponent<Tag_UpdateTransform>();
-			auto& transform = ent.GetComponent<STransformComponent>();
-			auto& id = ent.GetComponent<IDComponent>();
-
-			spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
-			spacket->WriteUInt64(id.ID);
-			spacket->WriteVector3(transform.Position);
-			spacket->WriteFloat(transform.Rotation.y);
-		}
-
-		mSendQueue.push(spacket);
+		return;
 	}
+
+	MemoryStream* spacket = new MemoryStream;
+	for (auto e : view)
+	{
+		Entity ent = Entity(e, this);
+		ent.RemoveComponent<Tag_UpdateTransform>();
+		auto& transform = ent.GetComponent<STransformComponent>();
+		auto& id = ent.GetComponent<IDComponent>();
+
+		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateTransform));
+		spacket->WriteUInt64(id.ID);
+		spacket->WriteVector3(transform.Position);
+		spacket->WriteFloat(transform.Rotation.y);
+	}
+
+	mSendQueue.push(spacket);
+}
+
+void Server::makeUpdateCollisionPacket()
+{
+	auto view = GetRegistry().view<Tag_UpdateCollision>();
+	if (view.empty())
+	{
+		return;
+	}
+
+	MemoryStream* spacket = new MemoryStream;
+	for (auto e : view)
+	{
+		Entity ent = Entity(e, this);
+		ent.RemoveComponent<Tag_UpdateCollision>();
+		auto& transform = ent.GetComponent<STransformComponent>();
+		auto& id = ent.GetComponent<IDComponent>();
+
+		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateCollision));
+		spacket->WriteUInt64(id.ID);
+		spacket->WriteVector3(transform.Position);
+	}
+	mSendQueue.push(spacket);
 }

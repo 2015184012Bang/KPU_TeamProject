@@ -66,7 +66,8 @@ private:
 
 	void initGameStage();
 	
-	void makePacket();
+	void makeUpdateTransformPacket();
+	void makeUpdateCollisionPacket();
 
 	void sendToAllSessions(const MemoryStream& packet);
 private:
@@ -82,4 +83,5 @@ private:
 	shared_ptr<EnemyGenerator> mEnemyGenerator;
 	shared_ptr<CollisionChecker> mCollisionChecker;
 	shared_ptr<AIController> mAIController;
+	
 };

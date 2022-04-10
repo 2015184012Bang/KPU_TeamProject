@@ -20,6 +20,7 @@ private:
     void processCreateEnemy(MemoryStream* packet);
     void processDeleteEntity(MemoryStream* packet);
     void processCreateTank(MemoryStream* packet);
+    void processUpdateCollision(MemoryStream* packet);
 
     void sendUserInput();
     void updateAnimTrigger();

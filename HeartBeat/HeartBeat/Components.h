@@ -49,11 +49,8 @@ struct HealthComponent
 struct ScriptComponent
 {
 	ScriptComponent();
-	ScriptComponent(Script* s);
-	~ScriptComponent();
-	ScriptComponent(ScriptComponent&& other) noexcept;
-	ScriptComponent& operator=(ScriptComponent&& other) noexcept;
+	ScriptComponent(shared_ptr<Script>&& script);
 
-	Script* NativeScript;
+	shared_ptr<Script> NativeScript;
 	bool bInitialized;
 };
