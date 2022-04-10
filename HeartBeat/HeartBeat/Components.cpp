@@ -1,6 +1,8 @@
 #include "PCH.h"
 #include "Components.h"
 
+#include "Script.h"
+
 IDComponent::IDComponent()
 	: ID()
 {
@@ -50,4 +52,60 @@ NameComponent::NameComponent(const string& name)
 	: Name(name)
 {
 
+}
+
+HealthComponent::HealthComponent()
+	: Health(0)
+{
+
+}
+
+HealthComponent::HealthComponent(int32 maxHealth)
+	: Health(maxHealth)
+{
+
+}
+
+ScriptComponent::ScriptComponent()
+	: NativeScript(nullptr)
+	, bInitialized(false)
+{
+
+}
+
+ScriptComponent::ScriptComponent(Script* s)
+	: NativeScript(s)
+	, bInitialized(false)
+{
+
+}
+
+ScriptComponent::ScriptComponent(ScriptComponent&& other) noexcept
+{
+	NativeScript = other.NativeScript;
+	bInitialized = other.bInitialized;
+
+	other.NativeScript = nullptr;
+}
+
+ScriptComponent& ScriptComponent::operator=(ScriptComponent&& other) noexcept
+{
+	if (this != &other)
+	{
+		NativeScript = other.NativeScript;
+		bInitialized = other.bInitialized;
+
+		other.NativeScript = nullptr;
+	}
+
+	return *this;
+}
+
+ScriptComponent::~ScriptComponent()
+{
+	if (NativeScript)
+	{
+		delete NativeScript;
+		NativeScript = nullptr;
+	}
 }

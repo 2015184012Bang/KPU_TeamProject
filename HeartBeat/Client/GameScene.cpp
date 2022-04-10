@@ -29,8 +29,8 @@ void GameScene::Enter()
 
 	mSocket = mOwner->GetMySocket();
 
+	// Map1 »ý¼º
 	const vector<Tile>& gameMap = gGameMap.GetTiles();
-
 	for (const Tile& tile : gameMap)
 	{
 		Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
@@ -101,6 +101,10 @@ void GameScene::processPacket(MemoryStream* packet)
 
 		case SCPacket::eDeleteEntity:
 			processDeleteEntity(packet);
+			break;
+
+		case SCPacket::eCreateTank:
+			processCreateTank(packet);
 			break;
 
 		default:
@@ -310,6 +314,28 @@ void GameScene::updateMainCamera()
 	camera.Position = Vector3(characterPosition.x, 1000.0f, characterPosition.z - 1000.0f);
 }
 
+void GameScene::processCreateTank(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+	
+	Vector3 position = Vector3::Zero;
+	packet->ReadVector3(&position);
+
+	float yaw = 0.0f;
+	packet->ReadFloat(&yaw);
+
+	Entity tank = mOwner->CreateSkeletalMeshEntity(MESH(L"Tank.mesh"), TEXTURE(L"Tank.png"), SKELETON(L"Tank.skel"), eid);
+	tank.AddTag<Tag_Tank>();
+	auto& transform = tank.GetComponent<TransformComponent>();
+
+	transform.Position = position;
+	transform.Rotation.y = yaw;
+
+	auto& animator = tank.GetComponent<AnimatorComponent>();
+	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(ANIM(L"Tank_Idle.anim")));
+}
+
 void GameScene::processDeleteEntity(MemoryStream* packet)
 {
 	uint64 eid;
@@ -369,13 +395,13 @@ wstring GetTileTex(int type)
 {
 	switch (type)
 	{
-	case 0:
+	case Grass:
 		return TEXTURE(L"Cube_Pink.png");
 		break;
-	case 1:
+	case Rail:
 		return TEXTURE(L"Cube_SkyBlue.png");
 		break;
-	case 2:
+	case Obstacle:
 		return TEXTURE(L"Cube_Black.png");
 		break;
 	default:

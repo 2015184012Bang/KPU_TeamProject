@@ -1,7 +1,7 @@
 #pragma once
 
-#include "HeartBeat/Entity.h"
-#include "HeartBeat/Components.h"
+#include "Entity.h"
+#include "Components.h"
 
 class Script
 {
@@ -16,12 +16,24 @@ public:
 	}
 
 	template<typename T>
+	void AddTag()
+	{
+		mOwner.AddTag<T>();
+	}
+
+	template<typename T>
+	T& AddComponent()
+	{
+		return mOwner.AddComponent<T>();
+	}
+
+	template<typename T>
 	vector<Entity> FindObjectsWithTag()
 	{
 		vector<entt::entity> entities = mOwner.GetGame()->FindObjectsWithTag<T>();
 		vector<Entity> objs;
 		objs.reserve(entities.size());
-		
+
 		for (auto entity : entities)
 		{
 			objs.emplace_back(entity, mOwner.GetGame());

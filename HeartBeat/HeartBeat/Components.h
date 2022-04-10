@@ -3,6 +3,8 @@
 #include "HBID.h"
 #include "AABB.h"
 
+class Script;
+
 struct IDComponent
 {
 	IDComponent();
@@ -34,4 +36,24 @@ struct NameComponent
 	NameComponent(const string& name);
 
 	string Name;
+};
+
+struct HealthComponent
+{
+	HealthComponent();
+	HealthComponent(int32 maxHealth);
+
+	int32 Health;
+};
+
+struct ScriptComponent
+{
+	ScriptComponent();
+	ScriptComponent(Script* s);
+	~ScriptComponent();
+	ScriptComponent(ScriptComponent&& other) noexcept;
+	ScriptComponent& operator=(ScriptComponent&& other) noexcept;
+
+	Script* NativeScript;
+	bool bInitialized;
 };

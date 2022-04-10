@@ -11,6 +11,9 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{31d257e2-654a-4bbb-8bbc-4b6839b66627}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{bb4c7f18-4a6e-45bb-a3ff-33efd60a6da0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ServerPCH.cpp">
@@ -34,6 +37,9 @@
     <ClCompile Include="CollisionChecker.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AIController.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerPCH.h">
@@ -53,6 +59,12 @@
     </ClInclude>
     <ClInclude Include="CollisionChecker.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AIController.h">
+      <Filter>Source Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Source Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@ struct Tag_DontDestroyOnLoad {};
 struct Tag_Player {};
 struct Tag_Enemy {};
 struct Tag_Tile {};
+struct Tag_Tank {};
 
 // 애니메이션 동기화용
 struct Tag_Moved {};

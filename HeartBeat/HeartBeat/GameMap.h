@@ -2,14 +2,16 @@
 
 struct Tile
 {
+	Tile() = default;
+
 	Tile(int type, float x, float z)
 		: Type(type)
 		, X(x)
 		, Z(z) {}
 
-	int Type;
-	float X;
-	float Z;
+	int Type = 0;
+	float X = 0.0f;
+	float Z = 0.0f;
 };
 
 class GameMap

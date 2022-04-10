@@ -7,8 +7,9 @@
 
 using std::queue;
 
-class EnemyGenerator;
+class AIController;
 class CollisionChecker;
+class EnemyGenerator;
 
 /************************************************************************/
 /* Server                                                               */
@@ -61,11 +62,13 @@ private:
 	
 	void updateEnemyGenerator();
 	void updateCollisionChecker();
+	void updateAIController();
+
+	void initGameStage();
 	
 	void makePacket();
 
 	void sendToAllSessions(const MemoryStream& packet);
-
 private:
 	TCPSocketPtr mListenSocket;
 	vector<Session> mSessions;
@@ -78,4 +81,5 @@ private:
 
 	shared_ptr<EnemyGenerator> mEnemyGenerator;
 	shared_ptr<CollisionChecker> mCollisionChecker;
+	shared_ptr<AIController> mAIController;
 };

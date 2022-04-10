@@ -101,7 +101,7 @@ void CollisionChecker::MakeHitBoxAndCheck(const Vector3& position, float yaw)
 
 			if (ServerSystems::Intersects(hitBox, box.World))
 			{
-				auto& health = enemy.GetComponent<SHealthComponent>();
+				auto& health = enemy.GetComponent<HealthComponent>();
 				health.Health -= 1;
 
 				// 만약 체력이 0이하라면 Dead 태그를 붙여둔다

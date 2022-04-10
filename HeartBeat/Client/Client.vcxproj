@@ -123,7 +123,6 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Script.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Text.cpp" />
@@ -150,7 +149,6 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Script.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="GameScene.h" />

@@ -18,4 +18,5 @@ enum class SCPacket : uint8
 	eUpdateTransform,
 	eCreateEnemy,
 	eDeleteEntity,
+	eCreateTank,
 };

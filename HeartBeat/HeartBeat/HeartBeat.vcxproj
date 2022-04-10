@@ -112,6 +112,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Script.cpp" />
     <ClCompile Include="SocketAddress.cpp" />
     <ClCompile Include="SocketUtil.cpp" />
     <ClCompile Include="TCPSocket.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="GameMap.h" />
+    <ClInclude Include="Script.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />

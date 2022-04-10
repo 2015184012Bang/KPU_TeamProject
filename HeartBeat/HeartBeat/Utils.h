@@ -7,6 +7,7 @@ using std::wstring;
 using std::string;
 
 const wstring ASSET_PATH = L"../Assets/";
+constexpr float EPSILON = 0.001f;
 #define MESH(x) GetMeshPath(x)
 #define TEXTURE(x) GetTexturePath(x)
 #define SKELETON(x) GetSkeletonPath(x)
@@ -65,4 +66,19 @@ inline string ws2s(const wstring& s)
 	string r(len, '\0');
 	WideCharToMultiByte(CP_ACP, 0, s.c_str(), slength, &r[0], len, 0, 0);
 	return r;
+}
+
+inline bool NearZero(const Vector3& a, const Vector3& b)
+{
+	return (a - b).LengthSquared() < EPSILON;
+}
+
+inline bool NearZero(float a)
+{
+	if (fabs(a) < EPSILON)
+	{
+		return true;
+	}
+
+	return false;
 }

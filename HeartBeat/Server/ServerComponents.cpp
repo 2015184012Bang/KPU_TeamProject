@@ -16,14 +16,16 @@ STransformComponent::STransformComponent(const Vector3& position, const Vector3&
 
 }
 
-SHealthComponent::SHealthComponent()
-	: Health(0)
+AIComponent::AIComponent()
+	: AIScript(nullptr)
+	, bInitialized(false)
 {
 
 }
 
-SHealthComponent::SHealthComponent(int32 maxHealth)
-	: Health(maxHealth)
+AIComponent::AIComponent(shared_ptr<Script>&& ai)
+	: AIScript(std::move(ai))
+	, bInitialized(false)
 {
 
 }

@@ -1,4 +1,4 @@
-#include "ClientPCH.h"
+#include "PCH.h"
 #include "Script.h"
 
 Script::Script(Entity owner)

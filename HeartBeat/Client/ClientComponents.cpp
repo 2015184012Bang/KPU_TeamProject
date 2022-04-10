@@ -5,7 +5,6 @@
 #include "ClientSystems.h"
 #include "Mesh.h"
 #include "Skeleton.h"
-#include "Script.h"
 #include "Texture.h"
 #include "Text.h"
 
@@ -133,50 +132,6 @@ DebugDrawComponent::DebugDrawComponent(const Mesh* mesh)
 	: Mesi(mesh)
 {
 
-}
-
-ScriptComponent::ScriptComponent()
-	: NativeScript(nullptr)
-	, bInitialized(false)
-{
-
-}
-
-ScriptComponent::ScriptComponent(Script* s)
-	: NativeScript(s)
-	, bInitialized(false)
-{
-
-}
-
-ScriptComponent::ScriptComponent(ScriptComponent&& other) noexcept
-{
-	NativeScript = other.NativeScript;
-	bInitialized = other.bInitialized;
-
-	other.NativeScript = nullptr;
-}
-
-ScriptComponent& ScriptComponent::operator=(ScriptComponent&& other) noexcept
-{
-	if (this != &other)
-	{
-		NativeScript = other.NativeScript;
-		bInitialized = other.bInitialized;
-
-		other.NativeScript = nullptr;
-	}
-
-	return *this;
-}
-
-ScriptComponent::~ScriptComponent()
-{
-	if (NativeScript)
-	{
-		delete NativeScript;
-		NativeScript = nullptr;
-	}
 }
 
 SpriteRendererComponent::SpriteRendererComponent()

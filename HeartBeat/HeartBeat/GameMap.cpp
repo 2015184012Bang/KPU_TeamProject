@@ -15,8 +15,6 @@ void GameMap::LoadMap(const string& mapFile)
 
 	for (int i = doc.GetRowCount() - 1; i >= 0; --i)
 	{
-		HB_LOG(i);
-
 		std::vector<int> parsed = doc.GetRow<int>(i);
 
 		for (size_t j = 0; j < parsed.size(); ++j)

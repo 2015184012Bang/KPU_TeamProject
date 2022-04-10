@@ -11,3 +11,10 @@ enum : uint8
 	Virus,
 	Dog,
 };
+
+enum : uint8
+{
+	Grass,
+	Rail,
+	Obstacle,
+};

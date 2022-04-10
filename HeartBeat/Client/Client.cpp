@@ -11,7 +11,6 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "Script.h"
 #include "Text.h"
 #include "GameScene.h"
 
@@ -309,6 +308,14 @@ void Client::createAnimationTransitions()
 		idleAnim->AddTransition("Attack", attackingAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 		runningAnim->AddTransition("Attack", attackingAnim);
+	}
+
+	// ÅÊÅ©
+	{
+		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Idle.anim"));
+		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim"));
+		idleAnim->AddTransition("Run", runningAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
 	}
 }
 

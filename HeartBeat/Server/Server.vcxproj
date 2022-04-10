@@ -106,6 +106,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AIController.cpp" />
     <ClCompile Include="CollisionChecker.cpp" />
     <ClCompile Include="EnemyGenerator.cpp" />
     <ClCompile Include="Server.cpp" />
@@ -118,12 +119,14 @@
     <ClCompile Include="ServerSystems.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIController.h" />
     <ClInclude Include="CollisionChecker.h" />
     <ClInclude Include="EnemyGenerator.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerComponents.h" />
     <ClInclude Include="ServerPCH.h" />
     <ClInclude Include="ServerSystems.h" />
+    <ClInclude Include="Tank.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
