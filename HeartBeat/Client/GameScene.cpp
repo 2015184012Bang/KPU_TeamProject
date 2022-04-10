@@ -274,25 +274,6 @@ void GameScene::updateAnimTrigger()
 			}
 		}
 	}
-
-	{
-		auto view = mOwner->GetRegistry().view<Tag_Tank>();
-		for (auto entity : view)
-		{
-			Entity e = Entity(entity, mOwner);
-
-			auto& animator = e.GetComponent<AnimatorComponent>();
-			if (!e.HasComponent<Tag_Moved>())
-			{
-				animator.SetTrigger("Idle");
-			}
-			else
-			{
-				animator.SetTrigger("Run");
-				e.RemoveComponent<Tag_Moved>();
-			}
-		}
-	}
 }
 
 void GameScene::updateChildParentAfterDelete()
@@ -368,7 +349,7 @@ void GameScene::processCreateTank(MemoryStream* packet)
 	transform.Rotation.y = yaw;
 
 	auto& animator = tank.GetComponent<AnimatorComponent>();
-	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(ANIM(L"Tank_Idle.anim")));
+	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim")));
 }
 
 void GameScene::processDeleteEntity(MemoryStream* packet)
