@@ -184,31 +184,31 @@ void GameScene::sendUserInput()
 	bool bMove = false;
 	bool bClicked = false;
 
-	if (Input::IsButtonRepeat(eKeyCode::W))
+	if (Input::IsButtonRepeat(eKeyCode::Up))
 	{
 		direction.z += 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::S))
+	if (Input::IsButtonRepeat(eKeyCode::Down))
 	{
 		direction.z -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::A))
+	if (Input::IsButtonRepeat(eKeyCode::Left))
 	{
 		direction.x -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::D))
+	if (Input::IsButtonRepeat(eKeyCode::Right))
 	{
 		direction.x += 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+	if (Input::IsButtonPressed(eKeyCode::D))
 	{
 		bClicked = true;
 	}

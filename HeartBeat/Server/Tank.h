@@ -41,7 +41,7 @@ public:
 
 		Vector3 to = Vector3(mCurrentTarget.X, 0.0f, mCurrentTarget.Z);
 
-		ServerSystems::Move(&transform->Position, to, Timer::GetDeltaTime());
+		ServerSystems::MoveToward(transform, to, Timer::GetDeltaTime());
 		AddTag<Tag_UpdateTransform>();
 
 		if (NearZero(transform->Position, to))

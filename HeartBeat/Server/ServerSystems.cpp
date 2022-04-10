@@ -14,12 +14,15 @@ void ServerSystems::UpdatePlayerTransform(Vector3* outPosition, float* outRotati
 	if (direction.x < 0.0f) *outRotationY = -90.0f;
 }
 
-void ServerSystems::Move(Vector3* outPosition, const Vector3& to, float deltaTime)
+void ServerSystems::MoveToward(STransformComponent* outTransform, const Vector3& to, float deltaTime)
 {
-	Vector3 direction = to - *outPosition;
+	Vector3 direction = to - outTransform->Position;
 	direction.Normalize();
+	Vector3 forward = Vector3{ 0.0f, 0.0f, 1.0f };
+	Vector3 angle = XMVector3AngleBetweenNormals(direction, forward);
 
-	*outPosition += direction * TANK_MOVE_SPEED * deltaTime;
+	outTransform->Position += direction * TANK_MOVE_SPEED * deltaTime;
+	outTransform->Rotation.y = XMConvertToDegrees(angle.y);
 }
 
 bool ServerSystems::Intersects(const AABB& a, const AABB& b)
