@@ -89,26 +89,12 @@ struct AnimatorComponent
 	UploadBuffer<MatrixPalette> Buffer;
 };
 
-
-
 struct DebugDrawComponent
 {
 	DebugDrawComponent();
 	DebugDrawComponent(const Mesh* mesh);
 
 	const Mesh* Mesi;
-};
-
-struct ScriptComponent
-{
-	ScriptComponent();
-	ScriptComponent(Script* s);
-	~ScriptComponent();
-	ScriptComponent(ScriptComponent&& other) noexcept;
-	ScriptComponent& operator=(ScriptComponent&& other) noexcept;
-
-	Script* NativeScript;
-	bool bInitialized;
 };
 
 struct ButtonComponent

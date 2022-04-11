@@ -11,10 +11,11 @@ struct STransformComponent
 	Vector3 Rotation;
 };
 
-struct SHealthComponent
+struct AIComponent
 {
-	SHealthComponent();
-	SHealthComponent(int32 maxHealth);
+	AIComponent();
+	AIComponent(shared_ptr<Script>&& ai);
 
-	int32 Health;
+	shared_ptr<Script> AIScript;
+	bool bInitialized;
 };

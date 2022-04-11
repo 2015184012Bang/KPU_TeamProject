@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Script.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"
 
 
-class EnemyMovement : public Script
+class Enemy : public Script
 {
 public:
-	EnemyMovement(Entity owner)
+	Enemy(Entity owner)
 		: Script(owner)
 	{
 

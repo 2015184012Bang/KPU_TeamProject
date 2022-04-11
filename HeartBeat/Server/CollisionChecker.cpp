@@ -61,7 +61,7 @@ void CollisionChecker::Update()
 			if (ServerSystems::Intersects(playerBox.World, enemyBox.World))
 			{
 				processCollision(enemy, player);
-				player.AddTag<Tag_UpdateTransform>();
+				player.AddTag<Tag_UpdateCollision>();
 			}
 		}
 	}
@@ -79,7 +79,7 @@ void CollisionChecker::Update()
 				if (ServerSystems::Intersects(p1Box.World, p2Box.World))
 				{
 					processCollision(plrs[j], plrs[i]);
-					plrs[i].AddTag<Tag_UpdateTransform>();
+					plrs[i].AddTag<Tag_UpdateCollision>();
 				}
 			}
 		}
@@ -101,7 +101,7 @@ void CollisionChecker::MakeHitBoxAndCheck(const Vector3& position, float yaw)
 
 			if (ServerSystems::Intersects(hitBox, box.World))
 			{
-				auto& health = enemy.GetComponent<SHealthComponent>();
+				auto& health = enemy.GetComponent<HealthComponent>();
 				health.Health -= 1;
 
 				// 만약 체력이 0이하라면 Dead 태그를 붙여둔다

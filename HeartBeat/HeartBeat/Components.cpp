@@ -1,6 +1,8 @@
 #include "PCH.h"
 #include "Components.h"
 
+#include "Script.h"
+
 IDComponent::IDComponent()
 	: ID()
 {
@@ -38,4 +40,42 @@ BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float 
 	World = *Local;
 
 	World.UpdateWorldBox(position, yaw);
+}
+
+NameComponent::NameComponent()
+	: Name("default")
+{
+
+}
+
+NameComponent::NameComponent(const string& name)
+	: Name(name)
+{
+
+}
+
+HealthComponent::HealthComponent()
+	: Health(0)
+{
+
+}
+
+HealthComponent::HealthComponent(int32 maxHealth)
+	: Health(maxHealth)
+{
+
+}
+
+ScriptComponent::ScriptComponent()
+	: NativeScript(nullptr)
+	, bInitialized(false)
+{
+
+}
+
+ScriptComponent::ScriptComponent(shared_ptr<Script>&& script)
+	: NativeScript(std::move(script))
+	, bInitialized(false)
+{
+
 }

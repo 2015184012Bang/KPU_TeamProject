@@ -46,7 +46,7 @@ void EnemyGenerator::Update()
 			transform.Position.z = info.Z;
 
 			// 체력 컴포넌트 부착
-			enemy.AddComponent<SHealthComponent>(ENEMY_MAX_HEALTH);
+			enemy.AddComponent<HealthComponent>(ENEMY_MAX_HEALTH);
 
 			// TODO: 적의 타입에 따라 다른 박스 설정 필요
 			enemy.AddComponent<BoxComponent>(mCollsionChecker->GetLocalBox(L"Virus"), transform.Position);

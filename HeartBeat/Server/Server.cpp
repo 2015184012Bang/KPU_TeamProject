@@ -6,15 +6,19 @@
 #include "HeartBeat/Random.h"
 #include "HeartBeat/Define.h"
 
+#include "AIController.h"
 #include "CollisionChecker.h"
 #include "EnemyGenerator.h"
 #include "ServerComponents.h"
 #include "ServerSystems.h"
+#include "Tank.h"
 
 Server::Server()
 	: mListenSocket(nullptr)
 	, mNumCurUsers(0)
 	, mEnemyGenerator(nullptr)
+	, mCollisionChecker(nullptr)
+	, mAIController(nullptr)
 {
 	mUserReadied.fill(false);
 }
@@ -29,6 +33,7 @@ bool Server::Init()
 
 	mCollisionChecker = std::make_shared<CollisionChecker>(this);
 	mEnemyGenerator = std::make_shared<EnemyGenerator>(this);
+	mAIController = std::make_shared<AIController>(this);
 
 	int retVal = bindAndListen();
 
@@ -62,10 +67,18 @@ void Server::Run()
 
 		updateEnemyGenerator();
 		updateCollisionChecker();
+		updateAIController();
 
-		makePacket();
+		static float elapsed = 0.0f;
+		elapsed += Timer::GetDeltaTime();
 
-		flushSendQueue();
+		if (elapsed > 0.03f)
+		{
+			elapsed = 0.0f;
+			makeUpdateTransformPacket();
+			makeUpdateCollisionPacket();
+			flushSendQueue();
+		}
 	}
 }
 
@@ -186,20 +199,13 @@ void Server::clearIfDisconnected()
 
 void Server::flushSendQueue()
 {
-	static float elapsed = 0.0f;
-	elapsed += Timer::GetDeltaTime();
-	if (elapsed > 0.03f)
+	while (!mSendQueue.empty())
 	{
-		elapsed = 0.0f;
+		MemoryStream* packet = mSendQueue.front();
+		mSendQueue.pop();
 
-		while (!mSendQueue.empty())
-		{
-			MemoryStream* packet = mSendQueue.front();
-			mSendQueue.pop();
-
-			sendToAllSessions(*packet);
-			delete packet;
-		}
+		sendToAllSessions(*packet);
+		delete packet;
 	}
 }
 
@@ -306,8 +312,8 @@ void Server::processImReady(MemoryStream* outPacket, const Session& session)
 		spacket.WriteUByte(static_cast<uint8>(SCPacket::eGameStart));
 		bAllReady = true;
 
-		// 적 생성기 작동 시작
-		mEnemyGenerator->SetStart(true);
+		// 스테이지 초기화
+		initGameStage();
 	}
 	else
 	{
@@ -386,11 +392,42 @@ void Server::sendToAllSessions(const MemoryStream& packet)
 	}
 }
 
+void Server::updateAIController()
+{
+	if (!mAIController)
+	{
+		HB_LOG("AIController is nullptr");
+		return;
+	}
+
+	mAIController->Update();
+}
+
+void Server::initGameStage()
+{
+	mEnemyGenerator->SetStart(true);
+
+	Entity tank = CreateEntity();
+	tank.AddComponent<NameComponent>("Tank");
+	tank.AddComponent<AIComponent>(std::make_shared<Tank>(tank));
+
+	auto& transform = tank.GetComponent<STransformComponent>();
+	auto& id = tank.GetComponent<IDComponent>();
+
+	MemoryStream* packet = new MemoryStream;
+	packet->WriteUByte(static_cast<uint8>(SCPacket::eCreateTank));
+	packet->WriteUInt64(id.ID);
+	packet->WriteVector3(transform.Position);
+	packet->WriteFloat(transform.Rotation.y);
+
+	PushPacket(packet);
+}
+
 void Server::updateEnemyGenerator()
 {
 	if (!mEnemyGenerator)
 	{
-		HB_LOG("mEnemyGenerator is nullptr");
+		HB_LOG("EnemyGenerator is nullptr");
 		return;
 	}
 
@@ -408,7 +445,7 @@ void Server::updateCollisionChecker()
 	mCollisionChecker->Update();
 }
 
-void Server::makePacket()
+void Server::makeUpdateTransformPacket()
 {
 	auto view = GetRegistry().view<Tag_UpdateTransform>();
 	if (view.empty())
@@ -430,5 +467,28 @@ void Server::makePacket()
 		spacket->WriteFloat(transform.Rotation.y);
 	}
 
+	mSendQueue.push(spacket);
+}
+
+void Server::makeUpdateCollisionPacket()
+{
+	auto view = GetRegistry().view<Tag_UpdateCollision>();
+	if (view.empty())
+	{
+		return;
+	}
+
+	MemoryStream* spacket = new MemoryStream;
+	for (auto e : view)
+	{
+		Entity ent = Entity(e, this);
+		ent.RemoveComponent<Tag_UpdateCollision>();
+		auto& transform = ent.GetComponent<STransformComponent>();
+		auto& id = ent.GetComponent<IDComponent>();
+
+		spacket->WriteUByte(static_cast<uint8>(SCPacket::eUpdateCollision));
+		spacket->WriteUInt64(id.ID);
+		spacket->WriteVector3(transform.Position);
+	}
 	mSendQueue.push(spacket);
 }

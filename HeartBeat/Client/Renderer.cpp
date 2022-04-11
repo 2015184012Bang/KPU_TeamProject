@@ -492,6 +492,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(MESH(L"Dog.mesh"));
 	ResourceManager::GetMesh(MESH(L"Pickax.mesh"));
 	ResourceManager::GetMesh(MESH(L"Cube.mesh"));
+	ResourceManager::GetMesh(MESH(L"Tank.mesh"));
 
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Red.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Green.skel"));
@@ -499,6 +500,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetSkeleton(SKELETON(L"Cell.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Virus.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Dog.skel"));
+	ResourceManager::GetSkeleton(SKELETON(L"Tank.skel"));
 
 	ResourceManager::GetAABB(BOX(L"Character.box"));
 	ResourceManager::GetAABB(BOX(L"Cell.box"));

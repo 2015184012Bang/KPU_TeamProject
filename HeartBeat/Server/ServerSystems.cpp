@@ -2,6 +2,7 @@
 #include "ServerSystems.h"
 
 constexpr float PLAYER_MOVE_SPEED = 300.0f;
+constexpr float TANK_MOVE_SPEED = 100.0f;
 
 void ServerSystems::UpdatePlayerTransform(Vector3* outPosition, float* outRotationY, const Vector3& direction)
 {
@@ -11,6 +12,17 @@ void ServerSystems::UpdatePlayerTransform(Vector3* outPosition, float* outRotati
 	if (direction.z < 0.0f) *outRotationY = 180.0f;
 	if (direction.x > 0.0f) *outRotationY = 90.0f;
 	if (direction.x < 0.0f) *outRotationY = -90.0f;
+}
+
+void ServerSystems::MoveToward(STransformComponent* outTransform, const Vector3& to, float deltaTime)
+{
+	Vector3 direction = to - outTransform->Position;
+	direction.Normalize();
+	Vector3 forward = Vector3{ 0.0f, 0.0f, 1.0f };
+	Vector3 angle = XMVector3AngleBetweenNormals(direction, forward);
+
+	outTransform->Position += direction * TANK_MOVE_SPEED * deltaTime;
+	outTransform->Rotation.y = XMConvertToDegrees(angle.y);
 }
 
 bool ServerSystems::Intersects(const AABB& a, const AABB& b)

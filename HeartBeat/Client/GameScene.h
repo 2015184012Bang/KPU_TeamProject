@@ -19,10 +19,13 @@ private:
     void processUpdateTransform(MemoryStream* packet);
     void processCreateEnemy(MemoryStream* packet);
     void processDeleteEntity(MemoryStream* packet);
+    void processCreateTank(MemoryStream* packet);
+    void processUpdateCollision(MemoryStream* packet);
 
     void sendUserInput();
     void updateAnimTrigger();
     void updateChildParentAfterDelete();
+    void updateMainCamera();
 
 private:
     TCPSocketPtr mSocket;
@@ -30,4 +33,6 @@ private:
     Entity mMyCharacter;
     HBID mMyCharacterID;
 };
+
+wstring GetTileTex(int type);
 

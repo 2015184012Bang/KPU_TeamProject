@@ -4,6 +4,7 @@
 #include "HeartBeat/PacketType.h"
 #include "HeartBeat/Tags.h"
 #include "HeartBeat/Define.h"
+#include "HeartBeat/GameMap.h"
 
 #include "Animation.h"
 #include "Client.h"
@@ -27,6 +28,18 @@ void GameScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	mSocket = mOwner->GetMySocket();
+
+	// Map1 »ý¼º
+	const vector<Tile>& gameMap = gGameMap.GetTiles();
+	for (const Tile& tile : gameMap)
+	{
+		Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
+		t.AddTag<Tag_Tile>();
+		auto& transform = t.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -TILE_WIDTH;
+		transform.Position.z = tile.Z;
+	}
 }
 
 void GameScene::Exit()
@@ -58,7 +71,7 @@ void GameScene::ProcessInput()
 void GameScene::Update(float deltaTime)
 {
 	sendUserInput();
-	updateAnimTrigger();
+	updateMainCamera();
 }
 
 void GameScene::processPacket(MemoryStream* packet)
@@ -89,12 +102,22 @@ void GameScene::processPacket(MemoryStream* packet)
 			processDeleteEntity(packet);
 			break;
 
+		case SCPacket::eCreateTank:
+			processCreateTank(packet);
+			break;
+
+		case SCPacket::eUpdateCollision:
+			processUpdateCollision(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
 			packet->SetLength(totalLen);
 			break;
 		}
 	}
+
+	updateAnimTrigger();
 }
 
 void GameScene::processCreateCharacter(MemoryStream* packet)
@@ -124,7 +147,7 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 		if (clientID == mOwner->GetClientID())
 		{
 			mMyCharacter = e;
-			mMyCharacter.AddComponent<ScriptComponent>(new Character(mMyCharacter));
+			mMyCharacter.AddComponent<ScriptComponent>(std::make_shared<Character>(mMyCharacter));
 			mMyCharacterID = entityID;
 		}
 	}
@@ -140,22 +163,13 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 	float yaw;
 	packet->ReadFloat(&yaw);
 
-	auto e = mOwner->GetEntityByID(eid);
-	if (entt::null == e)
-	{
-		HB_ASSERT(false, "Unknown ID: {0}", eid);
-	}
+	auto entity = mOwner->GetEntityByID(eid);
+	HB_ASSERT((entity != entt::null), "Unknown ID: {0}", eid);
 
-	Entity ent = Entity(e, mOwner);
-
+	Entity ent = Entity(entity, mOwner);
 	auto& transform = ent.GetComponent<TransformComponent>();
-	
 	ClientSystems::UpdatePosition(&transform.Position, position, &transform.bDirty);
 	ClientSystems::UpdateYRotation(&transform.Rotation.y, yaw, &transform.bDirty);
-
-	auto& animator = ent.GetComponent<AnimatorComponent>();
-	animator.SetTrigger("Run");
-	
 	ent.AddTag<Tag_Moved>();
 }
 
@@ -170,31 +184,31 @@ void GameScene::sendUserInput()
 	bool bMove = false;
 	bool bClicked = false;
 
-	if (Input::IsButtonRepeat(eKeyCode::W))
+	if (Input::IsButtonRepeat(eKeyCode::Up))
 	{
 		direction.z += 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::S))
+	if (Input::IsButtonRepeat(eKeyCode::Down))
 	{
 		direction.z -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::A))
+	if (Input::IsButtonRepeat(eKeyCode::Left))
 	{
 		direction.x -= 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonRepeat(eKeyCode::D))
+	if (Input::IsButtonRepeat(eKeyCode::Right))
 	{
 		direction.x += 1.0f;
 		bMove = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+	if (Input::IsButtonPressed(eKeyCode::D))
 	{
 		bClicked = true;
 	}
@@ -229,13 +243,14 @@ void GameScene::updateAnimTrigger()
 		{
 			Entity e = Entity(entity, mOwner);
 
+			auto& animator = e.GetComponent<AnimatorComponent>();
 			if (!e.HasComponent<Tag_Moved>())
 			{
-				auto& animator = e.GetComponent<AnimatorComponent>();
 				animator.SetTrigger("Idle");
 			}
 			else
 			{
+				animator.SetTrigger("Run");
 				e.RemoveComponent<Tag_Moved>();
 			}
 		}
@@ -247,13 +262,14 @@ void GameScene::updateAnimTrigger()
 		{
 			Entity e = Entity(entity, mOwner);
 
+			auto& animator = e.GetComponent<AnimatorComponent>();
 			if (!e.HasComponent<Tag_Moved>())
 			{
-				auto& animator = e.GetComponent<AnimatorComponent>();
 				animator.SetTrigger("Idle");
 			}
 			else
 			{
+				animator.SetTrigger("Run");
 				e.RemoveComponent<Tag_Moved>();
 			}
 		}
@@ -269,13 +285,71 @@ void GameScene::updateChildParentAfterDelete()
 
 	for (auto [entity, parent, transform, animator] : view.each())
 	{
-		Entity child( mOwner->GetEntityByID(parent.ChildID), mOwner );
+		Entity child(mOwner->GetEntityByID(parent.ChildID), mOwner);
 		auto& attachmentChild = child.GetComponent<AttachmentChildComponent>();
 
 		attachmentChild.ParentPalette = &animator.Palette;
 		attachmentChild.BoneIndex = animator.Skel->GetBoneIndexByName("Weapon");
 		attachmentChild.ParentTransform = &transform;
 	}
+}
+
+void GameScene::updateMainCamera()
+{
+	if (!mMyCharacter)
+	{
+		return;
+	}
+
+	Entity& mainCamera = mOwner->GetMainCamera();
+
+	auto& camera = mainCamera.GetComponent<CameraComponent>();
+
+	auto& characterTransform = mMyCharacter.GetComponent<TransformComponent>();
+	auto& characterPosition = characterTransform.Position;
+
+	camera.Target = characterPosition;
+	camera.Position = Vector3(characterPosition.x, 1000.0f, characterPosition.z - 1000.0f);
+}
+
+void GameScene::processUpdateCollision(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+
+	Vector3 position = Vector3::Zero;
+	packet->ReadVector3(&position);
+
+	auto entity = mOwner->GetEntityByID(eid);
+
+	HB_ASSERT((entity != entt::null), "No entity id");
+
+	Entity e = Entity(entity, mOwner);
+
+	auto& transform = e.GetComponent<TransformComponent>();
+	transform.Position = position;
+}
+
+void GameScene::processCreateTank(MemoryStream* packet)
+{
+	uint64 eid;
+	packet->ReadUInt64(&eid);
+
+	Vector3 position = Vector3::Zero;
+	packet->ReadVector3(&position);
+
+	float yaw = 0.0f;
+	packet->ReadFloat(&yaw);
+
+	Entity tank = mOwner->CreateSkeletalMeshEntity(MESH(L"Tank.mesh"), TEXTURE(L"Tank.png"), SKELETON(L"Tank.skel"), eid);
+	tank.AddTag<Tag_Tank>();
+	auto& transform = tank.GetComponent<TransformComponent>();
+
+	transform.Position = position;
+	transform.Rotation.y = yaw;
+
+	auto& animator = tank.GetComponent<AnimatorComponent>();
+	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim")));
 }
 
 void GameScene::processDeleteEntity(MemoryStream* packet)
@@ -319,6 +393,7 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 
 	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid, BOX(L"Virus.box"));
 	enemy.AddTag<Tag_Enemy>();
+	enemy.AddComponent<ScriptComponent>(std::make_shared<Enemy>(enemy));
 
 	auto& transform = enemy.GetComponent<TransformComponent>();
 	transform.Position = position;
@@ -333,3 +408,23 @@ void GameScene::processCreateEnemy(MemoryStream* packet)
 	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 }
 
+wstring GetTileTex(int type)
+{
+	switch (type)
+	{
+	case Grass:
+		return TEXTURE(L"Cube_Pink.png");
+		break;
+	case Rail:
+		return TEXTURE(L"Cube_SkyBlue.png");
+		break;
+	case Obstacle:
+		return TEXTURE(L"Cube_Black.png");
+		break;
+	default:
+		HB_ASSERT(false, "Invalid tile type: {0}", type);
+		break;
+	}
+
+	return L"";
+}

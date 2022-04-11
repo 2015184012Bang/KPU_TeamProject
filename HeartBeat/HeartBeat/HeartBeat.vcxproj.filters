@@ -46,6 +46,12 @@
     <ClCompile Include="AABB.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="GameMap.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PCH.h">
@@ -103,6 +109,12 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Define.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMap.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
