@@ -387,6 +387,20 @@ void Client::drawSkeletalMesh()
 		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 	}
+
+	{
+		auto view = GetRegistry().view<AttachmentChildComponent, Tag_SkeletalMesh>();
+		for (auto entity : view)
+		{
+			Entity e = Entity(entity, this);
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
+			ClientSystems::BindWorldMatrixAttached(&transform, &attach);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
 }
 
 void Client::drawStaticMesh()

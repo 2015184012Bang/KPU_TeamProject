@@ -493,6 +493,20 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(MESH(L"Pickax.mesh"));
 	ResourceManager::GetMesh(MESH(L"Cube.mesh"));
 	ResourceManager::GetMesh(MESH(L"Tank.mesh"));
+	ResourceManager::GetMesh(MESH(L"Cotton_Swab.mesh"));
+	ResourceManager::GetMesh(MESH(L"Thermometer.mesh"));
+	ResourceManager::GetMesh(MESH(L"Syringe.mesh"));
+	ResourceManager::GetMesh(MESH(L"Pill.mesh"));
+	ResourceManager::GetMesh(MESH(L"Pill_Pack.mesh"));
+	ResourceManager::GetMesh(MESH(L"Ringer.mesh"));
+	ResourceManager::GetMesh(MESH(L"Belt_Red.mesh"));
+	ResourceManager::GetMesh(MESH(L"Belt_Green.mesh"));
+	ResourceManager::GetMesh(MESH(L"Belt_Pink.mesh"));
+	ResourceManager::GetMesh(MESH(L"Bat.mesh"));
+	ResourceManager::GetMesh(MESH(L"Hammer.mesh"));
+	ResourceManager::GetMesh(MESH(L"Oxygen.mesh"));
+	ResourceManager::GetMesh(MESH(L"Cart.mesh"));
+	ResourceManager::GetMesh(MESH(L"House.mesh"));
 
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Red.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Green.skel"));
@@ -501,11 +515,13 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetSkeleton(SKELETON(L"Virus.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Dog.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Tank.skel"));
+	ResourceManager::GetSkeleton(SKELETON(L"Cart.skel"));
 
 	ResourceManager::GetAABB(BOX(L"Character.box"));
 	ResourceManager::GetAABB(BOX(L"Cell.box"));
 	ResourceManager::GetAABB(BOX(L"Virus.box"));
 	ResourceManager::GetAABB(BOX(L"Cube.box"));
+	ResourceManager::GetAABB(BOX(L"Dog.box"));
 
 	ResourceManager::GetTexture(TEXTURE(L"Smile.png"));
 	ResourceManager::GetTexture(TEXTURE(L"Login_Background.png"));
