@@ -13,6 +13,7 @@
 #include "ResourceManager.h"
 #include "Text.h"
 #include "GameScene.h"
+#include "TestScene.h"
 
 Client::Client()
 	: Game()
@@ -37,7 +38,7 @@ bool Client::Init()
 	createCameraEntity();
 	createAnimationTransitions();
 
-	mActiveScene = std::make_unique<LoginScene>(this);
+	mActiveScene = std::make_unique<TestScene>(this);
 	mActiveScene->Enter();
 
 	return true;

@@ -507,6 +507,7 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetMesh(MESH(L"Oxygen.mesh"));
 	ResourceManager::GetMesh(MESH(L"Cart.mesh"));
 	ResourceManager::GetMesh(MESH(L"House.mesh"));
+	ResourceManager::GetMesh(MESH(L"Bag.mesh"));
 
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Red.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Character_Green.skel"));
@@ -516,12 +517,15 @@ void Renderer::loadAllAssetsFromFile()
 	ResourceManager::GetSkeleton(SKELETON(L"Dog.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Tank.skel"));
 	ResourceManager::GetSkeleton(SKELETON(L"Cart.skel"));
+	ResourceManager::GetSkeleton(SKELETON(L"Bag.skel"));
 
 	ResourceManager::GetAABB(BOX(L"Character.box"));
 	ResourceManager::GetAABB(BOX(L"Cell.box"));
 	ResourceManager::GetAABB(BOX(L"Virus.box"));
 	ResourceManager::GetAABB(BOX(L"Cube.box"));
 	ResourceManager::GetAABB(BOX(L"Dog.box"));
+	ResourceManager::GetAABB(BOX(L"Tank.box"));
+	ResourceManager::GetAABB(BOX(L"Cart.box"));
 
 	ResourceManager::GetTexture(TEXTURE(L"Smile.png"));
 	ResourceManager::GetTexture(TEXTURE(L"Login_Background.png"));
