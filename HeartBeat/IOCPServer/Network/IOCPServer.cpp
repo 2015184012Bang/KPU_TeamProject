@@ -34,6 +34,9 @@ void IOCPServer::Init()
 		return;
 	}
 
+	BOOL opt = TRUE;
+	setsockopt(mListenSocket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&opt), sizeof(opt));
+
 	LOG("Winsock init success...");
 }
 
