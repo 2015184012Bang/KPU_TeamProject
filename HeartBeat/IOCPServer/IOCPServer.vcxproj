@@ -145,7 +145,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Network\IOCPServer.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Network\Session.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Network\IOCPServer.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="Network\NetDefine.h" />
+    <ClInclude Include="Network\Session.h" />
+    <ClInclude Include="Types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

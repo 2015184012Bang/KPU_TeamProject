@@ -1,8 +1,15 @@
-#include <iostream>
+#include "Network/IOCPServer.h"
 
-using namespace std;
 
 int main()
 {
-	std::cout << "Hello, world!\n";
+	IOCPServer server;
+
+	server.Init();
+	server.BindAndListen(9000);
+	server.StartServer(3);
+	
+	while (true);
+
+	server.End();
 }
