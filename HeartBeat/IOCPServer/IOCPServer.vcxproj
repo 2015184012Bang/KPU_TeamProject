@@ -121,6 +121,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +138,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,6 +153,8 @@
     <ClCompile Include="Network\IOCPServer.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Network\Session.cpp" />
+    <ClCompile Include="User.cpp" />
+    <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServer.h" />
@@ -156,7 +162,10 @@
     <ClInclude Include="Log.h" />
     <ClInclude Include="Network\NetDefine.h" />
     <ClInclude Include="Network\Session.h" />
+    <ClInclude Include="Protocol.h" />
+    <ClInclude Include="User.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="UserManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

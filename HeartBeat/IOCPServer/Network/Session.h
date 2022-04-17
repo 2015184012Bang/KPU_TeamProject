@@ -7,7 +7,7 @@
 
 using std::queue;
 
-constexpr UINT32 RECVBUF_SIZE = 256;
+constexpr UINT32 RECV_BUFFER_SIZE = 256;
 
 class Session
 {
@@ -62,7 +62,7 @@ private:
 
 	// WSARecv() 호출에 사용
 	OVERLAPPEDEX mRecvContext = {};
-	char mRecvBuf[RECVBUF_SIZE] = { 0, };
+	char mRecvBuf[RECV_BUFFER_SIZE] = { 0, };
 
 	Mutex mSendLock;
 

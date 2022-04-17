@@ -94,7 +94,7 @@ bool Session::BindRecv()
 {
 	mRecvContext.Operation = IOOperation::RECV;
 	mRecvContext.WsaBuf.buf = mRecvBuf;
-	mRecvContext.WsaBuf.len = RECVBUF_SIZE;
+	mRecvContext.WsaBuf.len = RECV_BUFFER_SIZE;
 
 	DWORD flags = 0;
 
