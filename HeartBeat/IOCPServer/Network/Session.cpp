@@ -55,11 +55,12 @@ void Session::BindAccept(SOCKET listenSocket)
 	mAcceptContext.WsaBuf.buf = nullptr;
 	mAcceptContext.WsaBuf.len = 0;
 
-	DWORD numBytes = 0;
+	// lpdwBytesReceived의 인자로 NULL.
+	// 받은 패킷 크기 + 서버 주소 크기 + 클라 주소 크기가 들어가지만 여기서 처리 안함.
 	BOOL retVal = AcceptEx(listenSocket, mSocket, mAcceptBuf, 0,
 		sizeof(SOCKADDR_IN) + 16,
 		sizeof(SOCKADDR_IN) + 16,
-		&numBytes,
+		NULL,
 		(LPOVERLAPPED)&mAcceptContext);
 
 	if (FALSE == retVal && (WSAGetLastError() != WSA_IO_PENDING))
@@ -95,13 +96,14 @@ bool Session::BindRecv()
 	mRecvContext.WsaBuf.buf = mRecvBuf;
 	mRecvContext.WsaBuf.len = RECVBUF_SIZE;
 
-	DWORD numBytes = 0;
 	DWORD flags = 0;
 
+	// 4번째 인자를 NULL로 수정
+	// 도착한 데이터가 있어도 바로 받지 않도록 한다.
 	int retVal = WSARecv(mSocket,
 		&mRecvContext.WsaBuf,
 		1,
-		&numBytes,
+		NULL,
 		&flags,
 		(LPOVERLAPPED)&mRecvContext,
 		NULL);
@@ -140,6 +142,8 @@ bool Session::SendMsg(const UINT32 dataSize, char* msg)
 
 void Session::SendCompleted(const UINT32 dataSize)
 {
+	// TODO: 부분 Send인 경우 세션의 연결을 종료시키자.
+
 	LOG("SendCompleted: {0} bytes.", dataSize);
 
 	// SendQueue에서 첫 번째 OVERLAPPED를 꺼내 삭제한다.
@@ -160,12 +164,10 @@ void Session::sendDataInQueue()
 {
 	OVERLAPPEDEX* sendOver = mSendQueue.front();
 
-	DWORD numBytes = 0;
-
 	int retVal = WSASend(mSocket,
 		&sendOver->WsaBuf,
 		1,
-		&numBytes,
+		NULL,
 		0,
 		reinterpret_cast<LPWSAOVERLAPPED>(sendOver),
 		NULL);
