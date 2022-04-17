@@ -1,6 +1,5 @@
 #include "GameManager.h"
 
-#include "UserManager.h"
 #include "Log.h"
 
 void GameManager::Init(const UINT32 maxSessionCount)
