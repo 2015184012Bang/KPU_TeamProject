@@ -22,13 +22,13 @@ public:
 
 	void BindAndListen(const UINT16 bindPort);
 
-	void StartServer(const UINT32 maxSessionCount);
-
 	bool SendMsg(const INT32 sessionIndex, const UINT32 dataSize, char* msg);
 
 	virtual void End();
 
 protected:
+	void StartServer(const UINT32 maxSessionCount);
+
 	virtual void OnConnect(const INT32 sessionIndex) {}
 	
 	virtual void OnClose(const INT32 sessionIndex) {}

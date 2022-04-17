@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="Network\IOCPServer.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="Network\IOCPServer.h" />
     <ClInclude Include="Log.h" />

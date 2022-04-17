@@ -3,11 +3,10 @@
 #include <vector>
 #include <string>
 #include "Protocol.h"
+#include "User.h"
 
 using std::vector;
 using std::string;
-
-class User;
 
 class UserManager
 {

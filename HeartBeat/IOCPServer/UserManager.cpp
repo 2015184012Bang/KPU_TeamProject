@@ -1,7 +1,5 @@
 #include "UserManager.h"
 
-#include "User.h"
-
 UserManager::~UserManager()
 {
 	for (auto user : mUsers)

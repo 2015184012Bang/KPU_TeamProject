@@ -1,5 +1,6 @@
 #pragma once
 #include "Network/IOCPServer.h"
+#include "GameManager.h"
 
 class GameServer :
     public IOCPServer
@@ -14,5 +15,8 @@ public:
     void Run(const UINT32 maxSessionCount);
 
     virtual void End() override;
+
+private:
+    unique_ptr<GameManager> mGameManager = nullptr;
 };
 
