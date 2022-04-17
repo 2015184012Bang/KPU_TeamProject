@@ -80,9 +80,9 @@ void IOCPServer::BindAndListen(const UINT16 bindPort)
 	LOG("Bind and Listen success...");
 }
 
-void IOCPServer::StartServer(const UINT32 maxSession)
+void IOCPServer::StartServer(const UINT32 maxSessionCount)
 {
-	createSessions(maxSession);
+	createSessions(maxSessionCount);
 	createWorkerThread();
 	createAccepterThread();
 

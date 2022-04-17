@@ -1,9 +1,8 @@
-#include "Network/IOCPServer.h"
-
+#include "GameServer.h"
 
 int main()
 {
-	IOCPServer server;
+	GameServer server;
 
 	server.Init();
 	server.BindAndListen(9000);
