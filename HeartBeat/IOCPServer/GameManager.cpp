@@ -34,13 +34,13 @@ void GameManager::PushUserData(const INT32 sessionIndex, const UINT32 dataSize, 
 	auto user = mUserManager->FindUserByIndex(sessionIndex);
 	user->SetData(dataSize, pData);
 
-	LockGuard guard(mUserQueueLock);
+	WriteLockGuard guard(mUserQueueLock);
 	mUserIndexQueue.push(sessionIndex);
 }
 
 void GameManager::PushSystemPacket(PACKET_INFO packet)
 {
-	LockGuard guard(mSystemQueueLock);
+	WriteLockGuard guard(mSystemQueueLock);
 	mSystemPacketQueue.push(packet);
 }
 
@@ -55,7 +55,7 @@ PACKET_INFO GameManager::popUserPacket()
 	INT32 userIndex = -1;
 
 	{
-		LockGuard guard(mUserQueueLock);
+		WriteLockGuard guard(mUserQueueLock);
 		if (mUserIndexQueue.empty())
 		{
 			return PACKET_INFO();
@@ -71,7 +71,7 @@ PACKET_INFO GameManager::popUserPacket()
 
 PACKET_INFO GameManager::popSystemPacket()
 {
-	LockGuard guard(mSystemQueueLock);
+	WriteLockGuard guard(mSystemQueueLock);
 	if (mSystemPacketQueue.empty())
 	{
 		return PACKET_INFO();

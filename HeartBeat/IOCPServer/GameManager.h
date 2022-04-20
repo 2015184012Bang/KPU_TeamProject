@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Protocol.h"
-#include "Types.h"
 #include "UserManager.h"
 
 class GameManager
@@ -45,10 +44,10 @@ private:
 
 	thread mProcesserThread;
 
-	Mutex mUserQueueLock;
+	Lock mUserQueueLock;
 	queue<INT32> mUserIndexQueue; // 데이터를 받은 유저의 인덱스를 기록
 
-	Mutex mSystemQueueLock;
+	Lock mSystemQueueLock;
 	queue<PACKET_INFO> mSystemPacketQueue;
 };
 

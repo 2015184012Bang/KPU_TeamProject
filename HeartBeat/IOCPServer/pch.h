@@ -34,6 +34,8 @@
 #include <spdlog/spdlog.h>
 #pragma warning(pop)
 
+#include "Lock.h"
+
 #define LOG(...) spdlog::info(__VA_ARGS__)
 #undef ASSERT
 #define ASSERT(x, ...) {if(!(x)) { LOG(__VA_ARGS__); __debugbreak();}}

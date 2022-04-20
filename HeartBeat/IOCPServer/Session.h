@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Types.h"
 #include "Defines.h"
+
 
 #include <queue>
 
@@ -64,7 +64,7 @@ private:
 	OVERLAPPEDEX mRecvContext = {};
 	char mRecvBuf[RECV_BUFFER_SIZE] = { 0, };
 
-	Mutex mSendLock;
+	Lock mSendLock;
 
 	// 보낼 데이터를 담음
 	queue<OVERLAPPEDEX*> mSendQueue;

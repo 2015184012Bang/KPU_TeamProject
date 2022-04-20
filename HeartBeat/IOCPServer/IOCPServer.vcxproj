@@ -79,12 +79,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Win64-$(Configuration)\</OutDir>
-    <IntDir>..\bin-int\Win64-$(Configuration)\</IntDir>
+    <IntDir>bin-int\Win64-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Win64-$(Configuration)\</OutDir>
-    <IntDir>..\bin-int\Win64-$(Configuration)\</IntDir>
+    <IntDir>bin-int\Win64-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -159,6 +159,7 @@
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="IOCPServer.cpp" />
+    <ClCompile Include="Lock.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -173,11 +174,11 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="Defines.h" />
+    <ClInclude Include="Lock.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="User.h" />
-    <ClInclude Include="Types.h" />
     <ClInclude Include="UserManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

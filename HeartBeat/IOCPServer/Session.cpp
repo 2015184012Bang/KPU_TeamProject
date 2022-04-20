@@ -125,7 +125,7 @@ bool Session::SendMsg(const UINT32 dataSize, char* msg)
 	sendOver->WsaBuf.len = dataSize;
 	CopyMemory(sendOver->WsaBuf.buf, msg, dataSize);
 
-	LockGuard guard(mSendLock);
+	WriteLockGuard guard(mSendLock);
 	mSendQueue.push(sendOver);
 
 	if (mSendQueue.size() == 1)
@@ -143,7 +143,7 @@ void Session::SendCompleted(const UINT32 dataSize)
 	LOG("SendCompleted: {0} bytes.", dataSize);
 
 	// SendQueue에서 첫 번째 OVERLAPPED를 꺼내 삭제한다.
-	LockGuard guard(mSendLock);
+	WriteLockGuard guard(mSendLock);
 	OVERLAPPEDEX* sendOver = mSendQueue.front();
 	delete[] sendOver->WsaBuf.buf;
 	delete sendOver;
