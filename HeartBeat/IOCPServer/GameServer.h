@@ -1,5 +1,5 @@
 #pragma once
-#include "Network/IOCPServer.h"
+#include "IOCPServer.h"
 #include "GameManager.h"
 
 class GameServer :

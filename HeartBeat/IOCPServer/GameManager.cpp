@@ -1,6 +1,5 @@
+#include "pch.h"
 #include "GameManager.h"
-
-#include "Log.h"
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {

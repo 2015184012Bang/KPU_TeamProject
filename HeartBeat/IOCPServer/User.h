@@ -1,10 +1,6 @@
 #pragma once
 
-#include <string>
-
 #include "Protocol.h"
-
-using std::string;
 
 constexpr UINT32 DATA_BUFFER_SIZE = 8192;
 

@@ -4,14 +4,6 @@
 #include "Types.h"
 #include "UserManager.h"
 
-#include <memory>
-#include <functional>
-#include <unordered_map>
-#include <thread>
-#include <queue>
-
-using namespace std;
-
 class GameManager
 {
 public:

@@ -1,6 +1,5 @@
+#include "pch.h"
 #include "GameServer.h"
-#include "Log.h"
-
 
 void GameServer::OnConnect(const INT32 sessionIndex)
 {
