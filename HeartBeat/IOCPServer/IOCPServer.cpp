@@ -116,6 +116,7 @@ void IOCPServer::End()
 
 void IOCPServer::createSessions(const UINT32 maxSession)
 {
+	mSessions.reserve(maxSession);
 	for (UINT32 i = 0; i < maxSession; ++i)
 	{
 		auto session = new Session;
@@ -126,6 +127,7 @@ void IOCPServer::createSessions(const UINT32 maxSession)
 
 void IOCPServer::createWorkerThread()
 {
+	mWorkerThreads.reserve(MAX_WORKER_THREADS);
 	for (INT32 i = 0; i < MAX_WORKER_THREADS; ++i)
 	{
 		mWorkerThreads.emplace_back(thread{ [this]() { workerThread(); } });

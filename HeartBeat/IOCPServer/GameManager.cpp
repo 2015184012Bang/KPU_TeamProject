@@ -3,6 +3,7 @@
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
+	// 패킷 처리 함수들 등록
 	mPacketIdToFunction[SYS_USER_CONNECT] = std::bind(&GameManager::processUserConnect, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[SYS_USER_DISCONNECT] = std::bind(&GameManager::processUserDisconnect, this,
@@ -10,22 +11,30 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
+	// 유저 매니저 생성
 	mUserManager = make_unique<UserManager>();
 	mUserManager->Init(maxSessionCount);
+
+	// Back은 IO 워커 스레드들이 패킷을 쓰는 큐를 가리킴.
+	// Front는 로직 스레드가 처리할 패킷을 담은 큐.
+	mBackIndexQueue = &mIndexQueueA;
+	mFrontIndexQueue = &mIndexQueueB;
+	mBackSystemQueue = &mSystemQueueA;
+	mFrontSystemQueue = &mSystemQueueB;
 }
 
 void GameManager::Run()
 {
-	mProcesserThread = thread([this]() { processerThread(); });
+	mLogicThread = thread([this]() { logicThread(); });
 }
 
 void GameManager::End()
 {
-	mShouldProcesserRun = false;
+	mShouldLogicRun = false;
 
-	if (mProcesserThread.joinable())
+	if (mLogicThread.joinable())
 	{
-		mProcesserThread.join();
+		mLogicThread.join();
 	}
 }
 
@@ -34,14 +43,14 @@ void GameManager::PushUserData(const INT32 sessionIndex, const UINT32 dataSize, 
 	auto user = mUserManager->FindUserByIndex(sessionIndex);
 	user->SetData(dataSize, pData);
 
-	WriteLockGuard guard(mUserQueueLock);
-	mUserIndexQueue.push(sessionIndex);
+	WriteLockGuard guard(mLock);
+	mBackIndexQueue->push(sessionIndex);
 }
 
 void GameManager::PushSystemPacket(PACKET_INFO packet)
 {
-	WriteLockGuard guard(mSystemQueueLock);
-	mSystemPacketQueue.push(packet);
+	WriteLockGuard guard(mLock);
+	mBackSystemQueue->push(packet);
 }
 
 void GameManager::clearUser(const INT32 sessionIndex)
@@ -50,20 +59,18 @@ void GameManager::clearUser(const INT32 sessionIndex)
 	mUserManager->DeleteUser(user);
 }
 
+void GameManager::swapQueues()
+{
+	WriteLockGuard guard(mLock);
+	swap(mBackIndexQueue, mFrontIndexQueue);
+	swap(mBackSystemQueue, mFrontSystemQueue);
+}
+
 PACKET_INFO GameManager::popUserPacket()
 {
-	INT32 userIndex = -1;
-
-	{
-		WriteLockGuard guard(mUserQueueLock);
-		if (mUserIndexQueue.empty())
-		{
-			return PACKET_INFO();
-		}
-
-		userIndex = mUserIndexQueue.front();
-		mUserIndexQueue.pop();
-	}
+	// 로직 스레드에서 유일하게 접근하므로 락 불필요.
+	INT32 userIndex = mFrontIndexQueue->front();
+	mFrontIndexQueue->pop();
 
 	auto user = mUserManager->FindUserByIndex(userIndex);
 	return user->GetPacket();
@@ -71,38 +78,39 @@ PACKET_INFO GameManager::popUserPacket()
 
 PACKET_INFO GameManager::popSystemPacket()
 {
-	WriteLockGuard guard(mSystemQueueLock);
-	if (mSystemPacketQueue.empty())
-	{
-		return PACKET_INFO();
-	}
-
-	PACKET_INFO info = mSystemPacketQueue.front();
-	mSystemPacketQueue.pop();
+	// 로직 스레드에서 유일하게 접근하므로 락 불필요.
+	PACKET_INFO info = mFrontSystemQueue->front();
+	mFrontSystemQueue->pop();
 	return info;
 }
 
-void GameManager::processerThread()
+void GameManager::logicThread()
 {
-	while (mShouldProcesserRun)
+	while (mShouldLogicRun)
 	{
 		bool isIdle = true;
 
-		if (auto packet = popUserPacket(); packet.SessionIndex != -1)
+		while (!mFrontIndexQueue->empty())
 		{
 			isIdle = false;
+
+			PACKET_INFO packet = popUserPacket();
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
 
-		if (auto packet = popSystemPacket(); packet.SessionIndex != -1)
+		while (!mFrontSystemQueue->empty())
 		{
 			isIdle = false;
+
+			PACKET_INFO packet = popSystemPacket();
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
+
+		swapQueues();
 
 		if (isIdle)
 		{
-			this_thread::sleep_for(1ms);
+			this_thread::sleep_for(1s);
 		}
 	}
 }
