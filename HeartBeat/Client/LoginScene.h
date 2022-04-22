@@ -10,15 +10,10 @@ public:
 	virtual void Enter() override;
 	virtual void Exit() override;
 	virtual void ProcessInput() override;
+	virtual void Update(float deltaTime) override;
 
 private:
-	void processPacket(MemoryStream* packet);
-	void processLoginConfirmed(MemoryStream* packet);
-
-private:
-	bool mbConnected;
-	bool mbChangeScene;
-
-	TCPSocketPtr mSocket;
+	bool mbConnected = false;
+	bool mbChangeScene = false;
 };
 

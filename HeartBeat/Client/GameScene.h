@@ -28,8 +28,6 @@ private:
     void updateMainCamera();
 
 private:
-    TCPSocketPtr mSocket;
-
     Entity mMyCharacter;
     HBID mMyCharacterID;
 };

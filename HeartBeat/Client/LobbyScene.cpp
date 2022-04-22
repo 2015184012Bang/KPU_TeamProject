@@ -20,7 +20,7 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	mSocket = mOwner->GetMySocket();
+	//mSocket = mOwner->GetMySocket();
 	int myClientID = mOwner->GetClientID();
 
 	createNicknameText(myClientID);
@@ -32,12 +32,12 @@ void LobbyScene::Enter()
 		transform.Position.x = Application::GetScreenWidth() / 2.0f;
 		transform.Position.y = Application::GetScreenHeight() - 150.0f;
 
-		readyButton.AddComponent<ButtonComponent>([this, myClientID]() {
-			MemoryStream packet;
-			packet.WriteUByte(static_cast<uint8>(CSPacket::eImReady));
-			packet.WriteInt(myClientID);
-			this->mSocket->Send(&packet, sizeof(MemoryStream));
-			});
+		//readyButton.AddComponent<ButtonComponent>([this, myClientID]() {
+		//	MemoryStream packet;
+		//	packet.WriteUByte(static_cast<uint8>(CSPacket::eImReady));
+		//	packet.WriteInt(myClientID);
+		//	this->mSocket->Send(&packet, sizeof(MemoryStream));
+		//	});
 	}
 
 	{
@@ -61,27 +61,27 @@ void LobbyScene::Exit()
 
 void LobbyScene::ProcessInput()
 {
-	MemoryStream packet;
-	int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
+	//MemoryStream packet;
+	//int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
 
-	if (retVal == SOCKET_ERROR)
-	{
-		int error = WSAGetLastError();
+	//if (retVal == SOCKET_ERROR)
+	//{
+	//	int error = WSAGetLastError();
 
-		if (error == WSAEWOULDBLOCK)
-		{
-			return;
-		}
-		else
-		{
-			SocketUtil::ReportError(L"LobbyScene::ProcessInput", error);
-			mOwner->SetRunning(false);
-		}
-	}
-	else
-	{
-		processPacket(&packet);
-	}
+	//	if (error == WSAEWOULDBLOCK)
+	//	{
+	//		return;
+	//	}
+	//	else
+	//	{
+	//		SocketUtil::ReportError(L"LobbyScene::ProcessInput", error);
+	//		mOwner->SetRunning(false);
+	//	}
+	//}
+	//else
+	//{
+	//	processPacket(&packet);
+	//}
 }
 
 void LobbyScene::processPacket(MemoryStream* packet)
@@ -150,7 +150,7 @@ void LobbyScene::createNicknameText(int clientID)
 {
 	Entity nickname = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
 	auto& text = nickname.GetComponent<TextComponent>();
-	text.Txt->SetSentence(mOwner->GetNickname());
+	text.Txt->SetSentence(mOwner->GetClientName());
 	auto& transform = nickname.GetComponent<RectTransformComponent>();
 	transform.Position.x = 10.0f;
 	transform.Position.y = (clientID * SPACE_BETWEEN_LINES) + SPACE_BETWEEN_LINES;

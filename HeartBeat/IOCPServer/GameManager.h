@@ -19,13 +19,9 @@ public:
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 private:
-	void clearUser(const INT32 sessionIndex);
-
 	void swapQueues();
 
-	PACKET_INFO popUserPacket();
-
-	PACKET_INFO popSystemPacket();
+	PACKET_INFO popPacket();
 
 	void logicThread();
 
@@ -52,16 +48,10 @@ private:
 	// 백 큐 동기화용 락
 	Lock mLock;
 
-	// 데이터를 받은 유저의 인덱스를 기록
-	queue<INT32> mIndexQueueA; 
-	queue<INT32> mIndexQueueB; 
-	queue<INT32>* mBackIndexQueue = nullptr; 
-	queue<INT32>* mFrontIndexQueue = nullptr;
-	
-	// 세션 연결, 종료 등 시스템 패킷을 담는 큐
-	queue<PACKET_INFO> mSystemQueueA;
-	queue<PACKET_INFO> mSystemQueueB;
-	queue<PACKET_INFO>* mBackSystemQueue = nullptr;
-	queue<PACKET_INFO>* mFrontSystemQueue = nullptr;
+	// 패킷 큐
+	queue<PACKET_INFO> mPacketQueueA;
+	queue<PACKET_INFO> mPacketQueueB;
+	queue<PACKET_INFO>* mBackPacketQueue = nullptr;
+	queue<PACKET_INFO>* mFrontPacketQueue = nullptr;
 };
 

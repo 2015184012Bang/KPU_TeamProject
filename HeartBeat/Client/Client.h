@@ -4,6 +4,7 @@
 
 class Scene;
 class Renderer;
+class PacketManager;
 
 class Client :
     public Game
@@ -26,13 +27,13 @@ public:
 
     Entity& GetMainCamera() { return mMainCamera; }
 
-    TCPSocketPtr GetMySocket() { return mMySocket; }
-
     int GetClientID() const { return mClientID; }
     void SetClientID(int id) { mClientID = id; }
 
-    const string& GetNickname() const { return mNickname; }
-    void SetNickname(const string& nickname) { mNickname = nickname; }
+    const string& GetClientName() const { return mClientName; }
+    void SetClientName(const string& nickname) { mClientName = nickname; }
+
+    unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
 private:
     void processInput();
@@ -53,15 +54,14 @@ private:
     void drawSpriteAndText();
 
 private:
-    unique_ptr<Scene> mActiveScene;
-    unique_ptr<Renderer> mRenderer;
+    unique_ptr<Scene> mActiveScene = nullptr;
+    unique_ptr<Renderer> mRenderer = nullptr;
+    unique_ptr<PacketManager> mPacketManager = nullptr;
 
     Entity mMainCamera;
     Entity m2dCamera;
 
-    TCPSocketPtr mMySocket;
-    
-    int mClientID;
-    string mNickname;
+    int mClientID = -1;
+    string mClientName = "KimMyungKyu";
 };
 

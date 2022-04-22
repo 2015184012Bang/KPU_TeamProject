@@ -14,7 +14,13 @@ struct PACKET_INFO
 	char* DataPtr = nullptr;
 };
 
-
+// 클라에서 사용
+struct PACKET
+{
+	UINT8 PacketID = 0;
+	UINT8 DataSize = 0;
+	char* DataPtr = nullptr;
+};
 
 enum PACKET_ID : UINT8
 {
@@ -28,11 +34,9 @@ enum PACKET_ID : UINT8
 	ANSWER_LOGIN = 102,
 };
 
-
-
 enum ERROR_CODE : UINT8
 {
-	NONE = 0,
+	SUCCESS = 0,
 };
 
 
@@ -48,15 +52,17 @@ struct PACKET_HEADER
 };
 
 constexpr UINT32 PACKET_HEADER_SIZE = sizeof(PACKET_HEADER);
+constexpr UINT32 MAX_ID_LEN = 16;
 
 struct REQUEST_LOGIN_PACKET : public PACKET_HEADER
 {
-
+	char ID[MAX_ID_LEN + 1];
 };
 
 struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 {
-
+	UINT8 Result;
+	UINT8 ClientID;
 };
 #pragma pack(pop)
 

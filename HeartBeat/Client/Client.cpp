@@ -13,12 +13,10 @@
 #include "ResourceManager.h"
 #include "Text.h"
 #include "GameScene.h"
+#include "PacketManager.h"
 
 Client::Client()
 	: Game()
-	, mActiveScene(nullptr)
-	, mMySocket(nullptr)
-	, mClientID(-1)
 {
 
 }
@@ -27,9 +25,9 @@ bool Client::Init()
 {
 	Input::Init();
 	Timer::Init();
-	SocketUtil::Init();
 
-	mMySocket = SocketUtil::CreateTCPSocket();
+	mPacketManager = std::make_unique<PacketManager>();
+	mPacketManager->Init();
 
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
@@ -51,10 +49,8 @@ void Client::Shutdown()
 		mActiveScene = nullptr;
 	}
 
-	mMySocket = nullptr;
-
 	mRenderer->Shutdown();
-	SocketUtil::Shutdown();
+	mPacketManager->Shutdown();
 }
 
 void Client::Run()
@@ -196,6 +192,9 @@ void Client::processInput()
 	}
 
 	processButton();
+
+	// 패킷 수신
+	mPacketManager->Recv();
 
 	if (mActiveScene)
 	{

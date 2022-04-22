@@ -120,6 +120,7 @@
     <ClCompile Include="LobbyScene.cpp" />
     <ClCompile Include="LoginScene.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PacketManager.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="LobbyScene.h" />
     <ClInclude Include="LoginScene.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="PacketManager.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResourceManager.h" />

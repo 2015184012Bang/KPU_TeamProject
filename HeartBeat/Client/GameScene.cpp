@@ -27,8 +27,6 @@ void GameScene::Enter()
 {
 	HB_LOG("TestScene::Enter");
 
-	mSocket = mOwner->GetMySocket();
-
 	// Map1 »ý¼º
 	const vector<Tile>& gameMap = gGameMap.GetTiles();
 	for (const Tile& tile : gameMap)
@@ -49,23 +47,23 @@ void GameScene::Exit()
 
 void GameScene::ProcessInput()
 {
-	MemoryStream packet;
-	int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
+	//MemoryStream packet;
+	//int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
 
-	if (retVal == SOCKET_ERROR)
-	{
-		int errorCode = WSAGetLastError();
+	//if (retVal == SOCKET_ERROR)
+	//{
+	//	int errorCode = WSAGetLastError();
 
-		if (errorCode != WSAEWOULDBLOCK)
-		{
-			SocketUtil::ReportError(L"TestScene::ProcessInput", errorCode);
-			mOwner->SetRunning(false);
-		}
-	}
-	else
-	{
-		processPacket(&packet);
-	}
+	//	if (errorCode != WSAEWOULDBLOCK)
+	//	{
+	//		SocketUtil::ReportError(L"TestScene::ProcessInput", errorCode);
+	//		mOwner->SetRunning(false);
+	//	}
+	//}
+	//else
+	//{
+	//	processPacket(&packet);
+	//}
 }
 
 void GameScene::Update(float deltaTime)
@@ -175,62 +173,62 @@ void GameScene::processUpdateTransform(MemoryStream* packet)
 
 void GameScene::sendUserInput()
 {
-	if (!mMyCharacter)
-	{
-		return;
-	}
+	//if (!mMyCharacter)
+	//{
+	//	return;
+	//}
 
-	Vector3 direction = Vector3::Zero;
-	bool bMove = false;
-	bool bClicked = false;
+	//Vector3 direction = Vector3::Zero;
+	//bool bMove = false;
+	//bool bClicked = false;
 
-	if (Input::IsButtonRepeat(eKeyCode::Up))
-	{
-		direction.z += 1.0f;
-		bMove = true;
-	}
+	//if (Input::IsButtonRepeat(eKeyCode::Up))
+	//{
+	//	direction.z += 1.0f;
+	//	bMove = true;
+	//}
 
-	if (Input::IsButtonRepeat(eKeyCode::Down))
-	{
-		direction.z -= 1.0f;
-		bMove = true;
-	}
+	//if (Input::IsButtonRepeat(eKeyCode::Down))
+	//{
+	//	direction.z -= 1.0f;
+	//	bMove = true;
+	//}
 
-	if (Input::IsButtonRepeat(eKeyCode::Left))
-	{
-		direction.x -= 1.0f;
-		bMove = true;
-	}
+	//if (Input::IsButtonRepeat(eKeyCode::Left))
+	//{
+	//	direction.x -= 1.0f;
+	//	bMove = true;
+	//}
 
-	if (Input::IsButtonRepeat(eKeyCode::Right))
-	{
-		direction.x += 1.0f;
-		bMove = true;
-	}
+	//if (Input::IsButtonRepeat(eKeyCode::Right))
+	//{
+	//	direction.x += 1.0f;
+	//	bMove = true;
+	//}
 
-	if (Input::IsButtonPressed(eKeyCode::D))
-	{
-		bClicked = true;
-	}
+	//if (Input::IsButtonPressed(eKeyCode::D))
+	//{
+	//	bClicked = true;
+	//}
 
-	MemoryStream packet;
-	if (bMove)
-	{
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserKeyboardInput));
-		packet.WriteUInt64(mMyCharacterID);
-		packet.WriteVector3(direction);
-	}
+	//MemoryStream packet;
+	//if (bMove)
+	//{
+	//	packet.WriteUByte(static_cast<uint8>(CSPacket::eUserKeyboardInput));
+	//	packet.WriteUInt64(mMyCharacterID);
+	//	packet.WriteVector3(direction);
+	//}
 
-	if (bClicked)
-	{
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserMouseInput));
-		packet.WriteUInt64(mMyCharacterID);
-	}
+	//if (bClicked)
+	//{
+	//	packet.WriteUByte(static_cast<uint8>(CSPacket::eUserMouseInput));
+	//	packet.WriteUInt64(mMyCharacterID);
+	//}
 
-	if (packet.GetLength() > 0)
-	{
-		mSocket->Send(&packet, sizeof(packet));
-	}
+	//if (packet.GetLength() > 0)
+	//{
+	//	mSocket->Send(&packet, sizeof(packet));
+	//}
 }
 
 void GameScene::updateAnimTrigger()

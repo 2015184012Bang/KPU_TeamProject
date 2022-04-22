@@ -26,6 +26,9 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{0a1eff98-def4-4b11-bbf8-baca6b841527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{682b7cbb-0867-41f8-b6a4-b90d6b5b2e33}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientPCH.cpp">
@@ -90,6 +93,9 @@
     </ClCompile>
     <ClCompile Include="LobbyScene.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketManager.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>Source Files\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketManager.h">
+      <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

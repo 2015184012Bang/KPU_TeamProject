@@ -25,10 +25,7 @@ private:
 	void createCharacterMesh(int clientID);
 
 private:
-	TCPSocketPtr mSocket;
-
 	vector<int> mConnectedID;
-
 	Entity mReadyText;
 };
 
