@@ -43,7 +43,6 @@ void LoginScene::ProcessInput()
 			ANSWER_LOGIN_PACKET* loginPacket = reinterpret_cast<ANSWER_LOGIN_PACKET*>(packet.DataPtr);
 			mOwner->SetClientID(loginPacket->ClientID);
 			mbChangeScene = true;
-			delete[] packet.DataPtr;
 		}
 			break;
 

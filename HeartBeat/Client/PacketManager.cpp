@@ -89,30 +89,9 @@ void PacketManager::Recv()
 		return;
 	}
 
+	// 받은 바이트 수 만큼 WritePos 전진
 	mWritePos += retVal;
 	UINT32 remainBytes = mWritePos - mReadPos;
-
-	while (remainBytes > 0)
-	{
-		UINT8 packetSize = mRecvBuffer[mReadPos];
-
-		if (remainBytes >= packetSize)
-		{
-			PACKET packet;
-			packet.DataSize = packetSize;
-			packet.PacketID = mRecvBuffer[mReadPos + 1];
-			packet.DataPtr = new char[packetSize]; // 동적 할당한 메모리는 씬에서 사용 후 삭제!
-			CopyMemory(packet.DataPtr, &mRecvBuffer[mReadPos], packetSize);
-			mPackets.push(packet);
-
-			mReadPos += packetSize;
-			remainBytes -= packetSize;
-		}
-		else
-		{
-			break;
-		}
-	}
 
 	if (mWritePos >= PACKET_BUFFER_SIZE)
 	{
@@ -125,10 +104,30 @@ void PacketManager::Recv()
 		{
 			mWritePos = 0;
 		}
+
 		mReadPos = 0;
 	}
+	
+	while (remainBytes > 0)
+	{
+		UINT8 packetSize = mRecvBuffer[mReadPos];
 
-	HB_LOG("Recv Bytes: {0} writePos: {1} readPos: {2}", retVal, mWritePos, mReadPos);
+		if (remainBytes >= packetSize)
+		{
+			PACKET packet;
+			packet.DataSize = packetSize;
+			packet.PacketID = mRecvBuffer[mReadPos + 1];
+			packet.DataPtr = &mRecvBuffer[mReadPos];
+			mPackets.push(packet);
+
+			mReadPos += packetSize;
+			remainBytes -= packetSize;
+		}
+		else
+		{
+			break;
+		}
+	}
 }
 
 
