@@ -3,6 +3,7 @@
 
 #include "ResourceManager.h"
 #include "Utils.h"
+#include "Renderer.h"
 
 Mesh::Mesh()
 	: mVertexBufferView()

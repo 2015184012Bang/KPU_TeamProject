@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 #include "TableDescriptorHeap.h"
+#include "Renderer.h"
 
 uint32 Texture::sNumTextures = 0;
 

@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "TableDescriptorHeap.h"
 
+#include "Renderer.h"
+
 TableDescriptorHeap::TableDescriptorHeap()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};

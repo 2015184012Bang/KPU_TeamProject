@@ -2,6 +2,7 @@
 #include "Text.h"
 
 #include "Vertex.h"
+#include "Renderer.h"
 
 Text::Text()
 	: mFont(nullptr)
