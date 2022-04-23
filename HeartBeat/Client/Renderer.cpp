@@ -509,7 +509,7 @@ void Renderer::loadAllAssetsFromFile()
 
 	ResourceManager::GetTexture(TEXTURE(L"Smile.png"));
 	ResourceManager::GetTexture(TEXTURE(L"Login_Background.png"));
-	ResourceManager::GetTexture(TEXTURE(L"Ready_Button.png"));
+	ResourceManager::GetTexture(TEXTURE(L"Start_Button.png"));
 
 	Font* font = ResourceManager::GetFont(FONT(L"fontdata.txt"));
 	font->SetTexture(ResourceManager::GetTexture(TEXTURE(L"font.dds")));

@@ -1,10 +1,7 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
-#include "HeartBeat/PacketType.h"
 #include "HeartBeat/Define.h"
-
-#include "../IOCPServer/Protocol.h"
 
 #include "Application.h"
 #include "Client.h"
@@ -34,16 +31,12 @@ void LoginScene::Exit()
 void LoginScene::ProcessInput()
 {
 	PACKET packet;
-	while (mOwner->GetPacketManager()->GetPacket(packet))
+	if (mOwner->GetPacketManager()->GetPacket(packet))
 	{
 		switch (packet.PacketID)
 		{
 		case ANSWER_LOGIN:
-		{
-			ANSWER_LOGIN_PACKET* loginPacket = reinterpret_cast<ANSWER_LOGIN_PACKET*>(packet.DataPtr);
-			mOwner->SetClientID(loginPacket->ClientID);
-			mbChangeScene = true;
-		}
+			processAnswerLogin(packet);
 			break;
 
 		default:
@@ -67,7 +60,7 @@ void LoginScene::Update(float deltaTime)
 			mbConnected = true;
 			mOwner->GetPacketManager()->SetNonblocking(true);
 
-			REQUEST_LOGIN_PACKET packet;
+			REQUEST_LOGIN_PACKET packet = {};
 			packet.PacketID = REQUEST_LOGIN;
 			packet.PacketSize = sizeof(REQUEST_LOGIN_PACKET);
 			CopyMemory(packet.ID, mOwner->GetClientName().data(), MAX_ID_LEN);
@@ -80,4 +73,18 @@ void LoginScene::Update(float deltaTime)
 	{
 		mOwner->ChangeScene(new LobbyScene(mOwner));
 	}
+}
+
+void LoginScene::processAnswerLogin(const PACKET& packet)
+{
+	ANSWER_LOGIN_PACKET* loginPacket = reinterpret_cast<ANSWER_LOGIN_PACKET*>(packet.DataPtr);
+
+	if (loginPacket->Result != SUCCESS)
+	{
+		HB_LOG("Login declined!");
+		return;
+	}
+
+	mOwner->SetClientID(loginPacket->ClientID);
+	mbChangeScene = true;
 }

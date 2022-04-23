@@ -219,7 +219,7 @@ void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, 
 	}
 }
 
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
+wstring GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 {
 	wstring animFile;
 

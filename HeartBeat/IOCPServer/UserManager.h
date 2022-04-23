@@ -10,11 +10,13 @@ public:
 
 	void Init(const UINT32 maxUserCount);
 
-	void AddUser(const INT32 sessionIndex, string_view userID = "default"sv);
+	void AddUser(const INT32 sessionIndex, string_view userName = "default"sv);
 
 	void DeleteUser(User* user);
 
 	User* FindUserByIndex(const INT32 sessionIndex);
+
+	vector<INT32> GetAllConnectedUsersIndex();
 
 public:
 	UINT32 GetCurrentUserCount() { return mCurrentUserCount; }

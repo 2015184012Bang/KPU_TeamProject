@@ -19,15 +19,17 @@ void User::Init(const INT32 index)
 
 void User::Reset()
 {
-	mUserID = "";
+	mConnected = false;
+	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 }
 
-void User::SetLogin(string_view userID)
+void User::SetLogin(string_view userName)
 {
-	mUserID = userID.data();
+	mConnected = true;
+	mUserName = userName.data();
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)

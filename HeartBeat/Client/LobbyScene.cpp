@@ -1,16 +1,14 @@
 #include "ClientPCH.h"
 #include "LobbyScene.h"
 
-#include "HeartBeat/PacketType.h"
-
 #include "Application.h"
 #include "Client.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"
 #include "ResourceManager.h"
-#include "Text.h"
-#include "GameScene.h"
+#include "PacketManager.h"
+
 
 LobbyScene::LobbyScene(Client* owner)
 	: Scene(owner)
@@ -20,35 +18,28 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	//mSocket = mOwner->GetMySocket();
 	int myClientID = mOwner->GetClientID();
 
-	createNicknameText(myClientID);
+	// 클라이언트가 만일 호스트라면
+	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
+	if (HOST_ID == myClientID)
+	{
+		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE(L"Start_Button.png"));
+		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
+		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
+		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
+
+		gameStartButton.AddComponent<ButtonComponent>([this]() {
+			REQUEST_GAME_START_PACKET packet = {};
+			packet.PacketID = REQUEST_GAME_START;
+			packet.PacketSize = sizeof(REQUEST_GAME_START_PACKET);
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+			});
+	}
+
 	createCharacterMesh(myClientID);
 
-	{
-		Entity readyButton = mOwner->CreateSpriteEntity(200, 100, TEXTURE(L"Ready_Button.png"));
-		auto& transform = readyButton.GetComponent<RectTransformComponent>();
-		transform.Position.x = Application::GetScreenWidth() / 2.0f;
-		transform.Position.y = Application::GetScreenHeight() - 150.0f;
-
-		//readyButton.AddComponent<ButtonComponent>([this, myClientID]() {
-		//	MemoryStream packet;
-		//	packet.WriteUByte(static_cast<uint8>(CSPacket::eImReady));
-		//	packet.WriteInt(myClientID);
-		//	this->mSocket->Send(&packet, sizeof(MemoryStream));
-		//	});
-	}
-
-	{
-		mReadyText = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
-		auto& text = mReadyText.GetComponent<TextComponent>();
-		text.Txt->SetSentence("0 / 3");
-		auto& transform = mReadyText.GetComponent<RectTransformComponent>();
-		transform.Position.x = Application::GetScreenWidth() / 2.0f + 210.0f;
-		transform.Position.y = Application::GetScreenHeight() - 200.0f;
-	}
-
+	// 메인 카메라 위치 조정
 	auto& camera = mOwner->GetMainCamera();
 	auto& cc = camera.GetComponent<CameraComponent>();
 	cc.Position.z = -1000.0f;
@@ -61,99 +52,24 @@ void LobbyScene::Exit()
 
 void LobbyScene::ProcessInput()
 {
-	//MemoryStream packet;
-	//int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
-
-	//if (retVal == SOCKET_ERROR)
-	//{
-	//	int error = WSAGetLastError();
-
-	//	if (error == WSAEWOULDBLOCK)
-	//	{
-	//		return;
-	//	}
-	//	else
-	//	{
-	//		SocketUtil::ReportError(L"LobbyScene::ProcessInput", error);
-	//		mOwner->SetRunning(false);
-	//	}
-	//}
-	//else
-	//{
-	//	processPacket(&packet);
-	//}
-}
-
-void LobbyScene::processPacket(MemoryStream* packet)
-{
-	int totalLen = packet->GetLength();
-	packet->SetLength(0);
-
-	while (packet->GetLength() < totalLen)
+	PACKET packet;
+	if (mOwner->GetPacketManager()->GetPacket(packet))
 	{
-		uint8 packetType;
-		packet->ReadUByte(&packetType);
-
-		switch (static_cast<SCPacket>(packetType))
+		switch (packet.PacketID)
 		{
-		case SCPacket::eUserConnected:
-			processUserConnected(packet);
+		case ANSWER_NOTIFY_LOGIN:
+			processAnswerNofifyLogin(packet);
 			break;
 
-		case SCPacket::eReadyPressed:
-			processReadyPressed(packet);
+		case ANSWER_GAME_START:
+			processAnswerGameStart(packet);
 			break;
-
-		case SCPacket::eGameStart:
-			processGameStart(packet);
-			break;
-
+			
 		default:
-			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
-			packet->SetLength(totalLen);
+			HB_LOG("Unknown packet type: {0}", packet.PacketID);
 			break;
 		}
 	}
-}
-
-void LobbyScene::processUserConnected(MemoryStream* packet)
-{
-	int clientID = -1;
-	packet->ReadInt(&clientID);
-
-	int nickLen = -1;
-	packet->ReadInt(&nickLen);
-
-	string nickname;
-	packet->ReadString(&nickname, nickLen);
-
-	if (clientID == mOwner->GetClientID())
-	{
-		return;
-	}
-
-	bool exists = std::any_of(mConnectedID.begin(), mConnectedID.end(), [clientID](int id) {
-		return id == clientID;
-		});
-
-	if (exists)
-	{
-		return;
-	}
-
-	mConnectedID.push_back(clientID);
-	createNicknameText(clientID);
-	createCharacterMesh(clientID);
-}
-
-void LobbyScene::createNicknameText(int clientID)
-{
-	Entity nickname = mOwner->CreateTextEntity(FONT(L"fontdata.txt"));
-	auto& text = nickname.GetComponent<TextComponent>();
-	text.Txt->SetSentence(mOwner->GetClientName());
-	auto& transform = nickname.GetComponent<RectTransformComponent>();
-	transform.Position.x = 10.0f;
-	transform.Position.y = (clientID * SPACE_BETWEEN_LINES) + SPACE_BETWEEN_LINES;
 }
 
 void LobbyScene::createCharacterMesh(int clientID)
@@ -167,26 +83,54 @@ void LobbyScene::createCharacterMesh(int clientID)
 	Entity character = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile);
 
 	auto& transform = character.GetComponent<TransformComponent>();
-	transform.Position.x = (clientID * WIDTH_BETWEEN_CHARACTERS) - WIDTH_BETWEEN_CHARACTERS;
+	transform.Position.x = getXPosition(clientID);
 	transform.Rotation.y = 180.0f;
 
 	auto& animator = character.GetComponent<AnimatorComponent>();
 
-	wstring idleAnimFile = GetCharacterAnimation(clientID, CharacterAnimationType::eIdle);
+	wstring idleAnimFile = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
 	Animation* idleAnim = ResourceManager::GetAnimation(idleAnimFile);
-	ClientSystems::PlayAnimation(&animator, idleAnim, 1.0f);
+	ClientSystems::PlayAnimation(&animator, idleAnim);
 }
 
-void LobbyScene::processGameStart(MemoryStream* packet)
+float LobbyScene::getXPosition(int clientID)
 {
-	mOwner->ChangeScene(new GameScene(mOwner));
+	switch (clientID)
+	{
+	case 0:
+		return WIDTH_BETWEEN_CHARACTERS;
+		break;
+
+	case 1:
+		return -WIDTH_BETWEEN_CHARACTERS;
+		break;
+
+	case 2:
+		return 0.0f;
+		break;
+
+	default:
+		HB_LOG("Invalid client id!");
+		return 0.0f;
+		break;
+	}
 }
 
-void LobbyScene::processReadyPressed(MemoryStream* packet)
+void LobbyScene::processAnswerNofifyLogin(const PACKET& packet)
 {
-	int readyCount = 0;
-	packet->ReadInt(&readyCount);
+	ANSWER_NOTIFY_LOGIN_PACKET* nfyPacket = reinterpret_cast<ANSWER_NOTIFY_LOGIN_PACKET*>(packet.DataPtr);
+	createCharacterMesh(nfyPacket->ClientID);
+}
 
-	auto& text = mReadyText.GetComponent<TextComponent>();
-	text.Txt->SetSentence(std::to_string(readyCount) + " / 3");
+void LobbyScene::processAnswerGameStart(const PACKET& packet)
+{
+	ANSWER_GAME_START_PACKET* gsPacket = reinterpret_cast<ANSWER_GAME_START_PACKET*>(packet.DataPtr);
+
+	if (gsPacket->Result != ERROR_CODE::START_GAME)
+	{
+		HB_LOG("Unable to start game.");
+		return;
+	}
+
+	mbChangeScene = true;
 }

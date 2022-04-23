@@ -138,7 +138,7 @@ void GameScene::processCreateCharacter(MemoryStream* packet)
 		e.AddTag<Tag_Player>();
 		auto& animator = e.GetComponent<AnimatorComponent>();
 
-		wstring idleAnimFile = GetCharacterAnimation(clientID, CharacterAnimationType::eIdle);
+		wstring idleAnimFile = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
 		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 
 		// 클라이언트 ID가 나라면, 스크립트를 부착하고 따로 저장해둔다

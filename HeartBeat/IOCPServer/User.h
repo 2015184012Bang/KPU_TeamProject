@@ -14,19 +14,22 @@ public:
 
 	void Reset();
 
-	void SetLogin(string_view userID);
+	void SetLogin(string_view userName);
 
 	void SetData(const UINT32 dataSize, char* pData);
 
 	PACKET_INFO GetPacket();
 
 public:
-	INT32 GetIndex() { return mIndex; }
-	string GetUserID() { return mUserID; }
+	INT32 GetIndex() const { return mIndex; }
+	string GetUserName() const { return mUserName; }
+	bool IsConnected() const { return mConnected; }
 
 private:
 	INT32 mIndex = -1;
-	string mUserID = "";
+	string mUserName = "";
+
+	bool mConnected = false;
 
 	UINT32 mWritePos = 0;
 	UINT32 mReadPos = 0;

@@ -29,6 +29,9 @@ private:
 	void processUserConnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestLogin(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestGameStart(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+
+	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;

@@ -29,14 +29,21 @@ enum PACKET_ID : UINT8
 	SYS_USER_DISCONNECT = 12,
 	SYS_END = 30,
 
-	// 
+	// 로그인
 	REQUEST_LOGIN = 101,
 	ANSWER_LOGIN = 102,
+	ANSWER_NOTIFY_LOGIN = 103,
+	
+	// 게임 시작
+	REQUEST_GAME_START = 113,
+	ANSWER_GAME_START = 114,
 };
 
 enum ERROR_CODE : UINT8
 {
 	SUCCESS = 0,
+
+	START_GAME = 10,
 };
 
 
@@ -64,5 +71,21 @@ struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 	UINT8 Result;
 	UINT8 ClientID;
 };
+
+struct ANSWER_NOTIFY_LOGIN_PACKET : public PACKET_HEADER
+{
+	UINT8 ClientID;
+};
+
+struct REQUEST_GAME_START_PACKET : public PACKET_HEADER
+{
+
+};
+
+struct ANSWER_GAME_START_PACKET : public PACKET_HEADER
+{
+	UINT8 Result;
+};
+
 #pragma pack(pop)
 

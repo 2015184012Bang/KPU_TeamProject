@@ -43,7 +43,7 @@ enum class EnemyAnimationType
 };
 
 void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
+wstring GetCharacterAnimationFile(int clientID, CharacterAnimationType type);
 void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
 wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType);
 

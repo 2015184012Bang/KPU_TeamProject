@@ -10,6 +10,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_GAME_START] = std::bind(&GameManager::processRequestGameStart, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// 유저 매니저 생성
 	mUserManager = make_unique<UserManager>();
@@ -119,17 +121,79 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	}
 
 	REQUEST_LOGIN_PACKET* reqPacket = reinterpret_cast<REQUEST_LOGIN_PACKET*>(packet);
-	auto userID = reqPacket->ID;
-
-	// 유저 추가
-	mUserManager->AddUser(sessionIndex, userID);
-
-	LOG("User Name[{0}] entered.", userID);
+	auto userName = reqPacket->ID;
+	mUserManager->AddUser(sessionIndex, userName);
 
 	ANSWER_LOGIN_PACKET ansPacket;
 	ansPacket.PacketID = ANSWER_LOGIN;
 	ansPacket.PacketSize = sizeof(ANSWER_LOGIN_PACKET);
 	ansPacket.Result = ERROR_CODE::SUCCESS;
-	ansPacket.ClientID = mUserManager->GetCurrentUserCount() - 1;
+	ansPacket.ClientID = sessionIndex;	// 클라이언트 ID와 세션 인덱스를 일치시킨다.
 	SendPacketFunction(sessionIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+
+	sendNotifyLoginPacket(sessionIndex);
+}
+
+void GameManager::processRequestGameStart(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_GAME_START_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	ANSWER_GAME_START_PACKET ansPacket;
+	ansPacket.PacketID = ANSWER_GAME_START;
+	ansPacket.PacketSize = sizeof(ANSWER_GAME_START_PACKET);
+	ansPacket.Result = START_GAME;
+
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	if (connectedUsers.empty())
+	{
+		return;
+	}
+
+	for (auto userIndex : connectedUsers)
+	{
+		SendPacketFunction(userIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+	}
+}
+
+void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
+{
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	if (connectedUsers.empty())
+	{
+		return;
+	}
+
+	ANSWER_NOTIFY_LOGIN_PACKET nofityPacket;
+	nofityPacket.PacketID = ANSWER_NOTIFY_LOGIN;
+	nofityPacket.PacketSize = sizeof(ANSWER_NOTIFY_LOGIN_PACKET);
+	nofityPacket.ClientID = newlyConnectedIndex;
+
+	// 기존에 접속해 있던 유저들에게 새로 접속한 유저를 알린다.
+	for (auto userIndex : connectedUsers)
+	{
+		// userIndex와 sessionIndex는 대응된다.
+		if (userIndex == newlyConnectedIndex)
+		{
+			continue;
+		}
+
+		SendPacketFunction(userIndex, sizeof(nofityPacket), reinterpret_cast<char*>(&nofityPacket));
+	}
+
+	// 새로 접속한 유저에게 기존 유저들을 알린다.
+	for (auto userIndex : connectedUsers)
+	{
+		if (userIndex == newlyConnectedIndex)
+		{
+			continue;
+		}
+
+		nofityPacket.ClientID = userIndex;
+		SendPacketFunction(newlyConnectedIndex, sizeof(nofityPacket), reinterpret_cast<char*>(&nofityPacket));
+	}
 }
