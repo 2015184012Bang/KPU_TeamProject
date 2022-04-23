@@ -22,7 +22,7 @@ void UserManager::Init(const UINT32 maxUserCount)
 }
 
 
-void UserManager::AddUser(const INT32 sessionIndex, const string& userID /*= "default"*/)
+void UserManager::AddUser(const INT32 sessionIndex, string_view userID /*= "default"sv*/)
 {
 	ASSERT(sessionIndex >= 0 && sessionIndex < mMaxUserCount, "Invalid session index!");
 

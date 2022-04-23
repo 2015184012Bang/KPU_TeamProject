@@ -25,9 +25,9 @@ void User::Reset()
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 }
 
-void User::SetLogin(const string& userID)
+void User::SetLogin(string_view userID)
 {
-	mUserID = userID;
+	mUserID = userID.data();
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)

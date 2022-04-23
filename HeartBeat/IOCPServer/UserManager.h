@@ -10,7 +10,7 @@ public:
 
 	void Init(const UINT32 maxUserCount);
 
-	void AddUser(const INT32 sessionIndex, const string& userID = "default");
+	void AddUser(const INT32 sessionIndex, string_view userID = "default"sv);
 
 	void DeleteUser(User* user);
 

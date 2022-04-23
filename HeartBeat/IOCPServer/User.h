@@ -14,7 +14,7 @@ public:
 
 	void Reset();
 
-	void SetLogin(const string& userID);
+	void SetLogin(string_view userID);
 
 	void SetData(const UINT32 dataSize, char* pData);
 
