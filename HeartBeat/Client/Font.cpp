@@ -57,9 +57,9 @@ void Font::loadFontFile(const wstring& path)
 {
 	std::ifstream file(path);
 
-	if (file.is_open() == false)
+	if (!file.is_open())
 	{
-		HB_LOG("Failed to open font file: {0}", ws2s(path));
+		HB_ASSERT(false, "Invalid file path.");
 		return;
 	}
 

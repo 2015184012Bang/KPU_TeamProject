@@ -1,13 +1,15 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
+#include "AABB.h"
 #include "Animation.h"
 #include "Font.h"
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "Texture.h"
+#include "Utils.h"
 
 unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
 unordered_map<wstring, Texture*> ResourceManager::sTextures;
@@ -166,7 +168,7 @@ Mesh* ResourceManager::GetDebugMesh(const wstring& path)
 	}
 	else
 	{
-		HB_ASSERT(false, "Debug mesh not found: {0}", ws2s(path));
+		HB_ASSERT(false, "Debug mesh file not found");
 	}
 
 	return nullptr;

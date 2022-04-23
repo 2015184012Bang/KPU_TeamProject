@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Entity.h"
-#include "Components.h"
+#include "ClientComponents.h"
 
 class Script
 {

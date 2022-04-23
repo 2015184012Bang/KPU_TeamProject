@@ -1,4 +1,4 @@
-#include "PCH.h"
+#include "ClientPCH.h"
 #include "AABB.h"
 
 #include <rapidjson/document.h>
@@ -25,8 +25,7 @@ void AABB::Load(const wstring& path)
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Could not open file");
 	}
 
 	std::stringstream fileStream;
@@ -38,8 +37,7 @@ void AABB::Load(const wstring& path)
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Its not valid json file.");
 	}
 
 	const rapidjson::Value& vertsJson = doc["vertices"];

@@ -21,8 +21,7 @@ void Animation::Load(const wstring& path)
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid file path.");
 	}
 
 	std::stringstream fileStream;
@@ -34,8 +33,7 @@ void Animation::Load(const wstring& path)
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid file path.");
 	}
 
 	const rapidjson::Value& sequence = doc["sequence"];

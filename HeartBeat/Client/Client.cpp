@@ -1,8 +1,7 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
-#include "HeartBeat/Tags.h"
-
+#include "Tags.h"
 #include "Animation.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"
@@ -14,6 +13,9 @@
 #include "Text.h"
 #include "GameScene.h"
 #include "PacketManager.h"
+#include "Timer.h"
+#include "Utils.h"
+#include "Script.h"
 
 Client::Client()
 	: Game()

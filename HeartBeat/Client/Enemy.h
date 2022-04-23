@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Script.h"
 #include "ClientComponents.h"
 #include "ClientSystems.h"
 #include "Input.h"

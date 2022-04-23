@@ -1,5 +1,7 @@
 #pragma once
 
+#include "KeyCode.h"
+
 enum class KeyState
 {
 	None,

@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "Renderer.h"
 
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
 #include "Application.h"
 #include "Mesh.h"
@@ -10,6 +10,7 @@
 #include "Text.h"
 #include "Texture.h"
 #include "Vertex.h"
+#include "Utils.h"
 
 
 ComPtr<ID3D12Device> gDevice;

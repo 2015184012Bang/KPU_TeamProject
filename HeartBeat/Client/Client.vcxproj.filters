@@ -8,9 +8,6 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{a137fd7b-31ed-4369-90bc-349a0ca42237}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Test">
-      <UniqueIdentifier>{1d61fc7d-3ccf-4802-93a0-e237d83d1390}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Renderer">
       <UniqueIdentifier>{9bb76581-29bf-4061-b240-f340ca43fd41}</UniqueIdentifier>
     </Filter>
@@ -26,8 +23,14 @@
     <Filter Include="Source Files\Scene">
       <UniqueIdentifier>{0a1eff98-def4-4b11-bbf8-baca6b841527}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
+    <Filter Include="Source Files\Network">
       <UniqueIdentifier>{682b7cbb-0867-41f8-b6a4-b90d6b5b2e33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{1a6ddd8a-1a8a-4579-81a7-76fd1d565df0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Script">
+      <UniqueIdentifier>{1d61fc7d-3ccf-4802-93a0-e237d83d1390}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +98,28 @@
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="PacketManager.cpp">
-      <Filter>Network</Filter>
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="HBID.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GameMap.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,9 +171,6 @@
     <ClInclude Include="ClientSystems.h">
       <Filter>Source Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Skeleton.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
@@ -160,7 +181,7 @@
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Source Files\Test</Filter>
+      <Filter>Source Files\Script</Filter>
     </ClInclude>
     <ClInclude Include="Font.h">
       <Filter>Source Files\Resources</Filter>
@@ -178,10 +199,49 @@
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
-      <Filter>Source Files\Test</Filter>
+      <Filter>Source Files\Script</Filter>
     </ClInclude>
     <ClInclude Include="PacketManager.h">
-      <Filter>Network</Filter>
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyCode.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="HBID.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Define.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Tags.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameMap.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Source Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

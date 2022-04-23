@@ -8,6 +8,7 @@
 #include "Input.h"
 #include "ResourceManager.h"
 #include "PacketManager.h"
+#include "Utils.h"
 
 
 LobbyScene::LobbyScene(Client* owner)

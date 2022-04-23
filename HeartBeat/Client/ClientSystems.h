@@ -2,6 +2,7 @@
 
 #include "UploadBuffer.h"
 #include "Bone.h"
+#include "Entity.h"
 
 struct AnimatorComponent;
 struct TransformComponent;

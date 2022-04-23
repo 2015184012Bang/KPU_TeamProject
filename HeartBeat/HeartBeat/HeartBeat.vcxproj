@@ -112,16 +112,12 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="HBID.cpp" />
-    <ClCompile Include="MemoryStream.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Script.cpp" />
-    <ClCompile Include="SocketAddress.cpp" />
-    <ClCompile Include="SocketUtil.cpp" />
-    <ClCompile Include="TCPSocket.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -136,15 +132,10 @@
     <ClInclude Include="HBID.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="MemoryStream.h" />
-    <ClInclude Include="PacketType.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="Random.h" />
-    <ClInclude Include="SocketAddress.h" />
-    <ClInclude Include="SocketUtil.h" />
     <ClInclude Include="Tags.h" />
-    <ClInclude Include="TCPSocket.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

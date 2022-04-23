@@ -1,6 +1,6 @@
 #pragma once
 
-#include "HeartBeat/Game.h"
+#include "Game.h"
 
 class Scene;
 class Renderer;

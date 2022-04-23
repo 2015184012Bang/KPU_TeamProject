@@ -5,6 +5,7 @@
 #include "Animation.h"
 #include "ClientComponents.h"
 #include "Skeleton.h"
+#include "Define.h"
 
 void ClientSystems::UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty)
 {

@@ -2,6 +2,7 @@
 #include "Mesh.h"
 
 #include "ResourceManager.h"
+#include "Utils.h"
 
 Mesh::Mesh()
 	: mVertexBufferView()
@@ -97,8 +98,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid file path.");
 	}
 
 	std::stringstream fileStream;
@@ -110,8 +110,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid file path.");
 	}
 
 	const rapidjson::Value& textures = doc["textures"];
@@ -134,8 +133,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 	}
 	else
 	{
-		HB_LOG("Unknown vertex format: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Unknown vertex format");
 	}
 
 	return doc;

@@ -1,13 +1,14 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
 #include "Application.h"
 #include "Client.h"
 #include "Input.h"
 #include "LobbyScene.h"
 #include "PacketManager.h"
+#include "Utils.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
