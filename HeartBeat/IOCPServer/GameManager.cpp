@@ -158,17 +158,7 @@ void GameManager::processRequestGameStart(const INT32 sessionIndex, const UINT8 
 	ansPacket.PacketSize = sizeof(ANSWER_GAME_START_PACKET);
 	ansPacket.Result = START_GAME;
 
-	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
-
-	if (connectedUsers.empty())
-	{
-		return;
-	}
-
-	for (auto userIndex : connectedUsers)
-	{
-		SendPacketFunction(userIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
-	}
+	sendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -178,38 +168,25 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 		return;
 	}
 
+	// 패킷을 보낸 유저의 Direction 변경
 	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
 	auto user = mUserManager->FindUserByIndex(sessionIndex);
 	user->SetMoveDirection(rmPacket->Direction);
 
+	// 패킷을 보낸 유저에게 서버가 유지하고 있는 Position 전송
 	ANSWER_MOVE_PACKET amPacket = {};
 	amPacket.PacketID = ANSWER_MOVE;
 	amPacket.PacketSize = sizeof(amPacket);
 	amPacket.Position = user->GetPosition();
 	SendPacketFunction(sessionIndex, sizeof(amPacket), reinterpret_cast<char*>(&amPacket));
 
-	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
-
-	if (connectedUsers.empty())
-	{
-		return;
-	}
-
+	// 이동 노티파이 패킷 전송
 	NOTIFY_MOVE_PACKET anmPacket = {};
 	anmPacket.PacketID = NOTIFY_MOVE;
 	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
 	anmPacket.Direction = rmPacket->Direction;
 	anmPacket.EntityID = sessionIndex;
-
-	for (auto userIndex : connectedUsers)
-	{
-		if (userIndex == sessionIndex)
-		{
-			continue;
-		}
-
-		SendPacketFunction(userIndex, sizeof(NOTIFY_MOVE_PACKET), reinterpret_cast<char*>(&anmPacket));
-	}
+	sendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 
 void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
@@ -221,22 +198,13 @@ void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
 		return;
 	}
 
-	NOTIFY_LOGIN_PACKET nofityPacket;
-	nofityPacket.PacketID = NOTIFY_LOGIN;
-	nofityPacket.PacketSize = sizeof(NOTIFY_LOGIN_PACKET);
-	nofityPacket.ClientID = newlyConnectedIndex;
+	NOTIFY_LOGIN_PACKET notifyPacket;
+	notifyPacket.PacketID = NOTIFY_LOGIN;
+	notifyPacket.PacketSize = sizeof(NOTIFY_LOGIN_PACKET);
+	notifyPacket.ClientID = newlyConnectedIndex;
 
 	// 기존에 접속해 있던 유저들에게 새로 접속한 유저를 알린다.
-	for (auto userIndex : connectedUsers)
-	{
-		// userIndex와 sessionIndex는 대응된다.
-		if (userIndex == newlyConnectedIndex)
-		{
-			continue;
-		}
-
-		SendPacketFunction(userIndex, sizeof(nofityPacket), reinterpret_cast<char*>(&nofityPacket));
-	}
+	sendPacketExclude(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
 
 	// 새로 접속한 유저에게 기존 유저들을 알린다.
 	for (auto userIndex : connectedUsers)
@@ -246,7 +214,42 @@ void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
 			continue;
 		}
 
-		nofityPacket.ClientID = userIndex;
-		SendPacketFunction(newlyConnectedIndex, sizeof(nofityPacket), reinterpret_cast<char*>(&nofityPacket));
+		notifyPacket.ClientID = userIndex;
+		SendPacketFunction(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
+	}
+}
+
+void GameManager::sendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet)
+{
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	if (connectedUsers.empty())
+	{
+		return;
+	}
+
+	for (auto userIndex : connectedUsers)
+	{
+		if (userIndex == userIndexToExclude)
+		{
+			continue;
+		}
+
+		SendPacketFunction(userIndex, packetSize, packet);
+	}
+}
+
+void GameManager::sendToAll(const INT32 packetSize, char* packet)
+{
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	if (connectedUsers.empty())
+	{
+		return;
+	}
+
+	for (auto userIndex : connectedUsers)
+	{
+		SendPacketFunction(userIndex, packetSize, packet);
 	}
 }

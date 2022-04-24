@@ -34,6 +34,13 @@ private:
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 
+	// 노티파이 패킷을 보낼 때 사용.
+	// indexToExclude : 이 세션 인덱스를 제외한 다른 접속 유저들에게 패킷을 보냄
+	void sendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet);
+
+	// 접속 유저 모두에게 보내기
+	void sendToAll(const INT32 packetSize, char* packet);
+
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
 
