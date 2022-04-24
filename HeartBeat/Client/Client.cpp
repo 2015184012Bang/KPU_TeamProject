@@ -342,8 +342,25 @@ void Client::updateMovement(float deltaTime)
 	auto view = GetRegistry().view<MovementComponent, TransformComponent>();
 	for (auto [entity, movement, transform] : view.each())
 	{
+		if (movement.Direction == Vector3::Zero)
+		{
+			continue;
+		}
+
 		Vector3 toward = transform.Position + movement.Direction * movement.MaxSpeed * deltaTime;
 		Helpers::UpdatePosition(&transform.Position, toward, &transform.bDirty);
+
+		// XMVector3AngleBetweenVectors() 로 구할 수 있는 각도는 0~180 까지다.
+		// -x축으로 움직일 때, 제대로 된 각도로 회전하지 않으므로
+		// -1 을 곱해 준다.
+		Vector3 rotation = XMVector3AngleBetweenVectors(Vector3::UnitZ, movement.Direction);
+		float scalar = 1.0f;
+		if (movement.Direction.x < 0.0f)
+		{
+			scalar = -1.0f;
+		}
+
+		Helpers::UpdateYRotation(&transform.Rotation.y, scalar * XMConvertToDegrees(rotation.y), &transform.bDirty);
 	}
 }
 

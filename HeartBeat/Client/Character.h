@@ -23,27 +23,7 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
-		movement->Direction = Vector3::Zero;
 
-		if (Input::IsButtonRepeat(eKeyCode::Left))
-		{
-			movement->Direction.x = -1.0f;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Right))
-		{
-			movement->Direction.x = 1.0f;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Down))
-		{
-			movement->Direction.z = -1.0f;
-		}
-
-		if (Input::IsButtonRepeat(eKeyCode::Up))
-		{
-			movement->Direction.z = 1.0f;
-		}
 	}
 
 private:

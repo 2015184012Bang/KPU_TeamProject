@@ -15,6 +15,12 @@ public:
     virtual void Update(float deltaTime) override;
 
 private:
+    bool pollKeyboardPressed();
+    bool pollKeyboardReleased();
+
+    void processAnswerNotifyMove(const PACKET& packet);
+
+private:
     Entity mPlayerCharacter = {};
 };
 

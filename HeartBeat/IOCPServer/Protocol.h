@@ -4,6 +4,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
+#include <DirectXTK12/SimpleMath.h>
+using namespace DirectX::SimpleMath;
 
 // 서버에서 사용
 struct PACKET_INFO
@@ -37,6 +39,10 @@ enum PACKET_ID : UINT8
 	// 게임 시작
 	REQUEST_GAME_START = 113,
 	ANSWER_GAME_START = 114,
+
+	// 이동
+	REQUEST_MOVE = 121,
+	ANSWER_NOTIFY_MOVE = 122,
 };
 
 enum ERROR_CODE : UINT8
@@ -85,6 +91,17 @@ struct REQUEST_GAME_START_PACKET : public PACKET_HEADER
 struct ANSWER_GAME_START_PACKET : public PACKET_HEADER
 {
 	UINT8 Result;
+};
+
+struct REQUEST_MOVE_PACKET : public PACKET_HEADER
+{
+	Vector3 Direction;
+};
+
+struct ANSWER_NOTIFY_MOVE_PACKET : public PACKET_HEADER
+{
+	UINT32 EntityID;
+	Vector3 Direction;
 };
 
 #pragma pack(pop)
