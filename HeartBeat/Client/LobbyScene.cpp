@@ -56,7 +56,9 @@ void LobbyScene::Exit()
 void LobbyScene::ProcessInput()
 {
 	PACKET packet;
-	if (mOwner->GetPacketManager()->GetPacket(packet))
+	bool bRecvGameStart = false;
+
+	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
 		switch (packet.PacketID)
 		{
@@ -66,10 +68,16 @@ void LobbyScene::ProcessInput()
 
 		case ANSWER_GAME_START:
 			processAnswerGameStart(packet);
+			bRecvGameStart = true;
 			break;
 			
 		default:
 			HB_LOG("Unknown packet type: {0}", packet.PacketID);
+			break;
+		}
+
+		if (bRecvGameStart)
+		{
 			break;
 		}
 	}
@@ -80,6 +88,14 @@ void LobbyScene::createCharacterMesh(int clientID)
 	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
 
 	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel);
+
+	// 씬 변경에도 삭제되지 않도록 DontDestroyOnLoad 태그를 붙여둔다.
+	character.AddTag<Tag_DontDestroyOnLoad>();
+
+	// 서버와 동기화가 필요한 객체들은 ID를 부여한다.
+	// ex. 플레이어 캐릭터, 적, NPC... 등
+	// 플레이어 캐릭터의 아이디는 본인의 클라이언트 아이디를 대입한다.
+	character.AddComponent<IDComponent>(clientID);
 
 	auto& transform = character.GetComponent<TransformComponent>();
 	transform.Position.x = getXPosition(clientID);

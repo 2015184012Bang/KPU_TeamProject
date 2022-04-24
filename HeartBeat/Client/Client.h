@@ -48,6 +48,7 @@ private:
     void createAnimationTransitions();
 
     void processButton();
+    void updateMovement(float deltaTime);
     void updateScript(float deltaTime);
     void updateAnimation(float deltaTime);
     void updateCollisionBox(float deltaTime);

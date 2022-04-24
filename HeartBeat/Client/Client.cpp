@@ -208,6 +208,7 @@ void Client::update()
 
 	float deltaTime = Timer::GetDeltaTime();
 
+	updateMovement(deltaTime);
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
 	updateCollisionBox(deltaTime);
@@ -333,6 +334,16 @@ void Client::processButton()
 				break;
 			}
 		}
+	}
+}
+
+void Client::updateMovement(float deltaTime)
+{
+	auto view = GetRegistry().view<MovementComponent, TransformComponent>();
+	for (auto [entity, movement, transform] : view.each())
+	{
+		Vector3 toward = transform.Position + movement.Direction * movement.MaxSpeed * deltaTime;
+		Helpers::UpdatePosition(&transform.Position, toward, &transform.bDirty);
 	}
 }
 

@@ -176,3 +176,12 @@ struct ScriptComponent
 	shared_ptr<Script> NativeScript;
 	bool bInitialized;
 };
+
+struct MovementComponent
+{
+	MovementComponent();
+	MovementComponent(float maxSpeed);
+
+	float MaxSpeed;
+	Vector3 Direction;
+};

@@ -327,3 +327,17 @@ ScriptComponent::ScriptComponent(shared_ptr<Script>&& script)
 {
 
 }
+
+MovementComponent::MovementComponent()
+	: MaxSpeed(0.0f)
+	, Direction(Vector3::Zero)
+{
+
+}
+
+MovementComponent::MovementComponent(float maxSpeed)
+	: MaxSpeed(maxSpeed)
+	, Direction(Vector3::Zero)
+{
+
+}

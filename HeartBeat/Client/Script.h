@@ -21,10 +21,10 @@ public:
 		mOwner.AddTag<T>();
 	}
 
-	template<typename T>
-	T& AddComponent()
+	template<typename T, typename... Args>
+	T& AddComponent(Args&&... args)
 	{
-		return mOwner.AddComponent<T>();
+		return mOwner.AddComponent<T>(std::forward<Args>(args)...);
 	}
 
 	template<typename T>
