@@ -18,6 +18,8 @@ public:
 
 	vector<INT32> GetAllConnectedUsersIndex();
 
+	void UpdateUserTransforms();
+
 public:
 	UINT32 GetCurrentUserCount() { return mCurrentUserCount; }
 	UINT32 GetMaxUserCount() { return mMaxUserCount; }

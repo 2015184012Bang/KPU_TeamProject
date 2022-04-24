@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "Helpers.h"
 #include "Input.h"
+#include "ResourceManager.h"
 
 class Character : public Script
 {
@@ -18,12 +19,19 @@ public:
 	{
 		transform = &GetComponent<TransformComponent>();
 		animator = &GetComponent<AnimatorComponent>();
-		movement = &AddComponent<MovementComponent>(300.0f);
+		movement = &GetComponent<MovementComponent>();
 	}
 
 	virtual void Update(float deltaTime) override
 	{
-
+		if (movement->Direction != Vector3::Zero)
+		{
+			animator->SetTrigger("Run");
+		}
+		else
+		{
+			animator->SetTrigger("Idle");
+		}
 	}
 
 private:

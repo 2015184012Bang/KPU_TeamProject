@@ -6,6 +6,7 @@
 #include "Character.h"
 #include "PacketManager.h"
 #include "Input.h"
+#include "Helpers.h"
 
 UpgradeScene::UpgradeScene(Client* owner)
 	: Scene(owner)
@@ -17,7 +18,6 @@ void UpgradeScene::Enter()
 {
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
-	mPlayerCharacter.AddComponent<ScriptComponent>(std::make_shared<Character>(mPlayerCharacter));
 }
 
 void UpgradeScene::Exit()
@@ -123,6 +123,7 @@ void UpgradeScene::processAnswerNotifyMove(const PACKET& packet)
 	ANSWER_NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<ANSWER_NOTIFY_MOVE_PACKET*>(packet.DataPtr);
 	
 	auto entity = mOwner->GetEntityByID(nmPacket->EntityID);
+
 	Entity target = { entity, mOwner };
 
 	auto& movement = target.GetComponent<MovementComponent>();

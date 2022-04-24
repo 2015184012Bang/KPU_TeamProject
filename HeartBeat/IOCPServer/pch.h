@@ -6,6 +6,7 @@
 #pragma comment(linker, "/include:__tcmalloc")
 #pragma comment(lib, "spdlog")
 #pragma comment(lib, "fmt")
+#pragma comment(lib, "DirectXTK12")
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -15,6 +16,7 @@
 #include <MSWSock.h>
 #include <Windows.h>
 #include <DirectXTK12/SimpleMath.h>
+#include <DirectXMath.h>
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,5 +49,6 @@
 #endif
 
 using namespace DirectX::SimpleMath;
+using namespace DirectX;
 using namespace std;
 using namespace std::chrono;

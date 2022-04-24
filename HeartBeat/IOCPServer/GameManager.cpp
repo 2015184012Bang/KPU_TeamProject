@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameManager.h"
+#include "Timer.h"
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
@@ -12,6 +13,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_GAME_START] = std::bind(&GameManager::processRequestGameStart, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// 유저 매니저 생성
 	mUserManager = make_unique<UserManager>();
@@ -21,6 +24,9 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	// Front는 로직 스레드가 처리할 패킷을 담은 큐.
 	mBackPacketQueue = &mPacketQueueA;
 	mFrontPacketQueue = &mPacketQueueB;
+
+	// 타이머 초기화
+	Timer::Init();
 }
 
 void GameManager::Run()
@@ -74,6 +80,8 @@ void GameManager::logicThread()
 {
 	while (mShouldLogicRun)
 	{
+		Timer::Update();
+
 		bool isIdle = true;
 
 		while (!mFrontPacketQueue->empty())
@@ -84,6 +92,10 @@ void GameManager::logicThread()
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
 
+		// 유저의 이동 방향에 따라 위치를 갱신
+		mUserManager->UpdateUserTransforms();
+
+		// 백 큐와 프론트 큐를 스왑
 		swapQueues();
 
 		if (isIdle)
@@ -156,6 +168,41 @@ void GameManager::processRequestGameStart(const INT32 sessionIndex, const UINT8 
 	for (auto userIndex : connectedUsers)
 	{
 		SendPacketFunction(userIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+	}
+}
+
+void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_MOVE_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
+	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	user->SetMoveDirection(rmPacket->Direction);
+
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	if (connectedUsers.empty())
+	{
+		return;
+	}
+
+	ANSWER_NOTIFY_MOVE_PACKET anmPacket = {};
+	anmPacket.PacketID = ANSWER_NOTIFY_MOVE;
+	anmPacket.PacketSize = sizeof(ANSWER_NOTIFY_MOVE_PACKET);
+	anmPacket.Direction = rmPacket->Direction;
+	anmPacket.EntityID = sessionIndex;
+
+	for (auto userIndex : connectedUsers)
+	{
+		if (userIndex == sessionIndex)
+		{
+			continue;
+		}
+
+		SendPacketFunction(userIndex, sizeof(ANSWER_NOTIFY_MOVE_PACKET), reinterpret_cast<char*>(&anmPacket));
 	}
 }
 

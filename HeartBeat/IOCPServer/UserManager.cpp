@@ -55,3 +55,14 @@ vector<INT32> UserManager::GetAllConnectedUsersIndex()
 
 	return indices;
 }
+
+void UserManager::UpdateUserTransforms()
+{
+	for (auto user : mUsers)
+	{
+		if (user->IsConnected())
+		{
+			user->Update();
+		}
+	}
+}

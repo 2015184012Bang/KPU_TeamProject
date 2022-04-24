@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "User.h"
 
+#include "Timer.h"
+
 User::~User()
 {
 	if (mDataBuffer)
@@ -23,6 +25,9 @@ void User::Reset()
 	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
+	mPosition = Vector3::Zero;
+	mYaw = 0.0f;
+	mMoveDirection = Vector3::Zero;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 }
 
@@ -84,4 +89,35 @@ PACKET_INFO User::GetPacket()
 	mReadPos += header->PacketSize;
 
 	return info;
+}
+
+void User::Update()
+{
+	if (mMoveDirection == Vector3::Zero)
+	{
+		return;
+	}
+
+	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
+
+	LOG("Position: x-{0} z-{0}", mPosition.x, mPosition.z);
+}
+
+void User::SetMoveDirection(const Vector3& direction)
+{
+	mMoveDirection = direction;
+
+	if (mMoveDirection == Vector3::Zero)
+	{
+		return;
+	}
+
+	Vector3 rotation = XMVector3AngleBetweenVectors(Vector3::UnitZ, mMoveDirection);
+	float scalar = 1.0f;
+	if (mMoveDirection.x < 0.0f)
+	{
+		scalar = -1.0f;
+	}
+
+	mYaw = scalar * XMConvertToDegrees(rotation.y);
 }
