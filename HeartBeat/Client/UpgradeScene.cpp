@@ -9,6 +9,8 @@
 #include "Helpers.h"
 #include "Tags.h"
 
+using namespace std::string_view_literals;
+
 UpgradeScene::UpgradeScene(Client* owner)
 	: Scene(owner)
 {
@@ -21,20 +23,8 @@ void UpgradeScene::Enter()
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
 
-	// 로비씬 때 달랐던 플레이어들의 위치를 (0, 0, 0)으로 통일해주기
-	auto entities = mOwner->FindObjectsWithTag<Tag_Player>();
-	if (entities.empty())
-	{
-		HB_LOG("No Player exists.");
-		return;
-	}
-
-	for (auto eid : entities)
-	{
-		Entity character = { eid, mOwner };
-		auto& transform = character.GetComponent<TransformComponent>();
-		Helpers::UpdatePosition(&transform.Position, Vector3::Zero, &transform.bDirty);
-	}
+	initPlayersPositionToZero();
+	makeRolePlanes();
 }
 
 void UpgradeScene::Exit()
@@ -72,6 +62,30 @@ void UpgradeScene::Update(float deltaTime)
 		packet.PacketSize = sizeof(packet);
 		packet.Direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+	}
+
+	if (Input::IsButtonPressed(eKeyCode::Space))
+	{
+		// 상호작용키(SPACE BAR)를 누르면 어떤 업그레이드 Plane 위에 서 있는지 확인한다.
+		checkCollisionWithPlanes();
+	}
+}
+
+void UpgradeScene::initPlayersPositionToZero()
+{
+	// 로비씬 때 달랐던 플레이어들의 위치를 (0, 0, 0)으로 통일해주기
+	auto entities = mOwner->FindObjectsWithTag<Tag_Player>();
+	if (entities.empty())
+	{
+		HB_LOG("No Player exists.");
+		return;
+	}
+
+	for (auto eid : entities)
+	{
+		Entity character = { eid, mOwner };
+		auto& transform = character.GetComponent<TransformComponent>();
+		Helpers::UpdatePosition(&transform.Position, Vector3::Zero, &transform.bDirty);
 	}
 }
 
@@ -139,6 +153,26 @@ bool UpgradeScene::pollKeyboardReleased()
 	return bChanged;
 }
 
+void UpgradeScene::checkCollisionWithPlanes()
+{
+	const auto& playerBox = mPlayerCharacter.GetComponent<BoxComponent>().World;
+
+	auto entities = mOwner->FindObjectsWithTag<Tag_Plane>();
+
+	for (auto entity : entities)
+	{
+		Entity plane = { entity, mOwner };
+		const auto& planeBox = plane.GetComponent<BoxComponent>().World;
+
+		if (Helpers::Intersects(playerBox, planeBox))
+		{
+			auto& name = plane.GetComponent<NameComponent>().Name;
+			HB_LOG(L"Collision with plane: {0}", name);
+			break;
+		}
+	}
+}
+
 void UpgradeScene::processNotifyMove(const PACKET& packet)
 {
 	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
@@ -157,4 +191,39 @@ void UpgradeScene::processAnswerMove(const PACKET& packet)
 
 	auto& transform = mPlayerCharacter.GetComponent<TransformComponent>();
 	transform.Position = amPacket->Position;
+}
+
+void UpgradeScene::makeRolePlanes()
+{
+	{
+		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
+			TEXTURE(L"Attack.png"), L"../Assets/Meshes/Plane.mesh");
+
+		auto& transform = attackPlane.GetComponent<TransformComponent>();
+		transform.Position.x = -DISTANCE_BETWEEN_PLANE;
+
+		attackPlane.AddTag<Tag_Plane>();
+		attackPlane.AddComponent<NameComponent>(L"AttackPlane"sv);
+	}
+
+	{
+		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
+			TEXTURE(L"Heal.png"), L"../Assets/Meshes/Plane.mesh");
+
+		auto& transform = healPlane.GetComponent<TransformComponent>();
+
+		healPlane.AddTag<Tag_Plane>();
+		healPlane.AddComponent<NameComponent>(L"HealPlane"sv);
+	}
+
+	{
+		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
+			TEXTURE(L"Support.png"), L"../Assets/Meshes/Plane.mesh");
+
+		auto& transform = supportPlane.GetComponent<TransformComponent>();
+		transform.Position.x = DISTANCE_BETWEEN_PLANE;
+
+		supportPlane.AddTag<Tag_Plane>();
+		supportPlane.AddComponent<NameComponent>(L"SupportPlane"sv);
+	}
 }

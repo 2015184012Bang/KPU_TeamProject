@@ -88,7 +88,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 {
 	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
 
-	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel);
+	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel, L"../Assets/Boxes/Character.box");
 
 	// 씬 변경에도 삭제되지 않도록 DontDestroyOnLoad 태그를 붙여둔다.
 	character.AddTag<Tag_DontDestroyOnLoad>();

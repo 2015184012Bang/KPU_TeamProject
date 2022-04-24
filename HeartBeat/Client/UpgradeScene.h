@@ -6,6 +6,8 @@
 class UpgradeScene :
     public Scene
 {
+    const float DISTANCE_BETWEEN_PLANE = 700.0f;
+
 public:
     UpgradeScene(Client* owner);
 
@@ -15,8 +17,12 @@ public:
     virtual void Update(float deltaTime) override;
 
 private:
+    void initPlayersPositionToZero();
+    void makeRolePlanes();
+
     bool pollKeyboardPressed();
     bool pollKeyboardReleased();
+    void checkCollisionWithPlanes();
 
     void processNotifyMove(const PACKET& packet);
     void processAnswerMove(const PACKET& packet);
