@@ -63,8 +63,8 @@ void LobbyScene::ProcessInput()
 	{
 		switch (packet.PacketID)
 		{
-		case ANSWER_NOTIFY_LOGIN:
-			processAnswerNofifyLogin(packet);
+		case NOTIFY_LOGIN:
+			processNofifyLogin(packet);
 			break;
 
 		case ANSWER_GAME_START:
@@ -134,9 +134,9 @@ float LobbyScene::getXPosition(int clientID)
 	}
 }
 
-void LobbyScene::processAnswerNofifyLogin(const PACKET& packet)
+void LobbyScene::processNofifyLogin(const PACKET& packet)
 {
-	ANSWER_NOTIFY_LOGIN_PACKET* nfyPacket = reinterpret_cast<ANSWER_NOTIFY_LOGIN_PACKET*>(packet.DataPtr);
+	NOTIFY_LOGIN_PACKET* nfyPacket = reinterpret_cast<NOTIFY_LOGIN_PACKET*>(packet.DataPtr);
 	createCharacterMesh(nfyPacket->ClientID);
 }
 

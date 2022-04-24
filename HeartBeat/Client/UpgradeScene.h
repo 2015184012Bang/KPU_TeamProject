@@ -18,7 +18,7 @@ private:
     bool pollKeyboardPressed();
     bool pollKeyboardReleased();
 
-    void processAnswerNotifyMove(const PACKET& packet);
+    void processNotifyMove(const PACKET& packet);
 
 private:
     Entity mPlayerCharacter = {};

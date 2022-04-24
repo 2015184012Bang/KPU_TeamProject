@@ -34,7 +34,7 @@ enum PACKET_ID : UINT8
 	// 로그인
 	REQUEST_LOGIN = 101,
 	ANSWER_LOGIN = 102,
-	ANSWER_NOTIFY_LOGIN = 103,
+	NOTIFY_LOGIN = 103,
 	
 	// 게임 시작
 	REQUEST_GAME_START = 113,
@@ -42,7 +42,8 @@ enum PACKET_ID : UINT8
 
 	// 이동
 	REQUEST_MOVE = 121,
-	ANSWER_NOTIFY_MOVE = 123,
+	ANSWER_MOVE = 122,
+	NOTIFY_MOVE = 123,
 };
 
 enum ERROR_CODE : UINT8
@@ -78,7 +79,7 @@ struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 	UINT8 ClientID;
 };
 
-struct ANSWER_NOTIFY_LOGIN_PACKET : public PACKET_HEADER
+struct NOTIFY_LOGIN_PACKET : public PACKET_HEADER
 {
 	UINT8 ClientID;
 };
@@ -98,7 +99,12 @@ struct REQUEST_MOVE_PACKET : public PACKET_HEADER
 	Vector3 Direction;
 };
 
-struct ANSWER_NOTIFY_MOVE_PACKET : public PACKET_HEADER
+struct ANSWER_MOVE_PACKET : public PACKET_HEADER
+{
+	Vector3 Position;
+};
+
+struct NOTIFY_MOVE_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
 	Vector3 Direction;

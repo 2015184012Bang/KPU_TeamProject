@@ -189,9 +189,9 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 		return;
 	}
 
-	ANSWER_NOTIFY_MOVE_PACKET anmPacket = {};
-	anmPacket.PacketID = ANSWER_NOTIFY_MOVE;
-	anmPacket.PacketSize = sizeof(ANSWER_NOTIFY_MOVE_PACKET);
+	NOTIFY_MOVE_PACKET anmPacket = {};
+	anmPacket.PacketID = NOTIFY_MOVE;
+	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
 	anmPacket.Direction = rmPacket->Direction;
 	anmPacket.EntityID = sessionIndex;
 
@@ -202,7 +202,7 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 			continue;
 		}
 
-		SendPacketFunction(userIndex, sizeof(ANSWER_NOTIFY_MOVE_PACKET), reinterpret_cast<char*>(&anmPacket));
+		SendPacketFunction(userIndex, sizeof(NOTIFY_MOVE_PACKET), reinterpret_cast<char*>(&anmPacket));
 	}
 }
 
@@ -215,9 +215,9 @@ void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
 		return;
 	}
 
-	ANSWER_NOTIFY_LOGIN_PACKET nofityPacket;
-	nofityPacket.PacketID = ANSWER_NOTIFY_LOGIN;
-	nofityPacket.PacketSize = sizeof(ANSWER_NOTIFY_LOGIN_PACKET);
+	NOTIFY_LOGIN_PACKET nofityPacket;
+	nofityPacket.PacketID = NOTIFY_LOGIN;
+	nofityPacket.PacketSize = sizeof(NOTIFY_LOGIN_PACKET);
 	nofityPacket.ClientID = newlyConnectedIndex;
 
 	// 기존에 접속해 있던 유저들에게 새로 접속한 유저를 알린다.

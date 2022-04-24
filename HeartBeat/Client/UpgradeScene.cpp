@@ -32,8 +32,8 @@ void UpgradeScene::ProcessInput()
 	{
 		switch (packet.PacketID)
 		{
-		case ANSWER_NOTIFY_MOVE:
-			processAnswerNotifyMove(packet);
+		case NOTIFY_MOVE:
+			processNotifyMove(packet);
 			break;
 
 		default:
@@ -118,9 +118,9 @@ bool UpgradeScene::pollKeyboardReleased()
 	return bChanged;
 }
 
-void UpgradeScene::processAnswerNotifyMove(const PACKET& packet)
+void UpgradeScene::processNotifyMove(const PACKET& packet)
 {
-	ANSWER_NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<ANSWER_NOTIFY_MOVE_PACKET*>(packet.DataPtr);
+	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
 	
 	auto entity = mOwner->GetEntityByID(nmPacket->EntityID);
 

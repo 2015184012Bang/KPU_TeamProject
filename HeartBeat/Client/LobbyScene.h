@@ -23,7 +23,7 @@ private:
 	void createCharacterMesh(int clientID);
 	float getXPosition(int clientID);
 
-	void processAnswerNofifyLogin(const PACKET& packet);
+	void processNofifyLogin(const PACKET& packet);
 	void processAnswerGameStart(const PACKET& packet);
 };
 
