@@ -111,7 +111,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 
 	if (!doc.IsObject())
 	{
-		HB_ASSERT(false, "Invalid file path.");
+		HB_ASSERT(false, "Invalid json file.");
 	}
 
 	const rapidjson::Value& textures = doc["textures"];

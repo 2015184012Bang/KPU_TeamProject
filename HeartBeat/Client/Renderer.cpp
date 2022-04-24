@@ -486,6 +486,7 @@ void Renderer::waitForPreviousFrame()
 void Renderer::loadAllAssetsFromFile()
 {
 	MESH(L"Bag.mesh");
+	MESH(L"Bag_Lv3.mesh");
 	MESH(L"Bat.mesh");
 	MESH(L"Belt_Green.mesh");
 	MESH(L"Belt_Pink.mesh");
@@ -505,6 +506,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH(L"Pickax.mesh");
 	MESH(L"Pill.mesh");
 	MESH(L"Pill_Pack.mesh");
+	MESH(L"Plane.mesh");
 	MESH(L"Ringer.mesh");
 	MESH(L"Syringe.mesh");
 	MESH(L"Tank.mesh");
@@ -512,6 +514,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH(L"Virus.mesh");
 	
 	SKELETON(L"Bag.skel");
+	SKELETON(L"Bag_Lv3.skel");
 	SKELETON(L"Cart.skel");
 	SKELETON(L"Cell.skel");
 	SKELETON(L"Character_Green.skel");
