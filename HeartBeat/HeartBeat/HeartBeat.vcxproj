@@ -45,13 +45,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)bin-int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>..\bin\Win64-$(Configuration)\</OutDir>
+    <IntDir>bin-int\Win64-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)bin\$(Platform)-$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>$(SolutionDir)bin-int\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>..\bin\Win64-$(Configuration)\</OutDir>
+    <IntDir>bin-int\Win64-$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
     <VcpkgEnabled>false</VcpkgEnabled>
@@ -63,7 +63,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\vendor\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\include\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -79,6 +79,9 @@
       <Command>
       </Command>
     </PreBuildEvent>
+    <Lib>
+      <AdditionalLibraryDirectories>..\thirdparty\lib\debug\</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -89,7 +92,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>..\vendor\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\thirdparty\include\</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>PCH.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -99,6 +102,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>..\thirdparty\lib\release\</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AABB.cpp" />
@@ -106,16 +112,12 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="HBID.cpp" />
-    <ClCompile Include="MemoryStream.cpp" />
     <ClCompile Include="PCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Script.cpp" />
-    <ClCompile Include="SocketAddress.cpp" />
-    <ClCompile Include="SocketUtil.cpp" />
-    <ClCompile Include="TCPSocket.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -130,15 +132,10 @@
     <ClInclude Include="HBID.h" />
     <ClInclude Include="KeyCode.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="MemoryStream.h" />
-    <ClInclude Include="PacketType.h" />
     <ClInclude Include="PCH.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="Random.h" />
-    <ClInclude Include="SocketAddress.h" />
-    <ClInclude Include="SocketUtil.h" />
     <ClInclude Include="Tags.h" />
-    <ClInclude Include="TCPSocket.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

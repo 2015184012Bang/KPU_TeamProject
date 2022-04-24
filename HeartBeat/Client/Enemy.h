@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Script.h"
+#include "Components.h"
+#include "Helpers.h"
 #include "Input.h"
 
 

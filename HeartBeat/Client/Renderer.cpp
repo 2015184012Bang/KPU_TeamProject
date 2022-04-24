@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "Renderer.h"
 
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
 #include "Application.h"
 #include "Mesh.h"
@@ -10,6 +10,7 @@
 #include "Text.h"
 #include "Texture.h"
 #include "Vertex.h"
+#include "Utils.h"
 
 
 ComPtr<ID3D12Device> gDevice;
@@ -484,35 +485,59 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(MESH(L"Character_Red.mesh"));
-	ResourceManager::GetMesh(MESH(L"Character_Green.mesh"));
-	ResourceManager::GetMesh(MESH(L"Character_Pink.mesh"));
-	ResourceManager::GetMesh(MESH(L"Cell.mesh"));
-	ResourceManager::GetMesh(MESH(L"Virus.mesh"));
-	ResourceManager::GetMesh(MESH(L"Dog.mesh"));
-	ResourceManager::GetMesh(MESH(L"Pickax.mesh"));
-	ResourceManager::GetMesh(MESH(L"Cube.mesh"));
-	ResourceManager::GetMesh(MESH(L"Tank.mesh"));
+	MESH(L"Bag.mesh");
+	MESH(L"Bat.mesh");
+	MESH(L"Belt_Green.mesh");
+	MESH(L"Belt_Pink.mesh");
+	MESH(L"Belt_Red.mesh");
+	MESH(L"Cart.mesh");
+	MESH(L"Cell.mesh");
+	MESH(L"Character_Green.mesh");
+	MESH(L"Character_Pink.mesh");
+	MESH(L"Character_Red.mesh");
+	MESH(L"Cotton_Swab.mesh");
+	MESH(L"Cube.mesh");
+	MESH(L"Dog.mesh");
+	MESH(L"Fat.mesh");
+	MESH(L"Hammer.mesh");
+	MESH(L"House.mesh");
+	MESH(L"Oxygen.mesh");
+	MESH(L"Pickax.mesh");
+	MESH(L"Pill.mesh");
+	MESH(L"Pill_Pack.mesh");
+	MESH(L"Ringer.mesh");
+	MESH(L"Syringe.mesh");
+	MESH(L"Tank.mesh");
+	MESH(L"Thermometer.mesh");
+	MESH(L"Virus.mesh");
+	
+	SKELETON(L"Bag.skel");
+	SKELETON(L"Cart.skel");
+	SKELETON(L"Cell.skel");
+	SKELETON(L"Character_Green.skel");
+	SKELETON(L"Character_Pink.skel");
+	SKELETON(L"Character_Red.skel");
+	SKELETON(L"Dog.skel");
+	SKELETON(L"Fat.skel");
+	SKELETON(L"Tank.skel");
+	SKELETON(L"Virus.skel");
 
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Red.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Green.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Pink.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Cell.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Virus.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Dog.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Tank.skel"));
+#ifdef _DEBUG
+	BOX(L"Cart.box");
+	BOX(L"Cell.box");
+	BOX(L"Character.box");
+	BOX(L"Cube.box");
+	BOX(L"Dog.box");
+	BOX(L"Pickax.box");
+	BOX(L"Tank.box");
+	BOX(L"Virus.box");
+#endif
 
-	ResourceManager::GetAABB(BOX(L"Character.box"));
-	ResourceManager::GetAABB(BOX(L"Cell.box"));
-	ResourceManager::GetAABB(BOX(L"Virus.box"));
-	ResourceManager::GetAABB(BOX(L"Cube.box"));
+	TEXTURE(L"Login_Background.png");
+	TEXTURE(L"Start_Button.png");
 
-	ResourceManager::GetTexture(TEXTURE(L"Smile.png"));
-	ResourceManager::GetTexture(TEXTURE(L"Login_Background.png"));
-	ResourceManager::GetTexture(TEXTURE(L"Ready_Button.png"));
-
-	Font* font = ResourceManager::GetFont(FONT(L"fontdata.txt"));
-	font->SetTexture(ResourceManager::GetTexture(TEXTURE(L"font.dds")));
+	Font* font = FONT(L"fontdata.txt");
+	font->SetTexture(TEXTURE(L"font.dds"));
 }
 
 void Renderer::loadAssets()

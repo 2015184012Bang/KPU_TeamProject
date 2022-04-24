@@ -1,12 +1,16 @@
 #pragma once
 
 #include "Scene.h"
+#include "../IOCPServer/Protocol.h"
 
 
 class LobbyScene : public Scene
 {
-	const float SPACE_BETWEEN_LINES = 30.0f;
+	const int HOST_ID = 2;
 	const float WIDTH_BETWEEN_CHARACTERS = 700.0f;
+	const int START_BUTTON_WIDTH = 200;
+	const int START_BUTTON_HEIGHT = 100;
+	const float START_BUTTON_DIST_FROM_BOTTOM = 150.0f;
 
 public:
 	LobbyScene(Client* owner);
@@ -16,19 +20,13 @@ public:
 	virtual void ProcessInput() override;
 
 private:
-	void processPacket(MemoryStream* packet);
-	void processUserConnected(MemoryStream* packet);
-	void processReadyPressed(MemoryStream* packet);
-	void processGameStart(MemoryStream* packet);
-	
-	void createNicknameText(int clientID);
 	void createCharacterMesh(int clientID);
+	float getXPosition(int clientID);
+
+	void processAnswerNofifyLogin(const PACKET& packet);
+	void processAnswerGameStart(const PACKET& packet);
 
 private:
-	TCPSocketPtr mSocket;
-
-	vector<int> mConnectedID;
-
-	Entity mReadyText;
+	bool mbChangeScene = false;
 };
 

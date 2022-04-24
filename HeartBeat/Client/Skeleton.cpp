@@ -9,7 +9,7 @@ void Skeleton::Load(const wstring& path)
 
 	if (!file.is_open())
 	{
-		HB_ASSERT(false, "Could not open skeleton file: {0}", ws2s(path));
+		HB_ASSERT(false, "Could not open skeleton file");
 	}
 
 	std::stringstream fileStream;
@@ -21,7 +21,7 @@ void Skeleton::Load(const wstring& path)
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
+		HB_ASSERT(false, "Its not valid json file.");
 	}
 
 	const rapidjson::Value& boneCount = doc["bonecount"];

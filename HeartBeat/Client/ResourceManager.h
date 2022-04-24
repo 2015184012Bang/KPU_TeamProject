@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Define.h"
+
 class Mesh;
 class Texture;
 class Skeleton;
@@ -42,9 +44,49 @@ enum class EnemyAnimationType
 	eAttack,
 };
 
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type);
-void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile);
-wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType);
+std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID);
+Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type);
+std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType);
+Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType);
+
+const wstring ASSET_PATH = L"../Assets/";
+
+#define MESH(x) GetMeshFile(x)
+#define TEXTURE(x) GetTextureFile(x)
+#define SKELETON(x) GetSkeletonFile(x)
+#define ANIM(x) GetAnimFile(x)
+#define BOX(x) GetBoxFile(x)
+#define DEBUGMESH(x) GetBoxFile(x)
+#define FONT(x) GetFontFile(x)
+
+inline Mesh* GetMeshFile(const wstring& file)
+{
+	return ResourceManager::GetMesh(ASSET_PATH + L"Meshes/" + file);
+}
+
+inline Texture* GetTextureFile(const wstring& file)
+{
+	return ResourceManager::GetTexture(ASSET_PATH + L"Textures/" + file);
+}
+
+inline Skeleton* GetSkeletonFile(const wstring& file)
+{
+	return ResourceManager::GetSkeleton(ASSET_PATH + L"Skeletons/" + file);
+}
+
+inline Animation* GetAnimFile(const wstring& file)
+{
+	return ResourceManager::GetAnimation(ASSET_PATH + L"Animations/" + file);
+}
+
+inline AABB* GetBoxFile(const wstring& file)
+{
+	return ResourceManager::GetAABB(ASSET_PATH + L"Boxes/" + file);
+}
+
+inline Font* GetFontFile(const wstring& file)
+{
+	return ResourceManager::GetFont(ASSET_PATH + L"Fonts/" + file);
+}
 
 

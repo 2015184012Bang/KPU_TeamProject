@@ -2,6 +2,7 @@
 #include "Texture.h"
 
 #include "TableDescriptorHeap.h"
+#include "Renderer.h"
 
 uint32 Texture::sNumTextures = 0;
 
@@ -17,24 +18,21 @@ void Texture::Load(const wstring& path)
 
 	if (!success)
 	{
-		HB_LOG("Failed to load texture: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to load texture");
 	}
 
 	success = uploadTextureData();
 
 	if (!success)
 	{
-		HB_LOG("Failed to upload tex data to default buffer: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to upload tex data to default buffer");
 	}
 
 	success = createSRV();
 
 	if (!success)
 	{
-		HB_LOG("Failed to create SRV: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to create SRV");
 	}
 }
 
