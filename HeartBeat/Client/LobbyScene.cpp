@@ -9,6 +9,8 @@
 #include "ResourceManager.h"
 #include "PacketManager.h"
 #include "Utils.h"
+#include "UpgradeScene.h"
+#include "Tags.h"
 
 
 LobbyScene::LobbyScene(Client* owner)
@@ -127,5 +129,5 @@ void LobbyScene::processAnswerGameStart(const PACKET& packet)
 		return;
 	}
 
-	mbChangeScene = true;
+	mOwner->ChangeScene(new UpgradeScene(mOwner));
 }

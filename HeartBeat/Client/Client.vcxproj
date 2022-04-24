@@ -138,6 +138,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TableDescriptorHeap.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="UpgradeScene.cpp" />
     <ClCompile Include="UploadBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TableDescriptorHeap.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="UpgradeScene.h" />
     <ClInclude Include="UploadBuffer.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Vertex.h" />

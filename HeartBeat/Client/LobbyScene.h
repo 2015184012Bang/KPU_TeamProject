@@ -25,8 +25,5 @@ private:
 
 	void processAnswerNofifyLogin(const PACKET& packet);
 	void processAnswerGameStart(const PACKET& packet);
-
-private:
-	bool mbChangeScene = false;
 };
 
