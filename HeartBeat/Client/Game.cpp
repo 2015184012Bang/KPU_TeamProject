@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "Game.h"
 
-#include "ClientComponents.h"
+#include "Components.h"
 #include "Entity.h"
 #include "Tags.h"
 

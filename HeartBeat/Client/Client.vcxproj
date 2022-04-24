@@ -110,12 +110,12 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Client.cpp" />
-    <ClCompile Include="ClientComponents.cpp" />
+    <ClCompile Include="Components.cpp" />
     <ClCompile Include="ClientPCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="ClientSystems.cpp" />
+    <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
@@ -146,9 +146,9 @@
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="Client.h" />
-    <ClInclude Include="ClientComponents.h" />
+    <ClInclude Include="Components.h" />
     <ClInclude Include="ClientPCH.h" />
-    <ClInclude Include="ClientSystems.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="d3dHelper.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Entity.h" />
@@ -157,7 +157,6 @@
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="HBID.h" />
     <ClInclude Include="Input.h" />
-    <ClInclude Include="KeyCode.h" />
     <ClInclude Include="LobbyScene.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LoginScene.h" />

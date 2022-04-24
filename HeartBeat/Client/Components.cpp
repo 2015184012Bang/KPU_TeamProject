@@ -1,8 +1,8 @@
 #include "ClientPCH.h"
-#include "ClientComponents.h"
+#include "Components.h"
 
 #include "Animation.h"
-#include "ClientSystems.h"
+#include "Helpers.h"
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "Texture.h"
@@ -119,7 +119,7 @@ void AnimatorComponent::SetTrigger(const string& triggerName)
 		return;
 	}
 
-	ClientSystems::PlayAnimation(this, nextAnim, 1.0f);
+	Helpers::PlayAnimation(this, nextAnim, 1.0f);
 }
 
 DebugDrawComponent::DebugDrawComponent()

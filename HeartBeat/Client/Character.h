@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Script.h"
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Components.h"
+#include "Helpers.h"
 #include "Input.h"
 
 class Character : public Script

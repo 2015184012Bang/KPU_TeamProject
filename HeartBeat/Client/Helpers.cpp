@@ -1,26 +1,26 @@
 #include "ClientPCH.h"
-#include "ClientSystems.h"
+#include "Helpers.h"
 
 #include "Application.h"
 #include "Animation.h"
-#include "ClientComponents.h"
+#include "Components.h"
 #include "Skeleton.h"
 #include "Define.h"
 #include "Renderer.h"
 
-void ClientSystems::UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty)
+void Helpers::UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty)
 {
 	*outPosition = to;
 	*outDirty = true;
 }
 
-void ClientSystems::UpdateYRotation(float* outYRotation, const float to, bool* outDirty)
+void Helpers::UpdateYRotation(float* outYRotation, const float to, bool* outDirty)
 {
 	*outYRotation = to;
 	*outDirty = true;
 }
 
-void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
+void Helpers::BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
 {
 	if (*outDirty)
 	{
@@ -35,14 +35,14 @@ void ClientSystems::BindWorldMatrix(const Vector3& position, const Vector3& rota
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outBuffer->GetVirtualAddress());
 }
 
-void ClientSystems::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
+void Helpers::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
 {
 	Vector3 converted = ScreenToClip(position);
 
 	BindWorldMatrix(converted, Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
 
-void ClientSystems::BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment)
+void Helpers::BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment)
 {
 	TransformComponent* parentTransform = attachment->ParentTransform;
 	float rotationY = outTransform->Rotation.y + parentTransform->Rotation.y;
@@ -57,7 +57,7 @@ void ClientSystems::BindWorldMatrixAttached(TransformComponent* outTransform, co
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outTransform->Buffer.GetVirtualAddress());
 }
 
-void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
+void Helpers::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
 	const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer)
 {
 	Matrix viewProjection = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
@@ -66,7 +66,7 @@ void ClientSystems::BindViewProjectionMatrix(const Vector3& cameraPosition, cons
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
+void Helpers::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
 {
 	Matrix viewProjection = Matrix::Identity;
 	viewProjection *= XMMatrixOrthographicLH(static_cast<float>(Application::GetScreenWidth()), static_cast<float>(Application::GetScreenHeight()), 0.0f, 1.0f);
@@ -74,13 +74,13 @@ void ClientSystems::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer)
+void Helpers::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer)
 {
 	buffer.CopyData(0, palette);
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
 }
 
-void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
+void Helpers::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 {
 	if (!outAnimator->CurAnim || !outAnimator->Skel)
 	{
@@ -116,7 +116,7 @@ void ClientSystems::UpdateAnimation(AnimatorComponent* outAnimator, float deltaT
 	}
 }
 
-void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)
+void Helpers::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate)
 {
 	if (outAnimator->CurAnim == toAnim)
 	{
@@ -148,7 +148,7 @@ void ClientSystems::PlayAnimation(AnimatorComponent* outAnimator, Animation* toA
 	outAnimator->CurAnimTime = 0.0f;
 }
 
-void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)
+void Helpers::UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty)
 {
 	if (!bDirty)
 	{
@@ -160,7 +160,7 @@ void ClientSystems::UpdateBox(const AABB* const localBox, AABB* outWorldBox, con
 	outWorldBox->UpdateWorldBox(position, yaw);
 }
 
-bool ClientSystems::Intersects(const AABB& a, const AABB& b)
+bool Helpers::Intersects(const AABB& a, const AABB& b)
 {
 	const Vector3& aMin = a.GetMin();
 	const Vector3& aMax = a.GetMax();
@@ -178,7 +178,7 @@ bool ClientSystems::Intersects(const AABB& a, const AABB& b)
 	return !no;
 }
 
-bool ClientSystems::Intersects(const Vector2& position, int w, int h)
+bool Helpers::Intersects(const Vector2& position, int w, int h)
 {
 	POINT p;
 	GetCursorPos(&p);
@@ -190,7 +190,7 @@ bool ClientSystems::Intersects(const Vector2& position, int w, int h)
 	return contains;
 }
 
-void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette)
+void Helpers::computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette)
 {
 	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
 	vector<Matrix> currentPoses;
@@ -203,7 +203,7 @@ void ClientSystems::computeMatrixPalette(const Animation* anim, const Skeleton* 
 	}
 }
 
-void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, const Animation* toAnim, const Skeleton* skel, float fromAnimTime, float toAnimTime, float t, MatrixPalette* outPalette)
+void Helpers::computeBlendingMatrixPalette(const Animation* fromAnim, const Animation* toAnim, const Skeleton* skel, float fromAnimTime, float toAnimTime, float t, MatrixPalette* outPalette)
 {
 	const vector<Matrix>& globalInvBindPoses = skel->GetGlobalInvBindPoses();
 
@@ -220,7 +220,7 @@ void ClientSystems::computeBlendingMatrixPalette(const Animation* fromAnim, cons
 	}
 }
 
-Vector3 ClientSystems::ScreenToClip(const Vector2& coord)
+Vector3 Helpers::ScreenToClip(const Vector2& coord)
 {
 	Vector3 v;
 	v.x = -(Application::GetScreenWidth() / 2) + coord.x;
@@ -230,7 +230,7 @@ Vector3 ClientSystems::ScreenToClip(const Vector2& coord)
 	return v;
 }
 
-void ClientSystems::SetBoneAttachment(Entity& parent, Entity& child, const string& boneName)
+void Helpers::SetBoneAttachment(Entity& parent, Entity& child, const string& boneName)
 {
 	// Add AttachmentComponent to child
 	auto& parentAnimator = parent.GetComponent<AnimatorComponent>();

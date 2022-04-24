@@ -3,8 +3,8 @@
 
 #include "Tags.h"
 #include "Animation.h"
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Components.h"
+#include "Helpers.h"
 #include "Input.h"
 #include "LoginScene.h"
 #include "Mesh.h"
@@ -231,7 +231,7 @@ void Client::render()
 
 	// Set 3D camera
 	auto& camera = mMainCamera.GetComponent<CameraComponent>();
-	ClientSystems::BindViewProjectionMatrix(camera.Position,
+	Helpers::BindViewProjectionMatrix(camera.Position,
 		camera.Target, camera.Up, camera.FOV, camera.Buffer);
 
 	drawSkeletalMesh();
@@ -243,7 +243,7 @@ void Client::render()
 
 	// Set 2D camera
 	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
-	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
+	Helpers::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 
 	drawSpriteAndText();
 
@@ -332,7 +332,7 @@ void Client::processButton()
 		auto view = GetRegistry().view<ButtonComponent, RectTransformComponent>();
 		for (auto [entity, button, rect] : view.each())
 		{
-			bool contains = ClientSystems::Intersects(rect.Position, rect.Width, rect.Height);
+			bool contains = Helpers::Intersects(rect.Position, rect.Width, rect.Height);
 
 			if (contains)
 			{
@@ -363,7 +363,7 @@ void Client::updateAnimation(float deltaTime)
 	auto view = GetRegistry().view<AnimatorComponent>();
 	for (auto [entity, animator] : view.each())
 	{
-		ClientSystems::UpdateAnimation(&animator, deltaTime);
+		Helpers::UpdateAnimation(&animator, deltaTime);
 	}
 }
 
@@ -372,7 +372,7 @@ void Client::updateCollisionBox(float deltaTime)
 	auto view = GetRegistry().view<BoxComponent, TransformComponent>();
 	for (auto [entity, box, transform] : view.each())
 	{
-		ClientSystems::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
+		Helpers::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
 	}
 }
 
@@ -385,10 +385,10 @@ void Client::drawSkeletalMesh()
 		Entity e = Entity(entity, this);
 
 		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 		AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
-		ClientSystems::BindBoneMatrix(animator.Palette, animator.Buffer);
+		Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
 
 		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
@@ -406,7 +406,7 @@ void Client::drawStaticMesh()
 			Entity e = Entity(entity, this);
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}
@@ -420,7 +420,7 @@ void Client::drawStaticMesh()
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
 			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
-			ClientSystems::BindWorldMatrixAttached(&transform, &attach);
+			Helpers::BindWorldMatrixAttached(&transform, &attach);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}
@@ -433,7 +433,7 @@ void Client::drawCollisionBox()
 	auto view = GetRegistry().view<DebugDrawComponent, TransformComponent>();
 	for (auto [entity, debugDraw, transform] : view.each())
 	{
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 		mRenderer->SubmitDebugMesh(debugDraw.Mesi);
 	}
 }
@@ -446,7 +446,7 @@ void Client::drawSpriteAndText()
 		auto view = GetRegistry().view<SpriteRendererComponent, RectTransformComponent>();
 		for (auto [entity, sprite, rect] : view.each())
 		{
-			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 			mRenderer->SubmitSprite(sprite.Mesi, sprite.Tex);
 		}
 	}
@@ -455,7 +455,7 @@ void Client::drawSpriteAndText()
 		auto view = GetRegistry().view<TextComponent, RectTransformComponent>();
 		for (auto [entity, text, rect] : view.each())
 		{
-			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 			mRenderer->SubmitText(text.Txt);
 		}
 	}

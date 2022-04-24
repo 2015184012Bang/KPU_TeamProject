@@ -11,7 +11,7 @@ class Animation;
 class AABB;
 class Skeleton;
 
-class ClientSystems
+class Helpers
 {
 public:
 	static void UpdatePosition(Vector3* outPosition, const Vector3& to, bool* outDirty);

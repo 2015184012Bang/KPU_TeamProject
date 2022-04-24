@@ -3,8 +3,8 @@
 
 #include "Application.h"
 #include "Client.h"
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Components.h"
+#include "Helpers.h"
 #include "Input.h"
 #include "ResourceManager.h"
 #include "PacketManager.h"
@@ -85,7 +85,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 
 	auto& animator = character.GetComponent<AnimatorComponent>();
 	Animation* idleAnim = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
-	ClientSystems::PlayAnimation(&animator, idleAnim);
+	Helpers::PlayAnimation(&animator, idleAnim);
 }
 
 float LobbyScene::getXPosition(int clientID)
