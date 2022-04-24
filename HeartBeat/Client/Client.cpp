@@ -361,8 +361,6 @@ void Client::updateMovement(float deltaTime)
 		}
 
 		Helpers::UpdateYRotation(&transform.Rotation.y, scalar * XMConvertToDegrees(rotation.y), &transform.bDirty);
-
-		HB_LOG("Position: x-{0} z-{0}", transform.Position.x, transform.Position.z);
 	}
 }
 

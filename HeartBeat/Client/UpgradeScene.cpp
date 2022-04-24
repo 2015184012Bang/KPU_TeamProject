@@ -7,6 +7,7 @@
 #include "PacketManager.h"
 #include "Input.h"
 #include "Helpers.h"
+#include "Tags.h"
 
 UpgradeScene::UpgradeScene(Client* owner)
 	: Scene(owner)
@@ -16,8 +17,24 @@ UpgradeScene::UpgradeScene(Client* owner)
 
 void UpgradeScene::Enter()
 {
+	// 내 캐릭터 알아두기
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
+
+	// 로비씬 때 달랐던 플레이어들의 위치를 (0, 0, 0)으로 통일해주기
+	auto entities = mOwner->FindObjectsWithTag<Tag_Player>();
+	if (entities.empty())
+	{
+		HB_LOG("No Player exists.");
+		return;
+	}
+
+	for (auto eid : entities)
+	{
+		Entity character = { eid, mOwner };
+		auto& transform = character.GetComponent<TransformComponent>();
+		Helpers::UpdatePosition(&transform.Position, Vector3::Zero, &transform.bDirty);
+	}
 }
 
 void UpgradeScene::Exit()
@@ -32,6 +49,10 @@ void UpgradeScene::ProcessInput()
 	{
 		switch (packet.PacketID)
 		{
+		case ANSWER_MOVE:
+			processAnswerMove(packet);
+			break;
+
 		case NOTIFY_MOVE:
 			processNotifyMove(packet);
 			break;
@@ -128,4 +149,12 @@ void UpgradeScene::processNotifyMove(const PACKET& packet)
 
 	auto& movement = target.GetComponent<MovementComponent>();
 	movement.Direction = nmPacket->Direction;
+}
+
+void UpgradeScene::processAnswerMove(const PACKET& packet)
+{
+	ANSWER_MOVE_PACKET* amPacket = reinterpret_cast<ANSWER_MOVE_PACKET*>(packet.DataPtr);
+
+	auto& transform = mPlayerCharacter.GetComponent<TransformComponent>();
+	transform.Position = amPacket->Position;
 }

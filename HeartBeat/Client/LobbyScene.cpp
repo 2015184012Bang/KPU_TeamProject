@@ -93,6 +93,8 @@ void LobbyScene::createCharacterMesh(int clientID)
 	// 씬 변경에도 삭제되지 않도록 DontDestroyOnLoad 태그를 붙여둔다.
 	character.AddTag<Tag_DontDestroyOnLoad>();
 
+	character.AddTag<Tag_Player>();
+
 	// 서버와 동기화가 필요한 객체들은 ID를 부여한다.
 	// ex. 플레이어 캐릭터, 적, NPC... 등
 	// 플레이어 캐릭터의 아이디는 본인의 클라이언트 아이디를 대입한다.

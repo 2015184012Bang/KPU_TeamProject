@@ -99,8 +99,6 @@ void User::Update()
 	}
 
 	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
-
-	LOG("Position: x-{0} z-{0}", mPosition.x, mPosition.z);
 }
 
 void User::SetMoveDirection(const Vector3& direction)

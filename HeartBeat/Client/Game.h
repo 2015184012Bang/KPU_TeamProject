@@ -38,7 +38,7 @@ public:
 
 		vector<entt::entity> entts;
 		entts.reserve(view.size());
-		for (auto [entity, comp] : view.each())
+		for (auto entity: view)
 		{
 			entts.push_back(entity);
 		}

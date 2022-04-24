@@ -182,6 +182,12 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	auto user = mUserManager->FindUserByIndex(sessionIndex);
 	user->SetMoveDirection(rmPacket->Direction);
 
+	ANSWER_MOVE_PACKET amPacket = {};
+	amPacket.PacketID = ANSWER_MOVE;
+	amPacket.PacketSize = sizeof(amPacket);
+	amPacket.Position = user->GetPosition();
+	SendPacketFunction(sessionIndex, sizeof(amPacket), reinterpret_cast<char*>(&amPacket));
+
 	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
 
 	if (connectedUsers.empty())
