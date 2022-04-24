@@ -117,5 +117,8 @@
     <ClInclude Include="Script.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Node.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

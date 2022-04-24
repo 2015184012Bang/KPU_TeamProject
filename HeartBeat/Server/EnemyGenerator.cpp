@@ -10,6 +10,8 @@
 #include "CollisionChecker.h"
 #include "Server.h"
 #include "ServerComponents.h"
+#include <memory>
+#include "Enemy.h"
 
 
 EnemyGenerator::EnemyGenerator(Server* server)
@@ -47,6 +49,8 @@ void EnemyGenerator::Update()
 
 			// 체력 컴포넌트 부착
 			enemy.AddComponent<HealthComponent>(ENEMY_MAX_HEALTH);
+
+			enemy.AddComponent<AIComponent>(std::make_shared<Enemy>(enemy));
 
 			// TODO: 적의 타입에 따라 다른 박스 설정 필요
 			enemy.AddComponent<BoxComponent>(mCollsionChecker->GetLocalBox(L"Virus"), transform.Position);

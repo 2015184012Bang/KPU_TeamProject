@@ -108,6 +108,7 @@
   <ItemGroup>
     <ClCompile Include="AIController.cpp" />
     <ClCompile Include="CollisionChecker.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyGenerator.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="ServerComponents.cpp" />
@@ -121,6 +122,7 @@
   <ItemGroup>
     <ClInclude Include="AIController.h" />
     <ClInclude Include="CollisionChecker.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyGenerator.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="ServerComponents.h" />

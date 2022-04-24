@@ -123,6 +123,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="GameMap.h" />
+    <ClInclude Include="Node.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Entity.h" />

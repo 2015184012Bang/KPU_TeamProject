@@ -40,6 +40,9 @@
     <ClCompile Include="AIController.cpp">
       <Filter>Source Files\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ServerPCH.h">
@@ -64,6 +67,9 @@
       <Filter>Source Files\AI</Filter>
     </ClInclude>
     <ClInclude Include="Tank.h">
+      <Filter>Source Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
       <Filter>Source Files\AI</Filter>
     </ClInclude>
   </ItemGroup>
