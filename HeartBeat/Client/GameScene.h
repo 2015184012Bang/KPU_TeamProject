@@ -30,7 +30,7 @@ private:
 
 private:
     Entity mMyCharacter;
-    HBID mMyCharacterID;
+    //HBID mMyCharacterID;
 };
 
 //Texture* GetTileTex(int type);

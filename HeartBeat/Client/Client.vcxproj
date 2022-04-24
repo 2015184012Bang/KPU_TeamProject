@@ -119,7 +119,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameMap.cpp" />
-    <ClCompile Include="HBID.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="ClientMain.cpp" />
     <ClCompile Include="LobbyScene.cpp" />
@@ -157,7 +156,6 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameMap.h" />
-    <ClInclude Include="HBID.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="LobbyScene.h" />
     <ClInclude Include="Log.h" />

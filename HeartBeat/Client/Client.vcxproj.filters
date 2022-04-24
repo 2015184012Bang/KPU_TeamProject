@@ -109,9 +109,6 @@
     <ClCompile Include="Script.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="HBID.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -220,9 +217,6 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="HBID.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Define.h">

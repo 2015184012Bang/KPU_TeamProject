@@ -42,7 +42,7 @@ public:
 		return objs;
 	}
 
-	Entity Find(const string& targetName)
+	Entity Find(const wstring& targetName)
 	{
 		auto view = mOwner.GetGame()->GetRegistry().view<NameComponent>();
 
@@ -54,7 +54,7 @@ public:
 			}
 		}
 
-		HB_ASSERT(false, "There is no entity named: {0}", targetName);
+		HB_ASSERT(false, "There is no entity with name");
 	}
 
 	virtual void Start() = 0;

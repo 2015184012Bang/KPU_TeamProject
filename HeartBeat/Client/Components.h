@@ -2,7 +2,6 @@
 
 #include "UploadBuffer.h"
 #include "Bone.h"
-#include "HBID.h"
 #include "AABB.h"
 
 class Mesh;
@@ -131,17 +130,17 @@ struct AttachmentChildComponent
 struct IDComponent
 {
 	IDComponent();
-	IDComponent(uint64 id);
+	IDComponent(const uint32 id);
 
-	HBID ID;
+	uint32 ID;
 };
 
 struct AttachmentParentComponent
 {
 	AttachmentParentComponent();
-	AttachmentParentComponent(const HBID& id);
+	AttachmentParentComponent(const uint32 id);
 
-	HBID ChildID;
+	uint32 ChildID;
 };
 
 struct BoxComponent
@@ -156,9 +155,9 @@ struct BoxComponent
 struct NameComponent
 {
 	NameComponent();
-	NameComponent(const string& name);
+	NameComponent(wstring_view name);
 
-	string Name;
+	wstring Name;
 };
 
 struct HealthComponent

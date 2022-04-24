@@ -86,11 +86,8 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(mesh, texFile);
 	e.AddComponent<AnimatorComponent>(skelFile);
-
-	RegisterEntity(id.ID, e);
 
 	if (boxFile.size() != 0)
 	{
@@ -101,36 +98,22 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint64 eid, const wstring& boxFile /*= L""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const wstring& boxFile /*= L""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
-	auto& id = e.AddComponent<IDComponent>(eid);
 	e.AddComponent<MeshRendererComponent>(mesh, texFile);
 	e.AddComponent<AnimatorComponent>(skelFile);
 
-	RegisterEntity(id.ID, e);
+	e.AddComponent<IDComponent>(eid);
 
 	if (boxFile.size() != 0)
 	{
 		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
 		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
 	}
-
-	return e;
-}
-
-Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint64 eid)
-{
-	Entity e = Entity(GetNewEntity(), this);
-
-	auto& transform = e.AddComponent<TransformComponent>();
-	e.AddTag<Tag_StaticMesh>();
-	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
-	auto& id = e.AddComponent<IDComponent>(eid);
-	RegisterEntity(id.ID, e);
 
 	return e;
 }
@@ -141,10 +124,26 @@ Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFi
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
 
-	RegisterEntity(id.ID, e);
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
+
+	return e;
+}
+
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const wstring& boxFile /*= L""*/)
+{
+	Entity e = Entity(GetNewEntity(), this);
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<Tag_StaticMesh>();
+	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
+
+	e.AddComponent<IDComponent>(eid);
 
 	if (boxFile.size() != 0)
 	{
@@ -160,11 +159,8 @@ Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile,
 	Entity e = Entity(GetNewEntity(), this);
 
 	e.AddTag<Tag_Sprite>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(width, height);
 	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), texFile, drawOrder);
-
-	RegisterEntity(id.ID, e);
 
 	// Do sorting by draw order when sprite is added
 	GetRegistry().sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
@@ -180,11 +176,8 @@ Entity Client::CreateTextEntity(const Font* fontFile)
 	Entity e = Entity(GetNewEntity(), this);
 
 	e.AddTag<Tag_Text>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
 	e.AddComponent<TextComponent>(new Text(fontFile));
-
-	RegisterEntity(id.ID, e);
 
 	return e;
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "HBID.h"
-
 class Game
 {
 	friend class Entity;
@@ -17,10 +15,8 @@ public:
 	bool ShouldClose() const { return !mbRunning; }
 	void SetRunning(bool value) { mbRunning = value; }
 
-	void RegisterEntity(const HBID& id, const entt::entity entity);
-
 	void DestroyAll();
-	void DestroyEntityByID(const HBID& id);
+	void DestroyEntityByID(const uint32 id);
 	void DestroyEntity(const entt::entity entity);
 
 	template<typename T>
@@ -29,7 +25,7 @@ public:
 		auto view = mRegistry.view<T>();
 		for (auto entity : view)
 		{
-			DestroyEntity(entity);
+			mRegistry.destroy(entity);
 		}
 	}
 
@@ -38,25 +34,23 @@ public:
 	{
 		auto view = mRegistry.view<T>();
 
-		HB_ASSERT((!view.empty()), "0 entities with the tag!");
+		HB_ASSERT(!view.empty(), "0 entities with the tag!");
 
 		vector<entt::entity> entts;
 		entts.reserve(view.size());
-		for (auto id : view)
+		for (auto [entity, comp] : view.each())
 		{
-			entts.push_back(id);
+			entts.push_back(entity);
 		}
 
 		return entts;
 	}
 
-	entt::entity GetEntityByID(const HBID& id);
+	entt::entity GetEntityByID(const uint32 id);
 	entt::registry& GetRegistry() { return mRegistry; }
 	entt::entity GetNewEntity();
 
 private:
-	unordered_map<HBID, entt::entity> mEntities;
-
 	bool mbRunning;
 	entt::registry mRegistry;
 };

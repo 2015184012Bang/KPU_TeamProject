@@ -11,20 +11,6 @@ Game::Game()
 
 }
 
-void Game::RegisterEntity(const HBID& id, const entt::entity entity)
-{
-	auto iter = mEntities.find(id);
-
-	if (iter == mEntities.end())
-	{
-		mEntities.emplace(id, entity);
-	}
-	else
-	{
-		HB_LOG("Entity ID[{0}] already exists!", id);
-	}
-}
-
 entt::entity Game::GetNewEntity()
 {
 	return mRegistry.create();
@@ -36,49 +22,40 @@ void Game::DestroyAll()
 		Entity e(entity, this);
 		if (!e.HasComponent<Tag_DontDestroyOnLoad>())
 		{
-			DestroyEntityByID(e.GetComponent<IDComponent>().ID);
+			mRegistry.destroy(entity);
 		}
 		});
 }
 
-void Game::DestroyEntityByID(const HBID& id)
+void Game::DestroyEntityByID(const uint32 id)
 {
-	auto iter = mEntities.find(id);
+	auto view = mRegistry.view<IDComponent>();
 
-	Entity e(iter->second, this);
-	if (e.HasComponent<AttachmentParentComponent>())
+	for (auto [entity, idc] : view.each())
 	{
-		DestroyEntityByID(e.GetComponent<AttachmentParentComponent>().ChildID);
-	}
-
-	if (iter != mEntities.end())
-	{
-		HB_LOG("Entity ID[{0}] Deleted!", id);
-		mRegistry.destroy(iter->second);
-		mEntities.erase(iter);
-	}
-	else
-	{
-		HB_LOG("There is no entity id[{0}]!", id);
+		if (idc.ID == id)
+		{
+			mRegistry.destroy(entity);
+		}
 	}
 }
 
 void Game::DestroyEntity(const entt::entity entity)
 {
-	Entity e(entity, this);
-	DestroyEntityByID(e.GetComponent<IDComponent>().ID);
+	mRegistry.destroy(entity);
 }
 
-entt::entity Game::GetEntityByID(const HBID& id)
+entt::entity Game::GetEntityByID(const uint32 id)
 {
-	auto iter = mEntities.find(id);
+	auto view = mRegistry.view<IDComponent>();
 
-	if (iter != mEntities.end())
+	for (auto [entity, idc] : view.each())
 	{
-		return iter->second;
+		if (idc.ID == id)
+		{
+			return entity;
+		}
 	}
-	else
-	{
-		return entt::null;
-	}
+
+	return entt::null;
 }

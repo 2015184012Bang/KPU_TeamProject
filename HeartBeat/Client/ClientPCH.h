@@ -19,6 +19,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <string_view>
 #include <Windows.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
@@ -35,6 +36,7 @@ using std::array;
 using std::deque;
 using std::shared_ptr;
 using std::unique_ptr;
+using std::wstring_view;
 
 using int8 = __int8;
 using int16 = __int16;

@@ -252,24 +252,24 @@ AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint3
 }
 
 IDComponent::IDComponent()
-	: ID()
+	: ID(UINT32_MAX)
 {
 	HB_LOG("Entity ID: {0}", ID);
 }
 
-IDComponent::IDComponent(uint64 id)
+IDComponent::IDComponent(const uint32 id)
 	: ID(id)
 {
 	HB_LOG("Entity ID: {0}", ID);
 }
 
 AttachmentParentComponent::AttachmentParentComponent()
-	: ChildID(-1)
+	: ChildID(UINT32_MAX)
 {
 
 }
 
-AttachmentParentComponent::AttachmentParentComponent(const HBID& id)
+AttachmentParentComponent::AttachmentParentComponent(const uint32 id)
 	: ChildID(id)
 {
 
@@ -291,13 +291,13 @@ BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float 
 }
 
 NameComponent::NameComponent()
-	: Name("default")
+	: Name(L"default")
 {
 
 }
 
-NameComponent::NameComponent(const string& name)
-	: Name(name)
+NameComponent::NameComponent(wstring_view name)
+	: Name(name.data())
 {
 
 }
