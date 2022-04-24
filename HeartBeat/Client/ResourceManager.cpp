@@ -1,8 +1,6 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
-#include "Define.h"
-
 #include "AABB.h"
 #include "Animation.h"
 #include "Font.h"
@@ -192,28 +190,18 @@ Font* ResourceManager::GetFont(const wstring& path)
 	}
 }
 
-
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)
 {
 	switch (clientID)
 	{
 	case 0:
-		*outMeshFile = MESH(L"Character_Green.mesh");
-		*outTexFile = TEXTURE(L"Character_Green.png");
-		*outSkelFile = SKELETON(L"Character_Green.skel");
-		break;
+		return { MESH(L"Character_Green.mesh"), TEXTURE(L"Character_Green.png"), SKELETON(L"Character_Green.skel") };
 
 	case 1:
-		*outMeshFile = MESH(L"Character_Pink.mesh");
-		*outTexFile = TEXTURE(L"Character_Pink.png");
-		*outSkelFile = SKELETON(L"Character_Pink.skel");
-		break;
+		return { MESH(L"Character_Pink.mesh"), TEXTURE(L"Character_Pink.png"), SKELETON(L"Character_Pink.skel") };
 
 	case 2:
-		*outMeshFile = MESH(L"Character_Red.mesh");
-		*outTexFile = TEXTURE(L"Character_Red.png");
-		*outSkelFile = SKELETON(L"Character_Red.skel");
-		break;
+		return { MESH(L"Character_Red.mesh"), TEXTURE(L"Character_Red.png"), SKELETON(L"Character_Red.skel") };
 
 	default:
 		HB_ASSERT(false, "Unknown client id: {0}", clientID);
@@ -221,21 +209,19 @@ void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, 
 	}
 }
 
-wstring GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
+Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 {
-	wstring animFile;
-
 	switch (clientID)
 	{
 	case 0: // Character_Green
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CG_Idle.anim");
+			return ANIM(L"CG_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CG_Run.anim");
+			return ANIM(L"CG_Run.anim");
 			break;
 		}
 		break;
@@ -244,11 +230,11 @@ wstring GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CP_Idle.anim");
+			return ANIM(L"CP_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CP_Run.anim");
+			return ANIM(L"CP_Run.anim");
 			break;
 		}
 		break;
@@ -257,76 +243,69 @@ wstring GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CR_Idle.anim");
+			return ANIM(L"CR_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CR_Run.anim");
+			return ANIM(L"CR_Run.anim");
 			break;
 		}
 		break;
 	}
 
-	return animFile;
+	return nullptr;
 }
 
-void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType)
 {
 	switch (enemyType)
 	{
-	case Virus:
-		*outMeshFile = MESH(L"Virus.mesh");
-		*outTexFile = TEXTURE(L"Virus.png");
-		*outSkelFile = SKELETON(L"Virus.skel");
-		break;
+	case eEnemyType::Virus:
+		return { MESH(L"Virus.mesh") , TEXTURE(L"Virus.png") , SKELETON(L"Virus.skel") };
 
-	case Dog:
-		*outMeshFile = MESH(L"Dog.mesh");
-		*outTexFile = TEXTURE(L"Dog.png");
-		*outSkelFile = SKELETON(L"Dog.skel");
-		break;
+	case eEnemyType::Dog:
+		return { MESH(L"Dog.mesh") , TEXTURE(L"Dog.png") , SKELETON(L"Dog.skel") };
 
 	default:
+		HB_ASSERT(false, "UnKnown Enemy Type!");
 		break;
 	}
 }
 
-wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
+Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
 {
-	wstring animFile;
-
 	switch (enemyType)
 	{
-	case Virus:
+	case eEnemyType::Virus:
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			animFile = ANIM(L"Virus_Idle.anim");
+			return ANIM(L"Virus_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			animFile = ANIM(L"Virus_Run.anim");
+			return ANIM(L"Virus_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			animFile = ANIM(L"Virus_Attack.anim");
+			return ANIM(L"Virus_Attack.anim");
 			break;
 		}
 		break;
 
-	case Dog:
+	case eEnemyType::Dog:
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			animFile = ANIM(L"Dog_Idle.anim");
+			return ANIM(L"Dog_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			animFile = ANIM(L"Dog_Run.anim");
+			return ANIM(L"Dog_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			animFile = ANIM(L"Dog_Attack.anim");
+			return ANIM(L"Dog_Attack.anim");
 			break;
 		}
 		break;
@@ -335,5 +314,5 @@ wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
 		break;
 	}
 
-	return animFile;
+	return nullptr;
 }

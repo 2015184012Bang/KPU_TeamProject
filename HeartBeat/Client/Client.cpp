@@ -16,6 +16,10 @@
 #include "Timer.h"
 #include "Utils.h"
 #include "Script.h"
+#include "Mesh.h"
+#include "Font.h"
+#include "Texture.h"
+#include "Skeleton.h"
 
 Client::Client()
 	: Game()
@@ -75,15 +79,16 @@ void Client::ChangeScene(Scene* scene)
 	mActiveScene->Enter();
 }
 
-Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile)
+
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const wstring& boxFile /*= L""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
 	auto& id = e.AddComponent<IDComponent>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
+	e.AddComponent<MeshRendererComponent>(mesh, texFile);
+	e.AddComponent<AnimatorComponent>(skelFile);
 
 	RegisterEntity(id.ID, e);
 
@@ -96,15 +101,15 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid, const wstring& boxFile /*= L""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint64 eid, const wstring& boxFile /*= L""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
 	auto& id = e.AddComponent<IDComponent>(eid);
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
+	e.AddComponent<MeshRendererComponent>(mesh, texFile);
+	e.AddComponent<AnimatorComponent>(skelFile);
 
 	RegisterEntity(id.ID, e);
 
@@ -117,47 +122,47 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint64 eid)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
-	auto& id = e.AddComponent<IDComponent>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-
-	RegisterEntity(id.ID, e);
-
-	if (boxFile.size() != 0)
-	{
-		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
-		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
-	}
-
-	return e;
-}
-
-Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid)
-{
-	Entity e = Entity(GetNewEntity(), this);
-
-	auto& transform = e.AddComponent<TransformComponent>();
-	e.AddTag<Tag_StaticMesh>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
+	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
 	auto& id = e.AddComponent<IDComponent>(eid);
 	RegisterEntity(id.ID, e);
 
 	return e;
 }
 
-Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder /*= 100*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const wstring& boxFile /*= L""*/)
+{
+	Entity e = Entity(GetNewEntity(), this);
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<Tag_StaticMesh>();
+	auto& id = e.AddComponent<IDComponent>();
+	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
+
+	RegisterEntity(id.ID, e);
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
+
+	return e;
+}
+
+Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder /*= 100*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	e.AddTag<Tag_Sprite>();
 	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(width, height);
-	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile), drawOrder);
+	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), texFile, drawOrder);
 
 	RegisterEntity(id.ID, e);
 
@@ -170,14 +175,14 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile,
 	return e;
 }
 
-Entity Client::CreateTextEntity(const wstring& fontFile)
+Entity Client::CreateTextEntity(const Font* fontFile)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
 	e.AddTag<Tag_Text>();
 	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(fontFile)));
+	e.AddComponent<TextComponent>(new Text(fontFile));
 
 	RegisterEntity(id.ID, e);
 
@@ -264,9 +269,9 @@ void Client::createAnimationTransitions()
 {
 	// 바이러스 애니메이션 트랜지션 설정
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Run.anim"));
-		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Attack.anim"));
+		Animation* idleAnim = ANIM(L"Virus_Idle.anim");
+		Animation* runningAnim = ANIM(L"Virus_Run.anim");
+		Animation* attackingAnim = ANIM(L"Virus_Attack.anim");
 		attackingAnim->SetLoop(false);
 
 		idleAnim->AddTransition("Run", runningAnim);
@@ -277,33 +282,33 @@ void Client::createAnimationTransitions()
 
 	// 캐릭터_그린
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CG_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CG_Run.anim"));
+		Animation* idleAnim = ANIM(L"CG_Idle.anim");
+		Animation* runningAnim = ANIM(L"CG_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_핑크
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CP_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CP_Run.anim"));
+		Animation* idleAnim = ANIM(L"CP_Idle.anim");
+		Animation* runningAnim = ANIM(L"CP_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_레드
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CR_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CR_Run.anim"));
+		Animation* idleAnim = ANIM(L"CR_Idle.anim");
+		Animation* runningAnim = ANIM(L"CR_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// NPC(세포)
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Run.anim"));
-		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Attack.anim"));
+		Animation* idleAnim = ANIM(L"Cell_Idle.anim");
+		Animation* runningAnim = ANIM(L"Cell_Run.anim");
+		Animation* attackingAnim = ANIM(L"Cell_Attack.anim");
 
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);
@@ -313,8 +318,8 @@ void Client::createAnimationTransitions()
 
 	// 탱크
 	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim"));
+		Animation* idleAnim = ANIM(L"Tank_Idle.anim");
+		Animation* runningAnim = ANIM(L"Tank_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}

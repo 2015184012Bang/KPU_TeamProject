@@ -28,16 +28,16 @@ void GameScene::Enter()
 	HB_LOG("TestScene::Enter");
 
 	// Map1 »ý¼º
-	const vector<Tile>& gameMap = gGameMap.GetTiles();
-	for (const Tile& tile : gameMap)
-	{
-		Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
-		t.AddTag<Tag_Tile>();
-		auto& transform = t.GetComponent<TransformComponent>();
-		transform.Position.x = tile.X;
-		transform.Position.y = -TILE_WIDTH;
-		transform.Position.z = tile.Z;
-	}
+	//const vector<Tile>& gameMap = gGameMap.GetTiles();
+	//for (const Tile& tile : gameMap)
+	//{
+	//	Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
+	//	t.AddTag<Tag_Tile>();
+	//	auto& transform = t.GetComponent<TransformComponent>();
+	//	transform.Position.x = tile.X;
+	//	transform.Position.y = -TILE_WIDTH;
+	//	transform.Position.z = tile.Z;
+	//}
 }
 
 void GameScene::Exit()
@@ -406,23 +406,23 @@ void GameScene::Update(float deltaTime)
 //	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
 //}
 //
-wstring GetTileTex(int type)
-{
-	switch (type)
-	{
-	case Grass:
-		return TEXTURE(L"Cube_Pink.png");
-		break;
-	case Rail:
-		return TEXTURE(L"Cube_SkyBlue.png");
-		break;
-	case Obstacle:
-		return TEXTURE(L"Cube_Black.png");
-		break;
-	default:
-		HB_ASSERT(false, "Invalid tile type: {0}", type);
-		break;
-	}
-
-	return L"";
-}
+//wstring GetTileTex(int type)
+//{
+//	switch (type)
+//	{
+//	case Grass:
+//		return TEXTURE(L"Cube_Pink.png");
+//		break;
+//	case Rail:
+//		return TEXTURE(L"Cube_SkyBlue.png");
+//		break;
+//	case Obstacle:
+//		return TEXTURE(L"Cube_Black.png");
+//		break;
+//	default:
+//		HB_ASSERT(false, "Invalid tile type: {0}", type);
+//		break;
+//	}
+//
+//	return L"";
+//}

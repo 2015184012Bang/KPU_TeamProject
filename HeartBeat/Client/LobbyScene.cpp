@@ -75,22 +75,16 @@ void LobbyScene::ProcessInput()
 
 void LobbyScene::createCharacterMesh(int clientID)
 {
-	wstring meshFile;
-	wstring texFile;
-	wstring skelFile;
+	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
 
-	GetCharacterFiles(clientID, &meshFile, &texFile, &skelFile);
-
-	Entity character = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile);
+	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel);
 
 	auto& transform = character.GetComponent<TransformComponent>();
 	transform.Position.x = getXPosition(clientID);
 	transform.Rotation.y = 180.0f;
 
 	auto& animator = character.GetComponent<AnimatorComponent>();
-
-	wstring idleAnimFile = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
-	Animation* idleAnim = ResourceManager::GetAnimation(idleAnimFile);
+	Animation* idleAnim = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
 	ClientSystems::PlayAnimation(&animator, idleAnim);
 }
 

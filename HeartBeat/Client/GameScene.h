@@ -33,5 +33,5 @@ private:
     HBID mMyCharacterID;
 };
 
-wstring GetTileTex(int type);
+//Texture* GetTileTex(int type);
 

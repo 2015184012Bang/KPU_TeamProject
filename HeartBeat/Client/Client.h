@@ -5,6 +5,10 @@
 class Scene;
 class Renderer;
 class PacketManager;
+class Mesh;
+class Texture;
+class Skeleton;
+class Font;
 
 class Client :
     public Game
@@ -18,12 +22,12 @@ public:
 
     void ChangeScene(Scene* scene);
 
-    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
-    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid);
-    Entity CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder = 100);
-    Entity CreateTextEntity(const wstring& fontFile);
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const wstring& boxFile = L"");
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint64 eid, const wstring& boxFile = L"");
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const wstring& boxFile = L"");
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint64 eid);
+    Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
+    Entity CreateTextEntity(const Font* fontFile);
 
     Entity& GetMainCamera() { return mMainCamera; }
 

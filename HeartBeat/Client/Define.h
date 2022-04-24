@@ -6,7 +6,7 @@ constexpr int PLAYER_MAX_HEALTH = 10;
 constexpr int SERVER_PORT = 9000;
 constexpr float TILE_WIDTH = 500.0f;
 
-enum : uint8
+enum class eEnemyType: uint8
 {
 	Virus,
 	Dog,

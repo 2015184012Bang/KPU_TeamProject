@@ -9,6 +9,7 @@
 #include "LobbyScene.h"
 #include "PacketManager.h"
 #include "Utils.h"
+#include "ResourceManager.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
