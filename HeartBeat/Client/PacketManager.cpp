@@ -28,6 +28,15 @@ void PacketManager::Init()
 		HB_LOG("Failed to create client socket: {0}", WSAGetLastError());
 		return;
 	}
+
+	int opt = 1;
+	retVal = setsockopt(mSocket, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<char*>(&opt), sizeof(opt));
+
+	if (SOCKET_ERROR == retVal)
+	{
+		HB_LOG("Failed to turn off nagle: {0}", WSAGetLastError());
+		return;
+	}
 }
 
 void PacketManager::Shutdown()
