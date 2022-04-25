@@ -5,27 +5,17 @@
 tuple<int, int> Enemy::GetGoalIndex()
 {
 	int tileWidth = TILE_WIDTH;
-	int goalRow = static_cast<int>(setPlayerPosition->x) % tileWidth;
-	int goalCol = static_cast<int>(setPlayerPosition->y) & tileWidth;
+	goalRow = static_cast<int>(setPlayerPosition->x) / tileWidth;
+	goalCol = static_cast<int>(setPlayerPosition->z) / tileWidth;
 
-
-	for (int i = 0; i < maxRow; ++i)
-	{
-		for (int j = 0; j < maxCol; ++j)
-		{
-			if (i == goalRow && j == goalCol)
-			{
-				return std::make_tuple(i, j);
-			}
-		}
-    }
+	return std::make_tuple(goalRow, goalCol);
 }
 
 void Enemy::FindPath()
 {
 	if (openList.size() == 0)
 	{
-		HB_LOG("No Path");
+		//HB_LOG("No Path");
 	}
 
 	Node* openNode = nullptr;
@@ -39,19 +29,22 @@ void Enemy::FindPath()
 			openNode = op;
 		}
 	}
-
+	
 	if (openNode != nullptr)
 	{
-		if (openNode->TYPE == -1)
+		if (openNode->TYPE == -1 || (openNode->ROW == goalRow && openNode->COL == goalCol))
 		{
 			while (openNode != nullptr)
 			{
 				int row = openNode->ROW;
 				int col = openNode->COL;
 
-				openNode = openNode->conn;
-
+				HB_LOG("({0}, {1})", row, col);
 				mPath.push(Tile(openNode->TYPE, row * TILE_WIDTH, col * TILE_WIDTH));
+
+				if(openNode->conn != nullptr)
+					openNode = openNode->conn;
+				
 			}
 		}
 		else
@@ -112,15 +105,11 @@ void Enemy::FindPath()
 
 void Enemy::SetStartNode()
 {
-	int row = static_cast<int>(transform->Position.x) % static_cast<int>(TILE_WIDTH);
-	int col = static_cast<int>(transform->Position.z) % static_cast<int>(TILE_WIDTH);
-	Node* node = new Node;
-	node->ROW = row;
-	node->COL = col;
+	int myRow = static_cast<int>(transform->Position.x) / static_cast<int>(TILE_WIDTH);
+	int myCol = static_cast<int>(transform->Position.z) / static_cast<int>(TILE_WIDTH);
+	Node* startNode = new Node(myRow, myCol);
 
-	HB_LOG("(", row, ",", col, ")");
-
-	openList.push_back(node);
+	openList.push_back(startNode);
 }
 
 Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode)
