@@ -49,9 +49,9 @@ void GameManager::PushUserData(const INT32 sessionIndex, const UINT32 dataSize, 
 	auto user = mUserManager->FindUserByIndex(sessionIndex);
 	user->SetData(dataSize, pData);
 
-	WriteLockGuard guard(mLock);
 	if (auto packet = user->GetPacket(); packet.SessionIndex != -1)
 	{
+		WriteLockGuard guard(mLock);
 		mBackPacketQueue->push(packet);
 	}
 }
