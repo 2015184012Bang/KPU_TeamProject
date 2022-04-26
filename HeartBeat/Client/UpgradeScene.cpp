@@ -24,7 +24,7 @@ void UpgradeScene::Enter()
 	mPlayerCharacter = Entity(entity, mOwner);
 
 	initPlayersPositionToZero();
-	makeRolePlanes();
+	createPlanes();
 }
 
 void UpgradeScene::Exit()
@@ -193,8 +193,9 @@ void UpgradeScene::processAnswerMove(const PACKET& packet)
 	transform.Position = amPacket->Position;
 }
 
-void UpgradeScene::makeRolePlanes()
+void UpgradeScene::createPlanes()
 {
+	// °ø°Ý ¹Ù´Ú »ý¼º
 	{
 		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
 			TEXTURE(L"Attack.png"), L"../Assets/Meshes/Plane.mesh");
@@ -206,6 +207,7 @@ void UpgradeScene::makeRolePlanes()
 		attackPlane.AddComponent<NameComponent>(L"AttackPlane"sv);
 	}
 
+	// Èú ¹Ù´Ú »ý¼º
 	{
 		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
 			TEXTURE(L"Heal.png"), L"../Assets/Meshes/Plane.mesh");
@@ -216,6 +218,7 @@ void UpgradeScene::makeRolePlanes()
 		healPlane.AddComponent<NameComponent>(L"HealPlane"sv);
 	}
 
+	// ¼­Æ÷Æ® ¹Ù´Ú »ý¼º
 	{
 		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
 			TEXTURE(L"Support.png"), L"../Assets/Meshes/Plane.mesh");
@@ -225,5 +228,14 @@ void UpgradeScene::makeRolePlanes()
 
 		supportPlane.AddTag<Tag_Plane>();
 		supportPlane.AddComponent<NameComponent>(L"SupportPlane"sv);
+	}
+
+	// ¹Ù´Ú
+	{
+		Entity plane = mOwner->CreateStaticMeshEntity(MESH(L"Big_Plane.mesh"),
+			TEXTURE(L"Brick.jpg"));
+
+		auto& transform = plane.GetComponent<TransformComponent>();
+		transform.Position.y -= 45.0f;
 	}
 }

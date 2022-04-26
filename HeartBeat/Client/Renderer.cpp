@@ -512,6 +512,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH(L"Tank.mesh");
 	MESH(L"Thermometer.mesh");
 	MESH(L"Virus.mesh");
+	MESH(L"Big_Plane.mesh");
 	
 	SKELETON(L"Bag.skel");
 	SKELETON(L"Bag_Lv3.skel");

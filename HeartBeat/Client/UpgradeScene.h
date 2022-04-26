@@ -18,7 +18,7 @@ public:
 
 private:
     void initPlayersPositionToZero();
-    void makeRolePlanes();
+    void createPlanes();
 
     bool pollKeyboardPressed();
     bool pollKeyboardReleased();
