@@ -39,7 +39,12 @@ public:
 
     unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
+    UINT16 ServerPort = 0;
+    string ServerIP = {};
+
 private:
+    void loadServerSettingsFromXML(string_view fileName);
+
     void processInput();
     void update();
     void render();

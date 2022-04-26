@@ -2,7 +2,6 @@
 
 constexpr int ENEMY_MAX_HEALTH = 3;
 constexpr int PLAYER_MAX_HEALTH = 10;
-constexpr int SERVER_PORT = 9000;
 constexpr float TILE_WIDTH = 400.0f;
 constexpr float PLAYER_MAX_SPEED = 300.0f;
 

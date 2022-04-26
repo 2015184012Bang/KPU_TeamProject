@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <Server>
+    <Port>9000</Port>
+    <IP>127.0.0.1</IP>
+  </Server>
+</Root>

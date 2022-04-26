@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
+#include "tinyxml2.h"
+
 #include "Tags.h"
 #include "Animation.h"
 #include "Components.h"
@@ -31,6 +33,8 @@ bool Client::Init()
 {
 	Input::Init();
 	Timer::Init();
+
+	loadServerSettingsFromXML("settings.xml");
 
 	mPacketManager = std::make_unique<PacketManager>();
 	mPacketManager->Init();
@@ -180,6 +184,23 @@ Entity Client::CreateTextEntity(const Font* fontFile)
 	e.AddComponent<TextComponent>(new Text(fontFile));
 
 	return e;
+}
+
+void Client::loadServerSettingsFromXML(string_view fileName)
+{
+	tinyxml2::XMLDocument doc;
+	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
+
+	HB_ASSERT(error == tinyxml2::XML_SUCCESS, "Failed to read xml file: {0}", fileName.data());
+
+	auto root = doc.RootElement();
+	
+	auto elem = root->FirstChildElement("Server")->FirstChildElement("Port");
+	string port = elem->GetText();
+	ServerPort = std::stoi(port);
+
+	elem = elem->NextSiblingElement();
+	ServerIP = elem->GetText();
 }
 
 void Client::processInput()

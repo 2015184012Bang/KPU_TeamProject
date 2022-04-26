@@ -37,6 +37,7 @@ using std::deque;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::wstring_view;
+using std::string_view;
 
 using int8 = __int8;
 using int16 = __int16;

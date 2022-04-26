@@ -53,7 +53,7 @@ void LoginScene::Update(float deltaTime)
 	// 엔터 키를 누르면 서버에 접속 요청
 	if (Input::IsButtonPressed(eKeyCode::Return) && !mbConnected)
 	{
-		bool retVal = mOwner->GetPacketManager()->Connect("127.0.0.1", SERVER_PORT);
+		bool retVal = mOwner->GetPacketManager()->Connect(mOwner->ServerIP, mOwner->ServerPort);
 
 		if (retVal)
 		{
