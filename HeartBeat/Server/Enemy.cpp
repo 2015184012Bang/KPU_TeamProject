@@ -5,8 +5,8 @@
 tuple<int, int> Enemy::GetGoalIndex()
 {
 	int tileWidth = TILE_WIDTH;
-	goalRow = static_cast<int>(setPlayerPosition->x) / tileWidth;
-	goalCol = static_cast<int>(setPlayerPosition->z) / tileWidth;
+	goalRow = static_cast<int>(mChasingPlayerPosition->x) / tileWidth;
+	goalCol = static_cast<int>(mChasingPlayerPosition->z) / tileWidth;
 
 	return std::make_tuple(goalRow, goalCol);
 }
@@ -42,9 +42,8 @@ void Enemy::FindPath()
 				HB_LOG("({0}, {1})", row, col);
 				mPath.push(Tile(openNode->TYPE, row * TILE_WIDTH, col * TILE_WIDTH));
 
-				if(openNode->conn != nullptr)
-					openNode = openNode->conn;
-				
+				openNode = openNode->conn;
+				mbFind = true;
 			}
 		}
 		else
@@ -110,6 +109,22 @@ void Enemy::SetStartNode()
 	Node* startNode = new Node(myRow, myCol);
 
 	openList.push_back(startNode);
+}
+
+bool Enemy::CheckPath()
+{
+	float gap = abs(mPrevPlayerPosition.x - mChasingPlayerPosition->x) + 
+				abs(mPrevPlayerPosition.z - mChasingPlayerPosition->z);
+
+	if (gap < TILE_WIDTH)
+	{
+		return true;
+	}
+	else
+	{
+		false;
+	}
+
 }
 
 Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode)
@@ -217,7 +232,8 @@ bool Enemy::GetNextTarget(Tile* outTarget)
 		return false;
 	}
 	
-	*outTarget = mPath.front();
+	*outTarget = mPath.top();
 	mPath.pop();
+
 	return true;
 }

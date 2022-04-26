@@ -18,6 +18,7 @@
 #include <tuple>
 #include <list>
 #include <queue>
+#include <stack>
 #include <memory>
 #include <algorithm>
 #include <filesystem>

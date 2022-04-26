@@ -43,8 +43,12 @@ public:
 			auto& playerTransform = p.GetComponent<STransformComponent>();
 			playerPositon.push_back(playerTransform.Position);
 		}
-		setPlayerPosition = &playerPositon[0];
+		mChasingPlayerPosition = &playerPositon[0];
+		mPrevPlayerPosition = *mChasingPlayerPosition;
 
+		SetStartNode();
+		FindPath();
+		bool retVal = GetNextTarget(&mCurrentTarget);
 
 		/*int randomindx = Random::RandInt(0, 0);
 		playerOne = &playerPositon[randomindx];*/
@@ -53,40 +57,55 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
-		Vector3 to = Vector3(mCurrrentTarget.X, 0.0f, mCurrrentTarget.Z);
+		
 
 		if (!mbChase)
 		{
-			if (!NearZero(transform->Position, to))
+			if (!NearZero(transform->Position, mPrevPlayerPosition))
 			{
 				mbChase = true;
 				openList.clear();
 				closeList.clear();
 				SetStartNode();
+				FindPath();
+				bool retVal = GetNextTarget(&mCurrentTarget);
 			}
 		}
 		else if (mbChase)
 		{
 
-			openList.clear();
-			closeList.clear();
-			SetStartNode();
+			//openList.clear();
+			//closeList.clear();
+			//SetStartNode();
+			
+			if (mbFind == false)
+			{
+				//mPrevPlayerPosition = mChasingPlayerPosition;
+				//mPath = std::queue<Tile>();
+				FindPath();
+			}
 
-			FindPath();
+			
+			Vector3 to = Vector3(mCurrentTarget.X, 0.0f, mCurrentTarget.Z);
+			//HB_LOG("MoveToward : ({0},{1})", mCurrentTarget.X, mCurrentTarget.Z);
+
 
 			ServerSystems::MoveToward(transform, to, Timer::GetDeltaTime());
 			AddTag<Tag_UpdateTransform>();
 
+
 			if (NearZero(transform->Position, to))
 			{
-				bool retVal = GetNextTarget(&mCurrrentTarget);
+				
+				bool retVal = GetNextTarget(&mCurrentTarget);
 
 				if (!retVal)
 				{
 					mbChase = false;
+					mbFind = false;
 				}
 			}
-
+			
 		}
 
 	}
@@ -94,22 +113,24 @@ public:
 	tuple<int, int> GetGoalIndex();
 	void FindPath();
 	void SetStartNode();
+	bool CheckPath();	// true : 갱신 필요 X	false : 갱신 필요 O
 
 	Node* GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode);
 	Node* CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode);
 
 	bool GetNextTarget(Tile* outTarget);
-
+	
 
 private:
 	vector<Vector3> playerPositon;
-	Vector3* setPlayerPosition;
+	Vector3* mChasingPlayerPosition;
+	Vector3 mPrevPlayerPosition;
 
 	STransformComponent* transform = nullptr;
 	STransformComponent* playerTransform = nullptr;
 
-	std::queue<Tile> mPath;
-	Tile mCurrrentTarget;
+	std::stack<Tile> mPath;
+	Tile mCurrentTarget;
 
 	int maxRow;
 	int maxCol;
@@ -119,6 +140,6 @@ private:
 	list<Node*> openList;
 	list<Node*> closeList;
 
-
+	bool mbFind = false;
 	bool mbChase = true;
 };
