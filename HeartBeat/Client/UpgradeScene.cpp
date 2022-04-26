@@ -55,7 +55,10 @@ void UpgradeScene::ProcessInput()
 
 void UpgradeScene::Update(float deltaTime)
 {
-	if (pollKeyboardPressed() || pollKeyboardReleased())
+	bool isKeyPressed = pollKeyboardPressed();
+	bool isKeyReleased = pollKeyboardReleased();
+
+	if (isKeyPressed || isKeyReleased)
 	{
 		REQUEST_MOVE_PACKET packet = {};
 		packet.PacketID = REQUEST_MOVE;
@@ -96,25 +99,25 @@ bool UpgradeScene::pollKeyboardPressed()
 
 	if (Input::IsButtonPressed(eKeyCode::Left))
 	{
-		direction.x = -1.0f;
+		direction.x -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Right))
 	{
-		direction.x = 1.0f;
+		direction.x += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Up))
 	{
-		direction.z = 1.0f;
+		direction.z += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Down))
 	{
-		direction.z = -1.0f;
+		direction.z -= 1.0f;
 		bChanged = true;
 	}
 
