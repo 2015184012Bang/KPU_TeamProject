@@ -13,7 +13,7 @@ public:
 
 	void Init();
 
-	void BindAndListen(const UINT16 bindPort);
+	void BindAndListen();
 
 	bool SendMsg(const INT32 sessionIndex, const UINT32 dataSize, char* msg);
 
@@ -44,6 +44,8 @@ private:
 	Session* getSession(const INT32 sessionIndex);
 
 	void closeSession(Session* session, bool bForce = false);
+
+	UINT16 getPortNumber(string_view fileName);
 
 private:
 	vector<Session*> mSessions;

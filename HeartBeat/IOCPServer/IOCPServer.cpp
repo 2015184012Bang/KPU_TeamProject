@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "IOCPServer.h"
 
+#include "tinyxml2.h"
+
 IOCPServer::~IOCPServer()
 {
 	if (!mIsEnd)
@@ -35,8 +37,10 @@ void IOCPServer::Init()
 	LOG("Winsock init success...");
 }
 
-void IOCPServer::BindAndListen(const UINT16 bindPort)
+void IOCPServer::BindAndListen()
 {
+	UINT16 bindPort = getPortNumber("settings.xml");
+
 	SOCKADDR_IN serverAddr;
 	ZeroMemory(&serverAddr, sizeof(serverAddr));
 	serverAddr.sin_family = AF_INET;
@@ -250,4 +254,18 @@ void IOCPServer::closeSession(Session* session, bool bForce /*= false*/)
 
 	session->Close(bForce);
 	OnClose(session->GetIndex());
+}
+
+UINT16 IOCPServer::getPortNumber(string_view fileName)
+{
+	tinyxml2::XMLDocument doc;
+	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
+
+	ASSERT(error == tinyxml2::XML_SUCCESS, "Failed to read xml file: {0}", fileName.data());
+
+	auto root = doc.RootElement();
+
+	auto elem = root->FirstChildElement("Server")->FirstChildElement("Port");
+	string port = elem->GetText();
+	return static_cast<UINT16>(std::stoi(port));
 }

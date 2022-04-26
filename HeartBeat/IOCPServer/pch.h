@@ -30,6 +30,7 @@
 #include <thread>
 #include <queue>
 #include <chrono>
+#include <string_view>
 
 #pragma warning(push)
 #pragma warning(disable:4819)

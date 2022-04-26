@@ -6,7 +6,7 @@ int main()
 	GameServer server;
 
 	server.Init();
-	server.BindAndListen(9000);
+	server.BindAndListen();
 	server.Run(3);
 	
 	while (true);
