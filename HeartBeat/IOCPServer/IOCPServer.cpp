@@ -189,7 +189,8 @@ void IOCPServer::workerThread()
 		}
 		case IOOperation::SEND:
 		{
-			session->SendCompleted(numBytes);
+			delete[] overEx->WsaBuf.buf;
+			delete overEx;
 			break;
 		}
 		default:

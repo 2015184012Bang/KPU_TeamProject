@@ -27,17 +27,12 @@ public:
 
 	bool SendMsg(const UINT32 dataSize, char* msg);
 
-	void SendCompleted(const UINT32 dataSize);
-
 public:
 	INT32 GetIndex() { return mIndex; }
 	bool IsConnected() { return mIsConnected; }
 	UINT64 GetLastestClosedTimeSec() { return mLatestClosedTimeSec; }
 	SOCKET GetSocket() { return mSocket; }
 	char* GetRecvBuffer() { return mRecvBuf; }
-
-private:
-	void sendDataInQueue();
 
 private:
 	// 세션 인덱스
@@ -63,9 +58,4 @@ private:
 	// WSARecv() 호출에 사용
 	OVERLAPPEDEX mRecvContext = {};
 	char mRecvBuf[RECV_BUFFER_SIZE] = { 0, };
-
-	Lock mSendLock;
-
-	// 보낼 데이터를 담음
-	queue<OVERLAPPEDEX*> mSendQueue;
 };

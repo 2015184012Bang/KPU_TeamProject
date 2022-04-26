@@ -115,51 +115,14 @@ bool Session::BindRecv()
 
 bool Session::SendMsg(const UINT32 dataSize, char* msg)
 {
-	// 새 OVERLAPPED 구조체를 만들고 보낼 데이터를 복사한다.
-	// 그다음 SendQueue에 넣는다.
-	// 자원 해제는 SendCompleted()에서 수행된다.
+	// 자원 해제는 IOCPServer::workerThread에서 수행된다.
 	OVERLAPPEDEX* sendOver = new OVERLAPPEDEX;
 	ZeroMemory(sendOver, sizeof(OVERLAPPEDEX));
 	sendOver->Operation = IOOperation::SEND;
 	sendOver->WsaBuf.buf = new char[dataSize];
 	sendOver->WsaBuf.len = dataSize;
 	CopyMemory(sendOver->WsaBuf.buf, msg, dataSize);
-
-	WriteLockGuard guard(mSendLock);
-	mSendQueue.push(sendOver);
-
-	if (mSendQueue.size() == 1)
-	{
-		sendDataInQueue();
-	}
-
-	return true;
-}
-
-void Session::SendCompleted(const UINT32 dataSize)
-{
-	// TODO: 부분 Send인 경우 세션의 연결을 종료시키자.
-
-	LOG("SendCompleted: {0} bytes.", dataSize);
-
-	// SendQueue에서 첫 번째 OVERLAPPED를 꺼내 삭제한다.
-	WriteLockGuard guard(mSendLock);
-	OVERLAPPEDEX* sendOver = mSendQueue.front();
-	delete[] sendOver->WsaBuf.buf;
-	delete sendOver;
-	mSendQueue.pop();
-
-	// SendQueue가 비어있지 않다면 다시 보낸다.
-	if (!mSendQueue.empty())
-	{
-		sendDataInQueue();
-	}
-}
-
-void Session::sendDataInQueue()
-{
-	OVERLAPPEDEX* sendOver = mSendQueue.front();
-
+	
 	int retVal = WSASend(mSocket,
 		&sendOver->WsaBuf,
 		1,
@@ -171,5 +134,8 @@ void Session::sendDataInQueue()
 	if (SOCKET_ERROR == retVal && (WSAGetLastError() != WSA_IO_PENDING))
 	{
 		LOG("WSASend() failed: {0}", WSAGetLastError());
+		return false;
 	}
+
+	return true;
 }
