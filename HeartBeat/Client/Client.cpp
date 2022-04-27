@@ -22,6 +22,7 @@
 #include "Font.h"
 #include "Texture.h"
 #include "Skeleton.h"
+#include "TestScene.h"
 
 Client::Client()
 	: Game()
@@ -45,7 +46,7 @@ bool Client::Init()
 	createCameraEntity();
 	createAnimationTransitions();
 
-	mActiveScene = std::make_unique<LoginScene>(this);
+	mActiveScene = std::make_unique<TestScene>(this);
 	mActiveScene->Enter();
 
 	return true;
@@ -184,6 +185,24 @@ Entity Client::CreateTextEntity(const Font* fontFile)
 	e.AddComponent<TextComponent>(new Text(fontFile));
 
 	return e;
+}
+
+void Client::RearrangeAttachment()
+{
+	auto view = GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
+
+	for (auto [entity, parent, transform, animator] : view.each())
+	{
+		for (auto [boneName, eid] : parent.Children)
+		{
+			Entity child = { eid, this };
+			auto& attachment = child.GetComponent<AttachmentChildComponent>();
+
+			attachment.BoneIndex = animator.Skel->GetBoneIndexByName(boneName);
+			attachment.ParentPalette = &animator.Palette;
+			attachment.ParentTransform = &transform;
+		}
+	}
 }
 
 void Client::loadServerSettingsFromXML(string_view fileName)

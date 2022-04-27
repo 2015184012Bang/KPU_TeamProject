@@ -263,18 +263,6 @@ IDComponent::IDComponent(const uint32 id)
 	HB_LOG("Entity ID: {0}", ID);
 }
 
-AttachmentParentComponent::AttachmentParentComponent()
-	: ChildID(UINT32_MAX)
-{
-
-}
-
-AttachmentParentComponent::AttachmentParentComponent(const uint32 id)
-	: ChildID(id)
-{
-
-}
-
 BoxComponent::BoxComponent()
 	: Local(nullptr)
 	, World()

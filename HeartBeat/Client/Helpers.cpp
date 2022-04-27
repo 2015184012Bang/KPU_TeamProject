@@ -44,7 +44,7 @@ void Helpers::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* out
 
 void Helpers::BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment)
 {
-	TransformComponent* parentTransform = attachment->ParentTransform;
+	const TransformComponent* parentTransform = attachment->ParentTransform;
 	float rotationY = outTransform->Rotation.y + parentTransform->Rotation.y;
 	Vector3 position = outTransform->Position + parentTransform->Position;
 
@@ -230,15 +230,56 @@ Vector3 Helpers::ScreenToClip(const Vector2& coord)
 	return v;
 }
 
-void Helpers::SetBoneAttachment(Entity& parent, Entity& child, const string& boneName)
+void Helpers::AttachBone(Entity& parent, Entity& child, string_view boneName)
 {
 	// Add AttachmentComponent to child
 	auto& parentAnimator = parent.GetComponent<AnimatorComponent>();
 	auto& parentTransform = parent.GetComponent<TransformComponent>();
-	uint32 boneIndex = parentAnimator.Skel->GetBoneIndexByName(boneName);
+	uint32 boneIndex = parentAnimator.Skel->GetBoneIndexByName(boneName.data());
 	child.AddComponent<AttachmentChildComponent>(&parentAnimator.Palette, boneIndex, &parentTransform);
 
-	// Add ChildComponent to parent
-	auto& childId = child.GetComponent<IDComponent>();
-	parent.AddComponent<AttachmentParentComponent>(childId.ID);
+	// Child의 entity id를 부모가 가지고 있는다.
+	if (parent.HasComponent<AttachmentParentComponent>())
+	{
+		auto& attachParent = parent.GetComponent<AttachmentParentComponent>();
+		attachParent.Children.emplace_back(boneName.data(), child);
+	}
+	else
+	{
+		auto& attachParent = parent.AddComponent<AttachmentParentComponent>();
+		attachParent.Children.emplace_back(boneName.data(), child);
+	}
+}
+
+vector<entt::entity> Helpers::GetEntityToDetach(Entity& parent, bool bAll /*= true*/, string_view boneName /*= ""sv*/)
+{
+	auto& attachParent = parent.GetComponent<AttachmentParentComponent>();
+	vector<entt::entity> entities;
+
+	// 부모의 모든 자식을 리턴
+	if (bAll && boneName.empty())
+	{
+		auto& children = attachParent.Children;
+
+		while(!children.empty())
+		{
+			entities.push_back(children.back().second);
+			children.pop_back();
+		}
+	}
+	else
+	{
+		// 특정 본의 entity만 리턴
+		auto iter = std::find_if(attachParent.Children.begin(), attachParent.Children.end(), [boneName](const auto& child) {
+			return child.first == boneName;
+			});
+
+		if (iter != attachParent.Children.end())
+		{
+			entities.push_back(iter->second);
+			attachParent.Children.erase(iter);
+		}
+	}
+
+	return entities;
 }

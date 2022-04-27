@@ -137,10 +137,7 @@ struct IDComponent
 
 struct AttachmentParentComponent
 {
-	AttachmentParentComponent();
-	AttachmentParentComponent(const uint32 id);
-
-	uint32 ChildID;
+	vector<std::pair<string, entt::entity>> Children;
 };
 
 struct BoxComponent

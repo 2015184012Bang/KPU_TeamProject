@@ -39,6 +39,9 @@ public:
 
     unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
+    // Child entity를 삭제하고 난 후 호출해줄 것.
+    void RearrangeAttachment();
+
     UINT16 ServerPort = 0;
     string ServerIP = {};
 

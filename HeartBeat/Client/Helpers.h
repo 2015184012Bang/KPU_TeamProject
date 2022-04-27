@@ -4,6 +4,8 @@
 #include "Bone.h"
 #include "Entity.h"
 
+using namespace std::string_view_literals;
+
 struct AnimatorComponent;
 struct TransformComponent;
 struct AttachmentChildComponent;
@@ -28,7 +30,14 @@ public:
 	static bool Intersects(const AABB& a, const AABB& b);
 	static bool Intersects(const Vector2& position, int w, int h);
 	static Vector3 ScreenToClip(const Vector2& coord);
-	static void SetBoneAttachment(Entity& parent, Entity& child, const string& boneName);
+	static void AttachBone(Entity& parent, Entity& child, string_view boneName);
+
+	// [사용법]
+	// 1. 모든 자식 엔티티를 삭제하고 싶다
+	// bAll : true, boneName : 디폴트
+	// 2. 특정 자식 엔티티만 삭제하고 싶다
+	// bAll : false, boneName: 삭제할 엔티티가 붙어있는 본의 이름
+	static vector<entt::entity> GetEntityToDetach(Entity& parent, bool bAll = true, string_view boneName = ""sv);
 
 private:
 	static void computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette);
