@@ -204,8 +204,8 @@ std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)
 		return { MESH("Character_Red.mesh"), TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel") };
 
 	default:
-		HB_ASSERT(false, "Unknown client id: {0}", clientID);
-		break;
+		HB_LOG("Unknown client id: {0}", clientID);
+		return { nullptr, nullptr, nullptr };
 	}
 }
 
@@ -267,8 +267,8 @@ std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType)
 		return { MESH("Dog.mesh") , TEXTURE("Dog.png") , SKELETON("Dog.skel") };
 
 	default:
-		HB_ASSERT(false, "UnKnown Enemy Type!");
-		break;
+		HB_LOG("UnKnown Enemy Type!");
+		return { nullptr, nullptr, nullptr };
 	}
 }
 

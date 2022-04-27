@@ -23,9 +23,12 @@
 #include <Windows.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-#include <entt/entt.hpp>
 
+#pragma warning(push)
+#pragma warning(disable:4819)
+#include <entt/entt.hpp>
 #include "Log.h"
+#pragma warning(pop)
 
 using std::string;
 using std::vector;
@@ -47,6 +50,9 @@ using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
 
 namespace fs = std::filesystem;
+
+using namespace std::string_literals;
+using namespace std::string_view_literals;
 
 #pragma comment(lib, "d3d12")
 #pragma comment(lib, "dxgi")
