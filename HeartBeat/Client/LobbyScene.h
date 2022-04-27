@@ -26,8 +26,11 @@ private:
 	float getXPosition(int clientID);
 
 	void processNofifyLogin(const PACKET& packet);
-	void processAnswerGameStart(const PACKET& packet);
+	void processNotifyEnterUpgrade(const PACKET& packet);
 
 	std::tuple<Mesh*, Texture*> getCharacterBelt(int clientID);
+
+private:
+	bool mbChangeScene = false;
 };
 

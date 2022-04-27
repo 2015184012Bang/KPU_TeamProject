@@ -29,9 +29,10 @@ private:
 	void processUserConnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestLogin(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
-	void processRequestGameStart(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 

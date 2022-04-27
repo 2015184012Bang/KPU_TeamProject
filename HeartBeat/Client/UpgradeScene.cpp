@@ -40,6 +40,9 @@ void UpgradeScene::Enter()
 void UpgradeScene::Exit()
 {
 	SoundManager::StopSound("Countdown.mp3");
+	
+	// 만일 똑딱이 아직도 재생 중이라면 멈춘다.
+	SoundManager::StopSound("ClockTick.mp3");
 
 	mOwner->DestroyAll();
 }
@@ -63,8 +66,18 @@ void UpgradeScene::ProcessInput()
 			processNotifyUpgrade(packet);
 			break;
 
+		case NOTIFY_ENTER_GAME:
+			processNotifyEnterGame(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
+			break;
+		}
+
+		if (mbChangeScene)
+		{
+			mOwner->ChangeScene(new GameScene(mOwner));
 			break;
 		}
 	}
@@ -75,10 +88,20 @@ void UpgradeScene::Update(float deltaTime)
 	mElapsed += deltaTime;
 
 	// 시작 전 5초가 되면 카운트다운을 시작한다.
-	if (mElapsed > FIVE_SECS_BEFORE_START && !mbChangeScene)
+	if (mElapsed > FIVE_SECS_BEFORE_START && !mbCountdownPlayed)
 	{
-		mbChangeScene = true;
+		mbCountdownPlayed = true;
 		startCountdown();
+	}
+
+	// 시작할 시간이 되면 서버에 통지.
+	// 방장이 대표로 서버에 패킷 송신
+	if (mElapsed > SECS_TO_START)
+	{
+		REQUEST_ENTER_GAME_PACKET packet = {};
+		packet.PacketID = REQUEST_ENTER_GAME;
+		packet.PacketSize = sizeof(packet);
+		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
 	bool isKeyPressed = pollKeyboardPressed();
@@ -244,6 +267,20 @@ void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
 	Entity target = { entity, mOwner };
 	
 	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
+}
+
+
+void UpgradeScene::processNotifyEnterGame(const PACKET& packet)
+{
+	NOTIFY_ENTER_GAME_PACKET* nmgPacket = reinterpret_cast<NOTIFY_ENTER_GAME_PACKET*>(packet.DataPtr);
+
+	if (nmgPacket->Result != ERROR_CODE::SUCCESS)
+	{
+		HB_LOG("Unable to enter game scene.");
+		return;
+	}
+
+	mbChangeScene = true;
 }
 
 uint8 UpgradeScene::getPresetNumber(string_view planeName)

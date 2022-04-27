@@ -57,7 +57,6 @@ void LobbyScene::Exit()
 void LobbyScene::ProcessInput()
 {
 	PACKET packet;
-	bool bRecvGameStart = false;
 
 	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
@@ -67,9 +66,8 @@ void LobbyScene::ProcessInput()
 			processNofifyLogin(packet);
 			break;
 
-		case ANSWER_ENTER_UPGRADE:
-			processAnswerGameStart(packet);
-			bRecvGameStart = true;
+		case NOTIFY_ENTER_UPGRADE:
+			processNotifyEnterUpgrade(packet);
 			break;
 			
 		default:
@@ -77,8 +75,9 @@ void LobbyScene::ProcessInput()
 			break;
 		}
 
-		if (bRecvGameStart)
+		if (mbChangeScene)
 		{
+			mOwner->ChangeScene(new UpgradeScene(mOwner));
 			break;
 		}
 	}
@@ -150,17 +149,17 @@ void LobbyScene::processNofifyLogin(const PACKET& packet)
 	createCharacterMesh(nfyPacket->ClientID);
 }
 
-void LobbyScene::processAnswerGameStart(const PACKET& packet)
+void LobbyScene::processNotifyEnterUpgrade(const PACKET& packet)
 {
-	ANSWER_ENTER_UPGRADE_PACKET* gsPacket = reinterpret_cast<ANSWER_ENTER_UPGRADE_PACKET*>(packet.DataPtr);
+	NOTIFY_ENTER_UPGRADE_PACKET* neuPacket = reinterpret_cast<NOTIFY_ENTER_UPGRADE_PACKET*>(packet.DataPtr);
 
-	if (gsPacket->Result != ERROR_CODE::START_GAME)
+	if (neuPacket->Result != ERROR_CODE::SUCCESS)
 	{
-		HB_LOG("Unable to start game.");
+		HB_LOG("Unable to enter upgrade scene.");
 		return;
 	}
 
-	mOwner->ChangeScene(new UpgradeScene(mOwner));
+	mbChangeScene = true;
 }
 
 std::tuple<Mesh*, Texture*> LobbyScene::getCharacterBelt(int clientID)

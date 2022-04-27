@@ -11,11 +11,13 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	mPacketIdToFunction[REQUEST_ENTER_UPGRADE] = std::bind(&GameManager::processRequestGameStart, this,
+	mPacketIdToFunction[REQUEST_ENTER_UPGRADE] = std::bind(&GameManager::processRequestEnterUpgrade, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_UPGRADE] = std::bind(&GameManager::processRequestUpgrade, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_ENTER_GAME] = std::bind(&GameManager::processRequestEnterGame, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// 蜡历 概聪历 积己
@@ -148,17 +150,17 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	sendNotifyLoginPacket(sessionIndex);
 }
 
-void GameManager::processRequestGameStart(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
 	if (sizeof(REQUEST_ENTER_UPGRADE_PACKET) != packetSize)
 	{
 		return;
 	}
 
-	ANSWER_ENTER_UPGRADE_PACKET ansPacket;
-	ansPacket.PacketID = ANSWER_ENTER_UPGRADE;
-	ansPacket.PacketSize = sizeof(ANSWER_ENTER_UPGRADE_PACKET);
-	ansPacket.Result = START_GAME;
+	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
+	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
+	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
+	ansPacket.Result = ERROR_CODE::SUCCESS;
 
 	sendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 }
@@ -213,6 +215,21 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 	nuPacket.EntityID = sessionIndex;
 	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
 	sendToAll(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
+}
+
+void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_ENTER_GAME_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	NOTIFY_ENTER_GAME_PACKET negPacket = {};
+	negPacket.PacketID = NOTIFY_ENTER_GAME;
+	negPacket.PacketSize = sizeof(negPacket);
+	negPacket.Result = ERROR_CODE::SUCCESS;
+
+	sendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
 }
 
 void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)

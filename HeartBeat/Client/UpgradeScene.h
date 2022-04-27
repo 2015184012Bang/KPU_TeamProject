@@ -8,6 +8,7 @@ class UpgradeScene :
 {
     const float DISTANCE_BETWEEN_PLANE = 700.0f;
     const float FIVE_SECS_BEFORE_START = 25.8f;
+    const float SECS_TO_START = 30.0f;
 	
     enum class UpgradePreset
 	{
@@ -40,6 +41,7 @@ private:
     void processNotifyMove(const PACKET& packet);
     void processAnswerMove(const PACKET& packet);
     void processNotifyUpgrade(const PACKET& packet);
+    void processNotifyEnterGame(const PACKET& packet);
 
 private:
     Entity mPlayerCharacter = {};
@@ -48,8 +50,7 @@ private:
     Vector3 mDirection = Vector3::Zero;
 
     float mElapsed = 0.0f;
-
-    // Temp
+    bool mbCountdownPlayed = false;
     bool mbChangeScene = false;
 };
 
