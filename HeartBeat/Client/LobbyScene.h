@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "../IOCPServer/Protocol.h"
 
+class Mesh;
+class Texture;
 
 class LobbyScene : public Scene
 {
@@ -25,5 +27,7 @@ private:
 
 	void processNofifyLogin(const PACKET& packet);
 	void processAnswerGameStart(const PACKET& packet);
+
+	std::tuple<Mesh*, Texture*> getCharacterBelt(int clientID);
 };
 

@@ -111,6 +111,14 @@ void LobbyScene::createCharacterMesh(int clientID)
 	auto& animator = character.GetComponent<AnimatorComponent>();
 	Animation* idleAnim = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
 	Helpers::PlayAnimation(&animator, idleAnim);
+
+	// 캐릭터에게 벨트 장착
+	auto [beltMesh, beltTex] = getCharacterBelt(clientID);
+	Entity belt = mOwner->CreateStaticMeshEntity(beltMesh, beltTex);
+
+	// 씬을 넘어가면서 벨트가 삭제되지 않도록 태그를 붙여둔다.
+	belt.AddTag<Tag_DontDestroyOnLoad>();
+	Helpers::AttachBone(character, belt, "Bip001 Spine");
 }
 
 float LobbyScene::getXPosition(int clientID)
@@ -153,4 +161,24 @@ void LobbyScene::processAnswerGameStart(const PACKET& packet)
 	}
 
 	mOwner->ChangeScene(new UpgradeScene(mOwner));
+}
+
+std::tuple<Mesh*, Texture*> LobbyScene::getCharacterBelt(int clientID)
+{
+	switch (clientID)
+	{
+	case 0:
+		return { MESH("Belt_Green.mesh"), TEXTURE("Belt_Green.png") };
+		break;
+
+	case 1:
+		return { MESH("Belt_Pink.mesh"), TEXTURE("Belt_Pink.png") };
+		break;
+
+	case 2:
+		return { MESH("Belt_Red.mesh"), TEXTURE("Belt_Red.png") };
+		break;
+	}
+
+	return { nullptr, nullptr };
 }

@@ -261,16 +261,25 @@ vector<entt::entity> Helpers::GetEntityToDetach(Entity& parent, bool bAll /*= tr
 	auto& attachParent = parent.GetComponent<AttachmentParentComponent>();
 	vector<entt::entity> entities;
 
-	// 부모의 모든 자식을 리턴
 	if (bAll && boneName.empty())
 	{
 		auto& children = attachParent.Children;
 
-		while(!children.empty())
+		for (const auto& child : children)
 		{
-			entities.push_back(children.back().second);
-			children.pop_back();
+			if (child.first == "Bip001 Spine") // 벨트는 기본 장착이므로 삭제 대상에 포함시키지 않는다.
+			{
+				continue;
+			}
+
+			entities.push_back(child.second);
 		}
+
+		// AttachmentParentComponent의 Children 벡터를 정리해준다.
+		children.erase(std::remove_if(children.begin(), children.end(), [](const auto& child)
+			{
+				return child.first != "Bip001 Spine";
+			}), children.end());
 	}
 	else
 	{
