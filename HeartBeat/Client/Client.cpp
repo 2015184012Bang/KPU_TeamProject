@@ -208,6 +208,13 @@ void Client::RearrangeAttachment()
 	}
 }
 
+
+void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
+{
+	mFollowCameraTarget = target;
+	mTargetOffset = offset;
+}
+
 void Client::loadServerSettingsFromXML(string_view fileName)
 {
 	tinyxml2::XMLDocument doc;
@@ -255,6 +262,11 @@ void Client::update()
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
 	updateCollisionBox(deltaTime);
+	
+	if (mFollowCameraTarget)
+	{
+		updateMainCamera();
+	}
 
 	if (mActiveScene)
 	{
@@ -438,6 +450,14 @@ void Client::updateCollisionBox(float deltaTime)
 	{
 		Helpers::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
 	}
+}
+
+void Client::updateMainCamera()
+{
+	const auto& targetPosition = mFollowCameraTarget.GetComponent<TransformComponent>().Position;
+	auto& cc = mMainCamera.GetComponent<CameraComponent>();
+	cc.Target = targetPosition;
+	cc.Position = { targetPosition.x + mTargetOffset.x, mTargetOffset.y, targetPosition.z + mTargetOffset.z };
 }
 
 void Client::drawSkeletalMesh()

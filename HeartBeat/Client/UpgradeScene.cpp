@@ -28,6 +28,8 @@ void UpgradeScene::Enter()
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
 
+	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{0.0f, 750.0f, -750.0f});
+
 	initPlayersPositionToZero();
 
 	// ¹Ù´Ú, °ø°Ý/Èú/¼­Æ÷Æ® ¹Ù´Ú »ý¼º
