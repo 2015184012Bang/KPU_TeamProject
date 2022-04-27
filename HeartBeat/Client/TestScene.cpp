@@ -35,12 +35,12 @@ void TestScene::Enter()
 			TEXTURE("Temp.png"));
 		Helpers::AttachBone(mCharacter, pill, "Support");
 
-		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag_Lv3.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Bag_Lv3.skel"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
+			TEXTURE("Temp.png"), SKELETON("HealPack.skel"));
 		Helpers::AttachBone(mCharacter, bag, "Bag");
 
 		auto& bagAnimator = bag.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&bagAnimator, ANIM("Bag.anim"));
+		Helpers::PlayAnimation(&bagAnimator, ANIM("HealPack.anim"));
 	}
 
 	{

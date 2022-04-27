@@ -239,7 +239,7 @@ void UpgradeScene::createPlanes()
 
 	// ¹Ù´Ú
 	{
-		Entity plane = mOwner->CreateStaticMeshEntity(MESH("Big_Plane.mesh"),
+		Entity plane = mOwner->CreateStaticMeshEntity(MESH("Plane_Big.mesh"),
 			TEXTURE("Brick.jpg"));
 
 		auto& transform = plane.GetComponent<TransformComponent>();
