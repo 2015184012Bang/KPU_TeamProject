@@ -11,7 +11,7 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	mPacketIdToFunction[REQUEST_GAME_START] = std::bind(&GameManager::processRequestGameStart, this,
+	mPacketIdToFunction[REQUEST_ENTER_UPGRADE] = std::bind(&GameManager::processRequestGameStart, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -150,14 +150,14 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 
 void GameManager::processRequestGameStart(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
-	if (sizeof(REQUEST_GAME_START_PACKET) != packetSize)
+	if (sizeof(REQUEST_ENTER_UPGRADE_PACKET) != packetSize)
 	{
 		return;
 	}
 
-	ANSWER_GAME_START_PACKET ansPacket;
-	ansPacket.PacketID = ANSWER_GAME_START;
-	ansPacket.PacketSize = sizeof(ANSWER_GAME_START_PACKET);
+	ANSWER_ENTER_UPGRADE_PACKET ansPacket;
+	ansPacket.PacketID = ANSWER_ENTER_UPGRADE;
+	ansPacket.PacketSize = sizeof(ANSWER_ENTER_UPGRADE_PACKET);
 	ansPacket.Result = START_GAME;
 
 	sendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));

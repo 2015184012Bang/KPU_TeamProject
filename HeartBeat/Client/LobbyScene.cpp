@@ -34,9 +34,9 @@ void LobbyScene::Enter()
 		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
 
 		gameStartButton.AddComponent<ButtonComponent>([this]() {
-			REQUEST_GAME_START_PACKET packet = {};
-			packet.PacketID = REQUEST_GAME_START;
-			packet.PacketSize = sizeof(REQUEST_GAME_START_PACKET);
+			REQUEST_ENTER_UPGRADE_PACKET packet = {};
+			packet.PacketID = REQUEST_ENTER_UPGRADE;
+			packet.PacketSize = sizeof(packet);
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 			});
 	}
@@ -67,7 +67,7 @@ void LobbyScene::ProcessInput()
 			processNofifyLogin(packet);
 			break;
 
-		case ANSWER_GAME_START:
+		case ANSWER_ENTER_UPGRADE:
 			processAnswerGameStart(packet);
 			bRecvGameStart = true;
 			break;
@@ -152,7 +152,7 @@ void LobbyScene::processNofifyLogin(const PACKET& packet)
 
 void LobbyScene::processAnswerGameStart(const PACKET& packet)
 {
-	ANSWER_GAME_START_PACKET* gsPacket = reinterpret_cast<ANSWER_GAME_START_PACKET*>(packet.DataPtr);
+	ANSWER_ENTER_UPGRADE_PACKET* gsPacket = reinterpret_cast<ANSWER_ENTER_UPGRADE_PACKET*>(packet.DataPtr);
 
 	if (gsPacket->Result != ERROR_CODE::START_GAME)
 	{
