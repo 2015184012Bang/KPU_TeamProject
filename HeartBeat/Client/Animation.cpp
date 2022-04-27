@@ -15,9 +15,9 @@ Animation::Animation()
 
 }
 
-void Animation::Load(const wstring& path)
+void Animation::Load(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
@@ -118,9 +118,9 @@ void Animation::GetGlobalPoseAtTime(vector<Matrix>* outPoses, const Skeleton* sk
 	}
 }
 
-Animation* Animation::FindNextAnimation(const string& triggerName) const
+Animation* Animation::FindNextAnimation(string_view triggerName) const
 {
-	auto iter = mTransitions.find(triggerName);
+	auto iter = mTransitions.find(triggerName.data());
 
 	if (iter != mTransitions.end())
 	{
@@ -132,9 +132,9 @@ Animation* Animation::FindNextAnimation(const string& triggerName) const
 	}
 }
 
-void Animation::AddTransition(const string& triggerName, Animation* anim)
+void Animation::AddTransition(string_view triggerName, Animation* anim)
 {
-	auto iter = mTransitions.find(triggerName);
+	auto iter = mTransitions.find(triggerName.data());
 
 	if (iter == mTransitions.end())
 	{
@@ -146,9 +146,9 @@ void Animation::AddTransition(const string& triggerName, Animation* anim)
 	}
 }
 
-void Animation::RemoveTransition(const string& triggerName)
+void Animation::RemoveTransition(string_view triggerName)
 {
-	auto iter = mTransitions.find(triggerName);
+	auto iter = mTransitions.find(triggerName.data());
 
 	if (iter == mTransitions.end())
 	{

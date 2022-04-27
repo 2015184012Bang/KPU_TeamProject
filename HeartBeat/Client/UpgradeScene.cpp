@@ -4,10 +4,12 @@
 #include "Client.h"
 #include "Components.h"
 #include "Character.h"
+#include "GameScene.h"
 #include "PacketManager.h"
 #include "Input.h"
 #include "Helpers.h"
 #include "Tags.h"
+#include "SoundManager.h"
 
 using namespace std::string_view_literals;
 
@@ -19,16 +21,26 @@ UpgradeScene::UpgradeScene(Client* owner)
 
 void UpgradeScene::Enter()
 {
+	// Bgm 재생
+	SoundManager::PlaySound("ClockTick.mp3");
+
 	// 내 캐릭터 알아두기
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
 
 	initPlayersPositionToZero();
+
+	// 바닥, 공격/힐/서포트 바닥 생성
 	createPlanes();
+
+	// 위에서 플레이어를 따라 다니는 시계 생성
+	createClock();
 }
 
 void UpgradeScene::Exit()
 {
+	SoundManager::StopSound("Countdown.mp3");
+
 	mOwner->DestroyAll();
 }
 
@@ -47,7 +59,12 @@ void UpgradeScene::ProcessInput()
 			processNotifyMove(packet);
 			break;
 
+		case NOTIFY_UPGRADE:
+			processNotifyUpgrade(packet);
+			break;
+
 		default:
+			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
 		}
 	}
@@ -55,6 +72,15 @@ void UpgradeScene::ProcessInput()
 
 void UpgradeScene::Update(float deltaTime)
 {
+	mElapsed += deltaTime;
+
+	// 시작 전 5초가 되면 카운트다운을 시작한다.
+	if (mElapsed > FIVE_SECS_BEFORE_START && !mbChangeScene)
+	{
+		mbChangeScene = true;
+		startCountdown();
+	}
+
 	bool isKeyPressed = pollKeyboardPressed();
 	bool isKeyReleased = pollKeyboardReleased();
 
@@ -63,7 +89,7 @@ void UpgradeScene::Update(float deltaTime)
 		REQUEST_MOVE_PACKET packet = {};
 		packet.PacketID = REQUEST_MOVE;
 		packet.PacketSize = sizeof(packet);
-		packet.Direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
+		packet.Direction = mDirection;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
@@ -72,6 +98,8 @@ void UpgradeScene::Update(float deltaTime)
 		// 상호작용키(SPACE BAR)를 누르면 어떤 업그레이드 Plane 위에 서 있는지 확인한다.
 		checkCollisionWithPlanes();
 	}
+
+	updateClockPosition();
 }
 
 void UpgradeScene::initPlayersPositionToZero()
@@ -94,30 +122,29 @@ void UpgradeScene::initPlayersPositionToZero()
 
 bool UpgradeScene::pollKeyboardPressed()
 {
-	Vector3& direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
 	bool bChanged = false;
 
 	if (Input::IsButtonPressed(eKeyCode::Left))
 	{
-		direction.x -= 1.0f;
+		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Right))
 	{
-		direction.x += 1.0f;
+		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Up))
 	{
-		direction.z += 1.0f;
+		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Down))
 	{
-		direction.z -= 1.0f;
+		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
@@ -126,30 +153,29 @@ bool UpgradeScene::pollKeyboardPressed()
 
 bool UpgradeScene::pollKeyboardReleased()
 {
-	Vector3& direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
 	bool bChanged = false;
 
 	if (Input::IsButtonReleased(eKeyCode::Left))
 	{
-		direction.x += 1.0f;
+		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Right))
 	{
-		direction.x -= 1.0f;
+		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Up))
 	{
-		direction.z -= 1.0f;
+		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Down))
 	{
-		direction.z += 1.0f;
+		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
@@ -170,7 +196,15 @@ void UpgradeScene::checkCollisionWithPlanes()
 		if (Helpers::Intersects(playerBox, planeBox))
 		{
 			auto& name = plane.GetComponent<NameComponent>().Name;
-			HB_LOG(L"Collision with plane: {0}", name);
+			
+			REQUEST_UPGRADE_PACKET packet = {};
+			packet.PacketID = REQUEST_UPGRADE;
+			packet.PacketSize = sizeof(packet);
+			packet.UpgradePreset = getPresetNumber(name);
+
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet),
+				sizeof(packet));
+
 			break;
 		}
 	}
@@ -184,6 +218,9 @@ void UpgradeScene::processNotifyMove(const PACKET& packet)
 
 	Entity target = { entity, mOwner };
 
+	auto& transform = target.GetComponent<TransformComponent>();
+	transform.Position = nmPacket->Position;
+
 	auto& movement = target.GetComponent<MovementComponent>();
 	movement.Direction = nmPacket->Direction;
 }
@@ -194,51 +231,179 @@ void UpgradeScene::processAnswerMove(const PACKET& packet)
 
 	auto& transform = mPlayerCharacter.GetComponent<TransformComponent>();
 	transform.Position = amPacket->Position;
+
+	auto& movement = mPlayerCharacter.GetComponent<MovementComponent>();
+	movement.Direction = amPacket->Direction;
+}
+
+void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
+{
+	NOTIFY_UPGRADE_PACKET* nuPacket = reinterpret_cast<NOTIFY_UPGRADE_PACKET*>(packet.DataPtr);
+
+	auto entity = mOwner->GetEntityByID(nuPacket->EntityID);
+	Entity target = { entity, mOwner };
+	
+	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
+}
+
+uint8 UpgradeScene::getPresetNumber(string_view planeName)
+{
+	if (planeName == "AttackPlane")
+	{
+		return static_cast<uint8>(UpgradePreset::ATTACK);
+	}
+	else if (planeName == "HealPlane")
+	{
+		return static_cast<uint8>(UpgradePreset::HEAL);
+	}
+	else
+	{
+		return static_cast<uint8>(UpgradePreset::SUPPORT);
+	}
+}
+
+void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
+{
+	// 기존에 붙여놨던 엔티티들을 삭제한다.
+	auto entities = Helpers::GetEntityToDetach(target);
+	for (auto entity : entities)
+	{
+		mOwner->DestroyEntity(entity);
+	}
+
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Syringe.mesh"),
+			TEXTURE("Temp.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
+			TEXTURE("Temp.png"));
+
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+
+	case UpgradePreset::HEAL:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
+			TEXTURE("Cotton_Swab.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
+			TEXTURE("Temp.png"), SKELETON("HealPack.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
+			TEXTURE("Temp.png"));
+
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+
+	case UpgradePreset::SUPPORT:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Thermometer.mesh"),
+			TEXTURE("Temp.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
+			TEXTURE("Temp.png"));
+
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+	}
+}
+
+void UpgradeScene::updateClockPosition()
+{
+	const auto& playerPosition = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+
+	auto& clockTransform = mClock.GetComponent<TransformComponent>();
+	Vector3 to = { playerPosition.x, clockTransform.Position.y, playerPosition.z };
+	Helpers::UpdatePosition(&clockTransform.Position, to, &clockTransform.bDirty);
 }
 
 void UpgradeScene::createPlanes()
 {
 	// 공격 바닥 생성
 	{
-		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Attack.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Attack.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = attackPlane.GetComponent<TransformComponent>();
 		transform.Position.x = -DISTANCE_BETWEEN_PLANE;
 
 		attackPlane.AddTag<Tag_Plane>();
-		attackPlane.AddComponent<NameComponent>(L"AttackPlane"sv);
+		attackPlane.AddComponent<NameComponent>("AttackPlane"sv);
 	}
 
 	// 힐 바닥 생성
 	{
-		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Heal.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Heal.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = healPlane.GetComponent<TransformComponent>();
 
 		healPlane.AddTag<Tag_Plane>();
-		healPlane.AddComponent<NameComponent>(L"HealPlane"sv);
+		healPlane.AddComponent<NameComponent>("HealPlane"sv);
 	}
 
 	// 서포트 바닥 생성
 	{
-		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Support.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Support.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = supportPlane.GetComponent<TransformComponent>();
 		transform.Position.x = DISTANCE_BETWEEN_PLANE;
 
 		supportPlane.AddTag<Tag_Plane>();
-		supportPlane.AddComponent<NameComponent>(L"SupportPlane"sv);
+		supportPlane.AddComponent<NameComponent>("SupportPlane"sv);
 	}
 
 	// 바닥
 	{
-		Entity plane = mOwner->CreateStaticMeshEntity(MESH(L"Big_Plane.mesh"),
-			TEXTURE(L"Brick.jpg"));
+		Entity plane = mOwner->CreateStaticMeshEntity(MESH("Plane_Big.mesh"),
+			TEXTURE("Brick.jpg"));
 
 		auto& transform = plane.GetComponent<TransformComponent>();
 		transform.Position.y -= 45.0f;
 	}
+}
+
+void UpgradeScene::createClock()
+{
+	mClock = mOwner->CreateSkeletalMeshEntity(MESH("Clock.mesh"),
+		TEXTURE("Clock.png"), SKELETON("Clock.skel"));
+
+	auto& transform = mClock.GetComponent<TransformComponent>();
+	transform.Position.y = 600.0f;
+	transform.Rotation.y = 180.0f;
+
+	auto& animator = mClock.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&animator, ANIM("Clock.anim"));
+}
+
+void UpgradeScene::startCountdown()
+{
+	// 시계 똑딱 소리를 멈추고 카운트다운 재생을 시작한다.
+	SoundManager::StopSound("ClockTick.mp3");
+	SoundManager::PlaySound("Countdown.mp3");
 }

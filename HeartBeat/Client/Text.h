@@ -16,7 +16,7 @@ public:
 	uint32 GetVertexCount() const { return mVertexCount; }
 
 	void SetFont(const Font* font) { mFont = font; }
-	void SetSentence(const string& sentence);
+	void SetSentence(string_view sentence);
 
 	const Texture* GetTexture() const { return mFont->GetTexture(); }
 	const string& GetSentence() const { return mSentence; }

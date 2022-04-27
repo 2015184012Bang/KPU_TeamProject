@@ -22,6 +22,8 @@
 #include "Font.h"
 #include "Texture.h"
 #include "Skeleton.h"
+#include "SoundManager.h"
+#include "TestScene.h"
 
 Client::Client()
 	: Game()
@@ -33,6 +35,7 @@ bool Client::Init()
 {
 	Input::Init();
 	Timer::Init();
+	SoundManager::Init();
 
 	loadServerSettingsFromXML("settings.xml");
 
@@ -61,6 +64,7 @@ void Client::Shutdown()
 
 	mRenderer->Shutdown();
 	mPacketManager->Shutdown();
+	SoundManager::Shutdown();
 }
 
 void Client::Run()
@@ -84,7 +88,7 @@ void Client::ChangeScene(Scene* scene)
 }
 
 
-Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const wstring& boxFile /*= L""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -102,7 +106,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const wstring& boxFile /*= L""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -122,7 +126,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const wstring& boxFile /*= L""*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -139,7 +143,7 @@ Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFi
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const wstring& boxFile /*= L""*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -184,6 +188,24 @@ Entity Client::CreateTextEntity(const Font* fontFile)
 	e.AddComponent<TextComponent>(new Text(fontFile));
 
 	return e;
+}
+
+void Client::RearrangeAttachment()
+{
+	auto view = GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
+
+	for (auto [entity, parent, transform, animator] : view.each())
+	{
+		for (auto [boneName, eid] : parent.Children)
+		{
+			Entity child = { eid, this };
+			auto& attachment = child.GetComponent<AttachmentChildComponent>();
+
+			attachment.BoneIndex = animator.Skel->GetBoneIndexByName(boneName);
+			attachment.ParentPalette = &animator.Palette;
+			attachment.ParentTransform = &transform;
+		}
+	}
 }
 
 void Client::loadServerSettingsFromXML(string_view fileName)
@@ -284,9 +306,9 @@ void Client::createAnimationTransitions()
 {
 	// 바이러스 애니메이션 트랜지션 설정
 	{
-		Animation* idleAnim = ANIM(L"Virus_Idle.anim");
-		Animation* runningAnim = ANIM(L"Virus_Run.anim");
-		Animation* attackingAnim = ANIM(L"Virus_Attack.anim");
+		Animation* idleAnim = ANIM("Virus_Idle.anim");
+		Animation* runningAnim = ANIM("Virus_Run.anim");
+		Animation* attackingAnim = ANIM("Virus_Attack.anim");
 		attackingAnim->SetLoop(false);
 
 		idleAnim->AddTransition("Run", runningAnim);
@@ -297,33 +319,33 @@ void Client::createAnimationTransitions()
 
 	// 캐릭터_그린
 	{
-		Animation* idleAnim = ANIM(L"CG_Idle.anim");
-		Animation* runningAnim = ANIM(L"CG_Run.anim");
+		Animation* idleAnim = ANIM("CG_Idle.anim");
+		Animation* runningAnim = ANIM("CG_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_핑크
 	{
-		Animation* idleAnim = ANIM(L"CP_Idle.anim");
-		Animation* runningAnim = ANIM(L"CP_Run.anim");
+		Animation* idleAnim = ANIM("CP_Idle.anim");
+		Animation* runningAnim = ANIM("CP_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// 캐릭터_레드
 	{
-		Animation* idleAnim = ANIM(L"CR_Idle.anim");
-		Animation* runningAnim = ANIM(L"CR_Run.anim");
+		Animation* idleAnim = ANIM("CR_Idle.anim");
+		Animation* runningAnim = ANIM("CR_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
 	// NPC(세포)
 	{
-		Animation* idleAnim = ANIM(L"Cell_Idle.anim");
-		Animation* runningAnim = ANIM(L"Cell_Run.anim");
-		Animation* attackingAnim = ANIM(L"Cell_Attack.anim");
+		Animation* idleAnim = ANIM("Cell_Idle.anim");
+		Animation* runningAnim = ANIM("Cell_Run.anim");
+		Animation* attackingAnim = ANIM("Cell_Attack.anim");
 
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);
@@ -333,8 +355,8 @@ void Client::createAnimationTransitions()
 
 	// 탱크
 	{
-		Animation* idleAnim = ANIM(L"Tank_Idle.anim");
-		Animation* runningAnim = ANIM(L"Tank_Run.anim");
+		Animation* idleAnim = ANIM("Tank_Idle.anim");
+		Animation* runningAnim = ANIM("Tank_Run.anim");
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}

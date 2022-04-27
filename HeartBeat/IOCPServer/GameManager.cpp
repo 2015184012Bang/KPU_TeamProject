@@ -15,6 +15,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_UPGRADE] = std::bind(&GameManager::processRequestUpgrade, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// 유저 매니저 생성
 	mUserManager = make_unique<UserManager>();
@@ -178,15 +180,39 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	amPacket.PacketID = ANSWER_MOVE;
 	amPacket.PacketSize = sizeof(amPacket);
 	amPacket.Position = user->GetPosition();
+	amPacket.Direction = user->GetMoveDirection();
 	SendPacketFunction(sessionIndex, sizeof(amPacket), reinterpret_cast<char*>(&amPacket));
 
 	// 이동 노티파이 패킷 전송
 	NOTIFY_MOVE_PACKET anmPacket = {};
 	anmPacket.PacketID = NOTIFY_MOVE;
 	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
-	anmPacket.Direction = rmPacket->Direction;
+	anmPacket.Direction = amPacket.Direction;
+	anmPacket.Position = amPacket.Position;
 	anmPacket.EntityID = sessionIndex;
 	sendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
+}
+
+void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_UPGRADE_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
+	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	
+	// 유저 공격력, 방어력, 회복력 설정
+	user->SetUpgrade(static_cast<User::UpgradePreset>(ruPacket->UpgradePreset));
+	
+	// 해당 유저를 비롯한 다른 유저들에게 알림
+	NOTIFY_UPGRADE_PACKET nuPacket = {};
+	nuPacket.PacketID = NOTIFY_UPGRADE;
+	nuPacket.PacketSize = sizeof(nuPacket);
+	nuPacket.EntityID = sessionIndex;
+	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
+	sendToAll(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
 }
 
 void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)

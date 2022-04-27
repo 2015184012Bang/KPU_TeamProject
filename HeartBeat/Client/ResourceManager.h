@@ -13,22 +13,22 @@ class ResourceManager
 {
 public:
 	static void Shutdown();
-	static Mesh* GetMesh(const wstring& path);
-	static Texture* GetTexture(const wstring& path);
-	static Skeleton* GetSkeleton(const wstring& path);
-	static Animation* GetAnimation(const wstring& path);
-	static AABB* GetAABB(const wstring& path);
-	static Mesh* GetDebugMesh(const wstring& path);
-	static Font* GetFont(const wstring& path);
+	static Mesh* GetMesh(string_view path);
+	static Texture* GetTexture(string_view path);
+	static Skeleton* GetSkeleton(string_view path);
+	static Animation* GetAnimation(string_view path);
+	static AABB* GetAABB(string_view path);
+	static Mesh* GetDebugMesh(string_view path);
+	static Font* GetFont(string_view path);
 
 private:
-	static unordered_map<wstring, Mesh*> sMeshes;
-	static unordered_map<wstring, Texture*> sTextures;
-	static unordered_map<wstring, Skeleton*> sSkeletons;
-	static unordered_map<wstring, Animation*> sAnimations;
-	static unordered_map<wstring, AABB*> sBoxes;
-	static unordered_map<wstring, Mesh*> sDebugMeshes;
-	static unordered_map<wstring, Font*> sFonts;
+	static unordered_map<string, Mesh*> sMeshes;
+	static unordered_map<string, Texture*> sTextures;
+	static unordered_map<string, Skeleton*> sSkeletons;
+	static unordered_map<string, Animation*> sAnimations;
+	static unordered_map<string, AABB*> sBoxes;
+	static unordered_map<string, Mesh*> sDebugMeshes;
+	static unordered_map<string, Font*> sFonts;
 };
 
 enum class CharacterAnimationType
@@ -49,7 +49,7 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type);
 std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType);
 Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType);
 
-const wstring ASSET_PATH = L"../Assets/";
+const string ASSET_PATH = "../Assets/";
 
 #define MESH(x) GetMeshFile(x)
 #define TEXTURE(x) GetTextureFile(x)
@@ -59,34 +59,34 @@ const wstring ASSET_PATH = L"../Assets/";
 #define DEBUGMESH(x) GetBoxFile(x)
 #define FONT(x) GetFontFile(x)
 
-inline Mesh* GetMeshFile(const wstring& file)
+inline Mesh* GetMeshFile(string_view file)
 {
-	return ResourceManager::GetMesh(ASSET_PATH + L"Meshes/" + file);
+	return ResourceManager::GetMesh(ASSET_PATH + "Meshes/" + file.data());
 }
 
-inline Texture* GetTextureFile(const wstring& file)
+inline Texture* GetTextureFile(string_view file)
 {
-	return ResourceManager::GetTexture(ASSET_PATH + L"Textures/" + file);
+	return ResourceManager::GetTexture(ASSET_PATH + "Textures/" + file.data());
 }
 
-inline Skeleton* GetSkeletonFile(const wstring& file)
+inline Skeleton* GetSkeletonFile(string_view file)
 {
-	return ResourceManager::GetSkeleton(ASSET_PATH + L"Skeletons/" + file);
+	return ResourceManager::GetSkeleton(ASSET_PATH + "Skeletons/" + file.data());
 }
 
-inline Animation* GetAnimFile(const wstring& file)
+inline Animation* GetAnimFile(string_view file)
 {
-	return ResourceManager::GetAnimation(ASSET_PATH + L"Animations/" + file);
+	return ResourceManager::GetAnimation(ASSET_PATH + "Animations/" + file.data());
 }
 
-inline AABB* GetBoxFile(const wstring& file)
+inline AABB* GetBoxFile(string_view file)
 {
-	return ResourceManager::GetAABB(ASSET_PATH + L"Boxes/" + file);
+	return ResourceManager::GetAABB(ASSET_PATH + "Boxes/" + file.data());
 }
 
-inline Font* GetFontFile(const wstring& file)
+inline Font* GetFontFile(string_view file)
 {
-	return ResourceManager::GetFont(ASSET_PATH + L"Fonts/" + file);
+	return ResourceManager::GetFont(ASSET_PATH + "Fonts/" + file.data());
 }
 
 

@@ -77,7 +77,7 @@ struct AnimatorComponent
 	AnimatorComponent();
 	AnimatorComponent(const Skeleton* skel);
 
-	void SetTrigger(const string& triggerName);
+	void SetTrigger(string_view triggerName);
 
 	MatrixPalette Palette;
 	const Skeleton* Skel;
@@ -137,10 +137,7 @@ struct IDComponent
 
 struct AttachmentParentComponent
 {
-	AttachmentParentComponent();
-	AttachmentParentComponent(const uint32 id);
-
-	uint32 ChildID;
+	vector<std::pair<string, entt::entity>> Children;
 };
 
 struct BoxComponent
@@ -155,9 +152,9 @@ struct BoxComponent
 struct NameComponent
 {
 	NameComponent();
-	NameComponent(wstring_view name);
+	NameComponent(string_view name);
 
-	wstring Name;
+	string Name;
 };
 
 struct HealthComponent

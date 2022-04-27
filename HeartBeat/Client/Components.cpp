@@ -8,6 +8,8 @@
 #include "Texture.h"
 #include "Text.h"
 
+using namespace std::string_literals;
+
 MeshRendererComponent::MeshRendererComponent()
 	: Mesi(nullptr)
 	, Tex(nullptr)
@@ -110,7 +112,7 @@ AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 
 }
 
-void AnimatorComponent::SetTrigger(const string& triggerName)
+void AnimatorComponent::SetTrigger(string_view triggerName)
 {
 	Animation* nextAnim = CurAnim->FindNextAnimation(triggerName);
 
@@ -263,18 +265,6 @@ IDComponent::IDComponent(const uint32 id)
 	HB_LOG("Entity ID: {0}", ID);
 }
 
-AttachmentParentComponent::AttachmentParentComponent()
-	: ChildID(UINT32_MAX)
-{
-
-}
-
-AttachmentParentComponent::AttachmentParentComponent(const uint32 id)
-	: ChildID(id)
-{
-
-}
-
 BoxComponent::BoxComponent()
 	: Local(nullptr)
 	, World()
@@ -291,12 +281,12 @@ BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float 
 }
 
 NameComponent::NameComponent()
-	: Name(L"default")
+	: Name("default"s)
 {
 
 }
 
-NameComponent::NameComponent(wstring_view name)
+NameComponent::NameComponent(string_view name)
 	: Name(name.data())
 {
 

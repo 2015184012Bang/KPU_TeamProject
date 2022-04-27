@@ -14,7 +14,7 @@ Mesh::Mesh()
 
 }
 
-void Mesh::Load(const wstring& path)
+void Mesh::Load(string_view path)
 {
 	eMeshType meshType;
 	rapidjson::Document doc = openMeshFile(path, &meshType);
@@ -93,9 +93,9 @@ void Mesh::LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint)
 	createIndexBuffer(indices);
 }
 
-rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshType)
+rapidjson::Document Mesh::openMeshFile(string_view path, eMeshType* outMeshType)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
@@ -119,7 +119,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 	for (rapidjson::SizeType i = 0; i < textures.Size(); ++i)
 	{
 		string texName = textures[i].GetString();
-		ResourceManager::GetTexture(s2ws(texName));
+		ResourceManager::GetTexture(texName);
 	}
 	
 	string vertexFormat = doc["vertexformat"].GetString();

@@ -132,6 +132,7 @@
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Skeleton.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="TestScene.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Script.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Tags.h" />
     <ClInclude Include="TestScene.h" />
     <ClInclude Include="Text.h" />

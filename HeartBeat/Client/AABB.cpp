@@ -12,16 +12,16 @@ AABB::AABB()
 
 }
 
-AABB::AABB(const wstring& path)
+AABB::AABB(string_view path)
 	: mMin(FLT_MAX, FLT_MAX, FLT_MAX)
 	, mMax(FLT_MIN, FLT_MIN, FLT_MIN)
 {
 	Load(path);
 }
 
-void AABB::Load(const wstring& path)
+void AABB::Load(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{

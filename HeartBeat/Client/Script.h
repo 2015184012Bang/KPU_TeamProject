@@ -42,7 +42,7 @@ public:
 		return objs;
 	}
 
-	Entity Find(const wstring& targetName)
+	Entity Find(const string& targetName)
 	{
 		auto view = mOwner.GetGame()->GetRegistry().view<NameComponent>();
 

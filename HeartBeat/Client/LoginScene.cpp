@@ -21,7 +21,7 @@ void LoginScene::Enter()
 {
 	// 배경화면 생성
 	mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
-		TEXTURE(L"Login_Background.png"), 10);
+		TEXTURE("Login_Background.png"), 10);
 }
 
 void LoginScene::Exit()

@@ -51,7 +51,7 @@ void PacketManager::Shutdown()
 	WSACleanup();
 }
 
-bool PacketManager::Connect(const string& ip, const UINT16 port)
+bool PacketManager::Connect(string_view ip, const UINT16 port)
 {
 	SOCKADDR_IN serverAddr;
 	ZeroMemory(&serverAddr, sizeof(serverAddr));

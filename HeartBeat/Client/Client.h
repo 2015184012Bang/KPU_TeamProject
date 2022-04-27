@@ -10,6 +10,8 @@ class Texture;
 class Skeleton;
 class Font;
 
+using namespace std::string_literals;
+
 class Client :
     public Game
 {
@@ -22,10 +24,10 @@ public:
 
     void ChangeScene(Scene* scene);
 
-    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const wstring& boxFile = L"");
-    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const wstring& boxFile = L"");
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile = ""sv);
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile = ""sv);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile = ""sv);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile = ""sv);
     Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
     Entity CreateTextEntity(const Font* fontFile);
 
@@ -35,9 +37,12 @@ public:
     void SetClientID(int id) { mClientID = id; }
 
     const string& GetClientName() const { return mClientName; }
-    void SetClientName(const string& nickname) { mClientName = nickname; }
+    void SetClientName(string_view nickname) { mClientName = nickname.data(); }
 
     unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
+
+    // Child entity를 삭제하고 난 후 호출해줄 것.
+    void RearrangeAttachment();
 
     UINT16 ServerPort = 0;
     string ServerIP = {};

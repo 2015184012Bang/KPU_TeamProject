@@ -101,6 +101,30 @@ void User::Update()
 	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
 }
 
+void User::SetUpgrade(UpgradePreset preset)
+{
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK:
+		mBaseAttackDmg = 3;
+		mArmor = 1;
+		mRegeneration = 2;
+		break;
+
+	case UpgradePreset::HEAL:
+		mBaseAttackDmg = 1;
+		mArmor = 2;
+		mRegeneration = 3;
+		break;
+
+	case UpgradePreset::SUPPORT:
+		mBaseAttackDmg = 2;
+		mArmor = 3;
+		mRegeneration = 2;
+		break;
+	}
+}
+
 void User::SetMoveDirection(const Vector3& direction)
 {
 	mMoveDirection = direction;

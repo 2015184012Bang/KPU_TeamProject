@@ -9,13 +9,13 @@
 #include "Texture.h"
 #include "Utils.h"
 
-unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
-unordered_map<wstring, Texture*> ResourceManager::sTextures;
-unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
-unordered_map<wstring, Animation*> ResourceManager::sAnimations;
-unordered_map<wstring, AABB*> ResourceManager::sBoxes;
-unordered_map<wstring, Mesh*> ResourceManager::sDebugMeshes;
-unordered_map<wstring, Font*> ResourceManager::sFonts;
+unordered_map<string, Mesh*> ResourceManager::sMeshes;
+unordered_map<string, Texture*> ResourceManager::sTextures;
+unordered_map<string, Skeleton*> ResourceManager::sSkeletons;
+unordered_map<string, Animation*> ResourceManager::sAnimations;
+unordered_map<string, AABB*> ResourceManager::sBoxes;
+unordered_map<string, Mesh*> ResourceManager::sDebugMeshes;
+unordered_map<string, Font*> ResourceManager::sFonts;
 
 void ResourceManager::Shutdown()
 {
@@ -62,9 +62,9 @@ void ResourceManager::Shutdown()
 	sFonts.clear();
 }
 
-Mesh* ResourceManager::GetMesh(const wstring& path)
+Mesh* ResourceManager::GetMesh(string_view path)
 {
-	auto iter = sMeshes.find(path);
+	auto iter = sMeshes.find(path.data());
 
 	if (iter != sMeshes.end())
 	{
@@ -74,15 +74,15 @@ Mesh* ResourceManager::GetMesh(const wstring& path)
 	{
 		Mesh* newMesh = new Mesh;
 		newMesh->Load(path);
-		sMeshes[path] = newMesh;
+		sMeshes[path.data()] = newMesh;
 
 		return newMesh;
 	}
 }
 
-Texture* ResourceManager::GetTexture(const wstring& path)
+Texture* ResourceManager::GetTexture(string_view path)
 {
-	auto iter = sTextures.find(path);
+	auto iter = sTextures.find(path.data());
 
 	if (iter != sTextures.end())
 	{
@@ -92,15 +92,15 @@ Texture* ResourceManager::GetTexture(const wstring& path)
 	{
 		Texture* newTexture = new Texture;
 		newTexture->Load(path);
-		sTextures[path] = newTexture;
+		sTextures[path.data()] = newTexture;
 
 		return newTexture;
 	}
 }
 
-Skeleton* ResourceManager::GetSkeleton(const wstring& path)
+Skeleton* ResourceManager::GetSkeleton(string_view path)
 {
-	auto iter = sSkeletons.find(path);
+	auto iter = sSkeletons.find(path.data());
 	
 	if (iter != sSkeletons.end())
 	{
@@ -110,15 +110,15 @@ Skeleton* ResourceManager::GetSkeleton(const wstring& path)
 	{
 		Skeleton* newSkel = new Skeleton;
 		newSkel->Load(path);
-		sSkeletons[path] = newSkel;
+		sSkeletons[path.data()] = newSkel;
 
 		return newSkel;
 	}
 }
 
-Animation* ResourceManager::GetAnimation(const wstring& path)
+Animation* ResourceManager::GetAnimation(string_view path)
 {
-	auto iter = sAnimations.find(path);
+	auto iter = sAnimations.find(path.data());
 
 	if (iter != sAnimations.end())
 	{
@@ -128,15 +128,15 @@ Animation* ResourceManager::GetAnimation(const wstring& path)
 	{
 		Animation* newAnim = new Animation;
 		newAnim->Load(path);
-		sAnimations[path] = newAnim;
+		sAnimations[path.data()] = newAnim;
 
 		return newAnim;
 	}
 }
 
-AABB* ResourceManager::GetAABB(const wstring& path)
+AABB* ResourceManager::GetAABB(string_view path)
 {
-	auto iter = sBoxes.find(path);
+	auto iter = sBoxes.find(path.data());
 
 	if (iter != sBoxes.end())
 	{
@@ -146,19 +146,19 @@ AABB* ResourceManager::GetAABB(const wstring& path)
 	{
 		AABB* newBox = new AABB;
 		newBox->Load(path);
-		sBoxes[path] = newBox;
+		sBoxes[path.data()] = newBox;
 
 		Mesh* newDebugMesh = new Mesh;
 		newDebugMesh->LoadDebugMesh(newBox->GetMin(), newBox->GetMax());
-		sDebugMeshes[path] = newDebugMesh;
+		sDebugMeshes[path.data()] = newDebugMesh;
 
 		return newBox;
 	}
 }
 
-Mesh* ResourceManager::GetDebugMesh(const wstring& path)
+Mesh* ResourceManager::GetDebugMesh(string_view path)
 {
-	auto iter = sDebugMeshes.find(path);
+	auto iter = sDebugMeshes.find(path.data());
 
 	if (iter != sDebugMeshes.end())
 	{
@@ -172,9 +172,9 @@ Mesh* ResourceManager::GetDebugMesh(const wstring& path)
 	return nullptr;
 }
 
-Font* ResourceManager::GetFont(const wstring& path)
+Font* ResourceManager::GetFont(string_view path)
 {
-	auto iter = sFonts.find(path);
+	auto iter = sFonts.find(path.data());
 
 	if (iter != sFonts.end())
 	{
@@ -184,7 +184,7 @@ Font* ResourceManager::GetFont(const wstring& path)
 	{
 		Font* newFont = new Font;
 		newFont->Load(path);
-		sFonts[path] = newFont;
+		sFonts[path.data()] = newFont;
 
 		return newFont;
 	}
@@ -195,17 +195,17 @@ std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)
 	switch (clientID)
 	{
 	case 0:
-		return { MESH(L"Character_Green.mesh"), TEXTURE(L"Character_Green.png"), SKELETON(L"Character_Green.skel") };
+		return { MESH("Character_Green.mesh"), TEXTURE("Character_Green.png"), SKELETON("Character_Green.skel") };
 
 	case 1:
-		return { MESH(L"Character_Pink.mesh"), TEXTURE(L"Character_Pink.png"), SKELETON(L"Character_Pink.skel") };
+		return { MESH("Character_Pink.mesh"), TEXTURE("Character_Pink.png"), SKELETON("Character_Pink.skel") };
 
 	case 2:
-		return { MESH(L"Character_Red.mesh"), TEXTURE(L"Character_Red.png"), SKELETON(L"Character_Red.skel") };
+		return { MESH("Character_Red.mesh"), TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel") };
 
 	default:
-		HB_ASSERT(false, "Unknown client id: {0}", clientID);
-		break;
+		HB_LOG("Unknown client id: {0}", clientID);
+		return { nullptr, nullptr, nullptr };
 	}
 }
 
@@ -217,11 +217,11 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			return ANIM(L"CG_Idle.anim");
+			return ANIM("CG_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			return ANIM(L"CG_Run.anim");
+			return ANIM("CG_Run.anim");
 			break;
 		}
 		break;
@@ -230,11 +230,11 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			return ANIM(L"CP_Idle.anim");
+			return ANIM("CP_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			return ANIM(L"CP_Run.anim");
+			return ANIM("CP_Run.anim");
 			break;
 		}
 		break;
@@ -243,11 +243,11 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		switch (type)
 		{
 		case CharacterAnimationType::eIdle:
-			return ANIM(L"CR_Idle.anim");
+			return ANIM("CR_Idle.anim");
 			break;
 
 		case CharacterAnimationType::eRun:
-			return ANIM(L"CR_Run.anim");
+			return ANIM("CR_Run.anim");
 			break;
 		}
 		break;
@@ -261,14 +261,14 @@ std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType)
 	switch (enemyType)
 	{
 	case eEnemyType::Virus:
-		return { MESH(L"Virus.mesh") , TEXTURE(L"Virus.png") , SKELETON(L"Virus.skel") };
+		return { MESH("Virus.mesh") , TEXTURE("Virus.png") , SKELETON("Virus.skel") };
 
 	case eEnemyType::Dog:
-		return { MESH(L"Dog.mesh") , TEXTURE(L"Dog.png") , SKELETON(L"Dog.skel") };
+		return { MESH("Dog.mesh") , TEXTURE("Dog.png") , SKELETON("Dog.skel") };
 
 	default:
-		HB_ASSERT(false, "UnKnown Enemy Type!");
-		break;
+		HB_LOG("UnKnown Enemy Type!");
+		return { nullptr, nullptr, nullptr };
 	}
 }
 
@@ -280,15 +280,15 @@ Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			return ANIM(L"Virus_Idle.anim");
+			return ANIM("Virus_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			return ANIM(L"Virus_Run.anim");
+			return ANIM("Virus_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			return ANIM(L"Virus_Attack.anim");
+			return ANIM("Virus_Attack.anim");
 			break;
 		}
 		break;
@@ -297,15 +297,15 @@ Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
 		switch (animType)
 		{
 		case EnemyAnimationType::eIdle:
-			return ANIM(L"Dog_Idle.anim");
+			return ANIM("Dog_Idle.anim");
 			break;
 
 		case EnemyAnimationType::eRun:
-			return ANIM(L"Dog_Run.anim");
+			return ANIM("Dog_Run.anim");
 			break;
 
 		case EnemyAnimationType::eAttack:
-			return ANIM(L"Dog_Attack.anim");
+			return ANIM("Dog_Attack.anim");
 			break;
 		}
 		break;

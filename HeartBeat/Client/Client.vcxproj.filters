@@ -127,6 +127,9 @@
     <ClCompile Include="tinyxml2.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -251,6 +254,9 @@
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
       <Filter>Source Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
