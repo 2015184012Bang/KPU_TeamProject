@@ -20,7 +20,7 @@ class Mesh : public IResource
 public:
 	Mesh();
 
-	virtual void Load(const string& path) override;
+	virtual void Load(string_view path) override;
 	void LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
@@ -30,7 +30,7 @@ public:
 	uint32 GetIndexCount() const { return mIndexCount; }
 
 private:
-	rapidjson::Document openMeshFile(const string& path, eMeshType* outMeshType);
+	rapidjson::Document openMeshFile(string_view path, eMeshType* outMeshType);
 	void loadStaticMesh(const rapidjson::Document& doc);
 	void loadSkeletalMesh(const rapidjson::Document& doc);
 

@@ -25,11 +25,11 @@ Text::Text(const Font* font)
 }
 
 
-void Text::SetSentence(const string& sentence)
+void Text::SetSentence(string_view sentence)
 {
 	if (mSentence != sentence)
 	{
-		mSentence = sentence;
+		mSentence = sentence.data();
 		updateVertexBuffer();
 	}
 }

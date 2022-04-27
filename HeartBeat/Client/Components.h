@@ -77,7 +77,7 @@ struct AnimatorComponent
 	AnimatorComponent();
 	AnimatorComponent(const Skeleton* skel);
 
-	void SetTrigger(const string& triggerName);
+	void SetTrigger(string_view triggerName);
 
 	MatrixPalette Palette;
 	const Skeleton* Skel;

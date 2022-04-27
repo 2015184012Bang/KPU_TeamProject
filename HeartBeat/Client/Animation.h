@@ -12,7 +12,7 @@ class Animation : public IResource
 public:
 	Animation();
 
-	virtual void Load(const string& path) override;
+	virtual void Load(string_view path) override;
 	
 	uint32 GetNumBones() const { return mNumBones; }
 	uint32 GetNumFrames() const { return mNumFrames; }
@@ -24,10 +24,10 @@ public:
 	void SetLoop(bool value) { mbLoop = value; }
 	bool IsLoop() const { return mbLoop; }
 
-	Animation* FindNextAnimation(const string& triggerName) const;
+	Animation* FindNextAnimation(string_view triggerName) const;
 
-	void AddTransition(const string& triggerName, Animation* anim);
-	void RemoveTransition(const string& triggerName);
+	void AddTransition(string_view triggerName, Animation* anim);
+	void RemoveTransition(string_view triggerName);
 
 private:
 	uint32 mNumBones;

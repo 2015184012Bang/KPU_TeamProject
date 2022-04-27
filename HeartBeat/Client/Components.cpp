@@ -112,7 +112,7 @@ AnimatorComponent::AnimatorComponent(const Skeleton* skel)
 
 }
 
-void AnimatorComponent::SetTrigger(const string& triggerName)
+void AnimatorComponent::SetTrigger(string_view triggerName)
 {
 	Animation* nextAnim = CurAnim->FindNextAnimation(triggerName);
 

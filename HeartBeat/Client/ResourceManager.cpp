@@ -62,9 +62,9 @@ void ResourceManager::Shutdown()
 	sFonts.clear();
 }
 
-Mesh* ResourceManager::GetMesh(const string& path)
+Mesh* ResourceManager::GetMesh(string_view path)
 {
-	auto iter = sMeshes.find(path);
+	auto iter = sMeshes.find(path.data());
 
 	if (iter != sMeshes.end())
 	{
@@ -74,15 +74,15 @@ Mesh* ResourceManager::GetMesh(const string& path)
 	{
 		Mesh* newMesh = new Mesh;
 		newMesh->Load(path);
-		sMeshes[path] = newMesh;
+		sMeshes[path.data()] = newMesh;
 
 		return newMesh;
 	}
 }
 
-Texture* ResourceManager::GetTexture(const string& path)
+Texture* ResourceManager::GetTexture(string_view path)
 {
-	auto iter = sTextures.find(path);
+	auto iter = sTextures.find(path.data());
 
 	if (iter != sTextures.end())
 	{
@@ -92,15 +92,15 @@ Texture* ResourceManager::GetTexture(const string& path)
 	{
 		Texture* newTexture = new Texture;
 		newTexture->Load(path);
-		sTextures[path] = newTexture;
+		sTextures[path.data()] = newTexture;
 
 		return newTexture;
 	}
 }
 
-Skeleton* ResourceManager::GetSkeleton(const string& path)
+Skeleton* ResourceManager::GetSkeleton(string_view path)
 {
-	auto iter = sSkeletons.find(path);
+	auto iter = sSkeletons.find(path.data());
 	
 	if (iter != sSkeletons.end())
 	{
@@ -110,15 +110,15 @@ Skeleton* ResourceManager::GetSkeleton(const string& path)
 	{
 		Skeleton* newSkel = new Skeleton;
 		newSkel->Load(path);
-		sSkeletons[path] = newSkel;
+		sSkeletons[path.data()] = newSkel;
 
 		return newSkel;
 	}
 }
 
-Animation* ResourceManager::GetAnimation(const string& path)
+Animation* ResourceManager::GetAnimation(string_view path)
 {
-	auto iter = sAnimations.find(path);
+	auto iter = sAnimations.find(path.data());
 
 	if (iter != sAnimations.end())
 	{
@@ -128,15 +128,15 @@ Animation* ResourceManager::GetAnimation(const string& path)
 	{
 		Animation* newAnim = new Animation;
 		newAnim->Load(path);
-		sAnimations[path] = newAnim;
+		sAnimations[path.data()] = newAnim;
 
 		return newAnim;
 	}
 }
 
-AABB* ResourceManager::GetAABB(const string& path)
+AABB* ResourceManager::GetAABB(string_view path)
 {
-	auto iter = sBoxes.find(path);
+	auto iter = sBoxes.find(path.data());
 
 	if (iter != sBoxes.end())
 	{
@@ -146,19 +146,19 @@ AABB* ResourceManager::GetAABB(const string& path)
 	{
 		AABB* newBox = new AABB;
 		newBox->Load(path);
-		sBoxes[path] = newBox;
+		sBoxes[path.data()] = newBox;
 
 		Mesh* newDebugMesh = new Mesh;
 		newDebugMesh->LoadDebugMesh(newBox->GetMin(), newBox->GetMax());
-		sDebugMeshes[path] = newDebugMesh;
+		sDebugMeshes[path.data()] = newDebugMesh;
 
 		return newBox;
 	}
 }
 
-Mesh* ResourceManager::GetDebugMesh(const string& path)
+Mesh* ResourceManager::GetDebugMesh(string_view path)
 {
-	auto iter = sDebugMeshes.find(path);
+	auto iter = sDebugMeshes.find(path.data());
 
 	if (iter != sDebugMeshes.end())
 	{
@@ -172,9 +172,9 @@ Mesh* ResourceManager::GetDebugMesh(const string& path)
 	return nullptr;
 }
 
-Font* ResourceManager::GetFont(const string& path)
+Font* ResourceManager::GetFont(string_view path)
 {
-	auto iter = sFonts.find(path);
+	auto iter = sFonts.find(path.data());
 
 	if (iter != sFonts.end())
 	{
@@ -184,7 +184,7 @@ Font* ResourceManager::GetFont(const string& path)
 	{
 		Font* newFont = new Font;
 		newFont->Load(path);
-		sFonts[path] = newFont;
+		sFonts[path.data()] = newFont;
 
 		return newFont;
 	}

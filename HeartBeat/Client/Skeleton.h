@@ -8,7 +8,7 @@ class Skeleton : public IResource
 public:
 	Skeleton() = default;
 
-	virtual void Load(const string& path) override;
+	virtual void Load(string_view path) override;
 
 	uint32 GetNumBones() const { return static_cast<uint32>(mBones.size()); }
 	const Bone& GetBone(uint32 idx) const { return mBones[idx]; }

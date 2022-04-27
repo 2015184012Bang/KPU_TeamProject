@@ -3,9 +3,9 @@
 
 #include <rapidjson/document.h>
 
-void Skeleton::Load(const string& path)
+void Skeleton::Load(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{

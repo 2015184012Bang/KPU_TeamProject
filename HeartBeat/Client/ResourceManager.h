@@ -13,13 +13,13 @@ class ResourceManager
 {
 public:
 	static void Shutdown();
-	static Mesh* GetMesh(const string& path);
-	static Texture* GetTexture(const string& path);
-	static Skeleton* GetSkeleton(const string& path);
-	static Animation* GetAnimation(const string& path);
-	static AABB* GetAABB(const string& path);
-	static Mesh* GetDebugMesh(const string& path);
-	static Font* GetFont(const string& path);
+	static Mesh* GetMesh(string_view path);
+	static Texture* GetTexture(string_view path);
+	static Skeleton* GetSkeleton(string_view path);
+	static Animation* GetAnimation(string_view path);
+	static AABB* GetAABB(string_view path);
+	static Mesh* GetDebugMesh(string_view path);
+	static Font* GetFont(string_view path);
 
 private:
 	static unordered_map<string, Mesh*> sMeshes;
@@ -59,34 +59,34 @@ const string ASSET_PATH = "../Assets/";
 #define DEBUGMESH(x) GetBoxFile(x)
 #define FONT(x) GetFontFile(x)
 
-inline Mesh* GetMeshFile(const string& file)
+inline Mesh* GetMeshFile(string_view file)
 {
-	return ResourceManager::GetMesh(ASSET_PATH + "Meshes/" + file);
+	return ResourceManager::GetMesh(ASSET_PATH + "Meshes/" + file.data());
 }
 
-inline Texture* GetTextureFile(const string& file)
+inline Texture* GetTextureFile(string_view file)
 {
-	return ResourceManager::GetTexture(ASSET_PATH + "Textures/" + file);
+	return ResourceManager::GetTexture(ASSET_PATH + "Textures/" + file.data());
 }
 
-inline Skeleton* GetSkeletonFile(const string& file)
+inline Skeleton* GetSkeletonFile(string_view file)
 {
-	return ResourceManager::GetSkeleton(ASSET_PATH + "Skeletons/" + file);
+	return ResourceManager::GetSkeleton(ASSET_PATH + "Skeletons/" + file.data());
 }
 
-inline Animation* GetAnimFile(const string& file)
+inline Animation* GetAnimFile(string_view file)
 {
-	return ResourceManager::GetAnimation(ASSET_PATH + "Animations/" + file);
+	return ResourceManager::GetAnimation(ASSET_PATH + "Animations/" + file.data());
 }
 
-inline AABB* GetBoxFile(const string& file)
+inline AABB* GetBoxFile(string_view file)
 {
-	return ResourceManager::GetAABB(ASSET_PATH + "Boxes/" + file);
+	return ResourceManager::GetAABB(ASSET_PATH + "Boxes/" + file.data());
 }
 
-inline Font* GetFontFile(const string& file)
+inline Font* GetFontFile(string_view file)
 {
-	return ResourceManager::GetFont(ASSET_PATH + "Fonts/" + file);
+	return ResourceManager::GetFont(ASSET_PATH + "Fonts/" + file.data());
 }
 
 

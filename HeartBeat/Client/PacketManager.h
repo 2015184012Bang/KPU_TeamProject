@@ -17,7 +17,7 @@ public:
 
 	void Shutdown();
 
-	bool Connect(const string& ip, const UINT16 port);
+	bool Connect(string_view ip, const UINT16 port);
 
 	void Recv();
 

@@ -13,7 +13,7 @@ Texture::Texture()
 
 }
 
-void Texture::Load(const string& path)
+void Texture::Load(string_view path)
 {
 	bool success = loadTextureFromFile(path);
 
@@ -37,21 +37,21 @@ void Texture::Load(const string& path)
 	}
 }
 
-bool Texture::loadTextureFromFile(const string& path)
+bool Texture::loadTextureFromFile(string_view path)
 {
 	auto ext = std::filesystem::path(path).extension();
 
 	if (ext == ".dds" || ext == ".DDS")
 	{
-		LoadFromDDSFile(s2ws(path).c_str(), DDS_FLAGS_NONE, nullptr, mRawImage);
+		LoadFromDDSFile(s2ws(path.data()).c_str(), DDS_FLAGS_NONE, nullptr, mRawImage);
 	}
 	else if (ext == ".tga" || ext == ".TGA")
 	{
-		LoadFromTGAFile(s2ws(path).c_str(), nullptr, mRawImage);
+		LoadFromTGAFile(s2ws(path.data()).c_str(), nullptr, mRawImage);
 	}
 	else
 	{
-		LoadFromWICFile(s2ws(path).c_str(), WIC_FLAGS_NONE, nullptr, mRawImage);
+		LoadFromWICFile(s2ws(path.data()).c_str(), WIC_FLAGS_NONE, nullptr, mRawImage);
 	}
 
 	HRESULT hr = CreateTexture(gDevice.Get(), mRawImage.GetMetadata(), &mTexture);

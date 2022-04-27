@@ -85,7 +85,7 @@ void Client::ChangeScene(Scene* scene)
 }
 
 
-Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const string& boxFile /*= ""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -103,7 +103,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const string& boxFile /*= ""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -123,7 +123,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const string& boxFile /*= ""*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 
@@ -140,7 +140,7 @@ Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFi
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const string& boxFile /*= ""*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
 	Entity e = Entity(GetNewEntity(), this);
 

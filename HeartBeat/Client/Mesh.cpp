@@ -14,7 +14,7 @@ Mesh::Mesh()
 
 }
 
-void Mesh::Load(const string& path)
+void Mesh::Load(string_view path)
 {
 	eMeshType meshType;
 	rapidjson::Document doc = openMeshFile(path, &meshType);
@@ -93,9 +93,9 @@ void Mesh::LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint)
 	createIndexBuffer(indices);
 }
 
-rapidjson::Document Mesh::openMeshFile(const string& path, eMeshType* outMeshType)
+rapidjson::Document Mesh::openMeshFile(string_view path, eMeshType* outMeshType)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
