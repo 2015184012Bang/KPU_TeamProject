@@ -63,7 +63,7 @@ void UpgradeScene::Update(float deltaTime)
 		REQUEST_MOVE_PACKET packet = {};
 		packet.PacketID = REQUEST_MOVE;
 		packet.PacketSize = sizeof(packet);
-		packet.Direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
+		packet.Direction = mDirection;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
@@ -94,30 +94,29 @@ void UpgradeScene::initPlayersPositionToZero()
 
 bool UpgradeScene::pollKeyboardPressed()
 {
-	Vector3& direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
 	bool bChanged = false;
 
 	if (Input::IsButtonPressed(eKeyCode::Left))
 	{
-		direction.x -= 1.0f;
+		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Right))
 	{
-		direction.x += 1.0f;
+		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Up))
 	{
-		direction.z += 1.0f;
+		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonPressed(eKeyCode::Down))
 	{
-		direction.z -= 1.0f;
+		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
@@ -126,30 +125,29 @@ bool UpgradeScene::pollKeyboardPressed()
 
 bool UpgradeScene::pollKeyboardReleased()
 {
-	Vector3& direction = mPlayerCharacter.GetComponent<MovementComponent>().Direction;
 	bool bChanged = false;
 
 	if (Input::IsButtonReleased(eKeyCode::Left))
 	{
-		direction.x += 1.0f;
+		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Right))
 	{
-		direction.x -= 1.0f;
+		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Up))
 	{
-		direction.z -= 1.0f;
+		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
 	if (Input::IsButtonReleased(eKeyCode::Down))
 	{
-		direction.z += 1.0f;
+		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
@@ -184,6 +182,9 @@ void UpgradeScene::processNotifyMove(const PACKET& packet)
 
 	Entity target = { entity, mOwner };
 
+	auto& transform = target.GetComponent<TransformComponent>();
+	transform.Position = nmPacket->Position;
+
 	auto& movement = target.GetComponent<MovementComponent>();
 	movement.Direction = nmPacket->Direction;
 }
@@ -194,6 +195,9 @@ void UpgradeScene::processAnswerMove(const PACKET& packet)
 
 	auto& transform = mPlayerCharacter.GetComponent<TransformComponent>();
 	transform.Position = amPacket->Position;
+
+	auto& movement = mPlayerCharacter.GetComponent<MovementComponent>();
+	movement.Direction = amPacket->Direction;
 }
 
 void UpgradeScene::createPlanes()

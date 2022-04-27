@@ -178,13 +178,15 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	amPacket.PacketID = ANSWER_MOVE;
 	amPacket.PacketSize = sizeof(amPacket);
 	amPacket.Position = user->GetPosition();
+	amPacket.Direction = user->GetMoveDirection();
 	SendPacketFunction(sessionIndex, sizeof(amPacket), reinterpret_cast<char*>(&amPacket));
 
 	// 이동 노티파이 패킷 전송
 	NOTIFY_MOVE_PACKET anmPacket = {};
 	anmPacket.PacketID = NOTIFY_MOVE;
 	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
-	anmPacket.Direction = rmPacket->Direction;
+	anmPacket.Direction = amPacket.Direction;
+	anmPacket.Position = amPacket.Position;
 	anmPacket.EntityID = sessionIndex;
 	sendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }

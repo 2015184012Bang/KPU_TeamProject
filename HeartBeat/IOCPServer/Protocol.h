@@ -102,11 +102,13 @@ struct REQUEST_MOVE_PACKET : public PACKET_HEADER
 struct ANSWER_MOVE_PACKET : public PACKET_HEADER
 {
 	Vector3 Position;
+	Vector3 Direction;
 };
 
 struct NOTIFY_MOVE_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
+	Vector3 Position;
 	Vector3 Direction;
 };
 

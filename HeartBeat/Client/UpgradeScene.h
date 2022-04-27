@@ -29,5 +29,7 @@ private:
 
 private:
     Entity mPlayerCharacter = {};
+
+    Vector3 mDirection = Vector3::Zero;
 };
 

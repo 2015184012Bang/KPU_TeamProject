@@ -46,7 +46,7 @@ bool Client::Init()
 	createCameraEntity();
 	createAnimationTransitions();
 
-	mActiveScene = std::make_unique<TestScene>(this);
+	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
 
 	return true;
