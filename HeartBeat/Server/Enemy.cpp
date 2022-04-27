@@ -2,14 +2,14 @@
 #include "Enemy.h"
 #include "HeartBeat/Define.h"
 
-tuple<int, int> Enemy::GetGoalIndex()
-{
-	int nodeWidth = static_cast<int>(TILE_WIDTH) / maxRow;
-	
-	goalRow = static_cast<int>(mChasingPlayerPosition->x) / (static_cast<int>(TILE_WIDTH));
-	goalCol = static_cast<int>(mChasingPlayerPosition->z) / (static_cast<int>(TILE_WIDTH));
+void Enemy::GetGoalIndex()
+{	
+	goalRow = static_cast<int>(mChasingPlayerPosition->z) / (static_cast<int>(TILE_WIDTH));
+	goalCol = static_cast<int>(mChasingPlayerPosition->x + 20) / (static_cast<int>(TILE_WIDTH));
 
-	return std::make_tuple(goalRow, goalCol);
+	mGoalIndex = std::make_tuple(goalRow, goalCol);
+	HB_LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
+	HB_LOG("Get GoalNode : ({0},{1})", goalRow, goalCol);
 }
 
 void Enemy::FindPath()
@@ -41,11 +41,9 @@ void Enemy::FindPath()
 				int col = openNode->COL;
 
 				HB_LOG("({0}, {1})", row, col);
-				mPath.push(Tile(openNode->TYPE, row * TILE_WIDTH, col * TILE_WIDTH));
+				mPath.push(Tile(openNode->TYPE, col * TILE_WIDTH, row * TILE_WIDTH));
 
 				openNode = openNode->conn;
-				mbFind = true;
-
 			}
 		}
 		else
@@ -96,6 +94,7 @@ void Enemy::FindPath()
 				});
 
 			closeList.push_back(openNode);
+			HB_LOG("CloseNode({0},{1})", openNode->ROW, openNode->COL);
 
 			FindPath();
 
@@ -106,30 +105,16 @@ void Enemy::FindPath()
 
 void Enemy::SetStartNode()
 {
-	int myRow = static_cast<int>(transform->Position.x) / static_cast<int>(TILE_WIDTH);
-	int myCol = static_cast<int>(transform->Position.z) / static_cast<int>(TILE_WIDTH);
+	int myRow = static_cast<int>(transform->Position.z) / static_cast<int>(TILE_WIDTH);
+	int myCol = static_cast<int>(transform->Position.x) / static_cast<int>(TILE_WIDTH);
 	Node* startNode = new Node(myRow, myCol);
 
 	HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
 	HB_LOG("Set StartNode : ({0},{1})", myRow, myCol);
 
 	openList.push_back(startNode);
-}
 
-bool Enemy::CheckPath()
-{
-	float gap = abs(mPrevPlayerPosition.x - mChasingPlayerPosition->x) + 
-				abs(mPrevPlayerPosition.z - mChasingPlayerPosition->z);
-
-	if (gap < TILE_WIDTH)
-	{
-		return true;
-	}
-	else
-	{
-		false;
-	}
-
+	GetGoalIndex();
 }
 
 Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode)
@@ -201,7 +186,6 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 		return nullptr;
 	}
 
-	auto inds = GetGoalIndex();
 	Node* node = nullptr;
 	
 	if (val == -1)
@@ -217,9 +201,8 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 		node = new Node(val, rowIndex, colIndex);
 		node->G = parentNode->G + 1;
 
-		auto indexs = GetGoalIndex();
-		int goalRowIndex = std::get<0>(indexs);
-		int goalColIndex = std::get<1>(indexs);
+		int goalRowIndex = std::get<0>(mGoalIndex);
+		int goalColIndex = std::get<1>(mGoalIndex);
 
 		int h = abs(goalRowIndex - rowIndex) + abs(goalColIndex - colIndex);
 		node->H = h;
@@ -228,7 +211,6 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 	}
 
 	return node;
-
 }
 
 bool Enemy::GetNextTarget(Tile* outTarget)

@@ -34,7 +34,6 @@ public:
 		maxCol = gGameMap.GetMaxCol();
 
 		transform = &GetComponent<STransformComponent>();
-
 		
 		auto players = FindObjectsWithTag<Tag_Player>();
 
@@ -56,16 +55,12 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
-		//HB_LOG("[player]({0},{1}", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
-		//HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
-
 		if (!mbChase)
 		{
 			mbChase = true;
 			openList.clear();
 			closeList.clear();
 			SetStartNode();
-			goalRow = -1;
 			mbFind = false;
 
 			FindPath();
@@ -73,16 +68,9 @@ public:
 		}
 		else if (mbChase)
 		{
+			//FindPath();
 
-			//openList.clear();
-			//closeList.clear();
-			//SetStartNode();
-			FindPath();
-
-			
 			Vector3 to = Vector3(mCurrentTarget.X, 0.0f, mCurrentTarget.Z);
-			//HB_LOG("MoveToward : ({0},{1})", mCurrentTarget.X, mCurrentTarget.Z);
-
 
 			ServerSystems::MoveToward(transform, to, Timer::GetDeltaTime());
 			AddTag<Tag_UpdateTransform>();
@@ -90,7 +78,6 @@ public:
 
 			if (NearZero(transform->Position, to))
 			{
-				
 				bool retVal = GetNextTarget(&mCurrentTarget);
 
 				if (!retVal)
@@ -103,16 +90,14 @@ public:
 
 	}
 
-	tuple<int, int> GetGoalIndex();
+	void GetGoalIndex();
 	void FindPath();
 	void SetStartNode();
-	bool CheckPath();	// true : 갱신 필요 X	false : 갱신 필요 O
 
 	Node* GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode);
 	Node* CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode);
 
 	bool GetNextTarget(Tile* outTarget);
-	
 
 private:
 	vector<Vector3*> playerPositon;
@@ -123,6 +108,7 @@ private:
 	STransformComponent* playerTransform = nullptr;
 
 	std::stack<Tile> mPath;
+	std::tuple<int, int> mGoalIndex;
 	Tile mCurrentTarget;
 
 	int maxRow;
