@@ -3,6 +3,7 @@
 #pragma comment(lib, "fmt")
 #pragma comment(lib, "spdlog")
 #pragma comment(lib, "ws2_32")
+#pragma comment(lib, "fmod64_vc")
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX

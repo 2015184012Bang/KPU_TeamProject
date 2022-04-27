@@ -9,6 +9,7 @@
 #include "Input.h"
 #include "Helpers.h"
 #include "Tags.h"
+#include "SoundManager.h"
 
 using namespace std::string_view_literals;
 
@@ -20,6 +21,9 @@ UpgradeScene::UpgradeScene(Client* owner)
 
 void UpgradeScene::Enter()
 {
+	// Bgm 재생
+	SoundManager::PlaySound("ClockTick.mp3");
+
 	// 내 캐릭터 알아두기
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
@@ -35,6 +39,8 @@ void UpgradeScene::Enter()
 
 void UpgradeScene::Exit()
 {
+	SoundManager::StopSound("Countdown.mp3");
+
 	mOwner->DestroyAll();
 }
 
@@ -66,6 +72,15 @@ void UpgradeScene::ProcessInput()
 
 void UpgradeScene::Update(float deltaTime)
 {
+	mElapsed += deltaTime;
+
+	// 시작 전 5초가 되면 카운트다운을 시작한다.
+	if (mElapsed > FIVE_SECS_BEFORE_START && !mbChangeScene)
+	{
+		mbChangeScene = true;
+		startCountdown();
+	}
+
 	bool isKeyPressed = pollKeyboardPressed();
 	bool isKeyReleased = pollKeyboardReleased();
 
@@ -384,4 +399,11 @@ void UpgradeScene::createClock()
 
 	auto& animator = mClock.GetComponent<AnimatorComponent>();
 	Helpers::PlayAnimation(&animator, ANIM("Clock.anim"));
+}
+
+void UpgradeScene::startCountdown()
+{
+	// 시계 똑딱 소리를 멈추고 카운트다운 재생을 시작한다.
+	SoundManager::StopSound("ClockTick.mp3");
+	SoundManager::PlaySound("Countdown.mp3");
 }

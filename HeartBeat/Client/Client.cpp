@@ -22,6 +22,7 @@
 #include "Font.h"
 #include "Texture.h"
 #include "Skeleton.h"
+#include "SoundManager.h"
 #include "TestScene.h"
 
 Client::Client()
@@ -34,6 +35,7 @@ bool Client::Init()
 {
 	Input::Init();
 	Timer::Init();
+	SoundManager::Init();
 
 	loadServerSettingsFromXML("settings.xml");
 
@@ -62,6 +64,7 @@ void Client::Shutdown()
 
 	mRenderer->Shutdown();
 	mPacketManager->Shutdown();
+	SoundManager::Shutdown();
 }
 
 void Client::Run()
