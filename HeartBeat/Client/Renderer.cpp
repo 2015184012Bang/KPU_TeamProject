@@ -495,6 +495,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Character_Green.mesh");
 	MESH("Character_Pink.mesh");
 	MESH("Character_Red.mesh");
+	MESH("Clock.mesh");
 	MESH("Cotton_Swab.mesh");
 	MESH("Cube.mesh");
 	MESH("Dog.mesh");
@@ -520,6 +521,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Character_Green.skel");
 	SKELETON("Character_Pink.skel");
 	SKELETON("Character_Red.skel");
+	SKELETON("Clock.skel");
 	SKELETON("Dog.skel");
 	SKELETON("Fat.skel");
 	SKELETON("HealPack.skel");

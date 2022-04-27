@@ -25,7 +25,12 @@ void UpgradeScene::Enter()
 	mPlayerCharacter = Entity(entity, mOwner);
 
 	initPlayersPositionToZero();
+
+	// 바닥, 공격/힐/서포트 바닥 생성
 	createPlanes();
+
+	// 위에서 플레이어를 따라 다니는 시계 생성
+	createClock();
 }
 
 void UpgradeScene::Exit()
@@ -50,8 +55,10 @@ void UpgradeScene::ProcessInput()
 
 		case NOTIFY_UPGRADE:
 			processNotifyUpgrade(packet);
+			break;
 
 		default:
+			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
 		}
 	}
@@ -76,6 +83,8 @@ void UpgradeScene::Update(float deltaTime)
 		// 상호작용키(SPACE BAR)를 누르면 어떤 업그레이드 Plane 위에 서 있는지 확인한다.
 		checkCollisionWithPlanes();
 	}
+
+	updateClockPosition();
 }
 
 void UpgradeScene::initPlayersPositionToZero()
@@ -308,6 +317,15 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	}
 }
 
+void UpgradeScene::updateClockPosition()
+{
+	const auto& playerPosition = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+
+	auto& clockTransform = mClock.GetComponent<TransformComponent>();
+	Vector3 to = { playerPosition.x, clockTransform.Position.y, playerPosition.z };
+	Helpers::UpdatePosition(&clockTransform.Position, to, &clockTransform.bDirty);
+}
+
 void UpgradeScene::createPlanes()
 {
 	// 공격 바닥 생성
@@ -353,4 +371,17 @@ void UpgradeScene::createPlanes()
 		auto& transform = plane.GetComponent<TransformComponent>();
 		transform.Position.y -= 45.0f;
 	}
+}
+
+void UpgradeScene::createClock()
+{
+	mClock = mOwner->CreateSkeletalMeshEntity(MESH("Clock.mesh"),
+		TEXTURE("Clock.png"), SKELETON("Clock.skel"));
+
+	auto& transform = mClock.GetComponent<TransformComponent>();
+	transform.Position.y = 600.0f;
+	transform.Rotation.y = 180.0f;
+
+	auto& animator = mClock.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&animator, ANIM("Clock.anim"));
 }

@@ -26,12 +26,14 @@ public:
 private:
     void initPlayersPositionToZero();
     void createPlanes();
+    void createClock();
 
     bool pollKeyboardPressed();
     bool pollKeyboardReleased();
     void checkCollisionWithPlanes();
     uint8 getPresetNumber(string_view planeName);
     void equipPresetToCharacter(Entity& target, UpgradePreset preset);
+    void updateClockPosition();
 
     void processNotifyMove(const PACKET& packet);
     void processAnswerMove(const PACKET& packet);
@@ -39,6 +41,7 @@ private:
 
 private:
     Entity mPlayerCharacter = {};
+    Entity mClock = {};
 
     Vector3 mDirection = Vector3::Zero;
 };
