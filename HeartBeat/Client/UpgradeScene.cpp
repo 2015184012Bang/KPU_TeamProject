@@ -4,6 +4,7 @@
 #include "Client.h"
 #include "Components.h"
 #include "Character.h"
+#include "GameScene.h"
 #include "PacketManager.h"
 #include "Input.h"
 #include "Helpers.h"
@@ -239,6 +240,7 @@ uint8 UpgradeScene::getPresetNumber(string_view planeName)
 
 void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 {
+	// 기존에 붙여놨던 엔티티들을 삭제한다.
 	auto entities = Helpers::GetEntityToDetach(target);
 	for (auto entity : entities)
 	{
@@ -256,6 +258,10 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
 			TEXTURE("Temp.png"));
 
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
+
 		Helpers::AttachBone(target, weapon, "Weapon");
 		Helpers::AttachBone(target, bag, "Bag");
 		Helpers::AttachBone(target, sup, "Support");
@@ -271,6 +277,10 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
 			TEXTURE("Temp.png"));
 
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
+
 		Helpers::AttachBone(target, weapon, "Weapon");
 		Helpers::AttachBone(target, bag, "Bag");
 		Helpers::AttachBone(target, sup, "Support");
@@ -285,6 +295,10 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
 			TEXTURE("Temp.png"));
+
+		weapon.AddTag<Tag_DontDestroyOnLoad>();
+		bag.AddTag<Tag_DontDestroyOnLoad>();
+		sup.AddTag<Tag_DontDestroyOnLoad>();
 
 		Helpers::AttachBone(target, weapon, "Weapon");
 		Helpers::AttachBone(target, bag, "Bag");
