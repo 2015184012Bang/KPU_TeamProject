@@ -7,7 +7,7 @@ Font::Font()
 
 }
 
-void Font::Load(const wstring& path)
+void Font::Load(const string& path)
 {
 	loadFontFile(path);
 }
@@ -53,7 +53,7 @@ void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentenc
 	}
 }
 
-void Font::loadFontFile(const wstring& path)
+void Font::loadFontFile(const string& path)
 {
 	std::ifstream file(path);
 

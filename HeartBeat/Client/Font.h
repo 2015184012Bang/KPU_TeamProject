@@ -19,14 +19,14 @@ class Font :
 public:
 	Font();
 
-	virtual void Load(const wstring& path) override;
+	virtual void Load(const string& path) override;
 	void SetTexture(const Texture* texture) { mTexture = texture; }
 	const Texture* GetTexture() const { HB_ASSERT(mTexture, "Texture not set!");  return mTexture; }
 
 	void MakeVertices(vector<SpriteVertex>* outVertices, const string& sentence) const;
 
 private:
-	void loadFontFile(const wstring& path);
+	void loadFontFile(const string& path);
 
 private:
 	vector<FontType> mChars;

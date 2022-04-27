@@ -168,7 +168,7 @@ void UpgradeScene::checkCollisionWithPlanes()
 		if (Helpers::Intersects(playerBox, planeBox))
 		{
 			auto& name = plane.GetComponent<NameComponent>().Name;
-			HB_LOG(L"Collision with plane: {0}", name);
+			HB_LOG("Collision with plane: {0}", name);
 			break;
 		}
 	}
@@ -204,43 +204,43 @@ void UpgradeScene::createPlanes()
 {
 	// °ø°Ý ¹Ù´Ú »ý¼º
 	{
-		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Attack.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity attackPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Attack.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = attackPlane.GetComponent<TransformComponent>();
 		transform.Position.x = -DISTANCE_BETWEEN_PLANE;
 
 		attackPlane.AddTag<Tag_Plane>();
-		attackPlane.AddComponent<NameComponent>(L"AttackPlane"sv);
+		attackPlane.AddComponent<NameComponent>("AttackPlane"sv);
 	}
 
 	// Èú ¹Ù´Ú »ý¼º
 	{
-		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Heal.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity healPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Heal.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = healPlane.GetComponent<TransformComponent>();
 
 		healPlane.AddTag<Tag_Plane>();
-		healPlane.AddComponent<NameComponent>(L"HealPlane"sv);
+		healPlane.AddComponent<NameComponent>("HealPlane"sv);
 	}
 
 	// ¼­Æ÷Æ® ¹Ù´Ú »ý¼º
 	{
-		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH(L"Plane.mesh"),
-			TEXTURE(L"Support.png"), L"../Assets/Meshes/Plane.mesh");
+		Entity supportPlane = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Support.png"), "../Assets/Meshes/Plane.mesh");
 
 		auto& transform = supportPlane.GetComponent<TransformComponent>();
 		transform.Position.x = DISTANCE_BETWEEN_PLANE;
 
 		supportPlane.AddTag<Tag_Plane>();
-		supportPlane.AddComponent<NameComponent>(L"SupportPlane"sv);
+		supportPlane.AddComponent<NameComponent>("SupportPlane"sv);
 	}
 
 	// ¹Ù´Ú
 	{
-		Entity plane = mOwner->CreateStaticMeshEntity(MESH(L"Big_Plane.mesh"),
-			TEXTURE(L"Brick.jpg"));
+		Entity plane = mOwner->CreateStaticMeshEntity(MESH("Big_Plane.mesh"),
+			TEXTURE("Brick.jpg"));
 
 		auto& transform = plane.GetComponent<TransformComponent>();
 		transform.Position.y -= 45.0f;

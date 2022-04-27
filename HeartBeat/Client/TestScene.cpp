@@ -19,45 +19,45 @@ void TestScene::Enter()
 	camera.GetComponent<CameraComponent>().Position.z = -1000.0f;
 
 	{
-		mCharacter = mOwner->CreateSkeletalMeshEntity(MESH(L"Character_Red.mesh"),
-			TEXTURE(L"Character_Red.png"), SKELETON(L"Character_Red.skel"));
+		mCharacter = mOwner->CreateSkeletalMeshEntity(MESH("Character_Red.mesh"),
+			TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel"));
 		auto& animator = mCharacter.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(2, CharacterAnimationType::eRun));
-		Entity swab = mOwner->CreateStaticMeshEntity(MESH(L"Cotton_Swab.mesh"),
-			TEXTURE(L"Cotton_Swab.png"));
+		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
+			TEXTURE("Cotton_Swab.png"));
 		Helpers::AttachBone(mCharacter, swab, "Weapon");
 
-		Entity belt = mOwner->CreateStaticMeshEntity(MESH(L"Belt_Red.mesh"),
-			TEXTURE(L"Belt_Red.png"));
+		Entity belt = mOwner->CreateStaticMeshEntity(MESH("Belt_Red.mesh"),
+			TEXTURE("Belt_Red.png"));
 		Helpers::AttachBone(mCharacter, belt, "Bip001 Spine");
 
-		Entity pill = mOwner->CreateStaticMeshEntity(MESH(L"Pill.mesh"),
-			TEXTURE(L"Temp.png"));
+		Entity pill = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
+			TEXTURE("Temp.png"));
 		Helpers::AttachBone(mCharacter, pill, "Support");
 
-		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH(L"Bag_Lv3.mesh"),
-			TEXTURE(L"Temp.png"), SKELETON(L"Bag_Lv3.skel"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag_Lv3.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Bag_Lv3.skel"));
 		Helpers::AttachBone(mCharacter, bag, "Bag");
 
 		auto& bagAnimator = bag.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&bagAnimator, ANIM(L"Bag.anim"));
+		Helpers::PlayAnimation(&bagAnimator, ANIM("Bag.anim"));
 	}
 
 	{
-		Entity character = mOwner->CreateSkeletalMeshEntity(MESH(L"Character_Green.mesh"),
-			TEXTURE(L"Character_Green.png"), SKELETON(L"Character_Green.skel"));
+		Entity character = mOwner->CreateSkeletalMeshEntity(MESH("Character_Green.mesh"),
+			TEXTURE("Character_Green.png"), SKELETON("Character_Green.skel"));
 		auto& animator = character.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(0, CharacterAnimationType::eRun));
-		Entity swab = mOwner->CreateStaticMeshEntity(MESH(L"Cotton_Swab.mesh"),
-			TEXTURE(L"Cotton_Swab.png"));
+		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
+			TEXTURE("Cotton_Swab.png"));
 		Helpers::AttachBone(character, swab, "Weapon");
 
-		Entity belt = mOwner->CreateStaticMeshEntity(MESH(L"Belt_Red.mesh"),
-			TEXTURE(L"Belt_Red.png"));
+		Entity belt = mOwner->CreateStaticMeshEntity(MESH("Belt_Red.mesh"),
+			TEXTURE("Belt_Red.png"));
 		Helpers::AttachBone(character, belt, "Bip001 Spine");
 
-		Entity pill = mOwner->CreateStaticMeshEntity(MESH(L"Pill.mesh"),
-			TEXTURE(L"Temp.png"));
+		Entity pill = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
+			TEXTURE("Temp.png"));
 		Helpers::AttachBone(character, pill, "Support");
 
 		auto& transform = character.GetComponent<TransformComponent>();
@@ -65,12 +65,12 @@ void TestScene::Enter()
 	}
 
 	{
-		mEnemy = mOwner->CreateSkeletalMeshEntity(MESH(L"Virus.mesh"),
-			TEXTURE(L"Virus.png"), SKELETON(L"Virus.skel"));
+		mEnemy = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
+			TEXTURE("Virus.png"), SKELETON("Virus.skel"));
 		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, GetEnemyAnimation(eEnemyType::Virus, EnemyAnimationType::eRun));
-		Entity swab = mOwner->CreateStaticMeshEntity(MESH(L"Hammer.mesh"),
-			TEXTURE(L"Temp.png"));
+		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
+			TEXTURE("Temp.png"));
 		Helpers::AttachBone(mEnemy, swab, "Weapon");
 
 		auto& transform = mEnemy.GetComponent<TransformComponent>();

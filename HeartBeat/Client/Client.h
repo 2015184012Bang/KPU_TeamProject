@@ -10,6 +10,8 @@ class Texture;
 class Skeleton;
 class Font;
 
+using namespace std::string_literals;
+
 class Client :
     public Game
 {
@@ -22,10 +24,10 @@ public:
 
     void ChangeScene(Scene* scene);
 
-    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const wstring& boxFile = L"");
-    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const wstring& boxFile = L"");
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const string& boxFile = ""s);
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, const string& boxFile = ""s);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const string& boxFile = ""s);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, const string& boxFile = ""s);
     Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
     Entity CreateTextEntity(const Font* fontFile);
 

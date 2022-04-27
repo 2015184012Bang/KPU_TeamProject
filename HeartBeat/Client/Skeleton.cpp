@@ -3,7 +3,7 @@
 
 #include <rapidjson/document.h>
 
-void Skeleton::Load(const wstring& path)
+void Skeleton::Load(const string& path)
 {
 	std::ifstream file(path);
 

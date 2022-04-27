@@ -152,9 +152,9 @@ struct BoxComponent
 struct NameComponent
 {
 	NameComponent();
-	NameComponent(wstring_view name);
+	NameComponent(string_view name);
 
-	wstring Name;
+	string Name;
 };
 
 struct HealthComponent

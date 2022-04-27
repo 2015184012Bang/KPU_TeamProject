@@ -4,9 +4,9 @@ class AABB
 {
 public:
 	AABB();
-	AABB(const wstring& path);
+	AABB(const string& path);
 
-	void Load(const wstring& path);
+	void Load(const string& path);
 	void UpdateWorldBox(const Vector3& position, float yaw);
 
 	const Vector3& GetMin() const { return mMin; }

@@ -28,7 +28,6 @@
 #include "Log.h"
 
 using std::string;
-using std::wstring;
 using std::vector;
 using std::unordered_map;
 using std::map;
@@ -36,7 +35,6 @@ using std::array;
 using std::deque;
 using std::shared_ptr;
 using std::unique_ptr;
-using std::wstring_view;
 using std::string_view;
 
 using int8 = __int8;

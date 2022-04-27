@@ -12,7 +12,7 @@ class Animation : public IResource
 public:
 	Animation();
 
-	virtual void Load(const wstring& path) override;
+	virtual void Load(const string& path) override;
 	
 	uint32 GetNumBones() const { return mNumBones; }
 	uint32 GetNumFrames() const { return mNumFrames; }

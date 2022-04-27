@@ -28,7 +28,7 @@ void LobbyScene::Enter()
 	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
 	if (HOST_ID == myClientID)
 	{
-		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE(L"Start_Button.png"));
+		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE("Start_Button.png"));
 		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
 		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
 		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
@@ -88,7 +88,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 {
 	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
 
-	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel, L"../Assets/Boxes/Character.box");
+	Entity character = mOwner->CreateSkeletalMeshEntity(mesh, tex, skel, "../Assets/Boxes/Character.box");
 
 	// 씬 변경에도 삭제되지 않도록 DontDestroyOnLoad 태그를 붙여둔다.
 	character.AddTag<Tag_DontDestroyOnLoad>();

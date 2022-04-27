@@ -8,6 +8,8 @@
 #include "Texture.h"
 #include "Text.h"
 
+using namespace std::string_literals;
+
 MeshRendererComponent::MeshRendererComponent()
 	: Mesi(nullptr)
 	, Tex(nullptr)
@@ -279,12 +281,12 @@ BoxComponent::BoxComponent(const AABB* localBox, const Vector3& position, float 
 }
 
 NameComponent::NameComponent()
-	: Name(L"default")
+	: Name("default"s)
 {
 
 }
 
-NameComponent::NameComponent(wstring_view name)
+NameComponent::NameComponent(string_view name)
 	: Name(name.data())
 {
 

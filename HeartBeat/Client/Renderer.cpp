@@ -485,63 +485,63 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	MESH(L"Bag.mesh");
-	MESH(L"Bag_Lv3.mesh");
-	MESH(L"Bat.mesh");
-	MESH(L"Belt_Green.mesh");
-	MESH(L"Belt_Pink.mesh");
-	MESH(L"Belt_Red.mesh");
-	MESH(L"Cart.mesh");
-	MESH(L"Cell.mesh");
-	MESH(L"Character_Green.mesh");
-	MESH(L"Character_Pink.mesh");
-	MESH(L"Character_Red.mesh");
-	MESH(L"Cotton_Swab.mesh");
-	MESH(L"Cube.mesh");
-	MESH(L"Dog.mesh");
-	MESH(L"Fat.mesh");
-	MESH(L"Hammer.mesh");
-	MESH(L"House.mesh");
-	MESH(L"Oxygen.mesh");
-	MESH(L"Pickax.mesh");
-	MESH(L"Pill.mesh");
-	MESH(L"Pill_Pack.mesh");
-	MESH(L"Plane.mesh");
-	MESH(L"Ringer.mesh");
-	MESH(L"Syringe.mesh");
-	MESH(L"Tank.mesh");
-	MESH(L"Thermometer.mesh");
-	MESH(L"Virus.mesh");
-	MESH(L"Big_Plane.mesh");
+	MESH("Bag.mesh");
+	MESH("Bag_Lv3.mesh");
+	MESH("Bat.mesh");
+	MESH("Belt_Green.mesh");
+	MESH("Belt_Pink.mesh");
+	MESH("Belt_Red.mesh");
+	MESH("Cart.mesh");
+	MESH("Cell.mesh");
+	MESH("Character_Green.mesh");
+	MESH("Character_Pink.mesh");
+	MESH("Character_Red.mesh");
+	MESH("Cotton_Swab.mesh");
+	MESH("Cube.mesh");
+	MESH("Dog.mesh");
+	MESH("Fat.mesh");
+	MESH("Hammer.mesh");
+	MESH("House.mesh");
+	MESH("Oxygen.mesh");
+	MESH("Pickax.mesh");
+	MESH("Pill.mesh");
+	MESH("Pill_Pack.mesh");
+	MESH("Plane.mesh");
+	MESH("Ringer.mesh");
+	MESH("Syringe.mesh");
+	MESH("Tank.mesh");
+	MESH("Thermometer.mesh");
+	MESH("Virus.mesh");
+	MESH("Big_Plane.mesh");
 	
-	SKELETON(L"Bag.skel");
-	SKELETON(L"Bag_Lv3.skel");
-	SKELETON(L"Cart.skel");
-	SKELETON(L"Cell.skel");
-	SKELETON(L"Character_Green.skel");
-	SKELETON(L"Character_Pink.skel");
-	SKELETON(L"Character_Red.skel");
-	SKELETON(L"Dog.skel");
-	SKELETON(L"Fat.skel");
-	SKELETON(L"Tank.skel");
-	SKELETON(L"Virus.skel");
+	SKELETON("Bag.skel");
+	SKELETON("Bag_Lv3.skel");
+	SKELETON("Cart.skel");
+	SKELETON("Cell.skel");
+	SKELETON("Character_Green.skel");
+	SKELETON("Character_Pink.skel");
+	SKELETON("Character_Red.skel");
+	SKELETON("Dog.skel");
+	SKELETON("Fat.skel");
+	SKELETON("Tank.skel");
+	SKELETON("Virus.skel");
 
 #ifdef _DEBUG
-	BOX(L"Cart.box");
-	BOX(L"Cell.box");
-	BOX(L"Character.box");
-	BOX(L"Cube.box");
-	BOX(L"Dog.box");
-	BOX(L"Pickax.box");
-	BOX(L"Tank.box");
-	BOX(L"Virus.box");
+	BOX("Cart.box");
+	BOX("Cell.box");
+	BOX("Character.box");
+	BOX("Cube.box");
+	BOX("Dog.box");
+	BOX("Pickax.box");
+	BOX("Tank.box");
+	BOX("Virus.box");
 #endif
 
-	TEXTURE(L"Login_Background.png");
-	TEXTURE(L"Start_Button.png");
+	TEXTURE("Login_Background.png");
+	TEXTURE("Start_Button.png");
 
-	Font* font = FONT(L"fontdata.txt");
-	font->SetTexture(TEXTURE(L"font.dds"));
+	Font* font = FONT("fontdata.txt");
+	font->SetTexture(TEXTURE("font.dds"));
 }
 
 void Renderer::loadAssets()

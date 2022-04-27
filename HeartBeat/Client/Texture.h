@@ -7,12 +7,12 @@ class Texture : public IResource
 public:
 	Texture();
 
-	virtual void Load(const wstring& path) override;
+	virtual void Load(const string& path) override;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGpuHandle() const { return mSrvGpuHandle; }
 
 private:
-	bool loadTextureFromFile(const wstring& path);
+	bool loadTextureFromFile(const string& path);
 	bool uploadTextureData();
 	bool createSRV();
 

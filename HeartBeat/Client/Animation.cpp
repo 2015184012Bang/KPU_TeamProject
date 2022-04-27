@@ -15,7 +15,7 @@ Animation::Animation()
 
 }
 
-void Animation::Load(const wstring& path)
+void Animation::Load(const string& path)
 {
 	std::ifstream file(path);
 
