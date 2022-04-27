@@ -41,10 +41,9 @@ public:
 		for (auto& p : players)
 		{
 			auto& playerTransform = p.GetComponent<STransformComponent>();
-			playerPositon.push_back(playerTransform.Position);
+			playerPositon.push_back(&playerTransform.Position);
 		}
-		mChasingPlayerPosition = &playerPositon[0];
-		mPrevPlayerPosition = *mChasingPlayerPosition;
+		mChasingPlayerPosition = playerPositon[0];
 
 		SetStartNode();
 		FindPath();
@@ -57,19 +56,20 @@ public:
 
 	virtual void Update(float deltaTime) override
 	{
-		
+		//HB_LOG("[player]({0},{1}", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
+		//HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
 
 		if (!mbChase)
 		{
-			if (!NearZero(transform->Position, mPrevPlayerPosition))
-			{
-				mbChase = true;
-				openList.clear();
-				closeList.clear();
-				SetStartNode();
-				FindPath();
-				bool retVal = GetNextTarget(&mCurrentTarget);
-			}
+			mbChase = true;
+			openList.clear();
+			closeList.clear();
+			SetStartNode();
+			goalRow = -1;
+			mbFind = false;
+
+			FindPath();
+			bool retVal = GetNextTarget(&mCurrentTarget);
 		}
 		else if (mbChase)
 		{
@@ -77,13 +77,7 @@ public:
 			//openList.clear();
 			//closeList.clear();
 			//SetStartNode();
-			
-			if (mbFind == false)
-			{
-				//mPrevPlayerPosition = mChasingPlayerPosition;
-				//mPath = std::queue<Tile>();
-				FindPath();
-			}
+			FindPath();
 
 			
 			Vector3 to = Vector3(mCurrentTarget.X, 0.0f, mCurrentTarget.Z);
@@ -102,7 +96,6 @@ public:
 				if (!retVal)
 				{
 					mbChase = false;
-					mbFind = false;
 				}
 			}
 			
@@ -122,7 +115,7 @@ public:
 	
 
 private:
-	vector<Vector3> playerPositon;
+	vector<Vector3*> playerPositon;
 	Vector3* mChasingPlayerPosition;
 	Vector3 mPrevPlayerPosition;
 

@@ -4,9 +4,10 @@
 
 tuple<int, int> Enemy::GetGoalIndex()
 {
-	int tileWidth = TILE_WIDTH;
-	goalRow = static_cast<int>(mChasingPlayerPosition->x) / tileWidth;
-	goalCol = static_cast<int>(mChasingPlayerPosition->z) / tileWidth;
+	int nodeWidth = static_cast<int>(TILE_WIDTH) / maxRow;
+	
+	goalRow = static_cast<int>(mChasingPlayerPosition->x) / (static_cast<int>(TILE_WIDTH));
+	goalCol = static_cast<int>(mChasingPlayerPosition->z) / (static_cast<int>(TILE_WIDTH));
 
 	return std::make_tuple(goalRow, goalCol);
 }
@@ -44,6 +45,7 @@ void Enemy::FindPath()
 
 				openNode = openNode->conn;
 				mbFind = true;
+
 			}
 		}
 		else
@@ -107,6 +109,9 @@ void Enemy::SetStartNode()
 	int myRow = static_cast<int>(transform->Position.x) / static_cast<int>(TILE_WIDTH);
 	int myCol = static_cast<int>(transform->Position.z) / static_cast<int>(TILE_WIDTH);
 	Node* startNode = new Node(myRow, myCol);
+
+	HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
+	HB_LOG("Set StartNode : ({0},{1})", myRow, myCol);
 
 	openList.push_back(startNode);
 }
@@ -189,6 +194,7 @@ Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNod
 Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 {
 	int val = graph[rowIndex][colIndex].Type;
+	HB_LOG("({0},{1}):Type({2})", rowIndex, colIndex, val);
 
 	if (val == 2) // Àå¾Ö¹°
 	{
