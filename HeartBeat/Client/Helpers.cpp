@@ -253,6 +253,11 @@ void Helpers::AttachBone(Entity& parent, Entity& child, string_view boneName)
 
 vector<entt::entity> Helpers::GetEntityToDetach(Entity& parent, bool bAll /*= true*/, string_view boneName /*= ""sv*/)
 {
+	if (!parent.HasComponent<AttachmentParentComponent>())
+	{
+		return vector<entt::entity>{};
+	}
+
 	auto& attachParent = parent.GetComponent<AttachmentParentComponent>();
 	vector<entt::entity> entities;
 

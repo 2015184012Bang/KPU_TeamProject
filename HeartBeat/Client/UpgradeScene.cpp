@@ -47,6 +47,9 @@ void UpgradeScene::ProcessInput()
 			processNotifyMove(packet);
 			break;
 
+		case NOTIFY_UPGRADE:
+			processNotifyUpgrade(packet);
+
 		default:
 			break;
 		}
@@ -168,7 +171,15 @@ void UpgradeScene::checkCollisionWithPlanes()
 		if (Helpers::Intersects(playerBox, planeBox))
 		{
 			auto& name = plane.GetComponent<NameComponent>().Name;
-			HB_LOG("Collision with plane: {0}", name);
+			
+			REQUEST_UPGRADE_PACKET packet = {};
+			packet.PacketID = REQUEST_UPGRADE;
+			packet.PacketSize = sizeof(packet);
+			packet.UpgradePreset = getPresetNumber(name);
+
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet),
+				sizeof(packet));
+
 			break;
 		}
 	}
@@ -198,6 +209,89 @@ void UpgradeScene::processAnswerMove(const PACKET& packet)
 
 	auto& movement = mPlayerCharacter.GetComponent<MovementComponent>();
 	movement.Direction = amPacket->Direction;
+}
+
+void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
+{
+	NOTIFY_UPGRADE_PACKET* nuPacket = reinterpret_cast<NOTIFY_UPGRADE_PACKET*>(packet.DataPtr);
+
+	auto entity = mOwner->GetEntityByID(nuPacket->EntityID);
+	Entity target = { entity, mOwner };
+	
+	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
+}
+
+uint8 UpgradeScene::getPresetNumber(string_view planeName)
+{
+	if (planeName == "AttackPlane")
+	{
+		return static_cast<uint8>(UpgradePreset::ATTACK);
+	}
+	else if (planeName == "HealPlane")
+	{
+		return static_cast<uint8>(UpgradePreset::HEAL);
+	}
+	else
+	{
+		return static_cast<uint8>(UpgradePreset::SUPPORT);
+	}
+}
+
+void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
+{
+	auto entities = Helpers::GetEntityToDetach(target);
+	for (auto entity : entities)
+	{
+		mOwner->DestroyEntity(entity);
+	}
+
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Syringe.mesh"),
+			TEXTURE("Temp.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
+			TEXTURE("Temp.png"));
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+
+	case UpgradePreset::HEAL:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
+			TEXTURE("Cotton_Swab.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
+			TEXTURE("Temp.png"), SKELETON("HealPack.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
+			TEXTURE("Temp.png"));
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+
+	case UpgradePreset::SUPPORT:
+	{
+		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Thermometer.mesh"),
+			TEXTURE("Temp.png"));
+		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
+			TEXTURE("Temp.png"));
+
+		Helpers::AttachBone(target, weapon, "Weapon");
+		Helpers::AttachBone(target, bag, "Bag");
+		Helpers::AttachBone(target, sup, "Support");
+	}
+		break;
+	}
 }
 
 void UpgradeScene::createPlanes()

@@ -44,6 +44,10 @@ enum PACKET_ID : UINT8
 	REQUEST_MOVE = 121,
 	ANSWER_MOVE = 122,
 	NOTIFY_MOVE = 123,
+
+	// 업그레이드
+	REQUEST_UPGRADE = 131,
+	NOTIFY_UPGRADE
 };
 
 enum ERROR_CODE : UINT8
@@ -110,6 +114,19 @@ struct NOTIFY_MOVE_PACKET : public PACKET_HEADER
 	UINT32 EntityID;
 	Vector3 Position;
 	Vector3 Direction;
+};
+
+struct REQUEST_UPGRADE_PACKET : public PACKET_HEADER
+{
+	UINT8 UpgradePreset;	// 0 : Attack Preset
+							// 1 : Heal Preset
+							// 2 : Support Preset
+};
+
+struct NOTIFY_UPGRADE_PACKET : public PACKET_HEADER
+{
+	UINT32 EntityID;
+	UINT8 UpgradePreset;
 };
 
 #pragma pack(pop)

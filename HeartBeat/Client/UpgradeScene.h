@@ -7,6 +7,13 @@ class UpgradeScene :
     public Scene
 {
     const float DISTANCE_BETWEEN_PLANE = 700.0f;
+	
+    enum class UpgradePreset
+	{
+		ATTACK = 0,
+		HEAL = 1,
+		SUPPORT = 2,
+	};
 
 public:
     UpgradeScene(Client* owner);
@@ -23,9 +30,12 @@ private:
     bool pollKeyboardPressed();
     bool pollKeyboardReleased();
     void checkCollisionWithPlanes();
+    uint8 getPresetNumber(string_view planeName);
+    void equipPresetToCharacter(Entity& target, UpgradePreset preset);
 
     void processNotifyMove(const PACKET& packet);
     void processAnswerMove(const PACKET& packet);
+    void processNotifyUpgrade(const PACKET& packet);
 
 private:
     Entity mPlayerCharacter = {};
