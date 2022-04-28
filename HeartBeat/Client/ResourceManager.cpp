@@ -336,11 +336,15 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		{
 		case CharacterAnimationType::eIdle:
 			return ANIM("CG_Idle.anim");
-			break;
 
+		case CharacterAnimationType::eIdleNone:
+			return ANIM("CG_Idle_None.anim");
+			
 		case CharacterAnimationType::eRun:
 			return ANIM("CG_Run.anim");
-			break;
+			
+		case CharacterAnimationType::eRunNone:
+			return ANIM("CG_Run_None.anim");
 		}
 		break;
 
@@ -349,11 +353,15 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		{
 		case CharacterAnimationType::eIdle:
 			return ANIM("CP_Idle.anim");
-			break;
 
 		case CharacterAnimationType::eRun:
 			return ANIM("CP_Run.anim");
-			break;
+		
+		case CharacterAnimationType::eIdleNone:
+			return ANIM("CP_Idle_None.anim");
+
+		case CharacterAnimationType::eRunNone:
+			return ANIM("CP_Run_None.anim");
 		}
 		break;
 
@@ -362,11 +370,15 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 		{
 		case CharacterAnimationType::eIdle:
 			return ANIM("CR_Idle.anim");
-			break;
 
 		case CharacterAnimationType::eRun:
 			return ANIM("CR_Run.anim");
-			break;
+
+		case CharacterAnimationType::eIdleNone:
+			return ANIM("CR_Idle_None.anim");
+
+		case CharacterAnimationType::eRunNone:
+			return ANIM("CR_Run_None.anim");
 		}
 		break;
 	}
@@ -399,15 +411,15 @@ Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
 		{
 		case EnemyAnimationType::eIdle:
 			return ANIM("Virus_Idle.anim");
-			break;
 
 		case EnemyAnimationType::eRun:
 			return ANIM("Virus_Run.anim");
-			break;
 
 		case EnemyAnimationType::eAttack:
 			return ANIM("Virus_Attack.anim");
-			break;
+
+		case EnemyAnimationType::eDead:
+			return ANIM("Virus_Dead.anim");
 		}
 		break;
 
@@ -416,15 +428,12 @@ Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
 		{
 		case EnemyAnimationType::eIdle:
 			return ANIM("Dog_Idle.anim");
-			break;
 
 		case EnemyAnimationType::eRun:
 			return ANIM("Dog_Run.anim");
-			break;
 
 		case EnemyAnimationType::eAttack:
 			return ANIM("Dog_Attack.anim");
-			break;
 		}
 		break;
 	default:

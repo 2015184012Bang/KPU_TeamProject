@@ -36,7 +36,9 @@ private:
 enum class CharacterAnimationType
 {
 	eIdle,
+	eIdleNone,
 	eRun,
+	eRunNone,
 };
 
 enum class EnemyAnimationType
@@ -44,6 +46,7 @@ enum class EnemyAnimationType
 	eIdle,
 	eRun,
 	eAttack,
+	eDead,
 };
 
 std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID);

@@ -22,7 +22,7 @@ void TestScene::Enter()
 		mCharacter = mOwner->CreateSkeletalMeshEntity(MESH("Character_Red.mesh"),
 			TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel"));
 		auto& animator = mCharacter.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(2, CharacterAnimationType::eRun));
+		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(2, CharacterAnimationType::eRunNone));
 		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
 			TEXTURE("Cotton_Swab.png"));
 		Helpers::AttachBone(mCharacter, swab, "Weapon");
@@ -47,7 +47,7 @@ void TestScene::Enter()
 		Entity character = mOwner->CreateSkeletalMeshEntity(MESH("Character_Green.mesh"),
 			TEXTURE("Character_Green.png"), SKELETON("Character_Green.skel"));
 		auto& animator = character.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(0, CharacterAnimationType::eRun));
+		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(0, CharacterAnimationType::eIdleNone));
 		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
 			TEXTURE("Cotton_Swab.png"));
 		Helpers::AttachBone(character, swab, "Weapon");
@@ -68,7 +68,7 @@ void TestScene::Enter()
 		mEnemy = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
 			TEXTURE("Virus.png"), SKELETON("Virus.skel"));
 		auto& animator = mEnemy.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, GetEnemyAnimation(eEnemyType::Virus, EnemyAnimationType::eRun));
+		Helpers::PlayAnimation(&animator, GetEnemyAnimation(eEnemyType::Virus, EnemyAnimationType::eDead));
 		Entity swab = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
 			TEXTURE("Temp.png"));
 		Helpers::AttachBone(mEnemy, swab, "Weapon");
