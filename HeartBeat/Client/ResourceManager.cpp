@@ -349,16 +349,16 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 	case 0: // Character_Green
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
+		case CharacterAnimationType::IDLE:
 			return ANIM("CG_Idle.anim");
 
-		case CharacterAnimationType::eIdleNone:
+		case CharacterAnimationType::IDLE_NONE:
 			return ANIM("CG_Idle_None.anim");
 			
-		case CharacterAnimationType::eRun:
+		case CharacterAnimationType::RUN:
 			return ANIM("CG_Run.anim");
 			
-		case CharacterAnimationType::eRunNone:
+		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CG_Run_None.anim");
 		}
 		break;
@@ -366,16 +366,16 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 	case 1: // Character_Pink
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
+		case CharacterAnimationType::IDLE:
 			return ANIM("CP_Idle.anim");
 
-		case CharacterAnimationType::eRun:
+		case CharacterAnimationType::RUN:
 			return ANIM("CP_Run.anim");
 		
-		case CharacterAnimationType::eIdleNone:
+		case CharacterAnimationType::IDLE_NONE:
 			return ANIM("CP_Idle_None.anim");
 
-		case CharacterAnimationType::eRunNone:
+		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CP_Run_None.anim");
 		}
 		break;
@@ -383,16 +383,16 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 	case 2: // Character_Red
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
+		case CharacterAnimationType::IDLE:
 			return ANIM("CR_Idle.anim");
 
-		case CharacterAnimationType::eRun:
+		case CharacterAnimationType::RUN:
 			return ANIM("CR_Run.anim");
 
-		case CharacterAnimationType::eIdleNone:
+		case CharacterAnimationType::IDLE_NONE:
 			return ANIM("CR_Idle_None.anim");
 
-		case CharacterAnimationType::eRunNone:
+		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CR_Run_None.anim");
 		}
 		break;
@@ -401,14 +401,14 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 	return nullptr;
 }
 
-std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType)
+std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(EnemyType enemyType)
 {
 	switch (enemyType)
 	{
-	case eEnemyType::Virus:
+	case EnemyType::VIRUS:
 		return { MESH("Virus.mesh") , TEXTURE("Virus.png") , SKELETON("Virus.skel") };
 
-	case eEnemyType::Dog:
+	case EnemyType::DOG:
 		return { MESH("Dog.mesh") , TEXTURE("Dog.png") , SKELETON("Dog.skel") };
 
 	default:
@@ -417,37 +417,37 @@ std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType)
 	}
 }
 
-Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType)
+Animation* GetEnemyAnimation(EnemyType enemyType, EnemyAnimationType animType)
 {
 	switch (enemyType)
 	{
-	case eEnemyType::Virus:
+	case EnemyType::VIRUS:
 		switch (animType)
 		{
-		case EnemyAnimationType::eIdle:
+		case EnemyAnimationType::IDLE:
 			return ANIM("Virus_Idle.anim");
 
-		case EnemyAnimationType::eRun:
+		case EnemyAnimationType::RUN:
 			return ANIM("Virus_Run.anim");
 
-		case EnemyAnimationType::eAttack:
+		case EnemyAnimationType::ATTACK:
 			return ANIM("Virus_Attack.anim");
 
-		case EnemyAnimationType::eDead:
+		case EnemyAnimationType::DEAD:
 			return ANIM("Virus_Dead.anim");
 		}
 		break;
 
-	case eEnemyType::Dog:
+	case EnemyType::DOG:
 		switch (animType)
 		{
-		case EnemyAnimationType::eIdle:
+		case EnemyAnimationType::IDLE:
 			return ANIM("Dog_Idle.anim");
 
-		case EnemyAnimationType::eRun:
+		case EnemyAnimationType::RUN:
 			return ANIM("Dog_Run.anim");
 
-		case EnemyAnimationType::eAttack:
+		case EnemyAnimationType::ATTACK:
 			return ANIM("Dog_Attack.anim");
 		}
 		break;

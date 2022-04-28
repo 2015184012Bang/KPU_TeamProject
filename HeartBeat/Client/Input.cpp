@@ -9,7 +9,7 @@ HWND Input::sHwnd;
 void Input::Init()
 {
 	sHwnd = Application::GetHwnd();
-	sKeyStates.resize(256, KeyState::None);
+	sKeyStates.resize(256, KeyState::NONE);
 }
 
 void Input::Update()
@@ -19,7 +19,7 @@ void Input::Update()
 	{
 		for (UINT key = 0; key < KEY_COUNT; key++)
 		{
-			sKeyStates[key] = KeyState::None;
+			sKeyStates[key] = KeyState::NONE;
 		}
 
 		return;
@@ -37,34 +37,34 @@ void Input::Update()
 		{
 			KeyState& state = sKeyStates[key];
 
-			if (state == KeyState::Repeat || state == KeyState::Press)
-				state = KeyState::Repeat;
+			if (state == KeyState::REPEAT || state == KeyState::PRESS)
+				state = KeyState::REPEAT;
 			else
-				state = KeyState::Press;
+				state = KeyState::PRESS;
 		}
 		else
 		{
 			KeyState& state = sKeyStates[key];
 
-			if (state == KeyState::Repeat || state == KeyState::Press)
-				state = KeyState::Release;
+			if (state == KeyState::REPEAT || state == KeyState::PRESS)
+				state = KeyState::RELEASE;
 			else
-				state = KeyState::None;
+				state = KeyState::NONE;
 		}
 	}
 }
 
-bool Input::IsButtonRepeat(eKeyCode key)
+bool Input::IsButtonRepeat(KeyCode key)
 {
-	return sKeyStates[static_cast<int>(key)] == KeyState::Repeat;
+	return sKeyStates[static_cast<int>(key)] == KeyState::REPEAT;
 }
 
-bool Input::IsButtonPressed(eKeyCode key)
+bool Input::IsButtonPressed(KeyCode key)
 {
-	return sKeyStates[static_cast<int>(key)] == KeyState::Press;
+	return sKeyStates[static_cast<int>(key)] == KeyState::PRESS;
 }
 
-bool Input::IsButtonReleased(eKeyCode key)
+bool Input::IsButtonReleased(KeyCode key)
 {
-	return sKeyStates[static_cast<int>(key)] == KeyState::Release;
+	return sKeyStates[static_cast<int>(key)] == KeyState::RELEASE;
 }

@@ -118,7 +118,7 @@ void UpgradeScene::Update(float deltaTime)
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Space))
+	if (Input::IsButtonPressed(KeyCode::SPACE))
 	{
 		// 상호작용키(SPACE BAR)를 누르면 어떤 업그레이드 Plane 위에 서 있는지 확인한다.
 		checkCollisionWithPlanes();
@@ -149,25 +149,25 @@ bool UpgradeScene::pollKeyboardPressed()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonPressed(eKeyCode::Left))
+	if (Input::IsButtonPressed(KeyCode::LEFT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Right))
+	if (Input::IsButtonPressed(KeyCode::RIGHT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Up))
+	if (Input::IsButtonPressed(KeyCode::UP))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Down))
+	if (Input::IsButtonPressed(KeyCode::DOWN))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
@@ -180,25 +180,25 @@ bool UpgradeScene::pollKeyboardReleased()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonReleased(eKeyCode::Left))
+	if (Input::IsButtonReleased(KeyCode::LEFT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Right))
+	if (Input::IsButtonReleased(KeyCode::RIGHT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Up))
+	if (Input::IsButtonReleased(KeyCode::UP))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Down))
+	if (Input::IsButtonReleased(KeyCode::DOWN))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;
@@ -270,7 +270,7 @@ void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
 
 	// None 계열 애니메이션(비무장 상태)에서 무장 후 애니메이션으로 바꿔준다.
 	auto& animator = target.GetComponent<AnimatorComponent>();
-	Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(nuPacket->EntityID, CharacterAnimationType::eIdle));
+	Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(nuPacket->EntityID, CharacterAnimationType::IDLE));
 	
 	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
 }

@@ -239,7 +239,7 @@ void Client::processInput()
 {
 	Input::Update();
 
-	if (Input::IsButtonPressed(eKeyCode::Escape))
+	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
 		SetRunning(false);
 	}
@@ -319,7 +319,7 @@ void Client::createCameraEntity()
 
 void Client::processButton()
 {
-	if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+	if (Input::IsButtonPressed(KeyCode::MOUSE_L))
 	{
 		auto view = GetRegistry().view<ButtonComponent, RectTransformComponent>();
 		for (auto [entity, button, rect] : view.each())

@@ -85,7 +85,7 @@ void GameScene::Update(float deltaTime)
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::A))
+	if (Input::IsButtonPressed(KeyCode::A))
 	{
 		REQUEST_ATTACK_PACKET packet = {};
 		packet.PacketID = REQUEST_ATTACK;
@@ -100,25 +100,25 @@ bool GameScene::pollKeyboardPressed()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonPressed(eKeyCode::Left))
+	if (Input::IsButtonPressed(KeyCode::LEFT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Right))
+	if (Input::IsButtonPressed(KeyCode::RIGHT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Up))
+	if (Input::IsButtonPressed(KeyCode::UP))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(eKeyCode::Down))
+	if (Input::IsButtonPressed(KeyCode::DOWN))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
@@ -131,25 +131,25 @@ bool GameScene::pollKeyboardReleased()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonReleased(eKeyCode::Left))
+	if (Input::IsButtonReleased(KeyCode::LEFT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Right))
+	if (Input::IsButtonReleased(KeyCode::RIGHT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Up))
+	if (Input::IsButtonReleased(KeyCode::UP))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonReleased(eKeyCode::Down))
+	if (Input::IsButtonReleased(KeyCode::DOWN))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;

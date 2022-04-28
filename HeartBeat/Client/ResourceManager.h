@@ -35,24 +35,24 @@ private:
 
 enum class CharacterAnimationType
 {
-	eIdle,
-	eIdleNone,
-	eRun,
-	eRunNone,
+	IDLE,
+	IDLE_NONE,
+	RUN,
+	RUN_NONE,
 };
 
 enum class EnemyAnimationType
 {
-	eIdle,
-	eRun,
-	eAttack,
-	eDead,
+	IDLE,
+	RUN,
+	ATTACK,
+	DEAD,
 };
 
 std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID);
 Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type);
-std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(eEnemyType enemyType);
-Animation* GetEnemyAnimation(eEnemyType enemyType, EnemyAnimationType animType);
+std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(EnemyType enemyType);
+Animation* GetEnemyAnimation(EnemyType enemyType, EnemyAnimationType animType);
 
 const string ASSET_PATH = "../Assets/";
 

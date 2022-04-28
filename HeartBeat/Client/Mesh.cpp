@@ -16,15 +16,15 @@ Mesh::Mesh()
 
 void Mesh::Load(string_view path)
 {
-	eMeshType meshType;
+	MeshType meshType;
 	rapidjson::Document doc = openMeshFile(path, &meshType);
 
 	switch (meshType)
 	{
-	case eMeshType::Static:
+	case MeshType::STATIC:
 		loadStaticMesh(doc);
 		break;
-	case eMeshType::Skeletal:
+	case MeshType::SKELETAL:
 		loadSkeletalMesh(doc);
 		break;
 	default:
@@ -93,7 +93,7 @@ void Mesh::LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint)
 	createIndexBuffer(indices);
 }
 
-rapidjson::Document Mesh::openMeshFile(string_view path, eMeshType* outMeshType)
+rapidjson::Document Mesh::openMeshFile(string_view path, MeshType* outMeshType)
 {
 	std::ifstream file(path.data());
 
@@ -126,11 +126,11 @@ rapidjson::Document Mesh::openMeshFile(string_view path, eMeshType* outMeshType)
 
 	if (vertexFormat == "PosNormTex")
 	{
-		*outMeshType = eMeshType::Static;
+		*outMeshType = MeshType::STATIC;
 	}
 	else if (vertexFormat == "PosNormSkinTex")
 	{
-		*outMeshType = eMeshType::Skeletal;
+		*outMeshType = MeshType::SKELETAL;
 	}
 	else
 	{

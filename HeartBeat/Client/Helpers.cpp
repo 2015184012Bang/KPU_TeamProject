@@ -32,7 +32,7 @@ void Helpers::BindWorldMatrix(const Vector3& position, const Vector3& rotation, 
 		*outDirty = false;
 	}
 
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outBuffer->GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::WORLD_PARAM), outBuffer->GetVirtualAddress());
 }
 
 void Helpers::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty)
@@ -54,7 +54,7 @@ void Helpers::BindWorldMatrixAttached(TransformComponent* outTransform, const At
 	mat *= Matrix::CreateTranslation(position);
 
 	outTransform->Buffer.CopyData(0, mat);
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::WorldParam), outTransform->Buffer.GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::WORLD_PARAM), outTransform->Buffer.GetVirtualAddress());
 }
 
 void Helpers::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget,
@@ -63,7 +63,7 @@ void Helpers::BindViewProjectionMatrix(const Vector3& cameraPosition, const Vect
 	Matrix viewProjection = XMMatrixLookAtLH(cameraPosition, cameraTarget, cameraUp);
 	viewProjection *= XMMatrixPerspectiveFovLH(fov, Application::GetAspectRatio(), 0.1f, 10000.0f);
 	buffer.CopyData(0, viewProjection);
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::VIEWPROJ_PARAM), buffer.GetVirtualAddress());
 }
 
 void Helpers::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
@@ -71,13 +71,13 @@ void Helpers::BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer)
 	Matrix viewProjection = Matrix::Identity;
 	viewProjection *= XMMatrixOrthographicLH(static_cast<float>(Application::GetScreenWidth()), static_cast<float>(Application::GetScreenHeight()), 0.0f, 1.0f);
 	buffer.CopyData(0, viewProjection);
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::ViewProjParam), buffer.GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::VIEWPROJ_PARAM), buffer.GetVirtualAddress());
 }
 
 void Helpers::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer)
 {
 	buffer.CopyData(0, palette);
-	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(eRootParameter::BoneParam), buffer.GetVirtualAddress());
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::BONE_PARAM), buffer.GetVirtualAddress());
 }
 
 void Helpers::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)

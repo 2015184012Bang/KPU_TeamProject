@@ -5,32 +5,32 @@ constexpr int PLAYER_MAX_HEALTH = 10;
 constexpr float TILE_WIDTH = 400.0f;
 constexpr float PLAYER_MAX_SPEED = 300.0f;
 
-enum class eEnemyType: uint8
+enum class EnemyType: uint8
 {
-	Virus,
-	Dog,
+	VIRUS,
+	DOG,
 };
 
-enum : uint8
+enum class TileType : uint8
 {
-	Grass,
-	Rail,
-	Obstacle,
+	GRASS,
+	RAIL,
+	OBSTACLE,
 };
 
-enum class eRootParameter
+enum class RootParameter
 {
-	WorldParam,
-	ViewProjParam,
-	TexParam,
-	BoneParam,
-	End
+	WORLD_PARAM,
+	VIEWPROJ_PARAM,
+	TEX_PARAM,
+	BONE_PARAM,
+	END
 };
 
-enum class eShaderRegister
+enum class ShaderRegister
 {
 	B0,
 	B1,
 	B2,
-	End
+	END
 };

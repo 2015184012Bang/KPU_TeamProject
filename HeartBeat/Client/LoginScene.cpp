@@ -51,7 +51,7 @@ void LoginScene::ProcessInput()
 void LoginScene::Update(float deltaTime)
 {
 	// 엔터 키를 누르면 서버에 접속 요청
-	if (Input::IsButtonPressed(eKeyCode::Return) && !mbConnected)
+	if (Input::IsButtonPressed(KeyCode::RETURN) && !mbConnected)
 	{
 		bool retVal = mOwner->GetPacketManager()->Connect(mOwner->ServerIP, mOwner->ServerPort);
 
