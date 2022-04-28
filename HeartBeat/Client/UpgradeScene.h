@@ -8,7 +8,7 @@ class UpgradeScene :
 {
     const float DISTANCE_BETWEEN_PLANE = 700.0f;
     const float FIVE_SECS_BEFORE_START = 25.8f;
-    const float SECS_TO_START = 30.0f;
+    const float SECS_TO_START = 3.0f; // 테스트를 위해 30초에서 3초로 변경
 	
     enum class UpgradePreset
 	{
