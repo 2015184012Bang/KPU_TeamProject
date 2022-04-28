@@ -41,9 +41,7 @@ void UpgradeScene::Enter()
 
 void UpgradeScene::Exit()
 {
-	SoundManager::StopSound("Countdown.mp3");
-	
-	// 만일 똑딱이 아직도 재생 중이라면 멈춘다.
+	// 만일 똑딱 소리가 아직도 재생 중이라면 멈춘다.
 	SoundManager::StopSound("ClockTick.mp3");
 
 	mOwner->DestroyAll();
