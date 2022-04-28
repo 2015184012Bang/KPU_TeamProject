@@ -33,6 +33,7 @@ private:
 	void processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 

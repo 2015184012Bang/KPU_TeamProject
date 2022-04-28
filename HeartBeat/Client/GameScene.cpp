@@ -50,6 +50,14 @@ void GameScene::ProcessInput()
 			processNotifyMove(packet);
 			break;
 
+		case ANSWER_ATTACK:
+			processAnswerAttack(packet);
+			break;
+
+		case NOTIFY_ATTACK:
+			processNotifyAttack(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -79,9 +87,11 @@ void GameScene::Update(float deltaTime)
 
 	if (Input::IsButtonPressed(eKeyCode::A))
 	{
-		// TODO: 서버에 공격 요청 패킷을 보낸다
-		auto& animator = mPlayerCharacter.GetComponent<AnimatorComponent>();
-		animator.SetTrigger(GetRandomAttackAnimFile());
+		REQUEST_ATTACK_PACKET packet = {};
+		packet.PacketID = REQUEST_ATTACK;
+		packet.PacketSize = sizeof(packet);
+
+		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 }
 
@@ -174,24 +184,56 @@ void GameScene::processNotifyMove(const PACKET& packet)
 	movement.Direction = nmPacket->Direction;
 }
 
-string GetRandomAttackAnimFile()
+void GameScene::processAnswerAttack(const PACKET& packet)
 {
-	switch (Random::RandInt(1, 3))
+	ANSWER_ATTACK_PACKET* aaPacket = reinterpret_cast<ANSWER_ATTACK_PACKET*>(packet.DataPtr);
+
+	if (aaPacket->Result == ERROR_CODE::ATTACK_NOT_YET)
 	{
-	case 1:
-		return "Attack1";
-		break;
+		return;
+	}
 
-	case 2:
-		return "Attack2";
-		break;
+	auto& animator = mPlayerCharacter.GetComponent<AnimatorComponent>();
+	animator.SetTrigger(GetRandomAttackAnimFile());
+}
 
-	case 3:
-		return "Attack3";
-		break;
+void GameScene::processNotifyAttack(const PACKET& packet)
+{
+	NOTIFY_ATTACK_PACKET* naPacket = reinterpret_cast<NOTIFY_ATTACK_PACKET*>(packet.DataPtr);
 
-	default:
-		return "";
-		break;
+	auto entity = mOwner->GetEntityByID(naPacket->EntityID);
+	Entity e = { entity, mOwner };
+
+	auto& animator = e.GetComponent<AnimatorComponent>();
+	animator.SetTrigger(GetRandomAttackAnimFile());
+}
+
+string GetRandomAttackAnimFile(bool isEnemy /*= false*/)
+{
+	if (isEnemy)
+	{
+		return "Attack";
+	}
+	else
+	{
+
+		switch (Random::RandInt(1, 3))
+		{
+		case 1:
+			return "Attack1";
+			break;
+
+		case 2:
+			return "Attack2";
+			break;
+
+		case 3:
+			return "Attack3";
+			break;
+
+		default:
+			return "";
+			break;
+		}
 	}
 }

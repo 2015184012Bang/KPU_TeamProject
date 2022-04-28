@@ -51,12 +51,18 @@ enum PACKET_ID : UINT8
 
 	// 업그레이드
 	REQUEST_UPGRADE = 131,
-	NOTIFY_UPGRADE
+	NOTIFY_UPGRADE,
+
+	// 공격
+	REQUEST_ATTACK = 134,
+	ANSWER_ATTACK,
+	NOTIFY_ATTACK,
 };
 
 enum ERROR_CODE : UINT8
 {
 	SUCCESS = 0,
+	ATTACK_NOT_YET = 1,
 };
 
 
@@ -139,6 +145,21 @@ struct NOTIFY_UPGRADE_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
 	UINT8 UpgradePreset;
+};
+
+struct REQUEST_ATTACK_PACKET : public PACKET_HEADER
+{
+	
+};
+
+struct ANSWER_ATTACK_PACKET : public PACKET_HEADER
+{
+	UINT8 Result;
+};
+
+struct NOTIFY_ATTACK_PACKET : public PACKET_HEADER
+{
+	UINT32 EntityID;
 };
 
 #pragma pack(pop)

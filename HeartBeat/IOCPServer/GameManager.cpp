@@ -19,6 +19,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_GAME] = std::bind(&GameManager::processRequestEnterGame, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// 유저 매니저 생성
 	mUserManager = make_unique<UserManager>();
@@ -230,6 +232,42 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	negPacket.Result = ERROR_CODE::SUCCESS;
 
 	sendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
+}
+
+void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_ATTACK_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	bool bAttack = user->CanAttack();
+
+	ANSWER_ATTACK_PACKET aaPacket = {};
+	aaPacket.PacketID = ANSWER_ATTACK;
+	aaPacket.PacketSize = sizeof(aaPacket);
+
+	if (!bAttack)
+	{
+		aaPacket.Result = ERROR_CODE::ATTACK_NOT_YET;
+	}
+	else
+	{
+		aaPacket.Result = ERROR_CODE::SUCCESS;
+	}
+
+	SendPacketFunction(sessionIndex, sizeof(aaPacket), reinterpret_cast<char*>(&aaPacket));
+
+	if (aaPacket.Result == ERROR_CODE::SUCCESS)
+	{
+		// 공격이 허가됐다면, 다른 유저들에게 알려준다.
+		NOTIFY_ATTACK_PACKET naPacket = {};
+		naPacket.EntityID = sessionIndex;
+		naPacket.PacketID = NOTIFY_ATTACK;
+		naPacket.PacketSize = sizeof(naPacket);
+		sendPacketExclude(sessionIndex, sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
+	}
 }
 
 void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)

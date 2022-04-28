@@ -7,6 +7,8 @@ constexpr float PLAYER_MAX_SPEED = 300.0f;
 
 class User
 {
+	const float BASE_ATTACK_COOLDOWN = 1.0f; // 기본 공격 재사용 대기시간
+
 public:
 	enum class UpgradePreset : UINT8
 	{
@@ -31,6 +33,8 @@ public:
 	void Update();
 
 	void SetUpgrade(UpgradePreset preset);
+
+	bool CanAttack();
 
 public:
 	INT32 GetIndex() const { return mIndex; }
@@ -60,7 +64,6 @@ private:
 	UINT32 mReadPos = 0;
 	char* mDataBuffer = nullptr;
 
-	// TODO: 플레이어 정보 추가(ex. 체력 등)
 	Vector3 mPosition = Vector3::Zero;
 	float mYaw = 0.0f;
 	Vector3 mMoveDirection = Vector3::Zero;
@@ -68,5 +71,7 @@ private:
 	INT32 mBaseAttackDmg = 0; // 기본 공격 데미지
 	INT32 mArmor = 0; // 방어력
 	INT32 mRegeneration = 0; // 회복력
+
+	float mBaseAttackCooldown = BASE_ATTACK_COOLDOWN; // 기본 공격 대기시간 추적
 };
 

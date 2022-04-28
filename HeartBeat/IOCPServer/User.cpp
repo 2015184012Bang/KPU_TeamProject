@@ -93,11 +93,13 @@ PACKET_INFO User::GetPacket()
 
 void User::Update()
 {
+	mBaseAttackCooldown -= Timer::GetDeltaTime();
+
+	// 방향에 따라 위치 업데이트
 	if (mMoveDirection == Vector3::Zero)
 	{
 		return;
 	}
-
 	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
 }
 
@@ -122,6 +124,19 @@ void User::SetUpgrade(UpgradePreset preset)
 		mArmor = 3;
 		mRegeneration = 2;
 		break;
+	}
+}
+
+bool User::CanAttack()
+{
+	if (mBaseAttackCooldown <= 0.0f)
+	{
+		mBaseAttackCooldown = BASE_ATTACK_COOLDOWN;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 

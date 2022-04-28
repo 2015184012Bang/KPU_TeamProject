@@ -23,6 +23,8 @@ private:
 
 	void processAnswerMove(const PACKET& packet);
 	void processNotifyMove(const PACKET& packet);
+    void processAnswerAttack(const PACKET& packet);
+    void processNotifyAttack(const PACKET& packet);
 
 private:
     Entity mPlayerCharacter = {};
@@ -31,4 +33,4 @@ private:
     bool mbChangeScene = false;
 };
 
-string GetRandomAttackAnimFile();
+string GetRandomAttackAnimFile(bool isEnemy = false);
