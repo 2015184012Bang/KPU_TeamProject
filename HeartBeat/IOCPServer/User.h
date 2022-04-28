@@ -11,11 +11,6 @@ class User
 	const float BASE_ATTACK_COOLDOWN = 1.0f; // 기본 공격 재사용 대기시간
 
 public:
-	enum class UpgradePreset : UINT8
-	{
-		
-	};
-
 	User() = default;
 	~User();
 
