@@ -67,7 +67,7 @@ private:
 	char* mDataBuffer = nullptr;
 
 	Vector3 mPosition = Vector3::Zero;
-	float mYaw = 180.0f;
+	float mYaw = 0.0f;
 	Vector3 mMoveDirection = Vector3::Zero;
 
 	INT32 mBaseAttackDmg = 0; // 기본 공격 데미지
