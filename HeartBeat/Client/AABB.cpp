@@ -81,7 +81,7 @@ void AABB::rotateY(float yaw)
 	points[4] = Vector3(mMin.x, mMax.y, mMax.z);
 	points[5] = Vector3(mMax.x, mMin.y, mMax.z);
 	points[6] = Vector3(mMax.x, mMax.y, mMin.z);
-	points[7] = Vector3(mMax);
+	points[7] = mMax;
 
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(XMConvertToRadians(yaw), 0.0f, 0.0f);
 	Vector3 p = Vector3::Transform(points[0], q);

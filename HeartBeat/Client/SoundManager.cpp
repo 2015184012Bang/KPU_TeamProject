@@ -25,7 +25,7 @@ void SoundManager::Shutdown()
 
 void SoundManager::CreateSound(string_view fileName, bool bLoop /*= false*/)
 {
-	auto sound = fs::path(fileName.data()).filename();
+	auto sound = fs::path(fileName).filename();
 	
 	FMOD_MODE flag = bLoop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF;
 	FMOD_RESULT retVal = sSystem->createSound(fileName.data(), flag, nullptr, &sSounds[sound.string()]);
