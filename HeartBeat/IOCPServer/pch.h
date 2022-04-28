@@ -36,6 +36,7 @@
 #pragma warning(push)
 #pragma warning(disable:4819)
 #include <spdlog/spdlog.h>
+#include <entt/entt.hpp>
 #pragma warning(pop)
 
 #include "Lock.h"

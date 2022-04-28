@@ -3,6 +3,7 @@
 #include "Timer.h"
 
 #include "Box.h"
+#include "Entity.h"
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {

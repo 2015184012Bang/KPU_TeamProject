@@ -5,6 +5,8 @@
 
 class GameManager
 {
+	friend class Entity;
+
 public:
 	void Init(const UINT32 maxSessionCount);
 
@@ -69,5 +71,8 @@ private:
 	queue<PACKET_INFO> mPacketQueueB;
 	queue<PACKET_INFO>* mBackPacketQueue = nullptr;
 	queue<PACKET_INFO>* mFrontPacketQueue = nullptr;
+
+	// 엔티티 레지스트리
+	entt::registry mRegistry;
 };
 
