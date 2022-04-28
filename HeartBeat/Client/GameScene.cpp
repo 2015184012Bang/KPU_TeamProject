@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "PacketManager.h"
 #include "Input.h"
+#include "Random.h"
 #include "ResourceManager.h"
 
 GameScene::GameScene(Client* owner)
@@ -74,6 +75,13 @@ void GameScene::Update(float deltaTime)
 		packet.PacketSize = sizeof(packet);
 		packet.Direction = mDirection;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+	}
+
+	if (Input::IsButtonPressed(eKeyCode::A))
+	{
+		// TODO: 서버에 공격 요청 패킷을 보낸다
+		auto& animator = mPlayerCharacter.GetComponent<AnimatorComponent>();
+		animator.SetTrigger(GetRandomAttackAnimFile());
 	}
 }
 
@@ -166,4 +174,24 @@ void GameScene::processNotifyMove(const PACKET& packet)
 	movement.Direction = nmPacket->Direction;
 }
 
+string GetRandomAttackAnimFile()
+{
+	switch (Random::RandInt(1, 3))
+	{
+	case 1:
+		return "Attack1";
+		break;
 
+	case 2:
+		return "Attack2";
+		break;
+
+	case 3:
+		return "Attack3";
+		break;
+
+	default:
+		return "";
+		break;
+	}
+}

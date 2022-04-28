@@ -21,6 +21,8 @@ public:
 	static Mesh* GetDebugMesh(string_view path);
 	static Font* GetFont(string_view path);
 
+	static void MakeAnimTransitions();
+
 private:
 	static unordered_map<string, Mesh*> sMeshes;
 	static unordered_map<string, Texture*> sTextures;

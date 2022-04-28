@@ -31,3 +31,4 @@ private:
     bool mbChangeScene = false;
 };
 
+string GetRandomAttackAnimFile();

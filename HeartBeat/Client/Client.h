@@ -58,7 +58,6 @@ private:
     void render();
 
     void createCameraEntity();
-    void createAnimationTransitions();
 
     void processButton();
     void updateMovement(float deltaTime);

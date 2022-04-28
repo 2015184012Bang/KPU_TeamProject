@@ -24,6 +24,7 @@
 #include "Skeleton.h"
 #include "SoundManager.h"
 #include "TestScene.h"
+#include "Random.h"
 
 Client::Client()
 	: Game()
@@ -36,6 +37,7 @@ bool Client::Init()
 	Input::Init();
 	Timer::Init();
 	SoundManager::Init();
+	Random::Init();
 
 	loadServerSettingsFromXML("settings.xml");
 
@@ -45,8 +47,9 @@ bool Client::Init()
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
 
+	ResourceManager::MakeAnimTransitions();
+
 	createCameraEntity();
-	createAnimationTransitions();
 
 	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
@@ -312,66 +315,6 @@ void Client::createCameraEntity()
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
-}
-
-void Client::createAnimationTransitions()
-{
-	// 바이러스 애니메이션 트랜지션 설정
-	{
-		Animation* idleAnim = ANIM("Virus_Idle.anim");
-		Animation* runningAnim = ANIM("Virus_Run.anim");
-		Animation* attackingAnim = ANIM("Virus_Attack.anim");
-		attackingAnim->SetLoop(false);
-
-		idleAnim->AddTransition("Run", runningAnim);
-		idleAnim->AddTransition("Attack", attackingAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-		attackingAnim->AddTransition("WhenEnd", idleAnim);
-	}
-
-	// 캐릭터_그린
-	{
-		Animation* idleAnim = ANIM("CG_Idle.anim");
-		Animation* runningAnim = ANIM("CG_Run.anim");
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// 캐릭터_핑크
-	{
-		Animation* idleAnim = ANIM("CP_Idle.anim");
-		Animation* runningAnim = ANIM("CP_Run.anim");
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// 캐릭터_레드
-	{
-		Animation* idleAnim = ANIM("CR_Idle.anim");
-		Animation* runningAnim = ANIM("CR_Run.anim");
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// NPC(세포)
-	{
-		Animation* idleAnim = ANIM("Cell_Idle.anim");
-		Animation* runningAnim = ANIM("Cell_Run.anim");
-		Animation* attackingAnim = ANIM("Cell_Attack.anim");
-
-		idleAnim->AddTransition("Run", runningAnim);
-		idleAnim->AddTransition("Attack", attackingAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-		runningAnim->AddTransition("Attack", attackingAnim);
-	}
-
-	// 탱크
-	{
-		Animation* idleAnim = ANIM("Tank_Idle.anim");
-		Animation* runningAnim = ANIM("Tank_Run.anim");
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
 }
 
 void Client::processButton()
