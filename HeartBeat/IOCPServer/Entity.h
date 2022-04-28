@@ -1,15 +1,16 @@
 #pragma once
 
-#include "GameManager.h"
+#include <entt/entt.hpp>
+
+entt::registry gRegistry;
 
 class Entity
 {
 public:
 	Entity() = default;
 
-	Entity(entt::entity handle, GameManager* gameManager)
-		: mHandle(handle)
-		, mGameManager(gameManager) {}
+	explicit Entity(entt::entity handle)
+		: mHandle(handle) {}
 
 	// 빈 구조체를 사용해 태그를 표현하는데,
 	// 빈 구조체를 리턴할 때 오류가 발생하기에 AddComponent()를 사용할 수 없다.
@@ -18,14 +19,14 @@ public:
 	void AddTag()
 	{
 		ASSERT(!HasComponent<T>(), "Entity already has component.");
-		mGameManager->mRegistry.emplace<T>(mHandle);
+		gRegistry.emplace<T>(mHandle);
 	}
 
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{
 		ASSERT(!HasComponent<T>(), "Entity already has component.");
-		T& component = mGameManager->mRegistry.emplace<T>(mHandle, std::forward<Args>(args)...);
+		T& component = gRegistry.emplace<T>(mHandle, std::forward<Args>(args)...);
 		return component;
 	}
 
@@ -33,21 +34,21 @@ public:
 	T& GetComponent()
 	{
 		ASSERT(HasComponent<T>(), "Component does not exist.")
-		T& component = mGameManager->mRegistry.get<T>(mHandle);
+		T& component = gRegistry.get<T>(mHandle);
 		return component;
 	}
 
 	template<typename T>
 	bool HasComponent()
 	{
-		return mGameManager->mRegistry.any_of<T>(mHandle);
+		return gRegistry.any_of<T>(mHandle);
 	}
 
 	template<typename T>
 	void RemoveComponent()
 	{
 		ASSERT(HasComponent<T>(), "Component does not exist.");
-		mGameManager->mRegistry.remove<T>(mHandle);
+		gRegistry.remove<T>(mHandle);
 	}
 
 	bool operator==(const Entity& other)
@@ -66,9 +67,6 @@ public:
 	operator entt::entity() { return mHandle; }
 	operator entt::entity() const { return mHandle; }
 
-	GameManager* GetGameManager() { return mGameManager; }
-
 private:
 	entt::entity mHandle = entt::null;
-	GameManager* mGameManager = nullptr;
 };
