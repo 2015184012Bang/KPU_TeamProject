@@ -209,6 +209,8 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* idleAnim = ANIM("CG_Idle.anim");
 		Animation* runningAnim = ANIM("CG_Run.anim");
+		Animation* idleNoneAnim = ANIM("CG_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CG_Run_None.anim");
 		Animation* attack1 = ANIM("CG_Attack1.anim");
 		Animation* attack2 = ANIM("CG_Attack2.anim");
 		Animation* attack3 = ANIM("CG_Attack3.anim");
@@ -228,6 +230,9 @@ void ResourceManager::MakeAnimTransitions()
 		runningAnim->AddTransition("Attack2", attack2);
 		runningAnim->AddTransition("Attack3", attack3);
 
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
+
 		attack1->AddTransition("WhenEnd", idleAnim);
 		attack2->AddTransition("WhenEnd", idleAnim);
 		attack3->AddTransition("WhenEnd", idleAnim);
@@ -237,6 +242,8 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* idleAnim = ANIM("CP_Idle.anim");
 		Animation* runningAnim = ANIM("CP_Run.anim");
+		Animation* idleNoneAnim = ANIM("CP_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CP_Run_None.anim");
 		Animation* attack1 = ANIM("CP_Attack1.anim");
 		Animation* attack2 = ANIM("CP_Attack2.anim");
 		Animation* attack3 = ANIM("CP_Attack3.anim");
@@ -255,6 +262,9 @@ void ResourceManager::MakeAnimTransitions()
 		runningAnim->AddTransition("Attack2", attack2);
 		runningAnim->AddTransition("Attack3", attack3);
 
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
+
 		attack1->AddTransition("WhenEnd", idleAnim);
 		attack2->AddTransition("WhenEnd", idleAnim);
 		attack3->AddTransition("WhenEnd", idleAnim);
@@ -264,6 +274,8 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* idleAnim = ANIM("CR_Idle.anim");
 		Animation* runningAnim = ANIM("CR_Run.anim");
+		Animation* idleNoneAnim = ANIM("CR_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CR_Run_None.anim");
 		Animation* attack1 = ANIM("CR_Attack1.anim");
 		Animation* attack2 = ANIM("CR_Attack2.anim");
 		Animation* attack3 = ANIM("CR_Attack3.anim");
@@ -281,6 +293,9 @@ void ResourceManager::MakeAnimTransitions()
 		runningAnim->AddTransition("Attack1", attack1);
 		runningAnim->AddTransition("Attack2", attack2);
 		runningAnim->AddTransition("Attack3", attack3);
+
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
 
 		attack1->AddTransition("WhenEnd", idleAnim);
 		attack2->AddTransition("WhenEnd", idleAnim);

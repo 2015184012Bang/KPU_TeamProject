@@ -267,6 +267,10 @@ void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
 
 	auto entity = mOwner->GetEntityByID(nuPacket->EntityID);
 	Entity target = { entity, mOwner };
+
+	// None 계열 애니메이션(비무장 상태)에서 무장 후 애니메이션으로 바꿔준다.
+	auto& animator = target.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(nuPacket->EntityID, CharacterAnimationType::eIdle));
 	
 	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
 }

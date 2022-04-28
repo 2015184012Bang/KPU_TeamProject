@@ -108,7 +108,9 @@ void LobbyScene::createCharacterMesh(int clientID)
 	transform.Rotation.y = 180.0f;
 
 	auto& animator = character.GetComponent<AnimatorComponent>();
-	Animation* idleAnim = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdle);
+
+	// 로비 씬에서는 아무것도 들고 있지 않으므로 IdleNone 애니메이션 재생.
+	Animation* idleAnim = GetCharacterAnimationFile(clientID, CharacterAnimationType::eIdleNone);
 	Helpers::PlayAnimation(&animator, idleAnim);
 
 	// 캐릭터에게 벨트 장착
