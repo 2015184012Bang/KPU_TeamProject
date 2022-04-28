@@ -80,7 +80,7 @@ void GameManager::initSystems()
 {
 	mMovementSystem = make_unique<MovementSystem>();
 	mCombatSystem = make_unique<CombatSystem>();
-	mCollisionSystem = make_unique<CombatSystem>();
+	mCollisionSystem = make_unique<CollisionSystem>();
 }
 
 void GameManager::swapQueues()

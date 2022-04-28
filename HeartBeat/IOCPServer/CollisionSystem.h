@@ -4,5 +4,7 @@ class CollisionSystem
 {
 public:
 	void Update();
+
+	void TestCollision();
 };
 

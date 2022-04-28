@@ -77,6 +77,6 @@ private:
 	// ╫ц╫╨еш
 	unique_ptr<MovementSystem> mMovementSystem = nullptr;
 	unique_ptr<CombatSystem> mCombatSystem = nullptr;
-	unique_ptr<CombatSystem> mCollisionSystem = nullptr;
+	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
 };
 

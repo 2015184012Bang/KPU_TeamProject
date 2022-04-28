@@ -126,5 +126,8 @@
     <ClInclude Include="CollisionSystem.h">
       <Filter>Source Files\ECS</Filter>
     </ClInclude>
+    <ClInclude Include="Tags.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

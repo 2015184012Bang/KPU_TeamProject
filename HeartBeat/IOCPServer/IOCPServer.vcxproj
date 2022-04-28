@@ -192,6 +192,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Protocol.h" />
+    <ClInclude Include="Tags.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="User.h" />

@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "User.h"
 
-#include "Timer.h"
 #include "Components.h"
+#include "Timer.h"
+#include "Tags.h"
 
 User::~User()
 {
@@ -47,6 +48,7 @@ void User::SetLogin(string_view userName)
 	mCharacter.AddComponent<CombatComponent>();
 	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
 		transform.Position, transform.Yaw);
+	mCharacter.AddTag<Tag_Player>();
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)
