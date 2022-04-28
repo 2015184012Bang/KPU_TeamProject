@@ -77,7 +77,9 @@ void UpgradeScene::ProcessInput()
 
 		if (mbChangeScene)
 		{
-			mOwner->ChangeScene(new GameScene(mOwner));
+			auto newScene = new GameScene(mOwner);
+			newScene->SetDirection(mDirection);
+			mOwner->ChangeScene(newScene);
 			break;
 		}
 	}
