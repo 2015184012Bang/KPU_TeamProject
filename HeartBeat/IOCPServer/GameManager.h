@@ -44,6 +44,8 @@ private:
 	// 접속 유저 모두에게 보내기
 	void sendToAll(const INT32 packetSize, char* packet);
 
+	void checkCollision();
+
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
 

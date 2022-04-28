@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Protocol.h"
+#include "Box.h"
 
 constexpr UINT32 DATA_BUFFER_SIZE = 8192;
 constexpr float PLAYER_MAX_SPEED = 300.0f;
@@ -46,6 +47,7 @@ public:
 	INT32 GetBaseAttackDmg() const { return mBaseAttackDmg; }
 	INT32 GetArmor() const { return mArmor; }
 	INT32 GetRegeneration() const { return mRegeneration; }
+	const Box& GetBox() { return mWorldBox; }
 
 	void SetPosition(const Vector3& position) { mPosition = position; }
 	void SetYaw(float yaw) { mYaw = yaw; }
@@ -65,7 +67,7 @@ private:
 	char* mDataBuffer = nullptr;
 
 	Vector3 mPosition = Vector3::Zero;
-	float mYaw = 0.0f;
+	float mYaw = 180.0f;
 	Vector3 mMoveDirection = Vector3::Zero;
 
 	INT32 mBaseAttackDmg = 0; // 기본 공격 데미지
@@ -73,5 +75,9 @@ private:
 	INT32 mRegeneration = 0; // 회복력
 
 	float mBaseAttackCooldown = BASE_ATTACK_COOLDOWN; // 기본 공격 대기시간 추적
+
+	// 충돌 박스
+	const Box* mLocalBox = nullptr;
+	Box mWorldBox = {};
 };
 

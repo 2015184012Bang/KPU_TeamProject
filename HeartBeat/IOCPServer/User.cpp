@@ -28,6 +28,12 @@ void User::Reset()
 	mPosition = Vector3::Zero;
 	mYaw = 0.0f;
 	mMoveDirection = Vector3::Zero;
+	mBaseAttackDmg = 0;
+	mArmor = 0;
+	mRegeneration = 0;
+	mBaseAttackCooldown = BASE_ATTACK_COOLDOWN;
+	mLocalBox = nullptr;
+	mWorldBox = {};
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 }
 
@@ -35,6 +41,10 @@ void User::SetLogin(string_view userName)
 {
 	mConnected = true;
 	mUserName = userName.data();
+
+	// 충돌 박스 설정
+	mLocalBox = &Box::GetBox("../Assets/Boxes/Character.box");
+	mWorldBox = Box::GetBox("../Assets/Boxes/Character.box");
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)
@@ -73,7 +83,7 @@ PACKET_INFO User::GetPacket()
 	}
 
 	PACKET_HEADER* header = reinterpret_cast<PACKET_HEADER*>(&mDataBuffer[mReadPos]);
-	
+
 	// 패킷 크기보다 작나?
 	if (remain < header->PacketSize)
 	{
@@ -101,6 +111,10 @@ void User::Update()
 		return;
 	}
 	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
+	
+	// 위치를 업데이트한 경우에만 박스 업데이트
+	mWorldBox = *mLocalBox;
+	mWorldBox.Update(mPosition, mYaw);
 }
 
 void User::SetUpgrade(UpgradePreset preset)

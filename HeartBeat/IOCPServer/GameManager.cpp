@@ -2,6 +2,8 @@
 #include "GameManager.h"
 #include "Timer.h"
 
+#include "Box.h"
+
 void GameManager::Init(const UINT32 maxSessionCount)
 {
 	// 패킷 처리 함수들 등록
@@ -33,6 +35,9 @@ void GameManager::Init(const UINT32 maxSessionCount)
 
 	// 타이머 초기화
 	Timer::Init();
+
+	// 모든 박스 로드
+	Box::Init();
 }
 
 void GameManager::Run()
@@ -100,6 +105,8 @@ void GameManager::logicThread()
 
 		// 유저의 이동 방향에 따라 위치를 갱신
 		mUserManager->UpdateUserTransforms();
+
+		checkCollision();
 
 		// 백 큐와 프론트 큐를 스왑
 		swapQueues();
@@ -332,5 +339,27 @@ void GameManager::sendToAll(const INT32 packetSize, char* packet)
 	for (auto userIndex : connectedUsers)
 	{
 		SendPacketFunction(userIndex, packetSize, packet);
+	}
+}
+
+void GameManager::checkCollision()
+{
+	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
+
+	for (auto i : connectedUsers)
+	{
+		auto user1 = mUserManager->FindUserByIndex(i);
+
+		for (auto j : connectedUsers)
+		{
+			if (i == j) continue;
+
+			auto user2 = mUserManager->FindUserByIndex(j);
+
+			if (Intersects(user1->GetBox(), user2->GetBox()))
+			{
+				LOG("Collision!!");
+			}
+		}
 	}
 }

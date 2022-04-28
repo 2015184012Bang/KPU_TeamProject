@@ -31,6 +31,7 @@
 #include <queue>
 #include <chrono>
 #include <string_view>
+#include <filesystem>
 
 #pragma warning(push)
 #pragma warning(disable:4819)
@@ -53,3 +54,4 @@ using namespace DirectX::SimpleMath;
 using namespace DirectX;
 using namespace std;
 using namespace std::chrono;
+namespace fs = std::filesystem;
