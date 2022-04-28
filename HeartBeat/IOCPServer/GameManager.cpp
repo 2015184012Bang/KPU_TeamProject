@@ -39,6 +39,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 
 	// 모든 박스 로드
 	Box::Init();
+
+	initSystems();
 }
 
 void GameManager::Run()
@@ -58,7 +60,7 @@ void GameManager::End()
 
 void GameManager::PushUserData(const INT32 sessionIndex, const UINT32 dataSize, char* pData)
 {
-	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	user->SetData(dataSize, pData);
 
 	if (auto packet = user->GetPacket(); packet.SessionIndex != -1)
@@ -72,6 +74,13 @@ void GameManager::PushSystemPacket(PACKET_INFO packet)
 {
 	WriteLockGuard guard(mLock);
 	mBackPacketQueue->push(packet);
+}
+
+void GameManager::initSystems()
+{
+	mMovementSystem = make_unique<MovementSystem>();
+	mCombatSystem = make_unique<CombatSystem>();
+	mCollisionSystem = make_unique<CombatSystem>();
 }
 
 void GameManager::swapQueues()
@@ -104,10 +113,9 @@ void GameManager::logicThread()
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
 
-		// 유저의 이동 방향에 따라 위치를 갱신
-		mUserManager->UpdateUserTransforms();
-
-		checkCollision();
+		mMovementSystem->Update();
+		mCombatSystem->Update();
+		mCollisionSystem->Update();
 
 		// 백 큐와 프론트 큐를 스왑
 		swapQueues();
@@ -135,7 +143,7 @@ void GameManager::processUserConnect(const INT32 sessionIndex, const UINT8 packe
 void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
 	LOG("Process user disconnect packet. Session Index: {0}", sessionIndex);
-	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	mUserManager->DeleteUser(user);
 }
 
@@ -184,8 +192,9 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 
 	// 패킷을 보낸 유저의 Direction 변경
 	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
-	auto user = mUserManager->FindUserByIndex(sessionIndex);
-	user->SetMoveDirection(rmPacket->Direction);
+	mMovementSystem->SetDirection(sessionIndex, rmPacket->Direction);
+
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
 
 	// 패킷을 보낸 유저에게 서버가 유지하고 있는 Position 전송
 	ANSWER_MOVE_PACKET amPacket = {};
@@ -213,10 +222,11 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 	}
 
 	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
-	auto user = mUserManager->FindUserByIndex(sessionIndex);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	
 	// 유저 공격력, 방어력, 회복력 설정
-	user->SetUpgrade(static_cast<User::UpgradePreset>(ruPacket->UpgradePreset));
+	mCombatSystem->SetPreset(sessionIndex, 
+		static_cast<CombatSystem::UpgradePreset>(ruPacket->UpgradePreset));
 	
 	// 해당 유저를 비롯한 다른 유저들에게 알림
 	NOTIFY_UPGRADE_PACKET nuPacket = {};
@@ -249,14 +259,13 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 		return;
 	}
 
-	auto user = mUserManager->FindUserByIndex(sessionIndex);
-	bool bAttack = user->CanAttack();
+	bool canAttack = mCombatSystem->CanBaseAttack(sessionIndex);
 
 	ANSWER_ATTACK_PACKET aaPacket = {};
 	aaPacket.PacketID = ANSWER_ATTACK;
 	aaPacket.PacketSize = sizeof(aaPacket);
 
-	if (!bAttack)
+	if (!canAttack)
 	{
 		aaPacket.Result = ERROR_CODE::ATTACK_NOT_YET;
 	}
@@ -340,27 +349,5 @@ void GameManager::sendToAll(const INT32 packetSize, char* packet)
 	for (auto userIndex : connectedUsers)
 	{
 		SendPacketFunction(userIndex, packetSize, packet);
-	}
-}
-
-void GameManager::checkCollision()
-{
-	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
-
-	for (auto i : connectedUsers)
-	{
-		auto user1 = mUserManager->FindUserByIndex(i);
-
-		for (auto j : connectedUsers)
-		{
-			if (i == j) continue;
-
-			auto user2 = mUserManager->FindUserByIndex(j);
-
-			if (Intersects(user1->GetBox(), user2->GetBox()))
-			{
-				LOG("Collision!!");
-			}
-		}
 	}
 }

@@ -2,6 +2,7 @@
 #include "User.h"
 
 #include "Timer.h"
+#include "Components.h"
 
 User::~User()
 {
@@ -25,16 +26,9 @@ void User::Reset()
 	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
-	mPosition = Vector3::Zero;
-	mYaw = 0.0f;
-	mMoveDirection = Vector3::Zero;
-	mBaseAttackDmg = 0;
-	mArmor = 0;
-	mRegeneration = 0;
-	mBaseAttackCooldown = BASE_ATTACK_COOLDOWN;
-	mLocalBox = nullptr;
-	mWorldBox = {};
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
+	gRegistry.destroy(mCharacter);
+	mCharacter = {};
 }
 
 void User::SetLogin(string_view userName)
@@ -42,9 +36,17 @@ void User::SetLogin(string_view userName)
 	mConnected = true;
 	mUserName = userName.data();
 
-	// 충돌 박스 설정
-	mLocalBox = &Box::GetBox("../Assets/Boxes/Character.box");
-	mWorldBox = Box::GetBox("../Assets/Boxes/Character.box");
+	// 엔티티 생성
+	mCharacter = Entity{ gRegistry.create() };
+
+	// 컴포넌트 부착
+	auto& transform = mCharacter.AddComponent<TransformComponent>();
+	mCharacter.AddComponent<IDComponent>(mIndex);
+	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
+	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, PLAYER_MAX_SPEED);
+	mCharacter.AddComponent<CombatComponent>();
+	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
+		transform.Position, transform.Yaw);
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)
@@ -101,74 +103,12 @@ PACKET_INFO User::GetPacket()
 	return info;
 }
 
-void User::Update()
+const Vector3& User::GetPosition()
 {
-	mBaseAttackCooldown -= Timer::GetDeltaTime();
-
-	// 방향에 따라 위치 업데이트
-	if (mMoveDirection == Vector3::Zero)
-	{
-		return;
-	}
-	mPosition = mPosition + mMoveDirection * PLAYER_MAX_SPEED * Timer::GetDeltaTime();
-	
-	// 위치를 업데이트한 경우에만 박스 업데이트
-	mWorldBox = *mLocalBox;
-	mWorldBox.Update(mPosition, mYaw);
+	return mCharacter.GetComponent<TransformComponent>().Position;
 }
 
-void User::SetUpgrade(UpgradePreset preset)
+const Vector3& User::GetMoveDirection()
 {
-	switch (preset)
-	{
-	case UpgradePreset::ATTACK:
-		mBaseAttackDmg = 3;
-		mArmor = 1;
-		mRegeneration = 2;
-		break;
-
-	case UpgradePreset::HEAL:
-		mBaseAttackDmg = 1;
-		mArmor = 2;
-		mRegeneration = 3;
-		break;
-
-	case UpgradePreset::SUPPORT:
-		mBaseAttackDmg = 2;
-		mArmor = 3;
-		mRegeneration = 2;
-		break;
-	}
-}
-
-bool User::CanAttack()
-{
-	if (mBaseAttackCooldown <= 0.0f)
-	{
-		mBaseAttackCooldown = BASE_ATTACK_COOLDOWN;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-void User::SetMoveDirection(const Vector3& direction)
-{
-	mMoveDirection = direction;
-
-	if (mMoveDirection == Vector3::Zero)
-	{
-		return;
-	}
-
-	Vector3 rotation = XMVector3AngleBetweenVectors(Vector3::UnitZ, mMoveDirection);
-	float scalar = 1.0f;
-	if (mMoveDirection.x < 0.0f)
-	{
-		scalar = -1.0f;
-	}
-
-	mYaw = scalar * XMConvertToDegrees(rotation.y);
+	return mCharacter.GetComponent<MovementComponent>().Direction;
 }

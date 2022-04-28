@@ -23,7 +23,7 @@ void UserManager::Init(const UINT32 maxUserCount)
 
 void UserManager::AddUser(const INT32 sessionIndex, string_view userName /*= "default"sv*/)
 {
-	ASSERT(sessionIndex >= 0 && sessionIndex < mMaxUserCount, "Invalid session index!");
+	ASSERT((UINT32)sessionIndex >= 0 && (UINT32)sessionIndex < mMaxUserCount, "Invalid session index!");
 
 	mUsers[sessionIndex]->SetLogin(userName);
 	++mCurrentUserCount;
@@ -36,9 +36,9 @@ void UserManager::DeleteUser(User* user)
 	--mCurrentUserCount;
 }
 
-User* UserManager::FindUserByIndex(const INT32 sessionIndex)
+User* UserManager::GetUserByIndex(const INT32 sessionIndex)
 {
-	ASSERT(sessionIndex >= 0 && sessionIndex < mMaxUserCount, "Invalid session index!");
+	ASSERT((UINT32)sessionIndex >= 0 && (UINT32)sessionIndex < mMaxUserCount, "Invalid session index!");
 	return mUsers[sessionIndex];
 }
 
@@ -54,15 +54,4 @@ vector<INT32> UserManager::GetAllConnectedUsersIndex()
 	}
 
 	return indices;
-}
-
-void UserManager::UpdateUserTransforms()
-{
-	for (auto user : mUsers)
-	{
-		if (user->IsConnected())
-		{
-			user->Update();
-		}
-	}
 }

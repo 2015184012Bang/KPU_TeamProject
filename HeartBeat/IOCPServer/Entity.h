@@ -2,7 +2,9 @@
 
 #include <entt/entt.hpp>
 
-entt::registry gRegistry;
+#include "Components.h"
+
+extern entt::registry gRegistry;
 
 class Entity
 {
@@ -70,3 +72,7 @@ public:
 private:
 	entt::entity mHandle = entt::null;
 };
+
+extern Entity GetEntity(const UINT32 eid);
+
+extern Entity GetEntityByName(string_view name);

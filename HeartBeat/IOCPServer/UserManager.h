@@ -14,11 +14,9 @@ public:
 
 	void DeleteUser(User* user);
 
-	User* FindUserByIndex(const INT32 sessionIndex);
+	User* GetUserByIndex(const INT32 sessionIndex);
 
 	vector<INT32> GetAllConnectedUsersIndex();
-
-	void UpdateUserTransforms();
 
 public:
 	UINT32 GetCurrentUserCount() { return mCurrentUserCount; }

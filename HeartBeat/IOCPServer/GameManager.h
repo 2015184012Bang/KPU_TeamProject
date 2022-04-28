@@ -3,6 +3,10 @@
 #include "Protocol.h"
 #include "UserManager.h"
 
+#include "MovementSystem.h"
+#include "CombatSystem.h"
+#include "CollisionSystem.h"
+
 class GameManager
 {
 public:
@@ -19,6 +23,8 @@ public:
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 private:
+	void initSystems();
+
 	void swapQueues();
 
 	PACKET_INFO popPacket();
@@ -44,8 +50,6 @@ private:
 	// 접속 유저 모두에게 보내기
 	void sendToAll(const INT32 packetSize, char* packet);
 
-	void checkCollision();
-
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
 
@@ -69,5 +73,10 @@ private:
 	queue<PACKET_INFO> mPacketQueueB;
 	queue<PACKET_INFO>* mBackPacketQueue = nullptr;
 	queue<PACKET_INFO>* mFrontPacketQueue = nullptr;
+
+	// 시스템
+	unique_ptr<MovementSystem> mMovementSystem = nullptr;
+	unique_ptr<CombatSystem> mCombatSystem = nullptr;
+	unique_ptr<CombatSystem> mCollisionSystem = nullptr;
 };
 
