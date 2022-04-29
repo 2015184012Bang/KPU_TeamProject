@@ -44,6 +44,16 @@ Box& Box::GetBox(string_view filename)
 	}
 }
 
+void Box::SetBox(const Box& box, string_view name)
+{
+	if (auto iter = sBoxes.find(name.data()); iter != sBoxes.end())
+	{
+		LOG("Box already exists");
+		return;
+	}
+
+	sBoxes[name.data()] = box;
+}
 
 void Box::load(string_view filename)
 {

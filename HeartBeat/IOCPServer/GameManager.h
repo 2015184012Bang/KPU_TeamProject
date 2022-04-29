@@ -12,6 +12,7 @@
 extern float gTileSide;
 extern float gPlayerSpeed;
 extern float gBaseAttackCooldown;
+extern float gBaseAttackRange;
 
 class GameManager : public enable_shared_from_this<GameManager>
 {

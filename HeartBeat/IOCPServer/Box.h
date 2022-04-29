@@ -6,13 +6,15 @@ public:
 	static void Init();
 	
 	static Box& GetBox(string_view filename);
+	static void SetBox(const Box& box, string_view name);
 
 	void Update(const Vector3& position, float yaw);
 
 public:
 	const Vector3& GetMin() const { return mMin; }
-
 	const Vector3& GetMax() const { return mMax; }
+	void SetMin(const Vector3& v) { mMin = v; }
+	void SetMax(const Vector3& v) { mMax = v; }
 
 private:
 	void load(string_view filename);

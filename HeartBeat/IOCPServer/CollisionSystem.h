@@ -11,6 +11,8 @@ public:
 
 	void Update();
 
+	bool DoAttack(const INT32 sessionIndex);
+
 private:
 	void checkPlayerAndTile();
 	void reposition(BoxComponent& playerBox, Entity&& player, BoxComponent& otherBox);

@@ -11,12 +11,16 @@
 float gTileSide;
 float gPlayerSpeed;
 float gBaseAttackCooldown;
+float gBaseAttackRange;
 
 float GetTileYPos(TileType ttype);
 void AddTagToTile(Entity& tile, TileType ttype);
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
+	// XML 파일에서 여러 변수 값 읽어오기
+	loadValuesFromXML("settings.xml");
+
 	// 패킷 처리 함수들 등록
 	mPacketIdToFunction[SYS_USER_CONNECT] = std::bind(&GameManager::processUserConnect, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -50,9 +54,6 @@ void GameManager::Init(const UINT32 maxSessionCount)
 
 	// 시스템 생성
 	initSystems();
-
-	// XML 파일에서 여러 변수 값 읽어오기
-	loadValuesFromXML("settings.xml");
 
 	// 게임 맵 생성
 	mGameMap = make_unique<GameMap>();
@@ -114,6 +115,11 @@ void GameManager::loadValuesFromXML(string_view fileName)
 	elem = elem->NextSiblingElement();
 	string baCooldown = elem->GetText();
 	gBaseAttackCooldown = stof(baCooldown);
+
+	// 기본 공격 전방 사거리
+	elem = elem->NextSiblingElement();
+	string baRange = elem->GetText();
+	gBaseAttackRange = stof(baRange);
 }
 
 void GameManager::initSystems()
@@ -288,9 +294,12 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 		return;
 	}
 
+	bool bHit = mCollisionSystem->DoAttack(sessionIndex);
+
 	// 공격이 허가됐다면, 해당 유저를 포함한 다른 유저들에게 알려준다.
 	NOTIFY_ATTACK_PACKET naPacket = {};
 	naPacket.EntityID = sessionIndex;
+	naPacket.Result = bHit ? ERROR_CODE::ATTACK_SUCCESS : ERROR_CODE::ATTACK_MISS;
 	naPacket.PacketID = NOTIFY_ATTACK;
 	naPacket.PacketSize = sizeof(naPacket);
 	SendToAll(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
@@ -410,6 +419,7 @@ void AddTagToTile(Entity& tile, TileType ttype)
 	case TileType::TANK_FAT:
 		tile.AddTag<Tag_Tile>();
 		tile.AddTag<Tag_Blocked>();
+		tile.AddTag<Tag_Breakable>();
 		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
 		break;
 

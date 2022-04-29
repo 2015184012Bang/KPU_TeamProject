@@ -7,6 +7,7 @@
 #include "Input.h"
 #include "Random.h"
 #include "ResourceManager.h"
+#include "SoundManager.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -329,6 +330,11 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetRandomAttackAnimFile());
+
+	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
+	{
+		SoundManager::PlaySound("Punch.mp3");
+	}
 }
 
 string GetRandomAttackAnimFile(bool isEnemy /*= false*/)

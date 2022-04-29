@@ -103,4 +103,5 @@ void SoundManager::loadAllSounds()
 {
 	CreateSound("../Assets/Sounds/ClockTick.mp3", true);
 	CreateSound("../Assets/Sounds/Countdown.mp3");
+	CreateSound("../Assets/Sounds/Punch.mp3");
 }

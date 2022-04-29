@@ -10,7 +10,11 @@
 CollisionSystem::CollisionSystem(shared_ptr<GameManager>&& gm)
 	: mGameManager(move(gm))
 {
-	
+	// 플레이어가 공격할 때 사용할 히트박스 생성
+	Box hitbox;
+	hitbox.SetMin(Vector3{ -100.0f, 0.0f, 0.0f });
+	hitbox.SetMax(Vector3{ 100.0f, 0.0f, gBaseAttackRange });
+	Box::SetBox(hitbox, "Hitbox");
 }
 
 void CollisionSystem::Update()
@@ -31,6 +35,37 @@ void CollisionSystem::Update()
 
 	// 플레이어와 타일의 충돌을 검사한다.
 	checkPlayerAndTile();
+}
+
+bool CollisionSystem::DoAttack(const INT32 sessionIndex)
+{
+	Entity character = GetEntity(sessionIndex);
+	auto& transform = character.GetComponent<TransformComponent>();
+
+	Box hitbox = Box::GetBox("Hitbox");
+	hitbox.Update(transform.Position, transform.Yaw);
+
+	auto tiles = gRegistry.view<Tag_Breakable, BoxComponent>();
+	for (auto [entity, tileBox] : tiles.each())
+	{
+		if (Intersects(hitbox, tileBox.WorldBox))
+		{
+			LOG("Fat Attack!");
+
+			Entity tile = Entity{ entity };
+			auto& health = tile.GetComponent<HealthComponent>();
+			--health.Health;
+
+			if (health.Health <= 0)
+			{
+				// TODO : 타일이 부셔졌을 때 처리
+			}
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CollisionSystem::checkPlayerAndTile()

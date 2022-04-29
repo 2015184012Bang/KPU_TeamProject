@@ -60,7 +60,8 @@ enum PACKET_ID : UINT8
 enum ERROR_CODE : UINT8
 {
 	SUCCESS = 0,
-	ATTACK_NOT_YET = 1,
+	ATTACK_SUCCESS,
+	ATTACK_MISS,
 };
 
 
@@ -147,6 +148,7 @@ struct REQUEST_ATTACK_PACKET : public PACKET_HEADER
 struct NOTIFY_ATTACK_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
+	UINT8 Result;
 };
 
 #pragma pack(pop)
