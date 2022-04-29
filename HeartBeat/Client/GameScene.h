@@ -36,7 +36,6 @@ private:
 
 	void processAnswerMove(const PACKET& packet);
 	void processNotifyMove(const PACKET& packet);
-    void processAnswerAttack(const PACKET& packet);
     void processNotifyAttack(const PACKET& packet);
 
 private:

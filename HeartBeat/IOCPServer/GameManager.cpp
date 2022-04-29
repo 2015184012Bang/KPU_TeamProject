@@ -251,11 +251,11 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 
 	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	
+
 	// 유저 공격력, 방어력, 회복력 설정
-	mCombatSystem->SetPreset(sessionIndex, 
+	mCombatSystem->SetPreset(sessionIndex,
 		static_cast<CombatSystem::UpgradePreset>(ruPacket->UpgradePreset));
-	
+
 	// 해당 유저를 비롯한 다른 유저들에게 알림
 	NOTIFY_UPGRADE_PACKET nuPacket = {};
 	nuPacket.PacketID = NOTIFY_UPGRADE;
@@ -291,31 +291,17 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 	}
 
 	bool canAttack = mCombatSystem->CanBaseAttack(sessionIndex);
-
-	ANSWER_ATTACK_PACKET aaPacket = {};
-	aaPacket.PacketID = ANSWER_ATTACK;
-	aaPacket.PacketSize = sizeof(aaPacket);
-
 	if (!canAttack)
 	{
-		aaPacket.Result = ERROR_CODE::ATTACK_NOT_YET;
-	}
-	else
-	{
-		aaPacket.Result = ERROR_CODE::SUCCESS;
+		return;
 	}
 
-	SendPacketFunction(sessionIndex, sizeof(aaPacket), reinterpret_cast<char*>(&aaPacket));
-
-	if (aaPacket.Result == ERROR_CODE::SUCCESS)
-	{
-		// 공격이 허가됐다면, 다른 유저들에게 알려준다.
-		NOTIFY_ATTACK_PACKET naPacket = {};
-		naPacket.EntityID = sessionIndex;
-		naPacket.PacketID = NOTIFY_ATTACK;
-		naPacket.PacketSize = sizeof(naPacket);
-		SendPacketExclude(sessionIndex, sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
-	}
+	// 공격이 허가됐다면, 해당 유저를 포함한 다른 유저들에게 알려준다.
+	NOTIFY_ATTACK_PACKET naPacket = {};
+	naPacket.EntityID = sessionIndex;
+	naPacket.PacketID = NOTIFY_ATTACK;
+	naPacket.PacketSize = sizeof(naPacket);
+	SendToAll(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
 }
 
 void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)

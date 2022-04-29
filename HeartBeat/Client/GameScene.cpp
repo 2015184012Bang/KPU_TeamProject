@@ -44,10 +44,6 @@ void GameScene::ProcessInput()
 			processNotifyMove(packet);
 			break;
 
-		case ANSWER_ATTACK:
-			processAnswerAttack(packet);
-			break;
-
 		case NOTIFY_ATTACK:
 			processNotifyAttack(packet);
 			break;
@@ -337,19 +333,6 @@ void GameScene::processNotifyMove(const PACKET& packet)
 
 	auto& movement = target.GetComponent<MovementComponent>();
 	movement.Direction = nmPacket->Direction;
-}
-
-void GameScene::processAnswerAttack(const PACKET& packet)
-{
-	ANSWER_ATTACK_PACKET* aaPacket = reinterpret_cast<ANSWER_ATTACK_PACKET*>(packet.DataPtr);
-
-	if (aaPacket->Result == ERROR_CODE::ATTACK_NOT_YET)
-	{
-		return;
-	}
-
-	auto& animator = mPlayerCharacter.GetComponent<AnimatorComponent>();
-	animator.SetTrigger(GetRandomAttackAnimFile());
 }
 
 void GameScene::processNotifyAttack(const PACKET& packet)
