@@ -5,6 +5,12 @@
 #include "GameManager.h"
 #include "Timer.h"
 
+CombatSystem::CombatSystem(shared_ptr<GameManager>&& gm)
+	: mGameManager(move(gm))
+{
+	
+}
+
 void CombatSystem::Update()
 {
 	auto view = gRegistry.view<CombatComponent>();

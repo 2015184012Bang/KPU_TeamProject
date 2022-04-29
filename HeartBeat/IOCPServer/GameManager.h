@@ -13,7 +13,7 @@ extern float gTileSide;
 extern float gPlayerSpeed;
 extern float gBaseAttackCooldown;
 
-class GameManager
+class GameManager : public enable_shared_from_this<GameManager>
 {
 public:
 	void Init(const UINT32 maxSessionCount);
@@ -27,6 +27,13 @@ public:
 	void PushSystemPacket(PACKET_INFO packet);
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
+
+	// 노티파이 패킷을 보낼 때 사용.
+	// indexToExclude : 이 세션 인덱스를 제외한 다른 접속 유저들에게 패킷을 보냄
+	void SendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet);
+
+	// 접속 유저 모두에게 보내기
+	void SendToAll(const INT32 packetSize, char* packet);
 
 private:
 	void loadValuesFromXML(string_view fileName);
@@ -48,13 +55,6 @@ private:
 	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
-
-	// 노티파이 패킷을 보낼 때 사용.
-	// indexToExclude : 이 세션 인덱스를 제외한 다른 접속 유저들에게 패킷을 보냄
-	void sendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet);
-
-	// 접속 유저 모두에게 보내기
-	void sendToAll(const INT32 packetSize, char* packet);
 
 	// 맵을 이루는 타일 엔티티 생성
 	void createMapTiles();

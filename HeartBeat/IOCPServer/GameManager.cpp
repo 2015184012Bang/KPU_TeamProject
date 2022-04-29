@@ -119,9 +119,9 @@ void GameManager::loadValuesFromXML(string_view fileName)
 
 void GameManager::initSystems()
 {
-	mMovementSystem = make_unique<MovementSystem>();
-	mCombatSystem = make_unique<CombatSystem>();
-	mCollisionSystem = make_unique<CollisionSystem>();
+	mMovementSystem = make_unique<MovementSystem>(shared_from_this());
+	mCombatSystem = make_unique<CombatSystem>(shared_from_this());
+	mCollisionSystem = make_unique<CollisionSystem>(shared_from_this());
 }
 
 void GameManager::swapQueues()
@@ -136,12 +136,10 @@ void GameManager::logicThread()
 	{
 		Timer::Update();
 
-		bool isIdle = true;
+		auto start = high_resolution_clock::now();
 
 		while (!mFrontPacketQueue->empty())
 		{
-			isIdle = false;
-
 			PACKET_INFO packet = mFrontPacketQueue->front();
 			mFrontPacketQueue->pop();
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
@@ -151,13 +149,10 @@ void GameManager::logicThread()
 		mCombatSystem->Update();
 		mCollisionSystem->Update();
 
+		while (duration_cast<milliseconds>(high_resolution_clock::now() - start).count() < 33);
+
 		// 백 큐와 프론트 큐를 스왑
 		swapQueues();
-
-		if (isIdle)
-		{
-			this_thread::sleep_for(1ms);
-		}
 	}
 }
 
@@ -214,7 +209,7 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
 	ansPacket.Result = ERROR_CODE::SUCCESS;
 
-	sendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+	SendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -245,7 +240,7 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	anmPacket.Direction = amPacket.Direction;
 	anmPacket.Position = amPacket.Position;
 	anmPacket.EntityID = sessionIndex;
-	sendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
+	SendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 
 void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -268,7 +263,7 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 	nuPacket.PacketSize = sizeof(nuPacket);
 	nuPacket.EntityID = sessionIndex;
 	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
-	sendToAll(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
+	SendToAll(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
 }
 
 void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -283,7 +278,7 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	negPacket.PacketSize = sizeof(negPacket);
 	negPacket.Result = ERROR_CODE::SUCCESS;
 
-	sendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
+	SendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
 
 	// 게임이 시작되면, 서버에서도 맵 타일을 생성한다.
 	createMapTiles();
@@ -320,7 +315,7 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 		naPacket.EntityID = sessionIndex;
 		naPacket.PacketID = NOTIFY_ATTACK;
 		naPacket.PacketSize = sizeof(naPacket);
-		sendPacketExclude(sessionIndex, sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
+		SendPacketExclude(sessionIndex, sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
 	}
 }
 
@@ -339,7 +334,7 @@ void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
 	notifyPacket.ClientID = newlyConnectedIndex;
 
 	// 기존에 접속해 있던 유저들에게 새로 접속한 유저를 알린다.
-	sendPacketExclude(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
+	SendPacketExclude(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
 
 	// 새로 접속한 유저에게 기존 유저들을 알린다.
 	for (auto userIndex : connectedUsers)
@@ -354,7 +349,7 @@ void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
 	}
 }
 
-void GameManager::sendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet)
+void GameManager::SendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet)
 {
 	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
 
@@ -374,7 +369,7 @@ void GameManager::sendPacketExclude(const INT32 userIndexToExclude, const UINT32
 	}
 }
 
-void GameManager::sendToAll(const INT32 packetSize, char* packet)
+void GameManager::SendToAll(const INT32 packetSize, char* packet)
 {
 	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
 

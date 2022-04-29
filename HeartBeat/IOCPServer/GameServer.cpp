@@ -27,7 +27,7 @@ void GameServer::Run(const UINT32 maxSessionCount)
 		SendMsg(sessionIndex, packetSize, packet);
 	};
 
-	mGameManager = make_unique<GameManager>();
+	mGameManager = make_shared<GameManager>();
 	mGameManager->SendPacketFunction = sendPacketFunction;
 	mGameManager->Init(maxSessionCount);
 	mGameManager->Run();

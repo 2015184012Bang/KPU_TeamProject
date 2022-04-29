@@ -1,13 +1,21 @@
 #pragma once
 
+#include "Entity.h"
+
+class GameManager;
+
 class CollisionSystem
 {
 public:
-	void Update();
+	CollisionSystem(shared_ptr<GameManager>&& gm);
 
-	void TestCollision();
+	void Update();
 
 private:
 	void checkPlayerAndTile();
+	void reposition(BoxComponent& playerBox, Entity&& player, BoxComponent& otherBox);
+
+private:
+	shared_ptr<GameManager> mGameManager = nullptr;
 };
 

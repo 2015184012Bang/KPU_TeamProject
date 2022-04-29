@@ -3,6 +3,13 @@
 
 #include "Entity.h"
 #include "Timer.h"
+#include "GameManager.h"
+
+MovementSystem::MovementSystem(shared_ptr<GameManager>&& gm)
+	: mGameManager(move(gm))
+{
+
+}
 
 void MovementSystem::Update()
 {
