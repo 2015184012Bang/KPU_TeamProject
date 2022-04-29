@@ -1,15 +1,17 @@
 #pragma once
 
+#include "Define.h"
+
 struct Tile
 {
 	Tile() = default;
 
-	Tile(int type, float x, float z)
-		: Type(type)
+	Tile(TileType type, float x, float z)
+		: TType(type)
 		, X(x)
 		, Z(z) {}
 
-	int Type = 0;
+	TileType TType = TileType::BLOCKED;
 	float X = 0.0f;
 	float Z = 0.0f;
 };
@@ -17,15 +19,21 @@ struct Tile
 class GameMap
 {
 public:
-	GameMap();
+	GameMap() = default;
 
-	void LoadMap(const string& mapFile);
+	void LoadMap(string_view mapFile);
 	void Unload();
 
 	const vector<Tile>& GetTiles() const { return mTiles; }
 
+	uint32 GetMaxRow() const { return mMaxRow; }
+	uint32 GetMaxCol() const { return mMaxCol; }
+
 private:
 	vector<Tile> mTiles;
+
+	uint32 mMaxRow = 0;
+	uint32 mMaxCol = 0;
 };
 
 extern GameMap gGameMap;

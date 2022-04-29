@@ -6,6 +6,7 @@
 #include "Tags.h"
 #include "Animation.h"
 #include "Components.h"
+#include "GameMap.h"
 #include "Helpers.h"
 #include "Input.h"
 #include "LoginScene.h"
@@ -39,7 +40,7 @@ bool Client::Init()
 	SoundManager::Init();
 	Random::Init();
 
-	loadServerSettingsFromXML("settings.xml");
+	loadSettingsFromXML("settings.xml");
 
 	mPacketManager = std::make_unique<PacketManager>();
 	mPacketManager->Init();
@@ -218,7 +219,7 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 	mTargetOffset = offset;
 }
 
-void Client::loadServerSettingsFromXML(string_view fileName)
+void Client::loadSettingsFromXML(string_view fileName)
 {
 	tinyxml2::XMLDocument doc;
 	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
@@ -227,12 +228,19 @@ void Client::loadServerSettingsFromXML(string_view fileName)
 
 	auto root = doc.RootElement();
 	
+	// 서버 포트 번호 읽기
 	auto elem = root->FirstChildElement("Server")->FirstChildElement("Port");
 	string port = elem->GetText();
 	ServerPort = std::stoi(port);
 
+	// 서버 IP 주소 읽기
 	elem = elem->NextSiblingElement();
 	ServerIP = elem->GetText();
+
+	// 맵 파일 이름 읽어 로드하기
+	elem = root->FirstChildElement("GameMap")->FirstChildElement("FileName");
+	string mapFile = elem->GetText();
+	gGameMap.LoadMap(mapFile);
 }
 
 void Client::processInput()

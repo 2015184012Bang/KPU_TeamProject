@@ -13,9 +13,13 @@ enum class EnemyType: uint8
 
 enum class TileType : uint8
 {
-	GRASS,
+	BLOCKED = 0,
+	MOVABLE,
 	RAIL,
-	OBSTACLE,
+	FAT,
+	TANK_FAT,
+	SCAR,
+	END
 };
 
 enum class RootParameter

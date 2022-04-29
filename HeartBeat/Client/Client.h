@@ -51,7 +51,7 @@ public:
     Entity& GetMainCamera() { return mMainCamera; }
 
 private:
-    void loadServerSettingsFromXML(string_view fileName);
+    void loadSettingsFromXML(string_view fileName);
 
     void processInput();
     void update();
