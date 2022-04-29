@@ -224,22 +224,14 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 
-	// 패킷을 보낸 유저에게 서버가 유지하고 있는 Position 전송
-	ANSWER_MOVE_PACKET amPacket = {};
-	amPacket.PacketID = ANSWER_MOVE;
-	amPacket.PacketSize = sizeof(amPacket);
-	amPacket.Position = user->GetPosition();
-	amPacket.Direction = user->GetMoveDirection();
-	SendPacketFunction(sessionIndex, sizeof(amPacket), reinterpret_cast<char*>(&amPacket));
-
 	// 이동 노티파이 패킷 전송
 	NOTIFY_MOVE_PACKET anmPacket = {};
 	anmPacket.PacketID = NOTIFY_MOVE;
 	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
-	anmPacket.Direction = amPacket.Direction;
-	anmPacket.Position = amPacket.Position;
+	anmPacket.Direction = user->GetMoveDirection();
+	anmPacket.Position = user->GetPosition();
 	anmPacket.EntityID = sessionIndex;
-	SendPacketExclude(sessionIndex, sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
+	SendToAll(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 
 void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

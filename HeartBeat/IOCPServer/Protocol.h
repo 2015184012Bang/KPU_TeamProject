@@ -46,8 +46,7 @@ enum PACKET_ID : UINT8
 
 	// 이동
 	REQUEST_MOVE = 121,
-	ANSWER_MOVE = 122,
-	NOTIFY_MOVE = 123,
+	NOTIFY_MOVE,
 
 	// 업그레이드
 	REQUEST_UPGRADE = 131,
@@ -117,12 +116,6 @@ struct NOTIFY_ENTER_GAME_PACKET : public PACKET_HEADER
 
 struct REQUEST_MOVE_PACKET : public PACKET_HEADER
 {
-	Vector3 Direction;
-};
-
-struct ANSWER_MOVE_PACKET : public PACKET_HEADER
-{
-	Vector3 Position;
 	Vector3 Direction;
 };
 

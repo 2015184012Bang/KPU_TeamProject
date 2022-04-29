@@ -39,7 +39,6 @@ private:
     void updateClockPosition();
 
     void processNotifyMove(const PACKET& packet);
-    void processAnswerMove(const PACKET& packet);
     void processNotifyUpgrade(const PACKET& packet);
     void processNotifyEnterGame(const PACKET& packet);
 

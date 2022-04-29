@@ -34,7 +34,6 @@ private:
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();
 
-	void processAnswerMove(const PACKET& packet);
 	void processNotifyMove(const PACKET& packet);
     void processNotifyAttack(const PACKET& packet);
 

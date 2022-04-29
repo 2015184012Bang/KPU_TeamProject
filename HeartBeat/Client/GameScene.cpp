@@ -36,10 +36,6 @@ void GameScene::ProcessInput()
 	{
 		switch (packet.PacketID)
 		{
-		case ANSWER_MOVE:
-			processAnswerMove(packet);
-			break;
-
 		case NOTIFY_MOVE:
 			processNotifyMove(packet);
 			break;
@@ -307,17 +303,6 @@ bool GameScene::pollKeyboardReleased()
 	}
 
 	return bChanged;
-}
-
-void GameScene::processAnswerMove(const PACKET& packet)
-{
-	ANSWER_MOVE_PACKET* amPacket = reinterpret_cast<ANSWER_MOVE_PACKET*>(packet.DataPtr);
-
-	auto& transform = mPlayerCharacter.GetComponent<TransformComponent>();
-	transform.Position = amPacket->Position;
-
-	auto& movement = mPlayerCharacter.GetComponent<MovementComponent>();
-	movement.Direction = amPacket->Direction;
 }
 
 void GameScene::processNotifyMove(const PACKET& packet)
