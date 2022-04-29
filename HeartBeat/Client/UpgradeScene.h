@@ -52,5 +52,6 @@ private:
     float mElapsed = 0.0f;
     bool mbCountdownPlayed = false;
     bool mbChangeScene = false;
+    bool mbSendEnterPacket = false;
 };
 
