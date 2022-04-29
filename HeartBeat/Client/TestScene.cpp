@@ -76,6 +76,14 @@ void TestScene::Enter()
 		auto& transform = mEnemy.GetComponent<TransformComponent>();
 		transform.Position.x = 700.0f;
 	}
+
+	{
+		Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
+			TEXTURE("Cell_White.png"), SKELETON("Cell.skel"));
+
+		auto& animator = cell.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cell_Dead.anim"));
+	}
 }
 
 void TestScene::Exit()
