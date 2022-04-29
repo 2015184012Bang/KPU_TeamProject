@@ -27,8 +27,6 @@ private:
 
 	void swapQueues();
 
-	PACKET_INFO popPacket();
-
 	void logicThread();
 
 	void processPacket(const INT32 sessionIndex, const UINT8 packetID, const UINT8 packetSize, char* packet);

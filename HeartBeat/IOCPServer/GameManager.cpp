@@ -89,14 +89,6 @@ void GameManager::swapQueues()
 	swap(mBackPacketQueue, mFrontPacketQueue);
 }
 
-PACKET_INFO GameManager::popPacket()
-{
-	// 로직 스레드에서 유일하게 접근하므로 락 불필요.
-	PACKET_INFO info = mFrontPacketQueue->front();
-	mFrontPacketQueue->pop();
-	return info;
-}
-
 void GameManager::logicThread()
 {
 	while (mShouldLogicRun)
@@ -109,7 +101,8 @@ void GameManager::logicThread()
 		{
 			isIdle = false;
 
-			PACKET_INFO packet = popPacket();
+			PACKET_INFO packet = mFrontPacketQueue->front();
+			mFrontPacketQueue->pop();
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
 
