@@ -2,6 +2,9 @@
 
 #include "Scene.h"
 #include "../IOCPServer/Protocol.h"
+#include "Define.h"
+
+class Texture;
 
 class GameScene :
     public Scene
@@ -18,6 +21,8 @@ public:
     void SetDirection(const Vector3& direction) { mDirection = direction; }
 
 private:
+    void createMap();
+
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();
 
@@ -34,3 +39,4 @@ private:
 };
 
 string GetRandomAttackAnimFile(bool isEnemy = false);
+Texture* GetTileTexture(TileType ttype);

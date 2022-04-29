@@ -3,6 +3,7 @@
 
 #include "Client.h"
 #include "Components.h"
+#include "GameMap.h"
 #include "PacketManager.h"
 #include "Input.h"
 #include "Random.h"
@@ -20,14 +21,8 @@ void GameScene::Enter()
 	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
 	mPlayerCharacter = Entity(entity, mOwner);
 
-	// ÀÓ½Ã ¹Ù´Ú
-	{
-		Entity plane = mOwner->CreateStaticMeshEntity(MESH("Plane_Big.mesh"),
-			TEXTURE("Brick.jpg"));
-
-		auto& transform = plane.GetComponent<TransformComponent>();
-		transform.Position.y -= 45.0f;
-	}
+	// ¸Ê »ý¼º
+	createMap();
 }
 
 void GameScene::Exit()
@@ -95,6 +90,24 @@ void GameScene::Update(float deltaTime)
 	}
 }
 
+
+void GameScene::createMap()
+{
+	const auto& tiles = gGameMap.GetTiles();
+
+	for (const auto& tile : tiles)
+	{
+		const Texture* tileTex = GetTileTexture(tile.TType);
+
+		Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			tileTex);
+
+		auto& transform = obj.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -TILE_WIDTH;
+		transform.Position.z = tile.Z;
+	}
+}
 
 bool GameScene::pollKeyboardPressed()
 {
@@ -216,7 +229,6 @@ string GetRandomAttackAnimFile(bool isEnemy /*= false*/)
 	}
 	else
 	{
-
 		switch (Random::RandInt(1, 3))
 		{
 		case 1:
@@ -235,5 +247,33 @@ string GetRandomAttackAnimFile(bool isEnemy /*= false*/)
 			return "";
 			break;
 		}
+	}
+}
+
+Texture* GetTileTexture(TileType ttype)
+{
+	switch (ttype)
+	{
+	case TileType::BLOCKED:
+		return TEXTURE("Black.png");
+
+	case TileType::MOVABLE:
+		return TEXTURE("LightGreen.png");
+
+	case TileType::RAIL:
+		return TEXTURE("Brown.png");
+
+	case TileType::FAT:
+		return TEXTURE("Pink.png");
+		
+	case TileType::TANK_FAT:
+		return TEXTURE("Orange.png");
+		
+	case TileType::SCAR:
+		return TEXTURE("Red.png");
+		
+	default:
+		HB_ASSERT(false, "Unknown tile type!");
+		return nullptr;
 	}
 }
