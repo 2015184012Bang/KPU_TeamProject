@@ -32,6 +32,8 @@ public:
     Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile = ""sv);
     Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
     Entity CreateTextEntity(const Font* fontFile);
+
+    void DestroyEntityAfter(const uint32 eid, float secs);
    
     // Child entity를 삭제하고 난 후 호출해줄 것.
     void RearrangeAttachment();
@@ -62,6 +64,7 @@ private:
     void createCameraEntity();
 
     void processButton();
+    void processPendingEntities(float deltaTime);
     void updateMovement(float deltaTime);
     void updateScript(float deltaTime);
     void updateAnimation(float deltaTime);
@@ -86,5 +89,7 @@ private:
 
     Entity mFollowCameraTarget = {}; // 메인 카메라가 따라다닐 대상
     Vector3 mTargetOffset = Vector3::Zero; // 타겟과의 오프셋
+
+    deque<std::pair<uint32, float>> mPendingEntities;
 };
 

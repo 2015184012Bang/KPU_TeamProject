@@ -201,6 +201,11 @@ Entity Client::CreateTextEntity(const Font* fontFile)
 	return e;
 }
 
+void Client::DestroyEntityAfter(const uint32 eid, float secs)
+{
+	mPendingEntities.emplace_back(eid, secs);
+}
+
 void Client::RearrangeAttachment()
 {
 	auto view = GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
@@ -288,6 +293,7 @@ void Client::update()
 
 	float deltaTime = Timer::GetDeltaTime();
 
+	processPendingEntities(deltaTime);
 	updateMovement(deltaTime);
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
@@ -358,6 +364,25 @@ void Client::processButton()
 				button.CallbackFunc();
 				break;
 			}
+		}
+	}
+}
+
+void Client::processPendingEntities(float deltaTime)
+{
+	auto iter = mPendingEntities.begin();
+	while (iter != mPendingEntities.end())
+	{
+		iter->second -= deltaTime;
+
+		if (iter->second < 0.0f)
+		{
+			DestroyEntityByID(iter->first);
+			iter = mPendingEntities.erase(iter);
+		}
+		else
+		{
+			++iter;
 		}
 	}
 }

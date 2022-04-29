@@ -357,6 +357,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	{
 		auto& animator = e.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Fat_Break.anim"));
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 2.0f);
 	}
 		break;
 
