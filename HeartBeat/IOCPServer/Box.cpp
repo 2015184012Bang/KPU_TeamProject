@@ -20,6 +20,7 @@ void Box::Init()
 {
 	GetBox("../Assets/Boxes/Cart.box");
 	GetBox("../Assets/Boxes/Cell.box");
+	GetBox("../Assets/Boxes/Cube.box");
 	GetBox("../Assets/Boxes/Character.box");
 	GetBox("../Assets/Boxes/Dog.box");
 	GetBox("../Assets/Boxes/Tank.box");

@@ -6,5 +6,8 @@ public:
 	void Update();
 
 	void TestCollision();
+
+private:
+	void checkPlayerAndTile();
 };
 

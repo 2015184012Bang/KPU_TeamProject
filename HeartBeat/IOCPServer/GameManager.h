@@ -6,6 +6,8 @@
 #include "MovementSystem.h"
 #include "CombatSystem.h"
 #include "CollisionSystem.h"
+#include "GameMap.h"
+
 
 extern float gTileSide;
 extern float gPlayerSpeed;
@@ -54,6 +56,9 @@ private:
 	// 접속 유저 모두에게 보내기
 	void sendToAll(const INT32 packetSize, char* packet);
 
+	// 맵을 이루는 타일 엔티티 생성
+	void createMapTiles();
+
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
 
@@ -82,5 +87,8 @@ private:
 	unique_ptr<MovementSystem> mMovementSystem = nullptr;
 	unique_ptr<CombatSystem> mCombatSystem = nullptr;
 	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
+
+	// 게임 맵
+	unique_ptr<GameMap> mGameMap = nullptr;
 };
 

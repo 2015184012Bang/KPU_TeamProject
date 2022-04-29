@@ -5,10 +5,14 @@
 #include "Box.h"
 #include "Entity.h"
 #include "tinyxml2.h"
+#include "Tags.h"
 
 float gTileSide;
 float gPlayerSpeed;
 float gBaseAttackCooldown;
+
+float GetTileYPos(TileType ttype);
+void AddTagToTile(Entity& tile, TileType ttype);
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
@@ -45,9 +49,15 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	// 모든 박스 로드
 	Box::Init();
 
+	// 시스템 생성
 	initSystems();
 
+	// XML 파일에서 여러 변수 값 읽어오기
 	loadValuesFromXML("settings.xml");
+
+	// 게임 맵 생성
+	mGameMap = make_unique<GameMap>();
+	mGameMap->LoadMap("../Assets/Maps/Map01.csv");
 }
 
 void GameManager::Run()
@@ -274,6 +284,9 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	negPacket.Result = ERROR_CODE::SUCCESS;
 
 	sendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
+
+	// 게임이 시작되면, 서버에서도 맵 타일을 생성한다.
+	createMapTiles();
 }
 
 void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -373,5 +386,64 @@ void GameManager::sendToAll(const INT32 packetSize, char* packet)
 	for (auto userIndex : connectedUsers)
 	{
 		SendPacketFunction(userIndex, packetSize, packet);
+	}
+}
+
+void GameManager::createMapTiles()
+{
+	const auto& tiles = mGameMap->GetTiles();
+
+	for (const auto& tile : tiles)
+	{
+		Entity obj = Entity{ gRegistry.create() };
+		AddTagToTile(obj, tile.TType);
+
+		auto& transform = obj.AddComponent<TransformComponent>();
+		transform.Position = { tile.X, GetTileYPos(tile.TType), tile.Z };
+
+		obj.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
+	}
+}
+
+float GetTileYPos(TileType ttype)
+{
+	switch (ttype)
+	{
+	case TileType::BLOCKED:
+	case TileType::FAT:
+	case TileType::TANK_FAT:
+		return 0.0f;
+
+	case TileType::MOVABLE:
+	case TileType::RAIL:
+	case TileType::SCAR:
+		return -gTileSide;
+
+	default:
+		ASSERT(false, "Unknown tile type!");
+		return 0.0;
+	}
+}
+
+void AddTagToTile(Entity& tile, TileType ttype)
+{
+	switch (ttype)
+	{
+	case TileType::BLOCKED:
+	case TileType::FAT:
+	case TileType::TANK_FAT:
+		tile.AddTag<Tag_Tile>();
+		tile.AddTag<Tag_Blocked>();
+		break;
+
+	case TileType::MOVABLE:
+	case TileType::RAIL:
+	case TileType::SCAR:
+		tile.AddTag<Tag_Tile>();
+		break;
+
+	default:
+		ASSERT(false, "Unknown tile type!");
+		break;
 	}
 }

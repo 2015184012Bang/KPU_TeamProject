@@ -162,6 +162,7 @@
     <ClCompile Include="Components.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="IOCPServer.cpp" />
     <ClCompile Include="Lock.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="Components.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="IOCPServer.h" />
     <ClInclude Include="Defines.h" />
