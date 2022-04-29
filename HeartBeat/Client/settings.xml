@@ -7,4 +7,8 @@
   <GameMap>
     <FileName>../Assets/Maps/Map01.csv</FileName>
   </GameMap>
+  <Values>
+    <TileSide>400</TileSide>
+    <PlayerSpeed>600</PlayerSpeed>
+  </Values>
 </Root>

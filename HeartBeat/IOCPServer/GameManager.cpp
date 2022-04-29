@@ -4,6 +4,11 @@
 
 #include "Box.h"
 #include "Entity.h"
+#include "tinyxml2.h"
+
+float gTileSide;
+float gPlayerSpeed;
+float gBaseAttackCooldown;
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
@@ -41,6 +46,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	Box::Init();
 
 	initSystems();
+
+	loadValuesFromXML("settings.xml");
 }
 
 void GameManager::Run()
@@ -74,6 +81,30 @@ void GameManager::PushSystemPacket(PACKET_INFO packet)
 {
 	WriteLockGuard guard(mLock);
 	mBackPacketQueue->push(packet);
+}
+
+void GameManager::loadValuesFromXML(string_view fileName)
+{
+	tinyxml2::XMLDocument doc;
+	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
+	ASSERT(error == tinyxml2::XML_SUCCESS, "Failed to read xml file: {0}", fileName.data());
+
+	auto root = doc.RootElement();
+
+	// 타일 한 변의 길이
+	auto elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
+	string tileSide = elem->GetText();
+	gTileSide = stof(tileSide);
+
+	// 플레이어 이동 속도
+	elem = elem->NextSiblingElement();
+	string playerSpeed = elem->GetText();
+	gPlayerSpeed = stof(playerSpeed);
+
+	// 기본 공격 재사용 대기 시간
+	elem = elem->NextSiblingElement();
+	string baCooldown = elem->GetText();
+	gBaseAttackCooldown = stof(baCooldown);
 }
 
 void GameManager::initSystems()

@@ -7,6 +7,10 @@
 #include "CombatSystem.h"
 #include "CollisionSystem.h"
 
+extern float gTileSide;
+extern float gPlayerSpeed;
+extern float gBaseAttackCooldown;
+
 class GameManager
 {
 public:
@@ -23,6 +27,8 @@ public:
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 private:
+	void loadValuesFromXML(string_view fileName);
+
 	void initSystems();
 
 	void swapQueues();

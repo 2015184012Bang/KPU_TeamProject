@@ -4,7 +4,6 @@
 #include "Entity.h"
 
 constexpr UINT32 DATA_BUFFER_SIZE = 8192;
-constexpr float PLAYER_MAX_SPEED = 300.0f;
 
 class User
 {

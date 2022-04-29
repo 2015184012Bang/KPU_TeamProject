@@ -6,6 +6,7 @@
 #include "Tags.h"
 #include "Animation.h"
 #include "Components.h"
+#include "Define.h"
 #include "GameMap.h"
 #include "Helpers.h"
 #include "Input.h"
@@ -26,6 +27,10 @@
 #include "SoundManager.h"
 #include "TestScene.h"
 #include "Random.h"
+
+// XML 파일로부터 읽어들일 값들
+float gPlayerSpeed;
+float gTileWidth;
 
 Client::Client()
 	: Game()
@@ -237,10 +242,22 @@ void Client::loadSettingsFromXML(string_view fileName)
 	elem = elem->NextSiblingElement();
 	ServerIP = elem->GetText();
 
+	// 타일 크기
+	elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
+	string tileSide = elem->GetText();
+	gTileWidth = stof(tileSide);
+
+	// 플레이어 이동 속도
+	elem = elem->NextSiblingElement();
+	string playerSpeed = elem->GetText();
+	gPlayerSpeed = stof(playerSpeed);
+
 	// 맵 파일 이름 읽어 로드하기
+	// [주의] 타일 크기를 먼저 읽은 후에 로드해야 한다.
 	elem = root->FirstChildElement("GameMap")->FirstChildElement("FileName");
 	string mapFile = elem->GetText();
 	gGameMap.LoadMap(mapFile);
+
 }
 
 void Client::processInput()

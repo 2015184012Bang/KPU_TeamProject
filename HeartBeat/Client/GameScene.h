@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include "../IOCPServer/Protocol.h"
 #include "Define.h"
+#include "GameMap.h"
 
 class Texture;
 
@@ -22,6 +23,13 @@ public:
 
 private:
     void createMap();
+    void createTile(const Tile& tile);
+    void createBlockedTile(const Tile& tile);
+    void createMovableTile(const Tile& tile);
+    void createRailTile(const Tile& tile);
+    void createFatTile(const Tile& tile);
+    void createTankFatTile(const Tile& tile);
+    void createScarTile(const Tile& tile);
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();

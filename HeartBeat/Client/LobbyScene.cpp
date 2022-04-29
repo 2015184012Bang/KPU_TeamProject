@@ -98,7 +98,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 	// ex. 플레이어 캐릭터, 적, NPC... 등
 	// 플레이어 캐릭터의 아이디는 본인의 클라이언트 아이디를 대입한다.
 	character.AddComponent<IDComponent>(clientID);
-	character.AddComponent<MovementComponent>(PLAYER_MAX_SPEED);
+	character.AddComponent<MovementComponent>(gPlayerSpeed);
 
 	// [주의] Character 스크립트는 MovementComponent 먼저 넣고 부착해야 한다.
 	character.AddComponent<ScriptComponent>(std::make_shared<Character>(character));

@@ -32,8 +32,8 @@ void GameMap::LoadMap(string_view mapFile)
 		for (uint32 col = 0; col < mMaxCol; ++col)
 		{
 			mTiles.emplace_back(static_cast<TileType>(tileTypes[col]),
-				col * TILE_WIDTH,
-				row * TILE_WIDTH);
+				col * gTileWidth,
+				row * gTileWidth);
 		}
 	}
 

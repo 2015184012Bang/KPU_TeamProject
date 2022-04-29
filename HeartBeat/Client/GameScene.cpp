@@ -3,7 +3,6 @@
 
 #include "Client.h"
 #include "Components.h"
-#include "GameMap.h"
 #include "PacketManager.h"
 #include "Input.h"
 #include "Random.h"
@@ -97,16 +96,159 @@ void GameScene::createMap()
 
 	for (const auto& tile : tiles)
 	{
-		const Texture* tileTex = GetTileTexture(tile.TType);
+		createTile(tile);
+	}
+}
 
-		Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+void GameScene::createTile(const Tile& tile)
+{
+	switch (tile.TType)
+	{
+	case TileType::BLOCKED:
+		createBlockedTile(tile);
+		break;
+
+	case TileType::MOVABLE:
+		createMovableTile(tile);
+		break;
+
+	case TileType::RAIL:
+		createRailTile(tile);
+		break;
+
+	case TileType::FAT:
+		createFatTile(tile);
+		break;
+
+	case TileType::TANK_FAT:
+		createTankFatTile(tile);
+		break;
+
+	case TileType::SCAR:
+		createScarTile(tile);
+		break;
+		
+	default:
+		HB_ASSERT(false, "Unknown tile type!");
+		break;
+	}
+}
+
+
+void GameScene::createBlockedTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	// BLOCKED 타일은 위아래, 두 개를 생성한다.
+	{
+		Entity top = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			tileTex);
-
-		auto& transform = obj.GetComponent<TransformComponent>();
+		auto& transform = top.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
-		transform.Position.y = -TILE_WIDTH;
+		transform.Position.y = 0.0f;
 		transform.Position.z = tile.Z;
 	}
+
+	{
+		Entity down = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			tileTex);
+		auto& transform = down.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -gTileWidth;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createMovableTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -gTileWidth;
+	transform.Position.z = tile.Z;
+}
+
+void GameScene::createRailTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -gTileWidth;
+	transform.Position.z = tile.Z;
+}
+
+void GameScene::createFatTile(const Tile& tile)
+{
+	// 파괴 가능한 FAT 타일 아래에는 MOVABLE 타일을 생성한다.
+
+	const Texture* fatTex = GetTileTexture(tile.TType);
+	const Texture* movableTex = GetTileTexture(TileType::MOVABLE);
+
+	{
+		Entity fat = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			fatTex);
+		auto& transform = fat.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+	}
+
+	// TODO : Fat 타일이 파괴되면 아래 movable 타일을 생성하기
+	{
+		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			movableTex);
+		auto& transform = movable.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -gTileWidth;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createTankFatTile(const Tile& tile)
+{
+	// TANK_FAT 타일 아래에는 RAIL 타일을 생성한다.
+
+	const Texture* tankFatTex = GetTileTexture(tile.TType);
+	const Texture* railTex = GetTileTexture(TileType::RAIL);
+
+	{
+		Entity fat = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			tankFatTex);
+		auto& transform = fat.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+	}
+
+	{
+		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			railTex);
+		auto& transform = movable.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -gTileWidth;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createScarTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -gTileWidth;
+	transform.Position.z = tile.Z;
 }
 
 bool GameScene::pollKeyboardPressed()

@@ -2,8 +2,6 @@
 
 class CombatSystem
 {
-	const float BASE_ATTACK_COOLDOWN = 3.0f;
-
 public:
 	enum class UpgradePreset : UINT8
 	{

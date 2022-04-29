@@ -2,6 +2,7 @@
 #include "CombatSystem.h"
 
 #include "Entity.h"
+#include "GameManager.h"
 #include "Timer.h"
 
 void CombatSystem::Update()
@@ -42,7 +43,7 @@ void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
 		break;
 	}
 
-	combat.BaseAttackCooldown = BASE_ATTACK_COOLDOWN;
+	combat.BaseAttackCooldown = gBaseAttackCooldown;
 }
 
 bool CombatSystem::CanBaseAttack(const UINT32 eid)

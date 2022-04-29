@@ -4,4 +4,9 @@
     <Port>9000</Port>
     <IP>127.0.0.1</IP>
   </Server>
+  <Values>
+    <TileSide>400</TileSide>
+    <PlayerSpeed>600</PlayerSpeed>
+    <BACooldown>1.5</BACooldown>
+  </Values>
 </Root>
