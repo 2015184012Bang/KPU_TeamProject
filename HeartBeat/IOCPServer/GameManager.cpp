@@ -6,6 +6,7 @@
 #include "Entity.h"
 #include "tinyxml2.h"
 #include "Tags.h"
+#include "Random.h"
 
 float gTileSide;
 float gPlayerSpeed;
@@ -43,10 +44,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mBackPacketQueue = &mPacketQueueA;
 	mFrontPacketQueue = &mPacketQueueB;
 
-	// 타이머 초기화
 	Timer::Init();
-
-	// 모든 박스 로드
+	Random::Init();
 	Box::Init();
 
 	// 시스템 생성
@@ -425,10 +424,15 @@ void AddTagToTile(Entity& tile, TileType ttype)
 	switch (ttype)
 	{
 	case TileType::BLOCKED:
+		tile.AddTag<Tag_Tile>();
+		tile.AddTag<Tag_Blocked>();
+		break;
+
 	case TileType::FAT:
 	case TileType::TANK_FAT:
 		tile.AddTag<Tag_Tile>();
 		tile.AddTag<Tag_Blocked>();
+		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
 		break;
 
 	case TileType::MOVABLE:

@@ -57,3 +57,11 @@ struct BoxComponent
 	const Box* LocalBox = nullptr;
 	Box WorldBox = {};
 };
+
+struct HealthComponent
+{
+	HealthComponent() = default;
+	HealthComponent(const UINT8 health);
+
+	UINT8 Health = 0;
+};
