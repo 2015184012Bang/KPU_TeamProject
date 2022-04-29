@@ -8,11 +8,11 @@
 #include "CollisionSystem.h"
 #include "GameMap.h"
 
-
 extern float gTileSide;
 extern float gPlayerSpeed;
 extern float gBaseAttackCooldown;
 extern float gBaseAttackRange;
+extern UINT32 gEntityID;
 
 class GameManager : public enable_shared_from_this<GameManager>
 {

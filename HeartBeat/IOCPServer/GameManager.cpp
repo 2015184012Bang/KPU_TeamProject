@@ -12,6 +12,7 @@ float gTileSide;
 float gPlayerSpeed;
 float gBaseAttackCooldown;
 float gBaseAttackRange;
+UINT32 gEntityID = 3;
 
 float GetTileYPos(TileType ttype);
 void AddTagToTile(Entity& tile, TileType ttype);
@@ -421,6 +422,7 @@ void AddTagToTile(Entity& tile, TileType ttype)
 		tile.AddTag<Tag_Blocked>();
 		tile.AddTag<Tag_Breakable>();
 		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
+		tile.AddComponent<IDComponent>(gEntityID++);
 		break;
 
 	case TileType::MOVABLE:

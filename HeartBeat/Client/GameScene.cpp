@@ -8,6 +8,7 @@
 #include "Random.h"
 #include "ResourceManager.h"
 #include "SoundManager.h"
+#include "Helpers.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -43,6 +44,10 @@ void GameScene::ProcessInput()
 
 		case NOTIFY_ATTACK:
 			processNotifyAttack(packet);
+			break;
+
+		case NOTIFY_DELETE_ENTITY:
+			processNotifyDeleteEntity(packet);
 			break;
 
 		default:
@@ -186,8 +191,9 @@ void GameScene::createFatTile(const Tile& tile)
 	const Texture* movableTex = GetTileTexture(TileType::MOVABLE);
 
 	{
-		Entity fat = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
-			fatTex);
+		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), fatTex,
+			SKELETON("Fat.skel"));
+		fat.AddComponent<IDComponent>(gEntityID++);
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -213,8 +219,9 @@ void GameScene::createTankFatTile(const Tile& tile)
 	const Texture* railTex = GetTileTexture(TileType::RAIL);
 
 	{
-		Entity fat = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
-			tankFatTex);
+		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), tankFatTex,
+			SKELETON("Fat.skel"));
+		fat.AddComponent<IDComponent>(gEntityID++);
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -334,6 +341,27 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
 	{
 		SoundManager::PlaySound("Punch.mp3");
+	}
+}
+
+void GameScene::processNotifyDeleteEntity(const PACKET& packet)
+{
+	NOTIFY_DELETE_ENTITY_PACKET* ndePacket = reinterpret_cast<NOTIFY_DELETE_ENTITY_PACKET*>(packet.DataPtr);
+
+	auto entity = mOwner->GetEntityByID(ndePacket->EntityID);
+	Entity e = { entity, mOwner };
+
+	switch (static_cast<EntityType>(ndePacket->EntityType))
+	{
+	case EntityType::FAT:
+	{
+		auto& animator = e.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Fat_Break.anim"));
+	}
+		break;
+
+	default:
+		break;
 	}
 }
 

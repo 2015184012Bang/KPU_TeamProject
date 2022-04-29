@@ -36,6 +36,7 @@ private:
 
 	void processNotifyMove(const PACKET& packet);
     void processNotifyAttack(const PACKET& packet);
+    void processNotifyDeleteEntity(const PACKET& packet);
 
 private:
     Entity mPlayerCharacter = {};

@@ -98,6 +98,7 @@ void Helpers::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 		else
 		{
 			outAnimator->SetTrigger("WhenEnd");
+			return;
 		}
 	}
 

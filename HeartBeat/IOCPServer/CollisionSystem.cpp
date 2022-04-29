@@ -58,7 +58,13 @@ bool CollisionSystem::DoAttack(const INT32 sessionIndex)
 
 			if (health.Health <= 0)
 			{
-				// TODO : 타일이 부셔졌을 때 처리
+				NOTIFY_DELETE_ENTITY_PACKET packet = {};
+				packet.PacketID = NOTIFY_DELETE_ENTITY;
+				packet.PacketSize = sizeof(packet);
+				packet.EntityID = tile.GetComponent<IDComponent>().ID;
+				packet.EntityType = static_cast<UINT8>(EntityType::FAT);
+				mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+				gRegistry.destroy(entity);
 			}
 
 			return true;

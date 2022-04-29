@@ -12,6 +12,8 @@ class Font;
 
 using namespace std::string_literals;
 
+extern UINT32 gEntityID;
+
 class Client :
     public Game
 {

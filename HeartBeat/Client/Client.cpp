@@ -32,6 +32,8 @@
 float gPlayerSpeed;
 float gTileWidth;
 
+UINT32 gEntityID = 3;
+
 Client::Client()
 	: Game()
 {

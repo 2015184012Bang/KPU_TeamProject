@@ -321,6 +321,11 @@ void ResourceManager::MakeAnimTransitions()
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
+
+	{
+		Animation* breakAnim = ANIM("Fat_Break.anim");
+		breakAnim->SetLoop(false);
+	}
 }
 
 std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)

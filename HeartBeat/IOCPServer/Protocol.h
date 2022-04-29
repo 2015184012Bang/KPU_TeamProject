@@ -55,6 +55,10 @@ enum PACKET_ID : UINT8
 	// 공격
 	REQUEST_ATTACK = 134,
 	NOTIFY_ATTACK,
+
+	// 생성/삭제
+	NOTIFY_CREATE_ENTITY,
+	NOTIFY_DELETE_ENTITY,
 };
 
 enum ERROR_CODE : UINT8
@@ -64,7 +68,10 @@ enum ERROR_CODE : UINT8
 	ATTACK_MISS,
 };
 
-
+enum class EntityType : UINT8
+{
+	FAT,
+};
 
 /************************************************************************/
 /* 패킷 정의                                                             */
@@ -149,6 +156,19 @@ struct NOTIFY_ATTACK_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
 	UINT8 Result;
+};
+
+struct NOTIFY_CREATE_ENTITY_PACKET : public PACKET_HEADER
+{
+	UINT32 EntityID;
+	UINT8 EntityType;
+	Vector3 Position;
+};
+
+struct NOTIFY_DELETE_ENTITY_PACKET : public PACKET_HEADER
+{
+	UINT32 EntityID;
+	UINT8 EntityType;
 };
 
 #pragma pack(pop)
