@@ -71,6 +71,8 @@ enum ERROR_CODE : UINT8
 enum class EntityType : UINT8
 {
 	FAT,
+	TANK,
+	CART,
 };
 
 /************************************************************************/

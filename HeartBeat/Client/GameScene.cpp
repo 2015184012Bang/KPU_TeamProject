@@ -50,6 +50,10 @@ void GameScene::ProcessInput()
 			processNotifyDeleteEntity(packet);
 			break;
 
+		case NOTIFY_CREATE_ENTITY:
+			processNotifyCreateEntity(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -125,7 +129,7 @@ void GameScene::createTile(const Tile& tile)
 	case TileType::SCAR:
 		createScarTile(tile);
 		break;
-		
+
 	default:
 		HB_ASSERT(false, "Unknown tile type!");
 		break;
@@ -359,6 +363,31 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 		Helpers::PlayAnimation(&animator, ANIM("Fat_Break.anim"));
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 2.0f);
 	}
+	break;
+
+	default:
+		break;
+	}
+}
+
+void GameScene::processNotifyCreateEntity(const PACKET& packet)
+{
+	NOTIFY_CREATE_ENTITY_PACKET* ncePacket = reinterpret_cast<NOTIFY_CREATE_ENTITY_PACKET*>(packet.DataPtr);
+
+	switch (static_cast<EntityType>(ncePacket->EntityType))
+	{
+	case EntityType::TANK:
+	{
+		Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
+			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID);
+		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		tank.AddComponent<MovementComponent>(gTankSpeed);
+		auto& animator = tank.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
+	}
+	break;
+
+	case EntityType::CART:
 		break;
 
 	default:
@@ -410,13 +439,13 @@ Texture* GetTileTexture(TileType ttype)
 
 	case TileType::FAT:
 		return TEXTURE("Pink.png");
-		
+
 	case TileType::TANK_FAT:
 		return TEXTURE("Orange.png");
-		
+
 	case TileType::SCAR:
 		return TEXTURE("Red.png");
-		
+
 	default:
 		HB_ASSERT(false, "Unknown tile type!");
 		return nullptr;

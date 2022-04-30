@@ -2,6 +2,7 @@
 
 extern float gTileWidth;
 extern float gPlayerSpeed;
+extern float gTankSpeed;
 
 enum class EnemyType: uint8
 {

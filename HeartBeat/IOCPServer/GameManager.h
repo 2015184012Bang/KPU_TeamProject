@@ -12,7 +12,9 @@ extern float gTileSide;
 extern float gPlayerSpeed;
 extern float gBaseAttackCooldown;
 extern float gBaseAttackRange;
-extern UINT32 gEntityID;
+extern float gTankSpeed;
+extern INT32 gTankMaxHealth;
+extern UINT32 gEntityID;;
 
 class GameManager : public enable_shared_from_this<GameManager>
 {
@@ -60,8 +62,8 @@ private:
 	// 스테이지 초기화 함수
 	void initStage(string_view mapFile);
 
-	// 맵을 이루는 타일 엔티티 생성
 	void createMapTiles(string_view mapFile);
+	void createTankAndCart();
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;

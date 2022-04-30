@@ -10,5 +10,6 @@
   <Values>
     <TileSide>400</TileSide>
     <PlayerSpeed>600</PlayerSpeed>
+    <TankSpeed>300</TankSpeed>
   </Values>
 </Root>

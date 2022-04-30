@@ -31,6 +31,7 @@
 // XML 파일로부터 읽어들일 값들
 float gPlayerSpeed;
 float gTileWidth;
+float gTankSpeed;
 
 UINT32 gEntityID = 3;
 
@@ -258,6 +259,11 @@ void Client::loadSettingsFromXML(string_view fileName)
 	elem = elem->NextSiblingElement();
 	string playerSpeed = elem->GetText();
 	gPlayerSpeed = stof(playerSpeed);
+
+	// 탱크 이동 속도
+	elem = elem->NextSiblingElement();
+	string tankSpeed = elem->GetText();
+	gTankSpeed = stof(tankSpeed);
 
 	// 맵 파일 이름 읽어 로드하기
 	// [주의] 타일 크기를 먼저 읽은 후에 로드해야 한다.

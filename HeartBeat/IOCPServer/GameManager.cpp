@@ -12,6 +12,8 @@ float gTileSide;
 float gPlayerSpeed;
 float gBaseAttackCooldown;
 float gBaseAttackRange;
+float gTankSpeed;
+INT32 gTankMaxHealth;
 UINT32 gEntityID = 3;
 
 float GetTileYPos(TileType ttype);
@@ -121,6 +123,16 @@ void GameManager::loadValuesFromXML(string_view fileName)
 	elem = elem->NextSiblingElement();
 	string baRange = elem->GetText();
 	gBaseAttackRange = stof(baRange);
+
+	// 탱크 이동 속도
+	elem = elem->NextSiblingElement();
+	string tankSpeed = elem->GetText();
+	gTankSpeed = stof(tankSpeed);
+
+	// 탱크 최대 체력
+	elem = elem->NextSiblingElement();
+	string tankHealth = elem->GetText();
+	gTankMaxHealth = stoi(tankHealth);
 }
 
 void GameManager::initSystems()
@@ -375,6 +387,9 @@ void GameManager::initStage(string_view mapFile)
 {
 	// 맵 생성
 	createMapTiles(mapFile);
+
+	// 탱크 및 수레 생성
+	createTankAndCart();
 }
 
 
@@ -392,6 +407,27 @@ void GameManager::createMapTiles(string_view mapFile)
 
 		obj.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
 	}
+}
+
+void GameManager::createTankAndCart()
+{
+	Entity tank = Entity{ gRegistry.create() };
+	auto& id = tank.AddComponent<IDComponent>(gEntityID++);
+	tank.AddComponent<NameComponent>("Tank");
+	auto& transform = tank.AddComponent<TransformComponent>();
+	tank.AddComponent<MovementComponent>(Vector3::Zero, gTankSpeed);
+	tank.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Tank.box"),
+		transform.Position, transform.Yaw);
+	tank.AddComponent<HealthComponent>(gTankMaxHealth);
+
+	NOTIFY_CREATE_ENTITY_PACKET packet = {};
+	packet.EntityID = id.ID;
+	packet.EntityType = static_cast<UINT8>(EntityType::TANK);
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
+	packet.PacketSize = sizeof(packet);
+	packet.Position = transform.Position;
+
+	SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
 }
 
 float GetTileYPos(TileType ttype)

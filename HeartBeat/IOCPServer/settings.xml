@@ -9,5 +9,7 @@
     <PlayerSpeed>600</PlayerSpeed>
     <BACooldown>0.7</BACooldown>
     <BARange>400</BARange>
+    <TankSpeed>300</TankSpeed>
+    <TankHealth>20</TankHealth>
   </Values>
 </Root>
