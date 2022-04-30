@@ -10,6 +10,7 @@
 #include "ResourceManager.h"
 #include "SoundManager.h"
 #include "Helpers.h"
+#include "Tags.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -24,7 +25,7 @@ void GameScene::Enter()
 	mPlayerCharacter = Entity(entity, mOwner);
 
 	// 맵 생성
-	createMap();
+	createMap("../Assets/Maps/Map01.csv");
 }
 
 void GameScene::Exit()
@@ -93,11 +94,11 @@ void GameScene::Update(float deltaTime)
 }
 
 
-void GameScene::createMap()
+void GameScene::createMap(string_view mapFile)
 {
-	const auto& tiles = gGameMap.GetTiles();
+	const auto& gameMap = gGameMap.GetMap(mapFile);
 
-	for (const auto& tile : tiles)
+	for (const auto& tile : gameMap.Tiles)
 	{
 		createTile(tile);
 	}
@@ -146,6 +147,7 @@ void GameScene::createBlockedTile(const Tile& tile)
 	{
 		Entity top = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			tileTex);
+		top.AddTag<Tag_Tile>();
 		auto& transform = top.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -155,6 +157,7 @@ void GameScene::createBlockedTile(const Tile& tile)
 	{
 		Entity down = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			tileTex);
+		down.AddTag<Tag_Tile>();
 		auto& transform = down.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = -Values::TileSide;
@@ -168,6 +171,7 @@ void GameScene::createMovableTile(const Tile& tile)
 
 	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 		tileTex);
+	obj.AddTag<Tag_Tile>();
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
@@ -181,6 +185,7 @@ void GameScene::createRailTile(const Tile& tile)
 
 	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 		tileTex);
+	obj.AddTag<Tag_Tile>();
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
@@ -198,6 +203,7 @@ void GameScene::createFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), fatTex,
 			SKELETON("Fat.skel"));
+		fat.AddTag<Tag_Tile>();
 		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
@@ -209,6 +215,7 @@ void GameScene::createFatTile(const Tile& tile)
 	{
 		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			movableTex);
+		movable.AddTag<Tag_Tile>();
 		auto& transform = movable.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = -Values::TileSide;
@@ -226,6 +233,7 @@ void GameScene::createTankFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), tankFatTex,
 			SKELETON("Fat.skel"));
+		fat.AddTag<Tag_Tile>();
 		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
@@ -234,9 +242,10 @@ void GameScene::createTankFatTile(const Tile& tile)
 	}
 
 	{
-		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		Entity rail = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			railTex);
-		auto& transform = movable.GetComponent<TransformComponent>();
+		rail.AddTag<Tag_Tile>();
+		auto& transform = rail.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = -Values::TileSide;
 		transform.Position.z = tile.Z;
@@ -249,6 +258,7 @@ void GameScene::createScarTile(const Tile& tile)
 
 	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 		tileTex);
+	obj.AddTag<Tag_Tile>();
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;

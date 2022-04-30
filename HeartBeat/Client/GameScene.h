@@ -22,7 +22,7 @@ public:
     void SetDirection(const Vector3& direction) { mDirection = direction; }
 
 private:
-    void createMap();
+    void createMap(string_view mapFile);
     void createTile(const Tile& tile);
     void createBlockedTile(const Tile& tile);
     void createMovableTile(const Tile& tile);

@@ -16,24 +16,38 @@ struct Tile
 	float Z = 0.0f;
 };
 
+struct Map
+{
+	string FileName = ""s;
+	UINT32 MaxRow = 0;
+	UINT32 MaxCol = 0;
+	vector<Tile> Tiles;
+};
+
 class GameMap
 {
 public:
 	GameMap() = default;
 
-	void LoadMap(string_view mapFile);
-	void Unload();
+	/*
+	* Map └╬╡ж╜║ ▒╕┴╢
+	* 6 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 5 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 4 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 3 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 2 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 1 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	* 0 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
+	*   0  1  2  3  4  5  6  7  8  9
+	*/
+	void LoadMap(string_view path);
 
-	const vector<Tile>& GetTiles() const { return mTiles; }
+	void Unload(string_view fileName);
 
-	uint32 GetMaxRow() const { return mMaxRow; }
-	uint32 GetMaxCol() const { return mMaxCol; }
+	const Map& GetMap(string_view fileName) const;
 
 private:
-	vector<Tile> mTiles;
-
-	uint32 mMaxRow = 0;
-	uint32 mMaxCol = 0;
+	vector<Map> mMaps;
 };
 
 extern GameMap gGameMap;
