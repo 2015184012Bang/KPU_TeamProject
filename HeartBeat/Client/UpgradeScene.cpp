@@ -95,7 +95,9 @@ void UpgradeScene::Update(float deltaTime)
 	// 시작할 시간이 되면 서버에 통지.
 	// 방장이 대표로 서버에 패킷 송신.
 	// 패킷을 여러 번 보내는 걸 막기 위해 bool 변수를 하나 두었다.
-	if (mElapsed > SECS_TO_START && !mbSendEnterPacket)
+	if (mOwner->GetClientID() == HOST_ID 
+		&& mElapsed > SECS_TO_START 
+		&& !mbSendEnterPacket)
 	{
 		mbSendEnterPacket = true;
 

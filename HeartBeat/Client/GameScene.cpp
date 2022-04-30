@@ -193,7 +193,7 @@ void GameScene::createFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), fatTex,
 			SKELETON("Fat.skel"));
-		fat.AddComponent<IDComponent>(gEntityID++);
+		fat.AddComponent<IDComponent>(gEntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -221,7 +221,7 @@ void GameScene::createTankFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), tankFatTex,
 			SKELETON("Fat.skel"));
-		fat.AddComponent<IDComponent>(gEntityID++);
+		fat.AddComponent<IDComponent>(gEntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;

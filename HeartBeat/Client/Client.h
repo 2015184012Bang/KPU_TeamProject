@@ -14,6 +14,8 @@ using namespace std::string_literals;
 
 extern UINT32 gEntityID;
 
+constexpr int HOST_ID = 2;
+
 class Client :
     public Game
 {

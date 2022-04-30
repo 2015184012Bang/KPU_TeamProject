@@ -8,7 +8,6 @@ class Texture;
 
 class LobbyScene : public Scene
 {
-	const int HOST_ID = 2;
 	const float WIDTH_BETWEEN_CHARACTERS = 700.0f;
 	const int START_BUTTON_WIDTH = 200;
 	const int START_BUTTON_HEIGHT = 100;
