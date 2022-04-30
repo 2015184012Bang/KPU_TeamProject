@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include "GameManager.h"
 #include "Timer.h"
+#include "Values.h"
 
 CombatSystem::CombatSystem(shared_ptr<GameManager>&& gm)
 	: mGameManager(move(gm))
@@ -49,7 +50,7 @@ void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
 		break;
 	}
 
-	combat.BaseAttackCooldown = gBaseAttackCooldown;
+	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
 }
 
 bool CombatSystem::CanBaseAttack(const UINT32 eid)

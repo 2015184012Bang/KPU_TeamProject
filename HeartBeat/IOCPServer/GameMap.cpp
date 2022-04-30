@@ -2,6 +2,7 @@
 #include "GameMap.h"
 
 #include "GameManager.h"
+#include "Values.h"
 #include <rapidcsv.h>
 
 
@@ -22,8 +23,8 @@ void GameMap::LoadMap(string_view path)
 		for (UINT32 col = 0; col < gameMap.MaxCol; ++col)
 		{
 			gameMap.Tiles.emplace_back(static_cast<TileType>(tileTypes[col]),
-				col * gTileSide,
-				row * gTileSide);
+				col * Values::TileSide,
+				row * Values::TileSide);
 		}
 	}
 

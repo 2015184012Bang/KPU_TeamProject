@@ -6,6 +6,7 @@
 #include "Tags.h"
 #include "Protocol.h"
 #include "GameManager.h"
+#include "Values.h"
 
 CollisionSystem::CollisionSystem(shared_ptr<GameManager>&& gm)
 	: mGameManager(move(gm))
@@ -13,7 +14,7 @@ CollisionSystem::CollisionSystem(shared_ptr<GameManager>&& gm)
 	// 플레이어가 공격할 때 사용할 히트박스 생성
 	Box hitbox;
 	hitbox.SetMin(Vector3{ -100.0f, 0.0f, 0.0f });
-	hitbox.SetMax(Vector3{ 100.0f, 0.0f, gBaseAttackRange });
+	hitbox.SetMax(Vector3{ 100.0f, 0.0f, Values::BaseAttackRange });
 	Box::SetBox(hitbox, "Hitbox");
 }
 

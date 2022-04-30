@@ -8,14 +8,6 @@
 #include "CollisionSystem.h"
 #include "GameMap.h"
 
-extern float gTileSide;
-extern float gPlayerSpeed;
-extern float gBaseAttackCooldown;
-extern float gBaseAttackRange;
-extern float gTankSpeed;
-extern INT32 gTankMaxHealth;
-extern UINT32 gEntityID;;
-
 class GameManager : public enable_shared_from_this<GameManager>
 {
 public:
@@ -39,8 +31,6 @@ public:
 	void SendToAll(const INT32 packetSize, char* packet);
 
 private:
-	void loadValuesFromXML(string_view fileName);
-
 	void initSystems();
 
 	void swapQueues();

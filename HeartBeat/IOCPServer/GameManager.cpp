@@ -4,26 +4,15 @@
 
 #include "Box.h"
 #include "Entity.h"
-#include "tinyxml2.h"
 #include "Tags.h"
 #include "Random.h"
-
-float gTileSide;
-float gPlayerSpeed;
-float gBaseAttackCooldown;
-float gBaseAttackRange;
-float gTankSpeed;
-INT32 gTankMaxHealth;
-UINT32 gEntityID = 3;
+#include "Values.h"
 
 float GetTileYPos(TileType ttype);
 void AddTagToTile(Entity& tile, TileType ttype);
 
 void GameManager::Init(const UINT32 maxSessionCount)
 {
-	// XML 파일에서 여러 변수 값 읽어오기
-	loadValuesFromXML("settings.xml");
-
 	// 패킷 처리 함수들 등록
 	mPacketIdToFunction[SYS_USER_CONNECT] = std::bind(&GameManager::processUserConnect, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
@@ -42,21 +31,22 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
-	// 유저 매니저 생성
-	mUserManager = make_unique<UserManager>();
-	mUserManager->Init(maxSessionCount);
-
 	// Back은 IO 워커 스레드들이 패킷을 쓰는 큐를 가리킴.
 	// Front는 로직 스레드가 처리할 패킷을 담은 큐.
 	mBackPacketQueue = &mPacketQueueA;
 	mFrontPacketQueue = &mPacketQueueB;
 
+	Values::Init();
 	Timer::Init();
 	Random::Init();
 	Box::Init();
 
 	// 시스템 생성
 	initSystems();
+
+	// 유저 매니저 생성
+	mUserManager = make_unique<UserManager>();
+	mUserManager->Init(maxSessionCount);
 
 	// 게임 맵 생성
 	mGameMap = make_unique<GameMap>();
@@ -94,45 +84,6 @@ void GameManager::PushSystemPacket(PACKET_INFO packet)
 {
 	WriteLockGuard guard(mLock);
 	mBackPacketQueue->push(packet);
-}
-
-void GameManager::loadValuesFromXML(string_view fileName)
-{
-	tinyxml2::XMLDocument doc;
-	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
-	ASSERT(error == tinyxml2::XML_SUCCESS, "Failed to read xml file: {0}", fileName.data());
-
-	auto root = doc.RootElement();
-
-	// 타일 한 변의 길이
-	auto elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
-	string tileSide = elem->GetText();
-	gTileSide = stof(tileSide);
-
-	// 플레이어 이동 속도
-	elem = elem->NextSiblingElement();
-	string playerSpeed = elem->GetText();
-	gPlayerSpeed = stof(playerSpeed);
-
-	// 기본 공격 재사용 대기 시간
-	elem = elem->NextSiblingElement();
-	string baCooldown = elem->GetText();
-	gBaseAttackCooldown = stof(baCooldown);
-
-	// 기본 공격 전방 사거리
-	elem = elem->NextSiblingElement();
-	string baRange = elem->GetText();
-	gBaseAttackRange = stof(baRange);
-
-	// 탱크 이동 속도
-	elem = elem->NextSiblingElement();
-	string tankSpeed = elem->GetText();
-	gTankSpeed = stof(tankSpeed);
-
-	// 탱크 최대 체력
-	elem = elem->NextSiblingElement();
-	string tankHealth = elem->GetText();
-	gTankMaxHealth = stoi(tankHealth);
 }
 
 void GameManager::initSystems()
@@ -412,13 +363,13 @@ void GameManager::createMapTiles(string_view mapFile)
 void GameManager::createTankAndCart()
 {
 	Entity tank = Entity{ gRegistry.create() };
-	auto& id = tank.AddComponent<IDComponent>(gEntityID++);
+	auto& id = tank.AddComponent<IDComponent>(Values::EntityID++);
 	tank.AddComponent<NameComponent>("Tank");
 	auto& transform = tank.AddComponent<TransformComponent>();
-	tank.AddComponent<MovementComponent>(Vector3::Zero, gTankSpeed);
+	tank.AddComponent<MovementComponent>(Vector3::Zero, Values::TankSpeed);
 	tank.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Tank.box"),
 		transform.Position, transform.Yaw);
-	tank.AddComponent<HealthComponent>(gTankMaxHealth);
+	tank.AddComponent<HealthComponent>(Values::TankHealth);
 
 	NOTIFY_CREATE_ENTITY_PACKET packet = {};
 	packet.EntityID = id.ID;
@@ -442,7 +393,7 @@ float GetTileYPos(TileType ttype)
 	case TileType::MOVABLE:
 	case TileType::RAIL:
 	case TileType::SCAR:
-		return -gTileSide;
+		return -Values::TileSide;
 
 	default:
 		ASSERT(false, "Unknown tile type!");
@@ -465,7 +416,7 @@ void AddTagToTile(Entity& tile, TileType ttype)
 		tile.AddTag<Tag_Blocked>();
 		tile.AddTag<Tag_Breakable>();
 		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
-		tile.AddComponent<IDComponent>(gEntityID++);			   // FAT은 파괴됐다는 사실을 클라에게 알려줘야 하므로 아이디 부여
+		tile.AddComponent<IDComponent>(Values::EntityID++);			   // FAT은 파괴됐다는 사실을 클라에게 알려줘야 하므로 아이디 부여
 		break;
 
 	case TileType::MOVABLE:

@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Tags.h"
 #include "GameManager.h"
+#include "Values.h"
 
 User::~User()
 {
@@ -45,7 +46,7 @@ void User::SetLogin(string_view userName)
 	auto& transform = mCharacter.AddComponent<TransformComponent>();
 	mCharacter.AddComponent<IDComponent>(mIndex);
 	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
-	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, gPlayerSpeed);
+	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
 	mCharacter.AddComponent<CombatComponent>();
 	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
 		transform.Position, transform.Yaw);
