@@ -278,8 +278,8 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 
 	SendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
 
-	// 게임이 시작되면, 서버에서도 맵 타일을 생성한다.
-	createMapTiles();
+	// 해당하는 맵 파일로 스테이지 초기화
+	initStage("../Assets/Maps/Map01.csv");
 }
 
 void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -371,11 +371,18 @@ void GameManager::SendToAll(const INT32 packetSize, char* packet)
 	}
 }
 
-void GameManager::createMapTiles()
+void GameManager::initStage(string_view mapFile)
 {
-	const auto& tiles = mGameMap->GetTiles();
+	// 맵 생성
+	createMapTiles(mapFile);
+}
 
-	for (const auto& tile : tiles)
+
+void GameManager::createMapTiles(string_view mapFile)
+{
+	const auto& gameMap = mGameMap->GetMap(mapFile);
+
+	for (const auto& tile : gameMap.Tiles)
 	{
 		Entity obj = Entity{ gRegistry.create() };
 		AddTagToTile(obj, tile.TType);
@@ -422,7 +429,7 @@ void AddTagToTile(Entity& tile, TileType ttype)
 		tile.AddTag<Tag_Blocked>();
 		tile.AddTag<Tag_Breakable>();
 		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
-		tile.AddComponent<IDComponent>(gEntityID++);
+		tile.AddComponent<IDComponent>(gEntityID++);			   // FAT은 파괴됐다는 사실을 클라에게 알려줘야 하므로 아이디 부여
 		break;
 
 	case TileType::MOVABLE:

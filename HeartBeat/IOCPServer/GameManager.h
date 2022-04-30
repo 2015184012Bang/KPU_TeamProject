@@ -57,8 +57,11 @@ private:
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 
+	// 스테이지 초기화 함수
+	void initStage(string_view mapFile);
+
 	// 맵을 이루는 타일 엔티티 생성
-	void createMapTiles();
+	void createMapTiles(string_view mapFile);
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
