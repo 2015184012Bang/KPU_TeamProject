@@ -5,6 +5,7 @@
 
 #include "Application.h"
 #include "Client.h"
+#include "Define.h"
 #include "Input.h"
 #include "LobbyScene.h"
 #include "PacketManager.h"
@@ -53,7 +54,7 @@ void LoginScene::Update(float deltaTime)
 	// 엔터 키를 누르면 서버에 접속 요청
 	if (Input::IsButtonPressed(KeyCode::RETURN) && !mbConnected)
 	{
-		bool retVal = mOwner->GetPacketManager()->Connect(mOwner->ServerIP, mOwner->ServerPort);
+		bool retVal = mOwner->GetPacketManager()->Connect(Values::ServerIP, Values::ServerPort);
 
 		if (retVal)
 		{

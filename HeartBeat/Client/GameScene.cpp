@@ -3,6 +3,7 @@
 
 #include "Client.h"
 #include "Components.h"
+#include "Define.h"
 #include "PacketManager.h"
 #include "Input.h"
 #include "Random.h"
@@ -156,7 +157,7 @@ void GameScene::createBlockedTile(const Tile& tile)
 			tileTex);
 		auto& transform = down.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
-		transform.Position.y = -gTileWidth;
+		transform.Position.y = -Values::TileSide;
 		transform.Position.z = tile.Z;
 	}
 }
@@ -170,7 +171,7 @@ void GameScene::createMovableTile(const Tile& tile)
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
-	transform.Position.y = -gTileWidth;
+	transform.Position.y = -Values::TileSide;
 	transform.Position.z = tile.Z;
 }
 
@@ -183,7 +184,7 @@ void GameScene::createRailTile(const Tile& tile)
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
-	transform.Position.y = -gTileWidth;
+	transform.Position.y = -Values::TileSide;
 	transform.Position.z = tile.Z;
 }
 
@@ -197,7 +198,7 @@ void GameScene::createFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), fatTex,
 			SKELETON("Fat.skel"));
-		fat.AddComponent<IDComponent>(gEntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
+		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -210,7 +211,7 @@ void GameScene::createFatTile(const Tile& tile)
 			movableTex);
 		auto& transform = movable.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
-		transform.Position.y = -gTileWidth;
+		transform.Position.y = -Values::TileSide;
 		transform.Position.z = tile.Z;
 	}
 }
@@ -225,7 +226,7 @@ void GameScene::createTankFatTile(const Tile& tile)
 	{
 		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), tankFatTex,
 			SKELETON("Fat.skel"));
-		fat.AddComponent<IDComponent>(gEntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
+		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
 		auto& transform = fat.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -237,7 +238,7 @@ void GameScene::createTankFatTile(const Tile& tile)
 			railTex);
 		auto& transform = movable.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
-		transform.Position.y = -gTileWidth;
+		transform.Position.y = -Values::TileSide;
 		transform.Position.z = tile.Z;
 	}
 }
@@ -251,7 +252,7 @@ void GameScene::createScarTile(const Tile& tile)
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
-	transform.Position.y = -gTileWidth;
+	transform.Position.y = -Values::TileSide;
 	transform.Position.z = tile.Z;
 }
 
@@ -381,7 +382,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
 			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID);
 		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		tank.AddComponent<MovementComponent>(gTankSpeed);
+		tank.AddComponent<MovementComponent>(Values::TankSpeed);
 		auto& animator = tank.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
 	}

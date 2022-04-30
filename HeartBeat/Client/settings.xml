@@ -4,9 +4,6 @@
     <Port>9000</Port>
     <IP>127.0.0.1</IP>
   </Server>
-  <GameMap>
-    <FileName>../Assets/Maps/Map01.csv</FileName>
-  </GameMap>
   <Values>
     <TileSide>400</TileSide>
     <PlayerSpeed>600</PlayerSpeed>

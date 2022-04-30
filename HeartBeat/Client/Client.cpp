@@ -47,8 +47,9 @@ bool Client::Init()
 	Timer::Init();
 	SoundManager::Init();
 	Random::Init();
+	Values::Init();
 
-	loadSettingsFromXML("settings.xml");
+	gGameMap.LoadMap("../Assets/Maps/Map01.csv");
 
 	mPacketManager = std::make_unique<PacketManager>();
 	mPacketManager->Init();
@@ -230,47 +231,6 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 {
 	mFollowCameraTarget = target;
 	mTargetOffset = offset;
-}
-
-void Client::loadSettingsFromXML(string_view fileName)
-{
-	tinyxml2::XMLDocument doc;
-	tinyxml2::XMLError error = doc.LoadFile(fileName.data());
-
-	HB_ASSERT(error == tinyxml2::XML_SUCCESS, "Failed to read xml file: {0}", fileName.data());
-
-	auto root = doc.RootElement();
-	
-	// 서버 포트 번호 읽기
-	auto elem = root->FirstChildElement("Server")->FirstChildElement("Port");
-	string port = elem->GetText();
-	ServerPort = std::stoi(port);
-
-	// 서버 IP 주소 읽기
-	elem = elem->NextSiblingElement();
-	ServerIP = elem->GetText();
-
-	// 타일 크기
-	elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
-	string tileSide = elem->GetText();
-	gTileWidth = stof(tileSide);
-
-	// 플레이어 이동 속도
-	elem = elem->NextSiblingElement();
-	string playerSpeed = elem->GetText();
-	gPlayerSpeed = stof(playerSpeed);
-
-	// 탱크 이동 속도
-	elem = elem->NextSiblingElement();
-	string tankSpeed = elem->GetText();
-	gTankSpeed = stof(tankSpeed);
-
-	// 맵 파일 이름 읽어 로드하기
-	// [주의] 타일 크기를 먼저 읽은 후에 로드해야 한다.
-	elem = root->FirstChildElement("GameMap")->FirstChildElement("FileName");
-	string mapFile = elem->GetText();
-	gGameMap.LoadMap(mapFile);
-
 }
 
 void Client::processInput()

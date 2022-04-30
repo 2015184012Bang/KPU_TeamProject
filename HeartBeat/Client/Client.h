@@ -12,10 +12,6 @@ class Font;
 
 using namespace std::string_literals;
 
-extern UINT32 gEntityID;
-
-constexpr int HOST_ID = 2;
-
 class Client :
     public Game
 {
@@ -43,9 +39,6 @@ public:
     // MainCamera가 target을 따라다니도록 한다.
     void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
 
-    UINT16 ServerPort = 0;
-    string ServerIP = {};
-
 public:
 	int GetClientID() const { return mClientID; }
 	void SetClientID(int id) { mClientID = id; }
@@ -57,8 +50,6 @@ public:
     Entity& GetMainCamera() { return mMainCamera; }
 
 private:
-    void loadSettingsFromXML(string_view fileName);
-
     void processInput();
     void update();
     void render();

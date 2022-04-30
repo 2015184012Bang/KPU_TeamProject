@@ -12,6 +12,7 @@
 #include "Utils.h"
 #include "UpgradeScene.h"
 #include "Tags.h"
+#include "Define.h"
 
 
 LobbyScene::LobbyScene(Client* owner)
@@ -26,7 +27,7 @@ void LobbyScene::Enter()
 
 	// 클라이언트가 만일 호스트라면
 	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
-	if (HOST_ID == myClientID)
+	if (Values::HostID == myClientID)
 	{
 		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE("Start_Button.png"));
 		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
@@ -98,7 +99,7 @@ void LobbyScene::createCharacterMesh(int clientID)
 	// ex. 플레이어 캐릭터, 적, NPC... 등
 	// 플레이어 캐릭터의 아이디는 본인의 클라이언트 아이디를 대입한다.
 	character.AddComponent<IDComponent>(clientID);
-	character.AddComponent<MovementComponent>(gPlayerSpeed);
+	character.AddComponent<MovementComponent>(Values::PlayerSpeed);
 
 	// [주의] Character 스크립트는 MovementComponent 먼저 넣고 부착해야 한다.
 	character.AddComponent<ScriptComponent>(std::make_shared<Character>(character));
