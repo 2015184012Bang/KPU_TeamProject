@@ -37,7 +37,6 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mBackPacketQueue = &mPacketQueueA;
 	mFrontPacketQueue = &mPacketQueueB;
 
-	Values::Init();
 	Timer::Init();
 	Random::Init();
 	Box::Init();

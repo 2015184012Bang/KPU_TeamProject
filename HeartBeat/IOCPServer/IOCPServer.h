@@ -45,8 +45,6 @@ private:
 
 	void closeSession(Session* session, bool bForce = false);
 
-	UINT16 getPortNumber(string_view fileName);
-
 private:
 	vector<Session*> mSessions;
 

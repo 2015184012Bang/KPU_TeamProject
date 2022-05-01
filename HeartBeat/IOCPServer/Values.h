@@ -9,7 +9,7 @@ class Values
 public:
 	static void Init()
 	{
-		string fileName = "settings.xml";
+		string fileName = "Server.xml";
 
 		tinyxml2::XMLDocument doc;
 		tinyxml2::XMLError error = doc.LoadFile(fileName.data());
@@ -17,8 +17,12 @@ public:
 
 		auto root = doc.RootElement();
 
+		auto elem = root->FirstChildElement("Server")->FirstChildElement("Port");
+		string port = elem->GetText();
+		Values::ServerPort = stoi(port);
+
 		// 타일 한 변의 길이
-		auto elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
+		elem = root->FirstChildElement("Values")->FirstChildElement("TileSide");
 		string tileSide = elem->GetText();
 		Values::TileSide = stof(tileSide);
 
@@ -48,6 +52,7 @@ public:
 		Values::TankHealth = stoi(tankHealth);
 	}
 
+	static UINT16 ServerPort;
 	static float TileSide;
 	static float PlayerSpeed;
 	static float BaseAttackCooldown;
@@ -57,6 +62,7 @@ public:
 	static UINT32 EntityID;
 };
 
+__declspec(selectany) UINT16 Values::ServerPort = 0;
 __declspec(selectany) float Values::TileSide = 0.0f;
 __declspec(selectany) float Values::PlayerSpeed = 0.0f;
 __declspec(selectany) float Values::BaseAttackCooldown = 0.0f;
