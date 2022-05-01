@@ -358,11 +358,6 @@ void Client::updateMovement(float deltaTime)
 	auto view = GetRegistry().view<MovementComponent, TransformComponent>();
 	for (auto [entity, movement, transform] : view.each())
 	{
-		if (movement.Direction == Vector3::Zero)
-		{
-			continue;
-		}
-
 		Vector3 toward = transform.Position + movement.Direction * movement.MaxSpeed * deltaTime;
 		Helpers::UpdatePosition(&transform.Position, toward, &transform.bDirty);
 
@@ -374,6 +369,13 @@ void Client::updateMovement(float deltaTime)
 		if (movement.Direction.x < 0.0f)
 		{
 			scalar = -1.0f;
+		}
+
+		float yaw = XMConvertToDegrees(rotation.y);
+
+		if (isnan(yaw))
+		{
+			continue;
 		}
 
 		Helpers::UpdateYRotation(&transform.Rotation.y, scalar * XMConvertToDegrees(rotation.y), &transform.bDirty);
