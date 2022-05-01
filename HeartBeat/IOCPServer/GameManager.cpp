@@ -116,10 +116,14 @@ void GameManager::logicThread()
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
 		}
 
-		mMovementSystem->Update();
-		mCombatSystem->Update();
+		// 시스템 업데이트
 		mScriptSystem->Update();
+		mCombatSystem->Update();
+		mMovementSystem->Update();
 		mCollisionSystem->Update();
+
+		// 엔티티들의 변경된 위치 송신
+		mMovementSystem->SendNotifyMovePackets();
 
 		while (duration_cast<milliseconds>(high_resolution_clock::now() - start).count() < 33);
 
@@ -374,6 +378,7 @@ void GameManager::createTankAndCart()
 		transform.Position, transform.Yaw);
 	tank.AddComponent<HealthComponent>(Values::TankHealth);
 	tank.AddComponent<ScriptComponent>(make_shared<Tank>(tank));
+	tank.AddTag<Tag_Tank>();
 
 	NOTIFY_CREATE_ENTITY_PACKET packet = {};
 	packet.EntityID = id.ID;

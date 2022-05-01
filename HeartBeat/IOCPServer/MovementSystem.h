@@ -11,6 +11,8 @@ public:
 
 	void SetDirection(const UINT32 eid, const Vector3& direction);
 
+	void SendNotifyMovePackets();
+
 private:
 	shared_ptr<GameManager> mGameManager = nullptr;
 };

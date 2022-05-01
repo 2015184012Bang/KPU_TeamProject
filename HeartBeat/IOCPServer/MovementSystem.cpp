@@ -50,3 +50,21 @@ void MovementSystem::SetDirection(const UINT32 eid, const Vector3& direction)
 	auto& transform = actor.GetComponent<TransformComponent>();
 	transform.Yaw = scalar * XMConvertToDegrees(rotation.y);
 }
+
+void MovementSystem::SendNotifyMovePackets()
+{
+	auto tank = GetEntityByName("Tank");
+
+	if (!tank)
+	{
+		return;
+	}
+
+	NOTIFY_MOVE_PACKET packet = {};
+	packet.PacketID = NOTIFY_MOVE;
+	packet.PacketSize = sizeof(packet);
+	packet.EntityID = tank.GetComponent<IDComponent>().ID;
+	packet.Direction = tank.GetComponent<MovementComponent>().Direction;
+	packet.Position = tank.GetComponent<TransformComponent>().Position;
+	mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+}

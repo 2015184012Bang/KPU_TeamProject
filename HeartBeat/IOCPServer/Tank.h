@@ -11,14 +11,15 @@ public:
 
 	virtual void Start() override
 	{
-		LOG("Tank Start!");
+		movement = &GetComponent<MovementComponent>();
+		movement->Direction = Vector3::UnitZ;
 	}
 
 	virtual void Update() override
 	{
-		LOG("Tank Update...");
+
 	}
 
 private:
-
+	MovementComponent* movement = nullptr;
 };
