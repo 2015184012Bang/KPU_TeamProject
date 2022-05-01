@@ -8,6 +8,8 @@ enum class TileType
 	FAT,
 	TANK_FAT,
 	SCAR,
+	START_POINT,
+	END_POINT,
 	END
 };
 

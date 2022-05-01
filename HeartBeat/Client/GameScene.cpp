@@ -117,6 +117,8 @@ void GameScene::createTile(const Tile& tile)
 		break;
 
 	case TileType::RAIL:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
 		createRailTile(tile);
 		break;
 
@@ -446,6 +448,8 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("LightGreen.png");
 
 	case TileType::RAIL:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
 		return TEXTURE("Brown.png");
 
 	case TileType::FAT:

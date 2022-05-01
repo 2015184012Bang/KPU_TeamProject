@@ -3,7 +3,9 @@
 
 #include "Entity.h"
 #include "Timer.h"
+#include "Tags.h"
 #include "GameManager.h"
+#include "Random.h"
 
 MovementSystem::MovementSystem(shared_ptr<GameManager>&& gm)
 	: mGameManager(move(gm))
@@ -67,4 +69,33 @@ void MovementSystem::SendNotifyMovePackets()
 	packet.Direction = tank.GetComponent<MovementComponent>().Direction;
 	packet.Position = tank.GetComponent<TransformComponent>().Position;
 	mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+}
+
+void MovementSystem::SetPlayersStartPos()
+{
+	// START_POINT 타일 가져오기
+	auto startTile = GetEntityByName("StartPoint");
+	ASSERT(startTile, "There is no start point.");
+	const auto& startPos = startTile.GetComponent<TransformComponent>().Position;
+
+	auto view = gRegistry.view<Tag_Player, TransformComponent, IDComponent>();
+
+	for (auto [entity, transform, id] : view.each())
+	{
+		transform.Position = Vector3{
+			startPos.x + id.ID * 300.0f,
+			transform.Position.y,
+			startPos.z + id.ID * 300.0f
+		};
+
+		Entity player = Entity{ entity };
+		NOTIFY_MOVE_PACKET packet = {};
+		packet.Direction = player.GetComponent<MovementComponent>().Direction;
+		packet.EntityID = id.ID;
+		packet.PacketID = NOTIFY_MOVE;
+		packet.PacketSize = sizeof(packet);
+		packet.Position = transform.Position;
+
+		mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
 }

@@ -348,6 +348,9 @@ void GameManager::initStage(string_view mapFile)
 
 	// 탱크 및 수레 생성
 	createTankAndCart();
+
+	// 플레이어들 시작 위치로 변경
+	mMovementSystem->SetPlayersStartPos();
 }
 
 
@@ -402,6 +405,8 @@ float GetTileYPos(TileType ttype)
 	case TileType::MOVABLE:
 	case TileType::RAIL:
 	case TileType::SCAR:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
 		return -Values::TileSide;
 
 	default:
@@ -416,22 +421,38 @@ void AddTagToTile(Entity& tile, TileType ttype)
 	{
 	case TileType::BLOCKED:
 		tile.AddTag<Tag_Tile>();
-		tile.AddTag<Tag_Blocked>();
+		tile.AddTag<Tag_BlockingTile>();
 		break;
 
 	case TileType::FAT:
 	case TileType::TANK_FAT:
 		tile.AddTag<Tag_Tile>();
-		tile.AddTag<Tag_Blocked>();
-		tile.AddTag<Tag_Breakable>();
+		tile.AddTag<Tag_BlockingTile>();
+		tile.AddTag<Tag_BreakableTile>();
 		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
 		tile.AddComponent<IDComponent>(Values::EntityID++);			   // FAT은 파괴됐다는 사실을 클라에게 알려줘야 하므로 아이디 부여
 		break;
 
 	case TileType::MOVABLE:
-	case TileType::RAIL:
 	case TileType::SCAR:
 		tile.AddTag<Tag_Tile>();
+		break;
+
+	case TileType::RAIL:
+		tile.AddTag<Tag_Tile>();
+		tile.AddTag<Tag_RailTile>();
+		break;
+
+	case TileType::START_POINT:
+		tile.AddTag<Tag_Tile>();
+		tile.AddTag<Tag_RailTile>();
+		tile.AddComponent<NameComponent>("StartPoint");
+		break;
+
+	case TileType::END_POINT:
+		tile.AddTag<Tag_Tile>();
+		tile.AddTag<Tag_RailTile>();
+		tile.AddComponent<NameComponent>("EndPoint");
 		break;
 
 	default:

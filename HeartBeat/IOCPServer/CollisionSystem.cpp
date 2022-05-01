@@ -46,7 +46,7 @@ bool CollisionSystem::DoAttack(const INT32 sessionIndex)
 	Box hitbox = Box::GetBox("Hitbox");
 	hitbox.Update(transform.Position, transform.Yaw);
 
-	auto tiles = gRegistry.view<Tag_Breakable, BoxComponent>();
+	auto tiles = gRegistry.view<Tag_BreakableTile, BoxComponent>();
 	for (auto [entity, tileBox] : tiles.each())
 	{
 		if (Intersects(hitbox, tileBox.WorldBox))
@@ -79,7 +79,7 @@ bool CollisionSystem::DoAttack(const INT32 sessionIndex)
 void CollisionSystem::checkPlayerAndTile()
 {
 	auto players = gRegistry.view<Tag_Player, BoxComponent>();
-	auto blockingTiles = gRegistry.view<Tag_Blocked, BoxComponent>();
+	auto blockingTiles = gRegistry.view<Tag_BlockingTile, BoxComponent>();
 
 	for (auto [pEnt, playerBox] : players.each())
 	{

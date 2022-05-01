@@ -13,6 +13,8 @@ public:
 
 	void SendNotifyMovePackets();
 
+	void SetPlayersStartPos();
+
 private:
 	shared_ptr<GameManager> mGameManager = nullptr;
 };

@@ -16,6 +16,11 @@ enum class TileType : uint8
 	FAT,
 	TANK_FAT,
 	SCAR,
+
+	// 클라이언트의 경우 START_POINT 타일과 END_POINT 타일은
+	// 그냥 RAIL 타일 취급하면 된다. 서버와 맵 파일을 공유하기 위해서 넣었다.
+	START_POINT,
+	END_POINT,
 	END
 };
 
