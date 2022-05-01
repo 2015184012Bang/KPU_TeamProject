@@ -76,6 +76,9 @@
     <ClCompile Include="Random.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -142,6 +145,9 @@
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Values.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
