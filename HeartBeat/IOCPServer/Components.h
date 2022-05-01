@@ -2,6 +2,8 @@
 
 #include "Box.h"
 
+class Script;
+
 struct IDComponent
 {
 	IDComponent() = default;
@@ -64,4 +66,13 @@ struct HealthComponent
 	HealthComponent(const UINT8 health);
 
 	UINT8 Health = 0;
+};
+
+struct ScriptComponent
+{
+	ScriptComponent() = default;
+	ScriptComponent(shared_ptr<Script>&& script) noexcept;
+
+	shared_ptr<Script> NativeScript = nullptr;
+	bool bInitialized = false;
 };

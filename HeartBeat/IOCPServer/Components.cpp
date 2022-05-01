@@ -54,3 +54,9 @@ HealthComponent::HealthComponent(const UINT8 health)
 {
 
 }
+
+ScriptComponent::ScriptComponent(shared_ptr<Script>&& script) noexcept
+	: NativeScript(move(script))
+{
+
+}

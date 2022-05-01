@@ -174,6 +174,7 @@
     </ClCompile>
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Script.cpp" />
+    <ClCompile Include="ScriptSystem.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
@@ -196,9 +197,11 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Script.h" />
+    <ClInclude Include="ScriptSystem.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="Protocol.h" />
     <ClInclude Include="Tags.h" />
+    <ClInclude Include="Tank.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="User.h" />

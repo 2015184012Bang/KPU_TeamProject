@@ -6,6 +6,7 @@
 #include "MovementSystem.h"
 #include "CombatSystem.h"
 #include "CollisionSystem.h"
+#include "ScriptSystem.h"
 #include "GameMap.h"
 
 class GameManager : public enable_shared_from_this<GameManager>
@@ -83,6 +84,7 @@ private:
 	unique_ptr<MovementSystem> mMovementSystem = nullptr;
 	unique_ptr<CombatSystem> mCombatSystem = nullptr;
 	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
+	unique_ptr<ScriptSystem> mScriptSystem = nullptr;
 
 	// ∞‘¿” ∏ 
 	unique_ptr<GameMap> mGameMap = nullptr;

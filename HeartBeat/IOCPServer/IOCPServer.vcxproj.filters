@@ -17,6 +17,9 @@
     <Filter Include="Source Files\ECS">
       <UniqueIdentifier>{c9533316-e293-4f19-aaa9-17652504b603}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Scripts">
+      <UniqueIdentifier>{0f557c98-240c-43a6-98f4-8f6766f293b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -78,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptSystem.cpp">
+      <Filter>Source Files\ECS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +155,12 @@
     </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptSystem.h">
+      <Filter>Source Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>Source Files\Scripts</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

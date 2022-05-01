@@ -7,6 +7,7 @@
 #include "Tags.h"
 #include "Random.h"
 #include "Values.h"
+#include "Tank.h"
 
 float GetTileYPos(TileType ttype);
 void AddTagToTile(Entity& tile, TileType ttype);
@@ -91,6 +92,7 @@ void GameManager::initSystems()
 	mMovementSystem = make_unique<MovementSystem>(shared_from_this());
 	mCombatSystem = make_unique<CombatSystem>(shared_from_this());
 	mCollisionSystem = make_unique<CollisionSystem>(shared_from_this());
+	mScriptSystem = make_unique<ScriptSystem>(shared_from_this());
 }
 
 void GameManager::swapQueues()
@@ -116,6 +118,7 @@ void GameManager::logicThread()
 
 		mMovementSystem->Update();
 		mCombatSystem->Update();
+		mScriptSystem->Update();
 		mCollisionSystem->Update();
 
 		while (duration_cast<milliseconds>(high_resolution_clock::now() - start).count() < 33);
@@ -370,6 +373,7 @@ void GameManager::createTankAndCart()
 	tank.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Tank.box"),
 		transform.Position, transform.Yaw);
 	tank.AddComponent<HealthComponent>(Values::TankHealth);
+	tank.AddComponent<ScriptComponent>(make_shared<Tank>(tank));
 
 	NOTIFY_CREATE_ENTITY_PACKET packet = {};
 	packet.EntityID = id.ID;
