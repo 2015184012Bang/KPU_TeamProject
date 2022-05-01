@@ -366,7 +366,24 @@ void GameManager::createMapTiles(string_view mapFile)
 		auto& transform = obj.AddComponent<TransformComponent>();
 		transform.Position = { tile.X, GetTileYPos(tile.TType), tile.Z };
 
-		obj.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
+		// 충돌 처리가 필요한 타일의 경우에만 BoxComponent를 부착
+		if(tile.TType == TileType::BLOCKED ||
+			tile.TType == TileType::FAT ||
+			tile.TType == TileType::TANK_FAT)
+		{
+			obj.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
+		}
+
+		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
+		// 탱크가 경로 인식이 가능하다.
+		if (tile.TType == TileType::TANK_FAT)
+		{
+			Entity railUnder = Entity{ gRegistry.create() };
+			AddTagToTile(railUnder, TileType::RAIL);
+
+			auto& railTransform = railUnder.AddComponent<TransformComponent>();
+			railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		}
 	}
 }
 
