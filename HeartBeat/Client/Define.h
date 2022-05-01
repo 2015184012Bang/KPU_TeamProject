@@ -46,7 +46,7 @@ class Values
 public:
 	static void Init()
 	{
-		string fileName = "settings.xml";
+		string fileName = "Client.xml";
 
 		tinyxml2::XMLDocument doc;
 		tinyxml2::XMLError error = doc.LoadFile(fileName.data());

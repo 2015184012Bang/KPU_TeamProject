@@ -445,7 +445,7 @@ void AddTagToTile(Entity& tile, TileType ttype)
 		tile.AddTag<Tag_Tile>();
 		tile.AddTag<Tag_BlockingTile>();
 		tile.AddTag<Tag_BreakableTile>();
-		tile.AddComponent<HealthComponent>(Random::RandInt(1, 5)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
+		tile.AddComponent<HealthComponent>(Random::RandInt(1, 3)); // FAT 종류는 부술 수 있으므로 체력 컴포넌트 부착
 		tile.AddComponent<IDComponent>(Values::EntityID++);			   // FAT은 파괴됐다는 사실을 클라에게 알려줘야 하므로 아이디 부여
 		break;
 
