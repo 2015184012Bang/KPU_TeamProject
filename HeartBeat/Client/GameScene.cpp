@@ -11,6 +11,7 @@
 #include "SoundManager.h"
 #include "Helpers.h"
 #include "Tags.h"
+#include "Enemy.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -423,6 +424,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID);
 		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
+		virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
 		auto& animator = virus.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
 
@@ -438,6 +440,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID);
 		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
+		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
 		auto& animator = dog.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
 	}

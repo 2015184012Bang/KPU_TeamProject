@@ -17,25 +17,22 @@ public:
 
 	virtual void Start() override
 	{
-		transform = &GetComponent<TransformComponent>();
-		animator = &GetComponent<AnimatorComponent>();
-		movement = &GetComponent<MovementComponent>();
 	}
 
 	virtual void Update(float deltaTime) override
 	{
-		if (movement->Direction != Vector3::Zero)
+		auto& movement = GetComponent<MovementComponent>();
+		auto& animator = GetComponent<AnimatorComponent>();
+
+		if (movement.Direction != Vector3::Zero)
 		{
-			animator->SetTrigger("Run");
+			animator.SetTrigger("Run");
 		}
 		else
 		{
-			animator->SetTrigger("Idle");
+			animator.SetTrigger("Idle");
 		}
 	}
 
 private:
-	TransformComponent* transform = nullptr;
-	AnimatorComponent* animator = nullptr;
-	MovementComponent* movement = nullptr;
 };

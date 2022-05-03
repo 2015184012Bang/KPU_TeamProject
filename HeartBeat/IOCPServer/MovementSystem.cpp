@@ -62,6 +62,7 @@ void MovementSystem::SendNotifyMovePackets()
 		return;
 	}
 
+	// 탱크 이동 패킷 보내기
 	NOTIFY_MOVE_PACKET packet = {};
 	packet.PacketID = NOTIFY_MOVE;
 	packet.PacketSize = sizeof(packet);
@@ -69,6 +70,18 @@ void MovementSystem::SendNotifyMovePackets()
 	packet.Direction = tank.GetComponent<MovementComponent>().Direction;
 	packet.Position = tank.GetComponent<TransformComponent>().Position;
 	mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+	// 적 이동 패킷 보내기
+	auto view = gRegistry.view<Tag_Enemy>();
+	Entity enemy = {};
+	for (auto entity : view)
+	{
+		enemy = Entity{ entity };
+		packet.EntityID = enemy.GetComponent<IDComponent>().ID;
+		packet.Direction = enemy.GetComponent<MovementComponent>().Direction;
+		packet.Position = enemy.GetComponent<TransformComponent>().Position;
+		mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
 }
 
 void MovementSystem::SetPlayersStartPos()
