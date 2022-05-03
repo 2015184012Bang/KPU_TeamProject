@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "../IOCPServer/Protocol.h"
 
+#include "Entity.h"
+
 class UpgradeScene :
     public Scene
 {

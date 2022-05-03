@@ -78,5 +78,3 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 using namespace DirectX::PackedVector;
 using namespace DirectX::SimpleMath;
-
-#include "Entity.h"

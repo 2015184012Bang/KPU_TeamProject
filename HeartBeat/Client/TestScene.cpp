@@ -98,7 +98,7 @@ void TestScene::Update(float deltaTime)
 		auto entities = Helpers::GetEntityToDetach(mCharacter, false, "Bag");
 		for (auto entity : entities)
 		{
-			mOwner->DestroyEntity(entity);
+			DestroyEntity(entity);
 		}
 
 		mOwner->RearrangeAttachment();

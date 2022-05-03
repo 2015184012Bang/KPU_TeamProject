@@ -52,7 +52,7 @@ void LobbyScene::Enter()
 
 void LobbyScene::Exit()
 {
-	mOwner->DestroyAll();
+	DestroyAll();
 }
 
 void LobbyScene::ProcessInput()

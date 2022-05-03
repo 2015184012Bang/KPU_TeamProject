@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Entity.h"
 class TestScene :
 	public Scene
 {

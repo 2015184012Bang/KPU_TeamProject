@@ -26,8 +26,8 @@ void UpgradeScene::Enter()
 	SoundManager::PlaySound("ClockTick.mp3");
 
 	// 내 캐릭터 알아두기
-	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
-	mPlayerCharacter = Entity(entity, mOwner);
+	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
+	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
 	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{0.0f, 750.0f, -750.0f});
 
@@ -45,7 +45,7 @@ void UpgradeScene::Exit()
 	// 만일 똑딱 소리가 아직도 재생 중이라면 멈춘다.
 	SoundManager::StopSound("ClockTick.mp3");
 
-	mOwner->DestroyAll();
+	DestroyAll();
 }
 
 void UpgradeScene::ProcessInput()
@@ -132,17 +132,16 @@ void UpgradeScene::Update(float deltaTime)
 void UpgradeScene::initPlayersPositionToZero()
 {
 	// 로비씬 때 달랐던 플레이어들의 위치를 (0, 0, 0)으로 통일해주기
-	auto entities = mOwner->FindObjectsWithTag<Tag_Player>();
-	if (entities.empty())
+	auto players = GetEntitiesWithTag<Tag_Player>();
+	if (players.empty())
 	{
 		HB_LOG("No Player exists.");
 		return;
 	}
 
-	for (auto eid : entities)
+	for (auto player : players)
 	{
-		Entity character = { eid, mOwner };
-		auto& transform = character.GetComponent<TransformComponent>();
+		auto& transform = player.GetComponent<TransformComponent>();
 		Helpers::UpdatePosition(&transform.Position, Vector3::Zero, &transform.bDirty);
 	}
 }
@@ -213,11 +212,10 @@ void UpgradeScene::checkCollisionWithPlanes()
 {
 	const auto& playerBox = mPlayerCharacter.GetComponent<BoxComponent>().World;
 
-	auto entities = mOwner->FindObjectsWithTag<Tag_Plane>();
+	auto planes = GetEntitiesWithTag<Tag_Plane>();
 
-	for (auto entity : entities)
+	for (auto plane : planes)
 	{
-		Entity plane = { entity, mOwner };
 		const auto& planeBox = plane.GetComponent<BoxComponent>().World;
 
 		if (Helpers::Intersects(playerBox, planeBox))
@@ -241,9 +239,8 @@ void UpgradeScene::processNotifyMove(const PACKET& packet)
 {
 	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
 	
-	auto entity = mOwner->GetEntityByID(nmPacket->EntityID);
-
-	Entity target = { entity, mOwner };
+	auto target = GetEntityByID(nmPacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
 
 	auto& transform = target.GetComponent<TransformComponent>();
 	transform.Position = nmPacket->Position;
@@ -256,8 +253,8 @@ void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
 {
 	NOTIFY_UPGRADE_PACKET* nuPacket = reinterpret_cast<NOTIFY_UPGRADE_PACKET*>(packet.DataPtr);
 
-	auto entity = mOwner->GetEntityByID(nuPacket->EntityID);
-	Entity target = { entity, mOwner };
+	auto target = GetEntityByID(nuPacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
 
 	// None 계열 애니메이션(비무장 상태)에서 무장 후 애니메이션으로 바꿔준다.
 	auto& animator = target.GetComponent<AnimatorComponent>();
@@ -302,7 +299,7 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	auto entities = Helpers::GetEntityToDetach(target);
 	for (auto entity : entities)
 	{
-		mOwner->DestroyEntity(entity);
+		DestroyEntity(entity);
 	}
 
 	switch (preset)

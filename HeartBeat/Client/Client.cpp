@@ -28,13 +28,6 @@
 #include "TestScene.h"
 #include "Random.h"
 
-// XML 파일로부터 읽어들일 값들
-float gPlayerSpeed;
-float gTileWidth;
-float gTankSpeed;
-
-UINT32 gEntityID = 3;
-
 Client::Client()
 	: Game()
 {
@@ -103,7 +96,7 @@ void Client::ChangeScene(Scene* scene)
 
 Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
@@ -121,7 +114,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 
 Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
@@ -141,7 +134,7 @@ Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile
 
 Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
@@ -158,7 +151,7 @@ Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFi
 
 Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
@@ -177,14 +170,14 @@ Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFi
 
 Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder /*= 100*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	e.AddTag<Tag_Sprite>();
 	e.AddComponent<RectTransformComponent>(width, height);
 	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), texFile, drawOrder);
 
 	// Do sorting by draw order when sprite is added
-	GetRegistry().sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
+	gRegistry.sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
 		{
 			return lhs.DrawOrder < rhs.DrawOrder;
 		});
@@ -194,7 +187,7 @@ Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile,
 
 Entity Client::CreateTextEntity(const Font* fontFile)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	e.AddTag<Tag_Text>();
 	e.AddComponent<RectTransformComponent>(0, 0);
@@ -210,13 +203,13 @@ void Client::DestroyEntityAfter(const uint32 eid, float secs)
 
 void Client::RearrangeAttachment()
 {
-	auto view = GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
+	auto view = gRegistry.view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
 
 	for (auto [entity, parent, transform, animator] : view.each())
 	{
 		for (auto [boneName, eid] : parent.Children)
 		{
-			Entity child = { eid, this };
+			Entity child = Entity{ eid };
 			auto& attachment = child.GetComponent<AttachmentChildComponent>();
 
 			attachment.BoneIndex = animator.Skel->GetBoneIndexByName(boneName);
@@ -305,12 +298,12 @@ void Client::render()
 
 void Client::createCameraEntity()
 {
-	mMainCamera = Entity(GetNewEntity(), this);
+	mMainCamera = Entity{ gRegistry.create() };
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Tag_Camera>();
 	mMainCamera.AddTag<Tag_DontDestroyOnLoad>();
 
-	m2dCamera = Entity(GetNewEntity(), this);
+	m2dCamera = Entity{ gRegistry.create() };
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
@@ -320,7 +313,7 @@ void Client::processButton()
 {
 	if (Input::IsButtonPressed(KeyCode::MOUSE_L))
 	{
-		auto view = GetRegistry().view<ButtonComponent, RectTransformComponent>();
+		auto view = gRegistry.view<ButtonComponent, RectTransformComponent>();
 		for (auto [entity, button, rect] : view.each())
 		{
 			bool contains = Helpers::Intersects(rect.Position, rect.Width, rect.Height);
@@ -355,7 +348,7 @@ void Client::processPendingEntities(float deltaTime)
 
 void Client::updateMovement(float deltaTime)
 {
-	auto view = GetRegistry().view<MovementComponent, TransformComponent>();
+	auto view = gRegistry.view<MovementComponent, TransformComponent>();
 	for (auto [entity, movement, transform] : view.each())
 	{
 		Vector3 toward = transform.Position + movement.Direction * movement.MaxSpeed * deltaTime;
@@ -384,7 +377,7 @@ void Client::updateMovement(float deltaTime)
 
 void Client::updateScript(float deltaTime)
 {
-	auto view = GetRegistry().view<ScriptComponent>();
+	auto view = gRegistry.view<ScriptComponent>();
 	for (auto [entity, script] : view.each())
 	{
 		if (!script.bInitialized)
@@ -399,7 +392,7 @@ void Client::updateScript(float deltaTime)
 
 void Client::updateAnimation(float deltaTime)
 {
-	auto view = GetRegistry().view<AnimatorComponent>();
+	auto view = gRegistry.view<AnimatorComponent>();
 	for (auto [entity, animator] : view.each())
 	{
 		Helpers::UpdateAnimation(&animator, deltaTime);
@@ -408,7 +401,7 @@ void Client::updateAnimation(float deltaTime)
 
 void Client::updateCollisionBox(float deltaTime)
 {
-	auto view = GetRegistry().view<BoxComponent, TransformComponent>();
+	auto view = gRegistry.view<BoxComponent, TransformComponent>();
 	for (auto [entity, box, transform] : view.each())
 	{
 		Helpers::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
@@ -426,10 +419,10 @@ void Client::updateMainCamera()
 void Client::drawSkeletalMesh()
 {
 	gCmdList->SetPipelineState(mRenderer->GetSkeletalMeshPSO().Get());
-	auto view = GetRegistry().view<Tag_SkeletalMesh>();
+	auto view = gRegistry.view<Tag_SkeletalMesh>();
 	for (auto entity : view)
 	{
-		Entity e = Entity(entity, this);
+		Entity e = Entity{ entity };
 
 		TransformComponent& transform = e.GetComponent<TransformComponent>();
 		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
@@ -447,10 +440,10 @@ void Client::drawStaticMesh()
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 
 	{
-		auto view = GetRegistry().view<Tag_StaticMesh>(entt::exclude<AttachmentChildComponent>);
+		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<AttachmentChildComponent>);
 		for (auto entity : view)
 		{
-			Entity e = Entity(entity, this);
+			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
 			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
@@ -460,10 +453,10 @@ void Client::drawStaticMesh()
 	}
 
 	{
-		auto view = GetRegistry().view<AttachmentChildComponent>();
+		auto view = gRegistry.view<AttachmentChildComponent>();
 		for (auto entity : view)
 		{
-			Entity e = Entity(entity, this);
+			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
 			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
@@ -477,7 +470,7 @@ void Client::drawStaticMesh()
 void Client::drawCollisionBox()
 {
 	gCmdList->SetPipelineState(mRenderer->GetWireframePSO().Get());
-	auto view = GetRegistry().view<DebugDrawComponent, TransformComponent>();
+	auto view = gRegistry.view<DebugDrawComponent, TransformComponent>();
 	for (auto [entity, debugDraw, transform] : view.each())
 	{
 		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
@@ -490,7 +483,7 @@ void Client::drawSpriteAndText()
 	gCmdList->SetPipelineState(mRenderer->GetSpritePSO().Get());
 
 	{
-		auto view = GetRegistry().view<SpriteRendererComponent, RectTransformComponent>();
+		auto view = gRegistry.view<SpriteRendererComponent, RectTransformComponent>();
 		for (auto [entity, sprite, rect] : view.each())
 		{
 			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
@@ -499,7 +492,7 @@ void Client::drawSpriteAndText()
 	}
 
 	{
-		auto view = GetRegistry().view<TextComponent, RectTransformComponent>();
+		auto view = gRegistry.view<TextComponent, RectTransformComponent>();
 		for (auto [entity, text, rect] : view.each())
 		{
 			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);

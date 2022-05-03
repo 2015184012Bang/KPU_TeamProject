@@ -28,7 +28,7 @@ void LoginScene::Enter()
 void LoginScene::Exit()
 {
 	// DontDestroyOnLoad 태그가 붙어진 엔티티를 제외한 모든 엔티티 삭제
-	mOwner->DestroyAll();
+	DestroyAll();
 }
 
 void LoginScene::ProcessInput()

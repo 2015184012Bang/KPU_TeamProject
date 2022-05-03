@@ -27,36 +27,6 @@ public:
 		return mOwner.AddComponent<T>(std::forward<Args>(args)...);
 	}
 
-	template<typename T>
-	vector<Entity> FindObjectsWithTag()
-	{
-		vector<entt::entity> entities = mOwner.GetGame()->FindObjectsWithTag<T>();
-		vector<Entity> objs;
-		objs.reserve(entities.size());
-
-		for (auto entity : entities)
-		{
-			objs.emplace_back(entity, mOwner.GetGame());
-		}
-
-		return objs;
-	}
-
-	Entity Find(const string& targetName)
-	{
-		auto view = mOwner.GetGame()->GetRegistry().view<NameComponent>();
-
-		for (auto [entity, name] : view.each())
-		{
-			if (name.Name == targetName)
-			{
-				return Entity(entity, mOwner.GetGame());
-			}
-		}
-
-		HB_ASSERT(false, "There is no entity with name");
-	}
-
 	virtual void Start() = 0;
 	virtual void Update(float deltaTime) = 0;
 

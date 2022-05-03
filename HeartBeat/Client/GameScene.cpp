@@ -21,8 +21,8 @@ GameScene::GameScene(Client* owner)
 void GameScene::Enter()
 {
 	// 내 캐릭터 알아두기
-	auto entity = mOwner->GetEntityByID(mOwner->GetClientID());
-	mPlayerCharacter = Entity(entity, mOwner);
+	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
+	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
 	// 맵 생성
 	createMap("../Assets/Maps/Map01.csv");
@@ -334,9 +334,8 @@ void GameScene::processNotifyMove(const PACKET& packet)
 {
 	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
 
-	auto entity = mOwner->GetEntityByID(nmPacket->EntityID);
-
-	Entity target = { entity, mOwner };
+	auto target = GetEntityByID(nmPacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
 
 	auto& transform = target.GetComponent<TransformComponent>();
 	transform.Position = nmPacket->Position;
@@ -349,8 +348,8 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 {
 	NOTIFY_ATTACK_PACKET* naPacket = reinterpret_cast<NOTIFY_ATTACK_PACKET*>(packet.DataPtr);
 
-	auto entity = mOwner->GetEntityByID(naPacket->EntityID);
-	Entity e = { entity, mOwner };
+	auto e = GetEntityByID(naPacket->EntityID);
+	HB_ASSERT(e, "Invalid entity!");
 
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetRandomAttackAnimFile());
@@ -365,8 +364,8 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 {
 	NOTIFY_DELETE_ENTITY_PACKET* ndePacket = reinterpret_cast<NOTIFY_DELETE_ENTITY_PACKET*>(packet.DataPtr);
 
-	auto entity = mOwner->GetEntityByID(ndePacket->EntityID);
-	Entity e = { entity, mOwner };
+	auto e = GetEntityByID(ndePacket->EntityID);
+	HB_ASSERT(e, "Invalid entity!");
 
 	switch (static_cast<EntityType>(ndePacket->EntityType))
 	{

@@ -4,6 +4,7 @@
 #include "../IOCPServer/Protocol.h"
 #include "Define.h"
 #include "GameMap.h"
+#include "Entity.h"
 
 class Texture;
 

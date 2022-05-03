@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game.h"
+#include "Entity.h"
 
 class Scene;
 class Renderer;
