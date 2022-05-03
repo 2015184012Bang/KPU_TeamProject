@@ -103,9 +103,6 @@
     <ClCompile Include="Random.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -221,9 +218,6 @@
     </ClInclude>
     <ClInclude Include="Random.h">
       <Filter>Source Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>Source Files\Core</Filter>

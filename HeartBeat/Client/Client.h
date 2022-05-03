@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Game.h"
 #include "Entity.h"
 
 class Scene;
@@ -13,15 +12,15 @@ class Font;
 
 using namespace std::string_literals;
 
-class Client :
-    public Game
+class Client
 {
 public:
     Client();
+    ~Client();
     
-    virtual bool Init() override;
-    virtual void Shutdown() override;
-    virtual void Run() override;
+    bool Init();
+    void Shutdown();
+    void Run();
 
     void ChangeScene(Scene* scene);
 
@@ -41,6 +40,7 @@ public:
     void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
 
 public:
+    bool ShouldClose() { return !mbRunning; }
 	int GetClientID() const { return mClientID; }
 	void SetClientID(int id) { mClientID = id; }
 	const string& GetClientName() const { return mClientName; }
@@ -71,6 +71,8 @@ private:
     void drawSpriteAndText();
 
 private:
+    bool mbRunning = true;
+
     unique_ptr<Scene> mActiveScene = nullptr;
     unique_ptr<Renderer> mRenderer = nullptr;
     unique_ptr<PacketManager> mPacketManager = nullptr;

@@ -29,7 +29,11 @@
 #include "Random.h"
 
 Client::Client()
-	: Game()
+{
+
+}
+
+Client::~Client()
 {
 
 }
@@ -232,7 +236,7 @@ void Client::processInput()
 
 	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
-		SetRunning(false);
+		mbRunning = false;
 	}
 
 	processButton();
