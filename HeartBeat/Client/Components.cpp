@@ -237,18 +237,18 @@ TextComponent::~TextComponent()
 	}
 }
 
-AttachmentChildComponent::AttachmentChildComponent()
-	: ParentPalette(nullptr)
+HierarchyComponent::HierarchyComponent()
+	: Parent(entt::null)
 	, BoneIndex(-1)
-	, ParentTransform(nullptr)
+	, BoneName("")
 {
 
 }
 
-AttachmentChildComponent::AttachmentChildComponent(MatrixPalette* palette, uint32 index, TransformComponent* transform)
-	: ParentPalette(palette)
-	, BoneIndex(index)
-	, ParentTransform(transform)
+HierarchyComponent::HierarchyComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName)
+	: Parent(parent)
+	, BoneIndex(boneIndex)
+	, BoneName(boneName.data())
 {
 
 }

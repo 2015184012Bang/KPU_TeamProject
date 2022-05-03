@@ -8,7 +8,7 @@ using namespace std::string_view_literals;
 
 struct AnimatorComponent;
 struct TransformComponent;
-struct AttachmentChildComponent;
+struct HierarchyComponent;
 class Animation;
 class AABB;
 class Skeleton;
@@ -20,7 +20,7 @@ public:
 	static void UpdateYRotation(float* outYRotation, const float to, bool* outDirty);
 	static void BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty);
 	static void BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty);
-	static void BindWorldMatrixAttached(TransformComponent* outTransform, const AttachmentChildComponent* attachment);
+	static void BindWorldMatrixAttached(TransformComponent* outTransform, const HierarchyComponent* attachment);
 	static void BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer);
 	static void BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer);
 	static void BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer);
@@ -32,12 +32,8 @@ public:
 	static Vector3 ScreenToClip(const Vector2& coord);
 	static void AttachBone(Entity& parent, Entity& child, string_view boneName);
 
-	// [사용법]
-	// 1. 모든 자식 엔티티를 삭제하고 싶다
-	// bAll : true, boneName : 디폴트
-	// 2. 특정 자식 엔티티만 삭제하고 싶다
-	// bAll : false, boneName: 삭제할 엔티티가 붙어있는 본의 이름
-	static vector<entt::entity> GetEntityToDetach(Entity& parent, bool bAll = true, string_view boneName = ""sv);
+	// 벨트를 제외한 나머지 부착물들을 삭제한다.
+	static void DetachBone(Entity& parent);
 
 private:
 	static void computeMatrixPalette(const Animation* anim, const Skeleton* skel, float animTime, MatrixPalette* outPalette);

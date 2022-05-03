@@ -205,25 +205,6 @@ void Client::DestroyEntityAfter(const uint32 eid, float secs)
 	mPendingEntities.emplace_back(eid, secs);
 }
 
-void Client::RearrangeAttachment()
-{
-	auto view = gRegistry.view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
-
-	for (auto [entity, parent, transform, animator] : view.each())
-	{
-		for (auto [boneName, eid] : parent.Children)
-		{
-			Entity child = Entity{ eid };
-			auto& attachment = child.GetComponent<AttachmentChildComponent>();
-
-			attachment.BoneIndex = animator.Skel->GetBoneIndexByName(boneName);
-			attachment.ParentPalette = &animator.Palette;
-			attachment.ParentTransform = &transform;
-		}
-	}
-}
-
-
 void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 {
 	mFollowCameraTarget = target;
@@ -444,7 +425,7 @@ void Client::drawStaticMesh()
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 
 	{
-		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<AttachmentChildComponent>);
+		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<HierarchyComponent>);
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
@@ -457,13 +438,13 @@ void Client::drawStaticMesh()
 	}
 
 	{
-		auto view = gRegistry.view<AttachmentChildComponent>();
+		auto view = gRegistry.view<HierarchyComponent>();
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
+			HierarchyComponent& attach = e.GetComponent<HierarchyComponent>();
 			Helpers::BindWorldMatrixAttached(&transform, &attach);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);

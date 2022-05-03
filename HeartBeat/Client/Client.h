@@ -33,9 +33,6 @@ public:
 
     void DestroyEntityAfter(const uint32 eid, float secs);
    
-    // Child entity를 삭제하고 난 후 호출해줄 것.
-    void RearrangeAttachment();
-
     // MainCamera가 target을 따라다니도록 한다.
     void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
 

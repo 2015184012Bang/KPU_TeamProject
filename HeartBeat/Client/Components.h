@@ -117,14 +117,14 @@ struct TextComponent
 	Text* Txt;
 };
 
-struct AttachmentChildComponent
+struct HierarchyComponent
 {
-	AttachmentChildComponent();
-	AttachmentChildComponent(MatrixPalette* palette, uint32 index, TransformComponent* transform);
+	HierarchyComponent();
+	HierarchyComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName);
 
-	MatrixPalette* ParentPalette;
+	entt::entity Parent;
 	uint32 BoneIndex;
-	TransformComponent* ParentTransform;
+	string BoneName;
 };
 
 struct IDComponent
@@ -133,11 +133,6 @@ struct IDComponent
 	IDComponent(const uint32 id);
 
 	uint32 ID;
-};
-
-struct AttachmentParentComponent
-{
-	vector<std::pair<string, entt::entity>> Children;
 };
 
 struct BoxComponent

@@ -296,11 +296,7 @@ uint8 UpgradeScene::getPresetNumber(string_view planeName)
 void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 {
 	// 기존에 붙여놨던 엔티티들을 삭제한다.
-	auto entities = Helpers::GetEntityToDetach(target);
-	for (auto entity : entities)
-	{
-		DestroyEntity(entity);
-	}
+	Helpers::DetachBone(target);
 
 	switch (preset)
 	{

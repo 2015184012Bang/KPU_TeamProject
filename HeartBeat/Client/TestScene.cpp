@@ -95,12 +95,6 @@ void TestScene::Update(float deltaTime)
 {
 	if (Input::IsButtonPressed(KeyCode::SPACE))
 	{
-		auto entities = Helpers::GetEntityToDetach(mCharacter, false, "Bag");
-		for (auto entity : entities)
-		{
-			DestroyEntity(entity);
-		}
-
-		mOwner->RearrangeAttachment();
+		Helpers::DetachBone(mCharacter);
 	}
 }
