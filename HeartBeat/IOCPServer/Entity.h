@@ -76,3 +76,13 @@ private:
 extern Entity GetEntity(const UINT32 eid);
 
 extern Entity GetEntityByName(string_view name);
+
+template<typename T>
+void DestroyByComponent()
+{
+	auto view = gRegistry.view<T>();
+	for (auto entity : view)
+	{
+		gRegistry.destroy(entity);
+	}
+}

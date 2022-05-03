@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Box.h"
+#include "Protocol.h"
 
 class Script;
 
@@ -75,4 +76,15 @@ struct ScriptComponent
 
 	shared_ptr<Script> NativeScript = nullptr;
 	bool bInitialized = false;
+};
+
+struct SpawnComponent
+{
+	SpawnComponent() = default;
+	SpawnComponent(EntityType eType, float spawnTime, float posX, float posZ);
+
+	EntityType EType = EntityType::END;
+	float SpawnTime = 0.0f;
+	float GenPosX = 0.0f;
+	float GenPosZ = 0.0f;
 };

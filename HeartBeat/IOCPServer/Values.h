@@ -46,10 +46,20 @@ public:
 		string tankSpeed = elem->GetText();
 		Values::TankSpeed = stof(tankSpeed);
 
+		// 적 이동 속도
+		elem = elem->NextSiblingElement();
+		string enemySpeed = elem->GetText();
+		Values::EnemySpeed = stof(enemySpeed);
+
 		// 탱크 최대 체력
 		elem = elem->NextSiblingElement();
 		string tankHealth = elem->GetText();
 		Values::TankHealth = stoi(tankHealth);
+
+		// 적 최대 체력
+		elem = elem->NextSiblingElement();
+		string enemyHealth = elem->GetText();
+		Values::EnemyHealth = stoi(enemyHealth);
 	}
 
 	static UINT16 ServerPort;
@@ -58,7 +68,9 @@ public:
 	static float BaseAttackCooldown;
 	static float BaseAttackRange;
 	static float TankSpeed;
+	static float EnemySpeed;
 	static UINT8 TankHealth;
+	static UINT8 EnemyHealth;
 	static UINT32 EntityID;
 };
 
@@ -68,5 +80,7 @@ __declspec(selectany) float Values::PlayerSpeed = 0.0f;
 __declspec(selectany) float Values::BaseAttackCooldown = 0.0f;
 __declspec(selectany) float Values::BaseAttackRange = 0.0f;
 __declspec(selectany) float Values::TankSpeed = 0.0f;
-__declspec(selectany) UINT32 Values::EntityID = 3;
+__declspec(selectany) float Values::EnemySpeed = 0.0f;
 __declspec(selectany) UINT8 Values::TankHealth = 0;
+__declspec(selectany) UINT8 Values::EnemyHealth = 0;
+__declspec(selectany) UINT32 Values::EntityID = 3;

@@ -10,6 +10,8 @@
     <BACooldown>0.7</BACooldown>
     <BARange>400</BARange>
     <TankSpeed>300</TankSpeed>
+    <EnemySpeed>300</EnemySpeed>
     <TankHealth>20</TankHealth>
+    <EnemyHealth>3</EnemyHealth>
   </Values>
 </Root>

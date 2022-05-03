@@ -192,7 +192,7 @@ Font* ResourceManager::GetFont(string_view path)
 
 void ResourceManager::MakeAnimTransitions()
 {
-	// 바이러스 애니메이션 트랜지션 설정
+	// 바이러스
 	{
 		Animation* idleAnim = ANIM("Virus_Idle.anim");
 		Animation* runningAnim = ANIM("Virus_Run.anim");
@@ -202,6 +202,20 @@ void ResourceManager::MakeAnimTransitions()
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
+		attackingAnim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 개
+	{
+		Animation* idleAnim = ANIM("Dog_Idle.anim");
+		Animation* runningAnim = ANIM("Dog_Run.anim");
+		Animation* attackingAnim = ANIM("Dog_Attack.anim");
+		attackingAnim->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackingAnim);
 		attackingAnim->AddTransition("WhenEnd", idleAnim);
 	}
 
@@ -322,6 +336,7 @@ void ResourceManager::MakeAnimTransitions()
 		runningAnim->AddTransition("Idle", idleAnim);
 	}
 
+	// 지방
 	{
 		Animation* breakAnim = ANIM("Fat_Break.anim");
 		breakAnim->SetLoop(false);

@@ -60,3 +60,12 @@ ScriptComponent::ScriptComponent(shared_ptr<Script>&& script) noexcept
 {
 
 }
+
+SpawnComponent::SpawnComponent(EntityType eType, float spawnTime, float posX, float posZ)
+	: EType(eType)
+	, SpawnTime(spawnTime)
+	, GenPosX(posX)
+	, GenPosZ(posZ)
+{
+
+}

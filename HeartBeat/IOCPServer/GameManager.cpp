@@ -37,10 +37,6 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mBackPacketQueue = &mPacketQueueA;
 	mFrontPacketQueue = &mPacketQueueB;
 
-	Timer::Init();
-	Random::Init();
-	Box::Init();
-
 	// 시스템 생성
 	initSystems();
 
@@ -92,6 +88,7 @@ void GameManager::initSystems()
 	mCombatSystem = make_unique<CombatSystem>(shared_from_this());
 	mCollisionSystem = make_unique<CollisionSystem>(shared_from_this());
 	mScriptSystem = make_unique<ScriptSystem>(shared_from_this());
+	mEnemySystem = make_unique<EnemySystem>(shared_from_this());
 }
 
 void GameManager::swapQueues()
@@ -120,6 +117,7 @@ void GameManager::logicThread()
 		mCombatSystem->Update();
 		mMovementSystem->Update();
 		mCollisionSystem->Update();
+		mEnemySystem->Update();
 
 		// 엔티티들의 변경된 위치 송신
 		mMovementSystem->SendNotifyMovePackets();
@@ -350,6 +348,9 @@ void GameManager::initStage(string_view mapFile)
 
 	// 플레이어들 시작 위치로 변경
 	mMovementSystem->SetPlayersStartPos();
+
+	// 적 생성 시작
+	mEnemySystem->SetGenerate(true);
 }
 
 

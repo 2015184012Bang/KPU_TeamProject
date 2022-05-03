@@ -6,3 +6,4 @@ struct Tag_RailTile {};
 struct Tag_BlockingTile {};
 struct Tag_BreakableTile {};
 struct Tag_Tank {};
+struct Tag_Enemy {};

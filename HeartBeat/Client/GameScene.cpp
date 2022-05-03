@@ -364,16 +364,31 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 {
 	NOTIFY_DELETE_ENTITY_PACKET* ndePacket = reinterpret_cast<NOTIFY_DELETE_ENTITY_PACKET*>(packet.DataPtr);
 
-	auto e = GetEntityByID(ndePacket->EntityID);
-	HB_ASSERT(e, "Invalid entity!");
+	auto target = GetEntityByID(ndePacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
 
 	switch (static_cast<EntityType>(ndePacket->EntityType))
 	{
 	case EntityType::FAT:
 	{
-		auto& animator = e.GetComponent<AnimatorComponent>();
+		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Fat_Break.anim"));
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 2.0f);
+	}
+	break;
+
+	case EntityType::DOG:
+	{
+		// TODO : 개 폭발시키기
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
+	}
+	break;
+
+	case EntityType::VIRUS:
+	{
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Virus_Dead.anim"));
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
 	}
 	break;
 
@@ -401,6 +416,32 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 	case EntityType::CART:
 		break;
+
+	case EntityType::VIRUS:
+	{
+		Entity virus = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
+			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID);
+		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
+		auto& animator = virus.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
+
+		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
+			TEXTURE("Temp.png"));
+		Helpers::AttachBone(virus, hammer, "Weapon");
+	}
+	break;
+
+	case EntityType::DOG:
+	{
+		Entity dog = mOwner->CreateSkeletalMeshEntity(MESH("Dog.mesh"),
+			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID);
+		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
+		auto& animator = dog.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
+	}
+	break;
 
 	default:
 		break;

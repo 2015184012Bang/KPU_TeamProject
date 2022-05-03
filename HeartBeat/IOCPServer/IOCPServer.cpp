@@ -3,6 +3,9 @@
 
 #include "tinyxml2.h"
 #include "Values.h"
+#include "Timer.h"
+#include "Random.h"
+#include "Box.h"
 
 IOCPServer::~IOCPServer()
 {
@@ -17,6 +20,9 @@ IOCPServer::~IOCPServer()
 void IOCPServer::Init()
 {
 	Values::Init();
+	Timer::Init();
+	Random::Init();
+	Box::Init();
 
 	WSADATA wsa;
 

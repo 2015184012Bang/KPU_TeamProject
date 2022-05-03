@@ -85,6 +85,9 @@
     <ClCompile Include="ScriptSystem.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
+    <ClCompile Include="EnemySystem.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -160,6 +163,12 @@
       <Filter>Source Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="Tank.h">
+      <Filter>Source Files\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemySystem.h">
+      <Filter>Source Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
       <Filter>Source Files\Scripts</Filter>
     </ClInclude>
   </ItemGroup>

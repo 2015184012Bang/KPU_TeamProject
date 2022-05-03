@@ -8,5 +8,6 @@
     <TileSide>400</TileSide>
     <PlayerSpeed>600</PlayerSpeed>
     <TankSpeed>300</TankSpeed>
+    <EnemySpeed>300</EnemySpeed>
   </Values>
 </Root>

@@ -78,6 +78,11 @@ public:
 		elem = elem->NextSiblingElement();
 		string tankSpeed = elem->GetText();
 		TankSpeed = stof(tankSpeed);
+
+		// 적 이동 속도
+		elem = elem->NextSiblingElement();
+		string enemySpeed = elem->GetText();
+		EnemySpeed = stof(enemySpeed);
 	}
 
 	static uint16 ServerPort;
@@ -85,6 +90,7 @@ public:
 	static float TileSide;
 	static float PlayerSpeed;
 	static float TankSpeed;
+	static float EnemySpeed;
 	static uint32 EntityID;
 	static int HostID;
 };
@@ -94,5 +100,6 @@ __declspec(selectany) string Values::ServerIP = "";
 __declspec(selectany) float Values::TileSide = 0.0f;
 __declspec(selectany) float Values::PlayerSpeed = 0.0f;
 __declspec(selectany) float Values::TankSpeed = 0.0f;
+__declspec(selectany) float Values::EnemySpeed = 0.0f;
 __declspec(selectany) uint32 Values::EntityID = 3;
 __declspec(selectany) int Values::HostID = 2;

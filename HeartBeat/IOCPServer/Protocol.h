@@ -73,6 +73,9 @@ enum class EntityType : UINT8
 	FAT,
 	TANK,
 	CART,
+	VIRUS,
+	DOG,
+	END
 };
 
 /************************************************************************/
