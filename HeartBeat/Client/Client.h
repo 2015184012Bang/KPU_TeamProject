@@ -36,6 +36,9 @@ public:
     // MainCamera가 target을 따라다니도록 한다.
     void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
 
+    // Parent에 붙은 Children들 삭제
+    void DeleteChildren(entt::registry& regi, entt::entity entity);
+
 public:
     bool ShouldClose() { return !mbRunning; }
 	int GetClientID() const { return mClientID; }

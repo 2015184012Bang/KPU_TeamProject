@@ -8,7 +8,7 @@ using namespace std::string_view_literals;
 
 struct AnimatorComponent;
 struct TransformComponent;
-struct HierarchyComponent;
+struct ChildComponent;
 class Animation;
 class AABB;
 class Skeleton;
@@ -20,7 +20,7 @@ public:
 	static void UpdateYRotation(float* outYRotation, const float to, bool* outDirty);
 	static void BindWorldMatrix(const Vector3& position, const Vector3& rotation, float scale, UploadBuffer<Matrix>* outBuffer, bool* outDirty);
 	static void BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* outBuffer, bool* outDirty);
-	static void BindWorldMatrixAttached(TransformComponent* outTransform, const HierarchyComponent* attachment);
+	static void BindWorldMatrixAttached(TransformComponent* outTransform, const ChildComponent* attachment);
 	static void BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer);
 	static void BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer);
 	static void BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer);

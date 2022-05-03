@@ -32,7 +32,7 @@ void EnemySystem::Update()
 	{
 		spawn.SpawnTime -= Timer::GetDeltaTime();
 
-		if (spawn.SpawnTime < 0.0f)
+		if (spawn.SpawnTime < 0.0f && !spawn.bGenerated)
 		{
 			Entity enemy = Entity{ entity };
 			auto& transform = enemy.AddComponent<TransformComponent>(Vector3{ spawn.GenPosX, 0.0f, spawn.GenPosZ },
@@ -65,12 +65,13 @@ void EnemySystem::Update()
 			packet.PacketSize = sizeof(packet);
 			packet.Position = transform.Position;
 
-			// 积己茄 利篮 SpawnComponent 力芭.
-			enemy.RemoveComponent<SpawnComponent>();
+			spawn.bGenerated = true;
 
 			mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
 		}
 	}
+
+	//testDeletion();
 }
 
 void EnemySystem::LoadStageFile(string_view fileName)
@@ -101,5 +102,27 @@ void EnemySystem::readStageFile(string_view fileName)
 			stof(parsed[1]),
 			stof(parsed[2]),
 			stof(parsed[3]));
+	}
+}
+
+void EnemySystem::testDeletion()
+{
+	static float elapsed = 0.0f;
+	elapsed += Timer::GetDeltaTime();
+	if (elapsed > 15.0f)
+	{
+		auto view = gRegistry.view<SpawnComponent, IDComponent>();
+
+		for (auto [entity, spawn, id] : view.each())
+		{
+			NOTIFY_DELETE_ENTITY_PACKET packet = {};
+			packet.EntityID = id.ID;
+			packet.EntityType = static_cast<UINT8>(spawn.EType);
+			packet.PacketID = NOTIFY_DELETE_ENTITY;
+			packet.PacketSize = sizeof(packet);
+			mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+			gRegistry.destroy(entity);
+		}
 	}
 }

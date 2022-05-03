@@ -42,7 +42,7 @@ void Helpers::BindWorldMatrix(const Vector2& position, UploadBuffer<Matrix>* out
 	BindWorldMatrix(converted, Vector3::Zero, 1.0f, outBuffer, outDirty);
 }
 
-void Helpers::BindWorldMatrixAttached(TransformComponent* outTransform, const HierarchyComponent* attachment)
+void Helpers::BindWorldMatrixAttached(TransformComponent* outTransform, const ChildComponent* attachment)
 {
 	Entity parent = Entity{ attachment->Parent };
 
@@ -238,12 +238,23 @@ void Helpers::AttachBone(Entity& parent, Entity& child, string_view boneName)
 {
 	auto& parentAnimator = parent.GetComponent<AnimatorComponent>();
 	uint32 boneIndex = parentAnimator.Skel->GetBoneIndexByName(boneName);
-	child.AddComponent<HierarchyComponent>(parent, boneIndex, boneName);
+	child.AddComponent<ChildComponent>(parent, boneIndex, boneName);
+
+	if (parent.HasComponent<ParentComponent>())
+	{
+		auto& parentComp = parent.GetComponent<ParentComponent>();
+		parentComp.Children.push_back(child);
+	}
+	else
+	{
+		auto& parentComp = parent.AddComponent<ParentComponent>();
+		parentComp.Children.push_back(child);
+	}
 }
 
 void Helpers::DetachBone(Entity& parent)
 {
-	auto view = gRegistry.view<HierarchyComponent>();
+	auto view = gRegistry.view<ChildComponent>();
 
 	for (auto [entity, hierarchy] : view.each())
 	{

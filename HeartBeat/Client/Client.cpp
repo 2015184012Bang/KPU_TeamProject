@@ -46,6 +46,9 @@ bool Client::Init()
 	Random::Init();
 	Values::Init();
 
+	// Parent 엔티티가 삭제될 때 Child도 삭제하도록 한다.
+	gRegistry.on_destroy<ParentComponent>().connect<&Client::DeleteChildren>(this);
+
 	gGameMap.LoadMap("../Assets/Maps/Map01.csv");
 
 	mPacketManager = std::make_unique<PacketManager>();
@@ -209,6 +212,17 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 {
 	mFollowCameraTarget = target;
 	mTargetOffset = offset;
+}
+
+void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
+{
+	Entity parent = Entity{ entity };
+	const auto& children = parent.GetComponent<ParentComponent>().Children;
+
+	for (auto eid : children) 
+	{
+		regi.destroy(eid);
+	}
 }
 
 void Client::processInput()
@@ -425,7 +439,7 @@ void Client::drawStaticMesh()
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 
 	{
-		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<HierarchyComponent>);
+		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<ChildComponent>);
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
@@ -438,13 +452,13 @@ void Client::drawStaticMesh()
 	}
 
 	{
-		auto view = gRegistry.view<HierarchyComponent>();
+		auto view = gRegistry.view<ChildComponent>();
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			HierarchyComponent& attach = e.GetComponent<HierarchyComponent>();
+			ChildComponent& attach = e.GetComponent<ChildComponent>();
 			Helpers::BindWorldMatrixAttached(&transform, &attach);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);

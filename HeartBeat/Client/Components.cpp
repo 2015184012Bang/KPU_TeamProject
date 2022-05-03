@@ -237,7 +237,7 @@ TextComponent::~TextComponent()
 	}
 }
 
-HierarchyComponent::HierarchyComponent()
+ChildComponent::ChildComponent()
 	: Parent(entt::null)
 	, BoneIndex(-1)
 	, BoneName("")
@@ -245,7 +245,7 @@ HierarchyComponent::HierarchyComponent()
 
 }
 
-HierarchyComponent::HierarchyComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName)
+ChildComponent::ChildComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName)
 	: Parent(parent)
 	, BoneIndex(boneIndex)
 	, BoneName(boneName.data())

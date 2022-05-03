@@ -16,6 +16,8 @@ public:
 private:
 	void readStageFile(string_view fileName);
 
+	void testDeletion();
+
 private:
 	shared_ptr<GameManager> mGameManager = nullptr;
 

@@ -117,10 +117,17 @@ struct TextComponent
 	Text* Txt;
 };
 
-struct HierarchyComponent
+struct ParentComponent
 {
-	HierarchyComponent();
-	HierarchyComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName);
+	ParentComponent() = default;
+
+	vector<entt::entity> Children;
+};
+
+struct ChildComponent
+{
+	ChildComponent();
+	ChildComponent(const entt::entity parent, const uint32 boneIndex, string_view boneName);
 
 	entt::entity Parent;
 	uint32 BoneIndex;
