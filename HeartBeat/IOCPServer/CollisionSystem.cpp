@@ -39,6 +39,9 @@ void CollisionSystem::Update()
 
 	// 탱크와 FAT 타일의 충돌을 검사한다.
 	checkTankCollision();
+
+	// 플레이어가 맵의 경계 부분을 벗어났는지 검사한다.
+	checkPlayerOutOfBound();
 }
 
 bool CollisionSystem::DoAttack(const INT32 sessionIndex)
@@ -182,4 +185,39 @@ void CollisionSystem::checkTankCollision()
 	}
 
 	// TODO : 탱크 - 적 충돌 탐지&처리
+}
+
+void CollisionSystem::checkPlayerOutOfBound()
+{
+	if (mBorder == Vector3::Zero)
+	{
+		return;
+	}
+
+	auto view = gRegistry.view<Tag_Player, TransformComponent>();
+
+	for (auto [entity, transform] : view.each())
+	{
+		auto& position = transform.Position;
+		bool bOut = false;
+
+		if (position.x < 0) { position.x = 0; bOut = true; }
+		else if (position.x > mBorder.x) { position.x = mBorder.x; bOut = true; }
+
+		if (position.z < 0) { position.z = 0; bOut = true; }
+		else if (position.z > mBorder.z) { position.z = mBorder.z; bOut = true; }
+
+		if (bOut)
+		{
+			Entity player{ entity };
+			NOTIFY_MOVE_PACKET packet = {};
+			packet.Direction = player.GetComponent<MovementComponent>().Direction;
+			packet.EntityID = player.GetComponent<IDComponent>().ID;
+			packet.PacketID = NOTIFY_MOVE;
+			packet.PacketSize = sizeof(packet);
+			packet.Position = position;
+
+			mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+		}
+	}
 }

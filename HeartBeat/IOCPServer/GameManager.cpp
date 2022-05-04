@@ -364,7 +364,7 @@ void GameManager::initStage(string_view mapFile)
 
 	// 적 생성 시작
 	mEnemySystem->SetGenerate(true);
-	
+
 	// 충돌 체크 시작
 	mCollisionSystem->SetStart(true);
 }
@@ -420,6 +420,9 @@ void GameManager::createMapTiles(string_view mapFile)
 {
 	const auto& gameMap = mGameMap->GetMap(mapFile);
 
+	// 경계선 설정
+	mCollisionSystem->SetBorder(Vector3{ (gameMap.MaxCol - 1) * Values::TileSide, 0.0f, (gameMap.MaxRow - 1) * Values::TileSide });
+
 	for (const auto& tile : gameMap.Tiles)
 	{
 		Entity obj = Entity{ gRegistry.create() };
@@ -429,7 +432,7 @@ void GameManager::createMapTiles(string_view mapFile)
 		transform.Position = { tile.X, GetTileYPos(tile.TType), tile.Z };
 
 		// 충돌 처리가 필요한 타일의 경우에만 BoxComponent를 부착
-		if(tile.TType == TileType::BLOCKED ||
+		if (tile.TType == TileType::BLOCKED ||
 			tile.TType == TileType::FAT ||
 			tile.TType == TileType::TANK_FAT)
 		{
