@@ -407,7 +407,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	case EntityType::TANK:
 	{
 		Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
-			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID);
+			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID, "../Assets/Boxes/Tank.box");
 		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		tank.AddComponent<MovementComponent>(Values::TankSpeed);
 		auto& animator = tank.GetComponent<AnimatorComponent>();
@@ -421,7 +421,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	case EntityType::VIRUS:
 	{
 		Entity virus = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
-			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID);
+			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID, "../Assets/Boxes/Virus.box");
 		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
 		virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
@@ -437,7 +437,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	case EntityType::DOG:
 	{
 		Entity dog = mOwner->CreateSkeletalMeshEntity(MESH("Dog.mesh"),
-			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID);
+			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID, "../Assets/Boxes/Dog.box");
 		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
 		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
