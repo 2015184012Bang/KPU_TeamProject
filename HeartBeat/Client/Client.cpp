@@ -60,6 +60,7 @@ bool Client::Init()
 	ResourceManager::MakeAnimTransitions();
 
 	createCameraEntity();
+	createLightEntity();
 
 	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
@@ -288,6 +289,11 @@ void Client::render()
 	Helpers::BindViewProjectionMatrix(camera.Position,
 		camera.Target, camera.Up, camera.FOV, camera.Buffer);
 
+	// 조명 설정
+	auto& light = mLight.GetComponent<LightComponent>();
+	light.Light.CameraPosition = camera.Position;
+	Helpers::BindLight(&light);
+
 	drawSkeletalMesh();
 	drawStaticMesh();
 
@@ -317,6 +323,17 @@ void Client::createCameraEntity()
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
+}
+
+void Client::createLightEntity()
+{
+	mLight = Entity{ gRegistry.create() };
+	mLight.AddTag<Tag_DontDestroyOnLoad>();
+	auto& light = mLight.AddComponent<LightComponent>();
+	light.Light.AmbientColor = Vector3{ 0.2f, 0.2f, 0.2f };
+	light.Light.LightPosition = Vector3{ 10000.0f, 50000.f, 0.0f };
+	light.Light.SpecularStrength = 10.0f;
+	light.Light.CameraPosition = mMainCamera.GetComponent<CameraComponent>().Position;
 }
 
 void Client::processButton()

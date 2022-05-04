@@ -56,6 +56,7 @@ private:
     void render();
 
     void createCameraEntity();
+    void createLightEntity();
 
     void processButton();
     void processPendingEntities(float deltaTime);
@@ -77,8 +78,9 @@ private:
     unique_ptr<Renderer> mRenderer = nullptr;
     unique_ptr<PacketManager> mPacketManager = nullptr;
 
-    Entity mMainCamera;
-    Entity m2dCamera;
+    Entity mMainCamera = {};
+    Entity m2dCamera = {};
+    Entity mLight = {};
 
     int mClientID = -1;
     string mClientName = "KimMyungKyu";

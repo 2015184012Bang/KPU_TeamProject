@@ -83,6 +83,12 @@ void Helpers::BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPa
 	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::BONE_PARAM), buffer.GetVirtualAddress());
 }
 
+void Helpers::BindLight(LightComponent* light)
+{
+	light->Buffer.CopyData(0, light->Light);
+	gCmdList->SetGraphicsRootConstantBufferView(static_cast<uint32>(RootParameter::LIGHT_PARAM), light->Buffer.GetVirtualAddress());
+}
+
 void Helpers::UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime)
 {
 	if (!outAnimator->CurAnim || !outAnimator->Skel)

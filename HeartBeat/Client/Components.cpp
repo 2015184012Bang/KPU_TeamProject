@@ -331,3 +331,18 @@ MovementComponent::MovementComponent(float maxSpeed)
 {
 
 }
+
+LightComponent::LightComponent(const Vector3& ambient, const float specularStrength, const Vector3& lightPos, const Vector3& cameraPos)
+	: Buffer(gDevice.Get(), 1, true)
+{
+	Light.AmbientColor = ambient;
+	Light.SpecularStrength = specularStrength;
+	Light.LightPosition = lightPos;
+	Light.CameraPosition = cameraPos;
+}
+
+LightComponent::LightComponent()
+	: Buffer(gDevice.Get(), 1, true)
+{
+
+}

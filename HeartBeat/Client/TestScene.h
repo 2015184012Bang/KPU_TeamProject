@@ -12,7 +12,6 @@ public:
 	virtual void Update(float deltaTime) override;
 
 private:
-	Entity mCharacter = {};
-	Entity mEnemy = {};
+	Entity mCube = {};
 };
 

@@ -30,6 +30,7 @@ enum class RootParameter
 	VIEWPROJ_PARAM,
 	TEX_PARAM,
 	BONE_PARAM,
+	LIGHT_PARAM,
 	END
 };
 
@@ -38,6 +39,7 @@ enum class ShaderRegister
 	B0,
 	B1,
 	B2,
+	B3,
 	END
 };
 

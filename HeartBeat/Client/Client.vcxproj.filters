@@ -257,7 +257,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.hlsli">
+    <None Include="static.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="skeletal.hlsli">

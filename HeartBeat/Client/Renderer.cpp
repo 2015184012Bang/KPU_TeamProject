@@ -219,6 +219,7 @@ void Renderer::createPipelineState()
 	params[static_cast<uint32>(RootParameter::VIEWPROJ_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	params[static_cast<uint32>(RootParameter::TEX_PARAM)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 	params[static_cast<uint32>(RootParameter::BONE_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B2), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(RootParameter::LIGHT_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B3), 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
@@ -303,7 +304,7 @@ void Renderer::createPipelineState()
 		ComPtr<ID3DBlob> pixelShader;
 		ComPtr<ID3DBlob> errorBlob;
 
-		HRESULT hr = D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+		HRESULT hr = D3DCompileFromFile(L"static.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
 
 		if (FAILED(hr))
 		{
@@ -314,7 +315,7 @@ void Renderer::createPipelineState()
 			}
 		}
 
-		hr = D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+		hr = D3DCompileFromFile(L"static.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
 
 		if (FAILED(hr))
 		{

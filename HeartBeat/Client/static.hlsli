@@ -8,11 +8,6 @@ cbuffer cbViewProj : register(b1)
     row_major matrix gViewProj;
 }
 
-cbuffer cbBoneTransform : register(b2)
-{
-    row_major matrix gBoneTransform[128];
-}
-
 cbuffer cbLight : register(b3)
 {
     float3 gAmbientColor : packoffset(c0);
@@ -28,8 +23,6 @@ struct VSInput
 {
     float3 position : POSITION;
     float3 normal : NORMAL;
-    uint4 bone : BONE;
-    float4 weight : WEIGHT;
     float2 uv : TEXCOORD;
 };
 
@@ -44,25 +37,18 @@ struct PSInput
 PSInput VSMain(VSInput input)
 {
     PSInput result;
-
-    float4 pos = float4(input.position, 1.0f);
     
-    float4 skinnedPos = input.weight.x * mul(pos, gBoneTransform[input.bone.x]);
-    skinnedPos += input.weight.y * mul(pos, gBoneTransform[input.bone.y]);
-    skinnedPos += input.weight.z * mul(pos, gBoneTransform[input.bone.z]);
-    skinnedPos += input.weight.w * mul(pos, gBoneTransform[input.bone.w]);
+    result.position = mul(float4(input.position, 1.0f), gWorld);
+    result.fragPos = (float3)result.position;
+    result.position = mul(result.position, gViewProj);
+    result.uv = input.uv;    
+    result.normal = mul(input.normal, (float3x3)gWorld);
     
-    skinnedPos = mul(skinnedPos, gWorld);
-    
-    result.fragPos = (float3)skinnedPos;
-    result.position = mul(skinnedPos, gViewProj);
-    result.uv = input.uv;
-    result.normal = mul(input.normal, (float3x3) gWorld);
-
     return result;
 }
 
-float4 PSMain(PSInput input) : SV_TARGET
+
+float4 PSMain(PSInput input) : SV_Target
 {
     float3 norm = normalize(input.normal);
     float3 lightDir = normalize(gLightPos - input.fragPos);

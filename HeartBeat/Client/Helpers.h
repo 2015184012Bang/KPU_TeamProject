@@ -9,6 +9,7 @@ using namespace std::string_view_literals;
 struct AnimatorComponent;
 struct TransformComponent;
 struct ChildComponent;
+struct LightComponent;
 class Animation;
 class AABB;
 class Skeleton;
@@ -24,6 +25,7 @@ public:
 	static void BindViewProjectionMatrix(const Vector3& cameraPosition, const Vector3& cameraTarget, const Vector3& cameraUp, float fov, UploadBuffer<Matrix>& buffer);
 	static void BindViewProjectionMatrixOrtho(UploadBuffer<Matrix>& buffer);
 	static void BindBoneMatrix(const MatrixPalette& palette, UploadBuffer<MatrixPalette>& buffer);
+	static void BindLight(LightComponent* light);
 	static void UpdateAnimation(AnimatorComponent* outAnimator, float deltaTime);
 	static void PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, float animPlayRate = 1.0f);
 	static void UpdateBox(const AABB* const localBox, AABB* outWorldBox, const Vector3& position, float yaw, bool bDirty);
