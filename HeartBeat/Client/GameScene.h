@@ -39,12 +39,23 @@ private:
     void processNotifyAttack(const PACKET& packet);
     void processNotifyDeleteEntity(const PACKET& packet);
     void processNotifyCreateEntity(const PACKET& packet);
+    void processGameOver(const PACKET& packet);
+
+    void doWhenFail();
 
 private:
+    enum class StageCode
+    {
+        NONE,
+        CLEAR,
+        FAIL,
+    };
+
     Entity mPlayerCharacter = {};
     Vector3 mDirection = Vector3::Zero;
 
     bool mbChangeScene = false;
+    StageCode mStageCode = StageCode::NONE;
 };
 
 string GetRandomAttackAnimFile(bool isEnemy = false);

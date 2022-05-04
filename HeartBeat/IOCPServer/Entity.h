@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 
 #include "Components.h"
+#include "Tags.h"
 
 extern entt::registry gRegistry;
 
@@ -85,4 +86,17 @@ void DestroyByComponent()
 	{
 		gRegistry.destroy(entity);
 	}
+}
+
+template<typename T>
+void DestroyExclude()
+{
+	gRegistry.each([](entt::entity entity)
+		{
+			Entity e{ entity };
+			if (!e.HasComponent<Tag_Player>())
+			{
+				gRegistry.destroy(entity);
+			}
+		});
 }

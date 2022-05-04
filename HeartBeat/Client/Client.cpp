@@ -217,10 +217,18 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
 {
 	Entity parent = Entity{ entity };
-	const auto& children = parent.GetComponent<ParentComponent>().Children;
+	auto& children = parent.GetComponent<ParentComponent>().Children;
 
 	for (auto eid : children) 
 	{
+		// DestroyAll()을 수행하면 부모보다 자식이 먼저 삭제될 수 있다.
+		// 유효성 검사 필수.
+		bool bValid = regi.valid(eid);
+		if (!bValid)
+		{
+			continue;
+		}
+
 		regi.destroy(eid);
 	}
 }

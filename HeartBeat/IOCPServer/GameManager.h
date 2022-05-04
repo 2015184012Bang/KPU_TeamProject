@@ -32,6 +32,10 @@ public:
 	// 접속 유저 모두에게 보내기
 	void SendToAll(const INT32 packetSize, char* packet);
 
+	// 게임오버 처리
+	// CollisionSystem 내부에서 탱크와 FAT이 충돌하면 호출된다.
+	void DoGameOver();
+
 private:
 	void initSystems();
 
@@ -51,8 +55,11 @@ private:
 
 	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
 
-	// 스테이지 초기화 함수
+	// 스테이지 생성
 	void initStage(string_view mapFile);
+
+	// 스테이지 초기화
+	void clearStage();
 
 	void createMapTiles(string_view mapFile);
 	void createTankAndCart();

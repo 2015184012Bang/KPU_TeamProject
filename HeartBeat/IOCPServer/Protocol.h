@@ -59,13 +59,22 @@ enum PACKET_ID : UINT8
 	// 생성/삭제
 	NOTIFY_CREATE_ENTITY,
 	NOTIFY_DELETE_ENTITY,
+
+	// 게임오버
+	NOTIFY_GAME_OVER,
 };
 
 enum ERROR_CODE : UINT8
 {
 	SUCCESS = 0,
+
+	// 공격 에러 코드
 	ATTACK_SUCCESS,
 	ATTACK_MISS,
+
+	// 게임 오버 에러 코드
+	STAGE_CLEAR,
+	STAGE_FAIL,
 };
 
 enum class EntityType : UINT8
@@ -174,6 +183,11 @@ struct NOTIFY_DELETE_ENTITY_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
 	UINT8 EntityType;
+};
+
+struct NOTIFY_GAME_OVER_PACKET : public PACKET_HEADER
+{
+	UINT8 Result;
 };
 
 #pragma pack(pop)

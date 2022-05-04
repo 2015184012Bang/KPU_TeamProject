@@ -12,6 +12,7 @@
 #include "Helpers.h"
 #include "Tags.h"
 #include "Enemy.h"
+#include "UpgradeScene.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -31,7 +32,7 @@ void GameScene::Enter()
 
 void GameScene::Exit()
 {
-
+	DestroyAll();
 }
 
 void GameScene::ProcessInput()
@@ -57,6 +58,10 @@ void GameScene::ProcessInput()
 			processNotifyCreateEntity(packet);
 			break;
 
+		case NOTIFY_GAME_OVER:
+			processGameOver(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -64,7 +69,21 @@ void GameScene::ProcessInput()
 
 		if (mbChangeScene)
 		{
-			// TODO: 게임 종료 씬으로 전환
+			switch (mStageCode)
+			{
+			case StageCode::FAIL:
+				doWhenFail();
+				break;
+
+			case StageCode::CLEAR:
+				break;
+
+			default:
+				HB_ASSERT(false, "Unknown stage code!");
+				break;
+			}
+
+			// 패킷 처리 반복문 탈출
 			break;
 		}
 	}
@@ -449,6 +468,52 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	default:
 		break;
 	}
+}
+
+void GameScene::processGameOver(const PACKET& packet)
+{
+	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
+
+	switch (ngoPacket->Result)
+	{
+	case ERROR_CODE::STAGE_CLEAR:
+		HB_ASSERT(false, "Not implemented yet.");
+		mbChangeScene = true;
+		mStageCode = StageCode::CLEAR;
+		break;
+
+	case ERROR_CODE::STAGE_FAIL:
+	{
+		mbChangeScene = true;
+		mStageCode = StageCode::FAIL;
+	}
+		break;
+	}
+}
+
+void GameScene::doWhenFail()
+{
+	// 재시작을 위해 엔티티 아이디 초기화
+	Values::EntityID = 3; 
+
+	auto view = gRegistry.view<Tag_Player>();
+	for (auto entity : view)
+	{
+		Entity player{ entity };
+
+		// 플레이어들의 부착물 삭제(벨트 제외).
+		Helpers::DetachBone(player);
+
+		// 비무장 애니메이션으로 전환.
+		auto& animator = player.GetComponent<AnimatorComponent>();
+		const auto& id = player.GetComponent<IDComponent>();
+		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(id.ID, CharacterAnimationType::IDLE_NONE));
+	}
+	
+	// 업그레이드 씬으로 전환.
+	auto newScene = new UpgradeScene{ mOwner };
+	newScene->SetDirection(mDirection);
+	mOwner->ChangeScene(newScene);
 }
 
 string GetRandomAttackAnimFile(bool isEnemy /*= false*/)

@@ -27,6 +27,8 @@ public:
     virtual void ProcessInput() override;
     virtual void Update(float deltaTime) override;
 
+    void SetDirection(const Vector3& direction) { mDirection = direction; }
+
 private:
     void initPlayersPositionToZero();
     void createPlanes();

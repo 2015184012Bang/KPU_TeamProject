@@ -30,11 +30,6 @@ void CollisionSystem::Update()
 
 	for (auto [entity, box, movement, transform] : view.each())
 	{
-		if (movement.Direction == Vector3::Zero)
-		{
-			continue;
-		}
-
 		box.WorldBox = *box.LocalBox;
 		box.WorldBox.Update(transform.Position, transform.Yaw);
 	}
@@ -181,7 +176,7 @@ void CollisionSystem::checkTankCollision()
 	{
 		if (Intersects(tankBox.WorldBox, tileBox.WorldBox))
 		{
-			// TODO : 게임 오버 처리
+			mGameManager->DoGameOver();
 			break;
 		}
 	}

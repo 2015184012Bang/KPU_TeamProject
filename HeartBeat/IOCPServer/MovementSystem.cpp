@@ -98,7 +98,7 @@ void MovementSystem::SetPlayersStartPos()
 		transform.Position = Vector3{
 			startPos.x + id.ID * 300.0f,
 			transform.Position.y,
-			startPos.z + id.ID * 300.0f
+			startPos.z + 800.f
 		};
 
 		Entity player = Entity{ entity };
