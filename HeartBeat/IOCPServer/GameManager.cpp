@@ -351,6 +351,9 @@ void GameManager::initStage(string_view mapFile)
 
 	// 적 생성 시작
 	mEnemySystem->SetGenerate(true);
+	
+	// 충돌 체크 시작
+	mCollisionSystem->SetStart(true);
 }
 
 

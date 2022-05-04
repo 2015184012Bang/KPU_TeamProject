@@ -20,6 +20,11 @@ CollisionSystem::CollisionSystem(shared_ptr<GameManager>&& gm)
 
 void CollisionSystem::Update()
 {
+	if (!mbStart)
+	{
+		return;
+	}
+
 	// 동적인 객체들의 박스를 업데이트한다.
 	auto view = gRegistry.view<BoxComponent, MovementComponent, TransformComponent>();
 
@@ -34,8 +39,11 @@ void CollisionSystem::Update()
 		box.WorldBox.Update(transform.Position, transform.Yaw);
 	}
 
-	// 플레이어와 타일의 충돌을 검사한다.
-	checkPlayerAndTile();
+	// 플레이어와 다른 액터들과의 충돌을 검사한다.
+	checkPlayersCollision();
+
+	// 탱크와 FAT 타일의 충돌을 검사한다.
+	checkTankCollision();
 }
 
 bool CollisionSystem::DoAttack(const INT32 sessionIndex)
@@ -76,11 +84,11 @@ bool CollisionSystem::DoAttack(const INT32 sessionIndex)
 	return false;
 }
 
-void CollisionSystem::checkPlayerAndTile()
+void CollisionSystem::checkPlayersCollision()
 {
+	// 플레이어 - 타일
 	auto players = gRegistry.view<Tag_Player, BoxComponent>();
 	auto blockingTiles = gRegistry.view<Tag_BlockingTile, BoxComponent>();
-
 	for (auto [pEnt, playerBox] : players.each())
 	{
 		for (auto [tEnt, tileBox] : blockingTiles.each())
@@ -89,6 +97,31 @@ void CollisionSystem::checkPlayerAndTile()
 			{
 				reposition(playerBox, Entity{ pEnt }, tileBox);
 				break;
+			}
+		}
+	}
+
+	// 플레이어 - 탱크
+	auto tank = GetEntityByName("Tank");
+	ASSERT(tank, "Invalid entity!");
+	auto& tankBox = tank.GetComponent<BoxComponent>();
+	for (auto [pEnt, playerBox] : players.each())
+	{
+		if (Intersects(playerBox.WorldBox, tankBox.WorldBox))
+		{
+			reposition(playerBox, Entity{ pEnt }, tankBox);
+		}
+	}
+
+	// 플레이어 - 적
+	auto enemies = gRegistry.view<Tag_Enemy, BoxComponent>();
+	for (auto [pEnt, playerBox] : players.each())
+	{
+		for (auto [eEnt, enemyBox] : enemies.each())
+		{
+			if (Intersects(playerBox.WorldBox, enemyBox.WorldBox))
+			{
+				reposition(playerBox, Entity{ pEnt }, enemyBox);
 			}
 		}
 	}
@@ -134,4 +167,24 @@ void CollisionSystem::reposition(BoxComponent& playerBox, Entity&& player, BoxCo
 	packet.Position = playerTransform.Position;
 
 	mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+}
+
+void CollisionSystem::checkTankCollision()
+{
+	auto tank = GetEntityByName("Tank");
+	ASSERT(tank, "Invalid entity!");
+	auto& tankBox = tank.GetComponent<BoxComponent>();
+
+	// FAT과 TANK_FAT엔 BreakableTile 태그가 붙어 있다.
+	auto tiles = gRegistry.view<Tag_BreakableTile, BoxComponent>();
+	for (auto [entity, tileBox] : tiles.each())
+	{
+		if (Intersects(tankBox.WorldBox, tileBox.WorldBox))
+		{
+			// TODO : 게임 오버 처리
+			break;
+		}
+	}
+
+	// TODO : 탱크 - 적 충돌 탐지&처리
 }
