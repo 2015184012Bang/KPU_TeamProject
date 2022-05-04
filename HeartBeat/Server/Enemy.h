@@ -44,9 +44,6 @@ public:
 		}
 		int randomindx = Random::RandInt(0, MAX_PLAYER-1);
 		mChasingPlayerPosition = playerPositon[randomindx];
-		mPrevPlayerPosition = *mChasingPlayerPosition;
-
-		//mChasingPlayerPosition = playerPositon[0];
 
 		SetStartNode();
 		FindPath();
@@ -116,7 +113,6 @@ public:
 private:
 	vector<Vector3*> playerPositon;
 	Vector3* mChasingPlayerPosition;
-	Vector3 mPrevPlayerPosition;
 
 	STransformComponent* transform = nullptr;
 	STransformComponent* playerTransform = nullptr;
@@ -125,8 +121,7 @@ private:
 	std::tuple<int, int> mGoalIndex;
 	Tile mCurrentTarget;
 
-	int maxRow;
-	int maxCol;
+	int maxRow, maxCol;
 	int goalRow, goalCol;
 	Tile** graph;
 

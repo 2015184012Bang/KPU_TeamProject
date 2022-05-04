@@ -7,8 +7,6 @@ void Enemy::GetGoalIndex()
 	goalRow = GetClosestNode(static_cast<int>(mChasingPlayerPosition->z));
 	goalCol = GetClosestNode(static_cast<int>(mChasingPlayerPosition->x));
 
-	mPrevPlayerPosition = *mChasingPlayerPosition;
-
 	mGoalIndex = std::make_tuple(goalRow, goalCol);
 	//HB_LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
 	HB_LOG("Get GoalNode : ({0},{1})", goalRow, goalCol);
@@ -35,7 +33,7 @@ void Enemy::FindPath()
 	
 	if (openNode != nullptr)
 	{
-		if (openNode->TYPE == -1 || (openNode->ROW == goalRow && openNode->COL == goalCol))
+		if (openNode->ROW == goalRow && openNode->COL == goalCol)
 		{
 			while (openNode != nullptr)
 			{
@@ -43,10 +41,10 @@ void Enemy::FindPath()
 				int col = openNode->COL;
 
 				HB_LOG("({0}, {1})", row, col);
-				if(openNode->conn != nullptr)
+				if(openNode->CON != nullptr)
 					mPath.push(Tile(openNode->TYPE, col * TILE_WIDTH, row * TILE_WIDTH));
 
-				openNode = openNode->conn;
+				openNode = openNode->CON;
 			}
 		}
 		else
@@ -167,7 +165,7 @@ Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNod
 		if ((*it_open)->G < parentNode->G + 1)
 		{
 			(*it_open)->G = parentNode->G + 1;
-			parentNode->conn = (*it_open);
+			parentNode->CON = (*it_open);
 			(*it_open)->F = (*it_open)->G + (*it_open)->H;
 
 		}
@@ -178,7 +176,7 @@ Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNod
 		if((*it_close)->G < parentNode->G + 1)
 		{
 			(*it_close)->G = parentNode->G + 1;
-			parentNode->conn = (*it_close);
+			parentNode->CON = (*it_close);
 			(*it_close)->F = (*it_close)->G + (*it_close)->H;
 		}
 		return *it_close;
@@ -207,15 +205,7 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 
 	Node* node = nullptr;
 	
-	if (val == -1)
-	{
-		node = new Node(-1, rowIndex, colIndex);
-		node->G = parentNode->G + 1;
-		node->H = 0;
-		node->F = node->G;
-		node->conn = parentNode;
-	}
-	else if (val == 0 || val == 1)
+	if (val == 0 || val == 1)
 	{
 		node = new Node(val, rowIndex, colIndex);
 		node->G = parentNode->G + 1;
@@ -226,7 +216,7 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 		int h = abs(goalRowIndex - rowIndex) + abs(goalColIndex - colIndex);
 		node->H = h;
 		node->F = node->G + h;
-		node->conn = parentNode;
+		node->CON = parentNode;
 	}
 
 	return node;
@@ -235,7 +225,7 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 int Enemy::GetClosestNode(int pos)
 {
 	int nodePos = pos / 500;
-	if ((pos % 500) < 249)
+	if ((pos % static_cast<int>(TILE_WIDTH)) < ((static_cast<int>(TILE_WIDTH) / 2 ) - 1))
 		return nodePos;
 	else
 		return nodePos + 1;
