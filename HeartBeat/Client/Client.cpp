@@ -332,7 +332,7 @@ void Client::createLightEntity()
 	auto& light = mLight.AddComponent<LightComponent>();
 	light.Light.AmbientColor = Vector3{ 0.2f, 0.2f, 0.2f };
 	light.Light.LightPosition = Vector3{ 10000.0f, 50000.f, 0.0f };
-	light.Light.SpecularStrength = 10.0f;
+	light.Light.SpecularStrength = 0.5f;
 	light.Light.CameraPosition = mMainCamera.GetComponent<CameraComponent>().Position;
 }
 

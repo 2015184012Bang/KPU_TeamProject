@@ -72,7 +72,7 @@ float4 PSMain(PSInput input) : SV_TARGET
     float3 viewDir = normalize(gCameraPos - input.fragPos);
     float3 reflectDir = reflect(-lightDir, norm);
     
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 8);
     float3 specular = gSpecularStrength * spec;
     
     float4 color = tex0.Sample(sam0, input.uv);
