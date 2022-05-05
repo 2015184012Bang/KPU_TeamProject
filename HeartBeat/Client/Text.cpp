@@ -2,6 +2,7 @@
 #include "Text.h"
 
 #include "Vertex.h"
+#include "Renderer.h"
 
 Text::Text()
 	: mFont(nullptr)
@@ -24,11 +25,11 @@ Text::Text(const Font* font)
 }
 
 
-void Text::SetSentence(const string& sentence)
+void Text::SetSentence(string_view sentence)
 {
 	if (mSentence != sentence)
 	{
-		mSentence = sentence;
+		mSentence = sentence.data();
 		updateVertexBuffer();
 	}
 }

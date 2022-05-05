@@ -1,41 +1,59 @@
-#include "PCH.h"
+#include "pch.h"
 #include "GameMap.h"
 
-#include "rapidcsv.h"
-#include "Define.h"
+#include "GameManager.h"
+#include "Values.h"
+#include <rapidcsv.h>
 
-GameMap::GameMap()
+
+void GameMap::LoadMap(string_view path)
 {
-	LoadMap("../Assets/Maps/Map1.csv");
-	InitGraph();
-}
+	rapidcsv::Document doc(path.data(), rapidcsv::LabelParams(-1, -1));
 
-void GameMap::LoadMap(const string& mapFile)
-{
-	rapidcsv::Document doc(mapFile, rapidcsv::LabelParams(-1, -1));
+	Map gameMap;
+	gameMap.FileName = path.data();
+	gameMap.MaxRow = static_cast<UINT32>(doc.GetRowCount());
+	gameMap.MaxCol = static_cast<UINT32>(doc.GetColumnCount());
 
-	for (int i = doc.GetRowCount() - 1; i >= 0; --i)
+	for (UINT32 row = 0; row < gameMap.MaxRow; ++row)
 	{
-		std::vector<int> parsed = doc.GetRow<int>(i);
+		// 파일의 아래에서부터 파싱한다. 좌하단이 원점.
+		vector<int> tileTypes = doc.GetRow<int>(gameMap.MaxRow - row - 1);
 
-		for (size_t j = 0; j < parsed.size(); ++j)
+		for (UINT32 col = 0; col < gameMap.MaxCol; ++col)
 		{
-			mTiles.emplace_back(parsed[j], j * TILE_WIDTH, (doc.GetRowCount() - 1 - i) * TILE_WIDTH);
+			gameMap.Tiles.emplace_back(static_cast<TileType>(tileTypes[col]),
+				col * Values::TileSide,
+				row * Values::TileSide);
 		}
 	}
 
-	maxRow = doc.GetRowCount();
-	maxCol = doc.GetColumnCount();
+	mMaps.push_back(move(gameMap));
 }
 
-void GameMap::Unload()
+void GameMap::Unload(string_view fileName)
 {
-	mTiles.clear();
+	auto iter = find_if(mMaps.begin(), mMaps.end(), [fileName](const Map& m)
+		{
+			return m.FileName == fileName;
+		});
+	ASSERT(iter != mMaps.end(), "No map to unload: {0}", fileName.data());
+	iter_swap(iter, mMaps.end() - 1);
+	mMaps.pop_back();
 }
 
+const Map& GameMap::GetMap(string_view fileName) const
+{
+	auto iter = find_if(mMaps.begin(), mMaps.end(), [fileName](const Map& m)
+		{
+			return m.FileName == fileName;
+		});
+	ASSERT(iter != mMaps.end(), "Could not find map: {0}", fileName.data());
+	return *iter;
+}
 void GameMap::InitGraph()
 {
-	graph = new Tile* [maxRow];
+	graph = new Tile * [maxRow];
 	for (int i = 0; i < maxRow; ++i)
 	{
 		graph[i] = new Tile[maxCol];
@@ -66,5 +84,3 @@ void GameMap::DeleteGraph()
 
 	delete[] graph;
 }
-
-GameMap gGameMap;

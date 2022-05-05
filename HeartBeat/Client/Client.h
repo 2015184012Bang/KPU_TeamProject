@@ -1,38 +1,54 @@
 #pragma once
 
-#include "HeartBeat/Game.h"
+#include "Entity.h"
 
 class Scene;
 class Renderer;
+class PacketManager;
+class Mesh;
+class Texture;
+class Skeleton;
+class Font;
 
-class Client :
-    public Game
+using namespace std::string_literals;
+
+class Client
 {
 public:
     Client();
+    ~Client();
     
-    virtual bool Init() override;
-    virtual void Shutdown() override;
-    virtual void Run() override;
+    bool Init();
+    void Shutdown();
+    void Run();
 
     void ChangeScene(Scene* scene);
 
-    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile = L"");
-    Entity CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile = L"");
-    Entity CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid);
-    Entity CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder = 100);
-    Entity CreateTextEntity(const wstring& fontFile);
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile = ""sv);
+    Entity CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile = ""sv);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile = ""sv);
+    Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile = ""sv);
+    Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
+    Entity CreateTextEntity(const Font* fontFile);
+
+    void DestroyEntityAfter(const uint32 eid, float secs);
+   
+    // MainCamera가 target을 따라다니도록 한다.
+    void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
+
+    // Parent에 붙은 Children들 삭제
+    void DeleteChildren(entt::registry& regi, entt::entity entity);
+
+public:
+    bool ShouldClose() { return !mbRunning; }
+	int GetClientID() const { return mClientID; }
+	void SetClientID(int id) { mClientID = id; }
+	const string& GetClientName() const { return mClientName; }
+	void SetClientName(string_view nickname) { mClientName = nickname.data(); }
+
+	unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
     Entity& GetMainCamera() { return mMainCamera; }
-
-    TCPSocketPtr GetMySocket() { return mMySocket; }
-
-    int GetClientID() const { return mClientID; }
-    void SetClientID(int id) { mClientID = id; }
-
-    const string& GetNickname() const { return mNickname; }
-    void SetNickname(const string& nickname) { mNickname = nickname; }
 
 private:
     void processInput();
@@ -40,12 +56,14 @@ private:
     void render();
 
     void createCameraEntity();
-    void createAnimationTransitions();
 
     void processButton();
+    void processPendingEntities(float deltaTime);
+    void updateMovement(float deltaTime);
     void updateScript(float deltaTime);
     void updateAnimation(float deltaTime);
     void updateCollisionBox(float deltaTime);
+    void updateMainCamera();
 
     void drawSkeletalMesh();
     void drawStaticMesh();
@@ -53,15 +71,21 @@ private:
     void drawSpriteAndText();
 
 private:
-    unique_ptr<Scene> mActiveScene;
-    unique_ptr<Renderer> mRenderer;
+    bool mbRunning = true;
+
+    unique_ptr<Scene> mActiveScene = nullptr;
+    unique_ptr<Renderer> mRenderer = nullptr;
+    unique_ptr<PacketManager> mPacketManager = nullptr;
 
     Entity mMainCamera;
     Entity m2dCamera;
 
-    TCPSocketPtr mMySocket;
-    
-    int mClientID;
-    string mNickname;
+    int mClientID = -1;
+    string mClientName = "KimMyungKyu";
+
+    Entity mFollowCameraTarget = {}; // 메인 카메라가 따라다닐 대상
+    Vector3 mTargetOffset = Vector3::Zero; // 타겟과의 오프셋
+
+    deque<std::pair<uint32, float>> mPendingEntities;
 };
 

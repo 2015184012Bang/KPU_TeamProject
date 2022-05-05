@@ -1,9 +1,10 @@
 #pragma once
 
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Script.h"
+#include "Components.h"
+#include "Helpers.h"
 #include "Input.h"
-
+#include "ResourceManager.h"
 
 class Character : public Script
 {
@@ -16,16 +17,22 @@ public:
 
 	virtual void Start() override
 	{
-		transform = &GetComponent<TransformComponent>();
-		animator = &GetComponent<AnimatorComponent>();
 	}
 
 	virtual void Update(float deltaTime) override
 	{
+		auto& movement = GetComponent<MovementComponent>();
+		auto& animator = GetComponent<AnimatorComponent>();
 
+		if (movement.Direction != Vector3::Zero)
+		{
+			animator.SetTrigger("Run");
+		}
+		else
+		{
+			animator.SetTrigger("Idle");
+		}
 	}
 
 private:
-	TransformComponent* transform;
-	AnimatorComponent* animator;
 };

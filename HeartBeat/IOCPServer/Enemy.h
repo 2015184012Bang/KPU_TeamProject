@@ -1,22 +1,13 @@
 #pragma once
 
-#include "ServerPCH.h"
+#include "Script.h"
 
-#include "HeartBeat/Script.h"
-#include "HeartBeat/GameMap.h"
-#include "HeartBeat/Log.h"
-#include "HeartBeat/Tags.h"
-#include "HeartBeat/Node.h"
-#include "HeartBeat/Define.h"
-
-#include "ServerSystems.h"
-
-class Enemy : public Script
+class Enemy
+	: public Script
 {
 public:
 	Enemy(Entity owner)
-		: Script(owner)
-	{}
+		: Script(owner) {}
 
 	virtual void Start() override
 	{
@@ -44,13 +35,13 @@ public:
 		}
 		int randomindx = Random::RandInt(0, MAX_PLAYER-1);
 		mChasingPlayerPosition = playerPositon[randomindx];
-
+		
 		SetStartNode();
 		FindPath();
 		bool retVal = GetNextTarget(&mCurrentTarget);
 	}
 
-	virtual void Update(float deltaTime) override
+	virtual void Update() override
 	{
 		if (!mbChase)
 		{
@@ -89,7 +80,7 @@ public:
 				bool retVal = GetNextTarget(&mCurrentTarget);
 
 				if (!retVal)
-				{
+	{
 					mbChase = false;
 				}
 			}

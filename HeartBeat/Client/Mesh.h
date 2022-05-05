@@ -11,16 +11,16 @@ extern vector<ComPtr<ID3D12Resource>> gUsedUploadBuffers;
 
 class Mesh : public IResource
 {
-	enum class eMeshType
+	enum class MeshType
 	{
-		Static,
-		Skeletal
+		STATIC,
+		SKELETAL
 	};
 
 public:
 	Mesh();
 
-	virtual void Load(const wstring& path) override;
+	virtual void Load(string_view path) override;
 	void LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint);
 
 	const D3D12_VERTEX_BUFFER_VIEW& GetVertexBufferView() const { return mVertexBufferView; }
@@ -30,7 +30,7 @@ public:
 	uint32 GetIndexCount() const { return mIndexCount; }
 
 private:
-	rapidjson::Document openMeshFile(const wstring& path, eMeshType* outMeshType);
+	rapidjson::Document openMeshFile(string_view path, MeshType* outMeshType);
 	void loadStaticMesh(const rapidjson::Document& doc);
 	void loadSkeletalMesh(const rapidjson::Document& doc);
 

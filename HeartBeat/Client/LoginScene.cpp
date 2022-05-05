@@ -1,135 +1,93 @@
 #include "ClientPCH.h"
 #include "LoginScene.h"
 
-#include "HeartBeat/PacketType.h"
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
 #include "Application.h"
 #include "Client.h"
+#include "Define.h"
 #include "Input.h"
 #include "LobbyScene.h"
+#include "PacketManager.h"
+#include "Utils.h"
+#include "ResourceManager.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
-	, mbConnected(false)
-	, mbChangeScene(false)
-	, mSocket(nullptr)
 {
 
 }
 
 void LoginScene::Enter()
 {
-	mSocket = mOwner->GetMySocket();
-
 	// 배경화면 생성
 	mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
-		TEXTURE(L"Login_Background.png"), 10);
+		TEXTURE("Login_Background.png"), 10);
 }
 
 void LoginScene::Exit()
 {
-	mOwner->DestroyAll();
+	// DontDestroyOnLoad 태그가 붙어진 엔티티를 제외한 모든 엔티티 삭제
+	DestroyAll();
 }
 
 void LoginScene::ProcessInput()
 {
-	if (Input::IsButtonPressed(eKeyCode::Return) && !mbConnected)
+	PACKET packet;
+	if (mOwner->GetPacketManager()->GetPacket(packet))
 	{
-		SocketAddress serveraddr("127.0.0.1", SERVER_PORT);
-
-		int retVal = mSocket->Connect(serveraddr);
-
-		if (retVal == SOCKET_ERROR)
+		switch (packet.PacketID)
 		{
-			SocketUtil::ReportError(L"LoginScene::ProcessInput()");
+		case ANSWER_LOGIN:
+			processAnswerLogin(packet);
+			break;
+
+		default:
+			HB_LOG("Unknown packet type: {0}", packet.PacketID);
+			break;
 		}
-		else
+	}
+}
+
+void LoginScene::Update(float deltaTime)
+{
+	// 엔터 키를 누르면 서버에 접속 요청
+	if (Input::IsButtonPressed(KeyCode::RETURN) && !mbConnected)
+	{
+		bool retVal = mOwner->GetPacketManager()->Connect(Values::ServerIP, Values::ServerPort);
+
+		if (retVal)
 		{
+			// 접속에 성공하면 클라이언트 소켓을 논블로킹 모드로 바꾸고
+			// REQUEST_LOGIN 패킷을 보낸다.
 			mbConnected = true;
-			mSocket->SetNonBlockingMode(true);
+			mOwner->GetPacketManager()->SetNonblocking(true);
 
-			// Send LoginRequest packet after connect
-			MemoryStream packet;
-
-			string id = "derisan";
-			packet.WriteUByte(static_cast<uint8>(CSPacket::eLoginRequest));
-			packet.WriteInt(static_cast<int>(id.size()));
-			packet.WriteString(id);
-
-			mSocket->Send(&packet, sizeof(MemoryStream));
-			
+			REQUEST_LOGIN_PACKET packet = {};
+			packet.PacketID = REQUEST_LOGIN;
+			packet.PacketSize = sizeof(REQUEST_LOGIN_PACKET);
+			CopyMemory(packet.ID, mOwner->GetClientName().data(), MAX_ID_LEN);
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(REQUEST_LOGIN_PACKET));
 		}
 	}
 
-	if (mbConnected)
-	{
-		MemoryStream packet;
-
-		int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
-
-		if (retVal == SOCKET_ERROR)
-		{
-			int error = WSAGetLastError();
-
-			if (error == WSAEWOULDBLOCK)
-			{
-				return;
-			}
-			else
-			{
-				SocketUtil::ReportError(L"LoginScene::ProcessInput", error);
-				mOwner->SetRunning(false);
-			}
-		}
-		else
-		{
-			processPacket(&packet);
-		}
-	}
-
+	// 서버로부터 ANSWER_LOGIN_PACKET 패킷 받으면 씬 변경.
 	if (mbChangeScene)
 	{
 		mOwner->ChangeScene(new LobbyScene(mOwner));
 	}
 }
 
-void LoginScene::processPacket(MemoryStream* packet)
+void LoginScene::processAnswerLogin(const PACKET& packet)
 {
-	int totalLen = packet->GetLength();
-	packet->SetLength(0);
+	ANSWER_LOGIN_PACKET* loginPacket = reinterpret_cast<ANSWER_LOGIN_PACKET*>(packet.DataPtr);
 
-	while (packet->GetLength() < totalLen)
+	if (loginPacket->Result != SUCCESS)
 	{
-		uint8 packetType;
-		packet->ReadUByte(&packetType);
-
-		switch (static_cast<SCPacket>(packetType))
-		{
-		case SCPacket::eLoginConfirmed:
-			processLoginConfirmed(packet);
-			break;
-
-		default:
-			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
-			packet->SetLength(totalLen);
-			break;
-		}
+		HB_LOG("Login declined!");
+		return;
 	}
-}
 
-void LoginScene::processLoginConfirmed(MemoryStream* packet)
-{
-	int myClientID = -1;
-	packet->ReadInt(&myClientID);
-	mOwner->SetClientID(myClientID);
-
-	int nickLen = 0;
-	packet->ReadInt(&nickLen);
-
-	string nickname;
-	packet->ReadString(&nickname, nickLen);
-	mOwner->SetNickname(nickname);
-
+	mOwner->SetClientID(loginPacket->ClientID);
 	mbChangeScene = true;
 }

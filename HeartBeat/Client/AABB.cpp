@@ -1,4 +1,4 @@
-#include "PCH.h"
+#include "ClientPCH.h"
 #include "AABB.h"
 
 #include <rapidjson/document.h>
@@ -12,21 +12,20 @@ AABB::AABB()
 
 }
 
-AABB::AABB(const wstring& path)
+AABB::AABB(string_view path)
 	: mMin(FLT_MAX, FLT_MAX, FLT_MAX)
 	, mMax(FLT_MIN, FLT_MIN, FLT_MIN)
 {
 	Load(path);
 }
 
-void AABB::Load(const wstring& path)
+void AABB::Load(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Could not open file");
 	}
 
 	std::stringstream fileStream;
@@ -38,8 +37,7 @@ void AABB::Load(const wstring& path)
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Its not valid json file.");
 	}
 
 	const rapidjson::Value& vertsJson = doc["vertices"];
@@ -83,7 +81,7 @@ void AABB::rotateY(float yaw)
 	points[4] = Vector3(mMin.x, mMax.y, mMax.z);
 	points[5] = Vector3(mMax.x, mMin.y, mMax.z);
 	points[6] = Vector3(mMax.x, mMax.y, mMin.z);
-	points[7] = Vector3(mMax);
+	points[7] = mMax;
 
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(XMConvertToRadians(yaw), 0.0f, 0.0f);
 	Vector3 p = Vector3::Transform(points[0], q);

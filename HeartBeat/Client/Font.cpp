@@ -7,7 +7,7 @@ Font::Font()
 
 }
 
-void Font::Load(const wstring& path)
+void Font::Load(string_view path)
 {
 	loadFontFile(path);
 }
@@ -53,13 +53,13 @@ void Font::MakeVertices(vector<SpriteVertex>* outVertices, const string& sentenc
 	}
 }
 
-void Font::loadFontFile(const wstring& path)
+void Font::loadFontFile(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
-	if (file.is_open() == false)
+	if (!file.is_open())
 	{
-		HB_LOG("Failed to open font file: {0}", ws2s(path));
+		HB_ASSERT(false, "Invalid file path.");
 		return;
 	}
 

@@ -1,11 +1,14 @@
 #include "ClientPCH.h"
 #include "Client.h"
 
-#include "HeartBeat/Tags.h"
+#include "tinyxml2.h"
 
+#include "Tags.h"
 #include "Animation.h"
-#include "ClientComponents.h"
-#include "ClientSystems.h"
+#include "Components.h"
+#include "Define.h"
+#include "GameMap.h"
+#include "Helpers.h"
 #include "Input.h"
 #include "LoginScene.h"
 #include "Mesh.h"
@@ -13,12 +16,24 @@
 #include "ResourceManager.h"
 #include "Text.h"
 #include "GameScene.h"
+#include "PacketManager.h"
+#include "Timer.h"
+#include "Utils.h"
+#include "Script.h"
+#include "Mesh.h"
+#include "Font.h"
+#include "Texture.h"
+#include "Skeleton.h"
+#include "SoundManager.h"
+#include "TestScene.h"
+#include "Random.h"
 
 Client::Client()
-	: Game()
-	, mActiveScene(nullptr)
-	, mMySocket(nullptr)
-	, mClientID(-1)
+{
+
+}
+
+Client::~Client()
 {
 
 }
@@ -27,15 +42,24 @@ bool Client::Init()
 {
 	Input::Init();
 	Timer::Init();
-	SocketUtil::Init();
+	SoundManager::Init();
+	Random::Init();
+	Values::Init();
 
-	mMySocket = SocketUtil::CreateTCPSocket();
+	// Parent 엔티티가 삭제될 때 Child도 삭제하도록 한다.
+	gRegistry.on_destroy<ParentComponent>().connect<&Client::DeleteChildren>(this);
+
+	gGameMap.LoadMap("../Assets/Maps/Map01.csv");
+
+	mPacketManager = std::make_unique<PacketManager>();
+	mPacketManager->Init();
 
 	mRenderer = std::make_unique<Renderer>();
 	mRenderer->Init();
 
+	ResourceManager::MakeAnimTransitions();
+
 	createCameraEntity();
-	createAnimationTransitions();
 
 	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
@@ -51,10 +75,9 @@ void Client::Shutdown()
 		mActiveScene = nullptr;
 	}
 
-	mMySocket = nullptr;
-
 	mRenderer->Shutdown();
-	SocketUtil::Shutdown();
+	mPacketManager->Shutdown();
+	SoundManager::Shutdown();
 }
 
 void Client::Run()
@@ -77,17 +100,15 @@ void Client::ChangeScene(Scene* scene)
 	mActiveScene->Enter();
 }
 
-Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const wstring& boxFile)
+
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
-	auto& id = e.AddComponent<IDComponent>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
-
-	RegisterEntity(id.ID, e);
+	e.AddComponent<MeshRendererComponent>(mesh, texFile);
+	e.AddComponent<AnimatorComponent>(skelFile);
 
 	if (boxFile.size() != 0)
 	{
@@ -98,37 +119,16 @@ Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& 
 	return e;
 }
 
-Entity Client::CreateSkeletalMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& skelFile, const uint64 eid, const wstring& boxFile /*= L""*/)
+Entity Client::CreateSkeletalMeshEntity(const Mesh* mesh, const Texture* texFile, const Skeleton* skelFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_SkeletalMesh>();
-	auto& id = e.AddComponent<IDComponent>(eid);
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-	e.AddComponent<AnimatorComponent>(ResourceManager::GetSkeleton(skelFile));
+	e.AddComponent<MeshRendererComponent>(mesh, texFile);
+	e.AddComponent<AnimatorComponent>(skelFile);
 
-	RegisterEntity(id.ID, e);
-
-	if (boxFile.size() != 0)
-	{
-		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
-		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
-	}
-
-	return e;
-}
-
-Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const wstring& boxFile)
-{
-	Entity e = Entity(GetNewEntity(), this);
-
-	auto& transform = e.AddComponent<TransformComponent>();
-	e.AddTag<Tag_StaticMesh>();
-	auto& id = e.AddComponent<IDComponent>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-
-	RegisterEntity(id.ID, e);
+	e.AddComponent<IDComponent>(eid);
 
 	if (boxFile.size() != 0)
 	{
@@ -139,32 +139,52 @@ Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& te
 	return e;
 }
 
-Entity Client::CreateStaticMeshEntity(const wstring& meshFile, const wstring& texFile, const uint64 eid)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	auto& transform = e.AddComponent<TransformComponent>();
 	e.AddTag<Tag_StaticMesh>();
-	e.AddComponent<MeshRendererComponent>(ResourceManager::GetMesh(meshFile), ResourceManager::GetTexture(texFile));
-	auto& id = e.AddComponent<IDComponent>(eid);
-	RegisterEntity(id.ID, e);
+	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
 
 	return e;
 }
 
-Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile, int drawOrder /*= 100*/)
+Entity Client::CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile /*= ""*/)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
+
+	auto& transform = e.AddComponent<TransformComponent>();
+	e.AddTag<Tag_StaticMesh>();
+	e.AddComponent<MeshRendererComponent>(meshFile, texFile);
+
+	e.AddComponent<IDComponent>(eid);
+
+	if (boxFile.size() != 0)
+	{
+		e.AddComponent<BoxComponent>(ResourceManager::GetAABB(boxFile), transform.Position, transform.Rotation.y);
+		e.AddComponent<DebugDrawComponent>(ResourceManager::GetDebugMesh(boxFile));
+	}
+
+	return e;
+}
+
+Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder /*= 100*/)
+{
+	Entity e = Entity{ gRegistry.create() };
 
 	e.AddTag<Tag_Sprite>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(width, height);
-	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), ResourceManager::GetTexture(texFile), drawOrder);
-
-	RegisterEntity(id.ID, e);
+	e.AddComponent<SpriteRendererComponent>(new SpriteMesh(width, height), texFile, drawOrder);
 
 	// Do sorting by draw order when sprite is added
-	GetRegistry().sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
+	gRegistry.sort<SpriteRendererComponent>([](const auto& lhs, const auto& rhs)
 		{
 			return lhs.DrawOrder < rhs.DrawOrder;
 		});
@@ -172,30 +192,60 @@ Entity Client::CreateSpriteEntity(int width, int height, const wstring& texFile,
 	return e;
 }
 
-Entity Client::CreateTextEntity(const wstring& fontFile)
+Entity Client::CreateTextEntity(const Font* fontFile)
 {
-	Entity e = Entity(GetNewEntity(), this);
+	Entity e = Entity{ gRegistry.create() };
 
 	e.AddTag<Tag_Text>();
-	auto& id = e.AddComponent<IDComponent>();
 	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>(new Text(ResourceManager::GetFont(fontFile)));
-
-	RegisterEntity(id.ID, e);
+	e.AddComponent<TextComponent>(new Text(fontFile));
 
 	return e;
+}
+
+void Client::DestroyEntityAfter(const uint32 eid, float secs)
+{
+	mPendingEntities.emplace_back(eid, secs);
+}
+
+void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
+{
+	mFollowCameraTarget = target;
+	mTargetOffset = offset;
+}
+
+void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
+{
+	Entity parent = Entity{ entity };
+	auto& children = parent.GetComponent<ParentComponent>().Children;
+
+	for (auto eid : children) 
+	{
+		// DestroyAll()을 수행하면 부모보다 자식이 먼저 삭제될 수 있다.
+		// 유효성 검사 필수.
+		bool bValid = regi.valid(eid);
+		if (!bValid)
+		{
+			continue;
+		}
+
+		regi.destroy(eid);
+	}
 }
 
 void Client::processInput()
 {
 	Input::Update();
 
-	if (Input::IsButtonPressed(eKeyCode::Escape))
+	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
-		SetRunning(false);
+		mbRunning = false;
 	}
 
 	processButton();
+
+	// 패킷 수신
+	mPacketManager->Recv();
 
 	if (mActiveScene)
 	{
@@ -209,9 +259,19 @@ void Client::update()
 
 	float deltaTime = Timer::GetDeltaTime();
 
+	processPendingEntities(deltaTime);
+	updateMovement(deltaTime);
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
+
+#ifdef _DEBUG
 	updateCollisionBox(deltaTime);
+#endif
+	
+	if (mFollowCameraTarget)
+	{
+		updateMainCamera();
+	}
 
 	if (mActiveScene)
 	{
@@ -225,7 +285,7 @@ void Client::render()
 
 	// Set 3D camera
 	auto& camera = mMainCamera.GetComponent<CameraComponent>();
-	ClientSystems::BindViewProjectionMatrix(camera.Position,
+	Helpers::BindViewProjectionMatrix(camera.Position,
 		camera.Target, camera.Up, camera.FOV, camera.Buffer);
 
 	drawSkeletalMesh();
@@ -237,7 +297,7 @@ void Client::render()
 
 	// Set 2D camera
 	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
-	ClientSystems::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
+	Helpers::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 
 	drawSpriteAndText();
 
@@ -248,85 +308,25 @@ void Client::render()
 
 void Client::createCameraEntity()
 {
-	mMainCamera = Entity(GetNewEntity(), this);
+	mMainCamera = Entity{ gRegistry.create() };
 	mMainCamera.AddComponent<CameraComponent>(Vector3(0.0f, 500.0f, -500.0f), Vector3(0.0f, 0.0f, 0.0f));
 	mMainCamera.AddTag<Tag_Camera>();
 	mMainCamera.AddTag<Tag_DontDestroyOnLoad>();
 
-	m2dCamera = Entity(GetNewEntity(), this);
+	m2dCamera = Entity{ gRegistry.create() };
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
 }
 
-void Client::createAnimationTransitions()
-{
-	// 바이러스 애니메이션 트랜지션 설정
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Run.anim"));
-		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Virus_Attack.anim"));
-		attackingAnim->SetLoop(false);
-
-		idleAnim->AddTransition("Run", runningAnim);
-		idleAnim->AddTransition("Attack", attackingAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-		attackingAnim->AddTransition("WhenEnd", idleAnim);
-	}
-
-	// 캐릭터_그린
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CG_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CG_Run.anim"));
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// 캐릭터_핑크
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CP_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CP_Run.anim"));
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// 캐릭터_레드
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"CR_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"CR_Run.anim"));
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-
-	// NPC(세포)
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Run.anim"));
-		Animation* attackingAnim = ResourceManager::GetAnimation(ANIM(L"Cell_Attack.anim"));
-
-		idleAnim->AddTransition("Run", runningAnim);
-		idleAnim->AddTransition("Attack", attackingAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-		runningAnim->AddTransition("Attack", attackingAnim);
-	}
-
-	// 탱크
-	{
-		Animation* idleAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Idle.anim"));
-		Animation* runningAnim = ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim"));
-		idleAnim->AddTransition("Run", runningAnim);
-		runningAnim->AddTransition("Idle", idleAnim);
-	}
-}
-
 void Client::processButton()
 {
-	if (Input::IsButtonPressed(eKeyCode::MouseLButton))
+	if (Input::IsButtonPressed(KeyCode::MOUSE_L))
 	{
-		auto view = GetRegistry().view<ButtonComponent, RectTransformComponent>();
+		auto view = gRegistry.view<ButtonComponent, RectTransformComponent>();
 		for (auto [entity, button, rect] : view.each())
 		{
-			bool contains = ClientSystems::Intersects(rect.Position, rect.Width, rect.Height);
+			bool contains = Helpers::Intersects(rect.Position, rect.Width, rect.Height);
 
 			if (contains)
 			{
@@ -337,9 +337,57 @@ void Client::processButton()
 	}
 }
 
+void Client::processPendingEntities(float deltaTime)
+{
+	auto iter = mPendingEntities.begin();
+	while (iter != mPendingEntities.end())
+	{
+		iter->second -= deltaTime;
+
+		if (iter->second < 0.0f)
+		{
+			DestroyEntityByID(iter->first);
+			iter = mPendingEntities.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+}
+
+void Client::updateMovement(float deltaTime)
+{
+	auto view = gRegistry.view<MovementComponent, TransformComponent>();
+	for (auto [entity, movement, transform] : view.each())
+	{
+		Vector3 toward = transform.Position + movement.Direction * movement.MaxSpeed * deltaTime;
+		Helpers::UpdatePosition(&transform.Position, toward, &transform.bDirty);
+
+		// XMVector3AngleBetweenVectors() 로 구할 수 있는 각도는 0~180 까지다.
+		// -x축으로 움직일 때, 제대로 된 각도로 회전하지 않으므로
+		// -1 을 곱해 준다.
+		Vector3 rotation = XMVector3AngleBetweenVectors(Vector3::UnitZ, movement.Direction);
+		float scalar = 1.0f;
+		if (movement.Direction.x < 0.0f)
+		{
+			scalar = -1.0f;
+		}
+
+		float yaw = XMConvertToDegrees(rotation.y);
+
+		if (isnan(yaw))
+		{
+			continue;
+		}
+
+		Helpers::UpdateYRotation(&transform.Rotation.y, scalar * XMConvertToDegrees(rotation.y), &transform.bDirty);
+	}
+}
+
 void Client::updateScript(float deltaTime)
 {
-	auto view = GetRegistry().view<ScriptComponent>();
+	auto view = gRegistry.view<ScriptComponent>();
 	for (auto [entity, script] : view.each())
 	{
 		if (!script.bInitialized)
@@ -354,35 +402,43 @@ void Client::updateScript(float deltaTime)
 
 void Client::updateAnimation(float deltaTime)
 {
-	auto view = GetRegistry().view<AnimatorComponent>();
+	auto view = gRegistry.view<AnimatorComponent>();
 	for (auto [entity, animator] : view.each())
 	{
-		ClientSystems::UpdateAnimation(&animator, deltaTime);
+		Helpers::UpdateAnimation(&animator, deltaTime);
 	}
 }
 
 void Client::updateCollisionBox(float deltaTime)
 {
-	auto view = GetRegistry().view<BoxComponent, TransformComponent>();
+	auto view = gRegistry.view<BoxComponent, TransformComponent>();
 	for (auto [entity, box, transform] : view.each())
 	{
-		ClientSystems::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
+		Helpers::UpdateBox(box.Local, &box.World, transform.Position, transform.Rotation.y, transform.bDirty);
 	}
+}
+
+void Client::updateMainCamera()
+{
+	const auto& targetPosition = mFollowCameraTarget.GetComponent<TransformComponent>().Position;
+	auto& cc = mMainCamera.GetComponent<CameraComponent>();
+	cc.Target = targetPosition;
+	cc.Position = { targetPosition.x + mTargetOffset.x, mTargetOffset.y, targetPosition.z + mTargetOffset.z };
 }
 
 void Client::drawSkeletalMesh()
 {
 	gCmdList->SetPipelineState(mRenderer->GetSkeletalMeshPSO().Get());
-	auto view = GetRegistry().view<Tag_SkeletalMesh>();
+	auto view = gRegistry.view<Tag_SkeletalMesh>();
 	for (auto entity : view)
 	{
-		Entity e = Entity(entity, this);
+		Entity e = Entity{ entity };
 
 		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
 		AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
-		ClientSystems::BindBoneMatrix(animator.Palette, animator.Buffer);
+		Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
 
 		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
@@ -394,27 +450,27 @@ void Client::drawStaticMesh()
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 
 	{
-		auto view = GetRegistry().view<Tag_StaticMesh>(entt::exclude<AttachmentChildComponent>);
+		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<ChildComponent>);
 		for (auto entity : view)
 		{
-			Entity e = Entity(entity, this);
+			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}
 	}
 
 	{
-		auto view = GetRegistry().view<AttachmentChildComponent>();
+		auto view = gRegistry.view<ChildComponent>();
 		for (auto entity : view)
 		{
-			Entity e = Entity(entity, this);
+			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			AttachmentChildComponent& attach = e.GetComponent<AttachmentChildComponent>();
-			ClientSystems::BindWorldMatrixAttached(&transform, &attach);
+			ChildComponent& attach = e.GetComponent<ChildComponent>();
+			Helpers::BindWorldMatrixAttached(&transform, &attach);
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}
@@ -424,10 +480,10 @@ void Client::drawStaticMesh()
 void Client::drawCollisionBox()
 {
 	gCmdList->SetPipelineState(mRenderer->GetWireframePSO().Get());
-	auto view = GetRegistry().view<DebugDrawComponent, TransformComponent>();
+	auto view = gRegistry.view<DebugDrawComponent, TransformComponent>();
 	for (auto [entity, debugDraw, transform] : view.each())
 	{
-		ClientSystems::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 		mRenderer->SubmitDebugMesh(debugDraw.Mesi);
 	}
 }
@@ -437,19 +493,19 @@ void Client::drawSpriteAndText()
 	gCmdList->SetPipelineState(mRenderer->GetSpritePSO().Get());
 
 	{
-		auto view = GetRegistry().view<SpriteRendererComponent, RectTransformComponent>();
+		auto view = gRegistry.view<SpriteRendererComponent, RectTransformComponent>();
 		for (auto [entity, sprite, rect] : view.each())
 		{
-			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 			mRenderer->SubmitSprite(sprite.Mesi, sprite.Tex);
 		}
 	}
 
 	{
-		auto view = GetRegistry().view<TextComponent, RectTransformComponent>();
+		auto view = gRegistry.view<TextComponent, RectTransformComponent>();
 		for (auto [entity, text, rect] : view.each())
 		{
-			ClientSystems::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
+			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
 			mRenderer->SubmitText(text.Txt);
 		}
 	}

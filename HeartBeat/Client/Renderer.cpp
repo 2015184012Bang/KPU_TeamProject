@@ -1,7 +1,7 @@
 #include "ClientPCH.h"
 #include "Renderer.h"
 
-#include "HeartBeat/Define.h"
+#include "Define.h"
 
 #include "Application.h"
 #include "Mesh.h"
@@ -10,6 +10,7 @@
 #include "Text.h"
 #include "Texture.h"
 #include "Vertex.h"
+#include "Utils.h"
 
 
 ComPtr<ID3D12Device> gDevice;
@@ -213,11 +214,11 @@ void Renderer::createPipelineState()
 	CD3DX12_DESCRIPTOR_RANGE descRange[1];
 	descRange[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-	CD3DX12_ROOT_PARAMETER params[static_cast<uint32>(eRootParameter::End)];
-	params[static_cast<uint32>(eRootParameter::WorldParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B0), 0, D3D12_SHADER_VISIBILITY_VERTEX);
-	params[static_cast<uint32>(eRootParameter::ViewProjParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
-	params[static_cast<uint32>(eRootParameter::TexParam)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
-	params[static_cast<uint32>(eRootParameter::BoneParam)].InitAsConstantBufferView(static_cast<uint32>(eShaderRegister::B2), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	CD3DX12_ROOT_PARAMETER params[static_cast<uint32>(RootParameter::END)];
+	params[static_cast<uint32>(RootParameter::WORLD_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B0), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(RootParameter::VIEWPROJ_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(RootParameter::TEX_PARAM)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
+	params[static_cast<uint32>(RootParameter::BONE_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B2), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
@@ -484,35 +485,66 @@ void Renderer::waitForPreviousFrame()
 
 void Renderer::loadAllAssetsFromFile()
 {
-	ResourceManager::GetMesh(MESH(L"Character_Red.mesh"));
-	ResourceManager::GetMesh(MESH(L"Character_Green.mesh"));
-	ResourceManager::GetMesh(MESH(L"Character_Pink.mesh"));
-	ResourceManager::GetMesh(MESH(L"Cell.mesh"));
-	ResourceManager::GetMesh(MESH(L"Virus.mesh"));
-	ResourceManager::GetMesh(MESH(L"Dog.mesh"));
-	ResourceManager::GetMesh(MESH(L"Pickax.mesh"));
-	ResourceManager::GetMesh(MESH(L"Cube.mesh"));
-	ResourceManager::GetMesh(MESH(L"Tank.mesh"));
+	MESH("Bag.mesh");
+	MESH("Bat.mesh");
+	MESH("Belt_Green.mesh");
+	MESH("Belt_Pink.mesh");
+	MESH("Belt_Red.mesh");
+	MESH("Cart.mesh");
+	MESH("Cell.mesh");
+	MESH("Character_Green.mesh");
+	MESH("Character_Pink.mesh");
+	MESH("Character_Red.mesh");
+	MESH("Clock.mesh");
+	MESH("Cotton_Swab.mesh");
+	MESH("Cube.mesh");
+	MESH("Dog.mesh");
+	MESH("Fat.mesh");
+	MESH("Hammer.mesh");
+	MESH("HealPack.mesh");
+	MESH("House.mesh");
+	MESH("Oxygen.mesh");
+	MESH("Pickax.mesh");
+	MESH("Pill.mesh");
+	MESH("Pill_Pack.mesh");
+	MESH("Plane.mesh");
+	MESH("Ringer.mesh");
+	MESH("Syringe.mesh");
+	MESH("Tank.mesh");
+	MESH("Thermometer.mesh");
+	MESH("Virus.mesh");
+	MESH("Plane_Big.mesh");
+	
+	SKELETON("Bag.skel");
+	SKELETON("Cart.skel");
+	SKELETON("Cell.skel");
+	SKELETON("Character_Green.skel");
+	SKELETON("Character_Pink.skel");
+	SKELETON("Character_Red.skel");
+	SKELETON("Clock.skel");
+	SKELETON("Dog.skel");
+	SKELETON("Fat.skel");
+	SKELETON("HealPack.skel");
+	SKELETON("Tank.skel");
+	SKELETON("Virus.skel");
 
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Red.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Green.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Character_Pink.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Cell.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Virus.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Dog.skel"));
-	ResourceManager::GetSkeleton(SKELETON(L"Tank.skel"));
+#ifdef _DEBUG
+	BOX("Cart.box");
+	BOX("Cell.box");
+	BOX("Character.box");
+	BOX("Cube.box");
+	BOX("Dog.box");
+	BOX("Pickax.box");
+	BOX("Tank.box");
+	BOX("Virus.box");
+#endif
 
-	ResourceManager::GetAABB(BOX(L"Character.box"));
-	ResourceManager::GetAABB(BOX(L"Cell.box"));
-	ResourceManager::GetAABB(BOX(L"Virus.box"));
-	ResourceManager::GetAABB(BOX(L"Cube.box"));
+	TEXTURE("Login_Background.png");
+	TEXTURE("Start_Button.png");
+	TEXTURE("GameOver.png");
 
-	ResourceManager::GetTexture(TEXTURE(L"Smile.png"));
-	ResourceManager::GetTexture(TEXTURE(L"Login_Background.png"));
-	ResourceManager::GetTexture(TEXTURE(L"Ready_Button.png"));
-
-	Font* font = ResourceManager::GetFont(FONT(L"fontdata.txt"));
-	font->SetTexture(ResourceManager::GetTexture(TEXTURE(L"font.dds")));
+	Font* font = FONT("fontdata.txt");
+	font->SetTexture(TEXTURE("font.dds"));
 }
 
 void Renderer::loadAssets()
@@ -534,7 +566,7 @@ void Renderer::loadAssets()
 
 void Renderer::Submit(const Mesh* mesh, const Texture* texture)
 {
-	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(RootParameter::TEX_PARAM), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->IASetIndexBuffer(&mesh->GetIndexBufferView());
@@ -551,7 +583,7 @@ void Renderer::SubmitDebugMesh(const Mesh* mesh)
 
 void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
 {
-	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(RootParameter::TEX_PARAM), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
@@ -561,7 +593,7 @@ void Renderer::SubmitText(const Text* text)
 {
 	const Texture* texture = text->GetTexture();
 
-	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(eRootParameter::TexParam), texture->GetGpuHandle());
+	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(RootParameter::TEX_PARAM), texture->GetGpuHandle());
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &text->GetVertexBufferView());
 	mCmdList->DrawInstanced(text->GetVertexCount(), 1, 0, 0);

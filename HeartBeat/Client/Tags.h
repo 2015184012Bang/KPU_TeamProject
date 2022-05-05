@@ -10,12 +10,4 @@ struct Tag_Player {};
 struct Tag_Enemy {};
 struct Tag_Tile {};
 struct Tag_Tank {};
-
-// 애니메이션 동기화용
-struct Tag_Moved {};
-
-
-// 서버용
-struct Tag_UpdateTransform {};
-struct Tag_UpdateCollision {};
-struct Tag_Dead {};
+struct Tag_Plane {};

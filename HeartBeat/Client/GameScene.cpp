@@ -1,21 +1,18 @@
 #include "ClientPCH.h"
 #include "GameScene.h"
 
-#include "HeartBeat/PacketType.h"
-#include "HeartBeat/Tags.h"
-#include "HeartBeat/Define.h"
-#include "HeartBeat/GameMap.h"
-
-#include "Animation.h"
 #include "Client.h"
-#include "ClientSystems.h"
-#include "Character.h"
-#include "Enemy.h"
+#include "Components.h"
+#include "Define.h"
+#include "PacketManager.h"
 #include "Input.h"
-#include "Renderer.h"
+#include "Random.h"
 #include "ResourceManager.h"
-#include "Text.h"
-#include "Skeleton.h"
+#include "SoundManager.h"
+#include "Helpers.h"
+#include "Tags.h"
+#include "Enemy.h"
+#include "UpgradeScene.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -25,406 +22,555 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
-	HB_LOG("TestScene::Enter");
+	// 내 캐릭터 알아두기
+	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
+	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
-	mSocket = mOwner->GetMySocket();
-
-	// Map1 생성
-	const vector<Tile>& gameMap = gGameMap.GetTiles();
-	for (const Tile& tile : gameMap)
-	{
-		Entity t = mOwner->CreateStaticMeshEntity(MESH(L"Cube.mesh"), GetTileTex(tile.Type));
-		t.AddTag<Tag_Tile>();
-		auto& transform = t.GetComponent<TransformComponent>();
-		transform.Position.x = tile.X;
-		transform.Position.y = -TILE_WIDTH;
-		transform.Position.z = tile.Z;
-	}
+	// 맵 생성
+	createMap("../Assets/Maps/Map01.csv");
 }
 
 void GameScene::Exit()
 {
-	HB_LOG("TestScene::Exit");
+	DestroyAll();
 }
 
 void GameScene::ProcessInput()
 {
-	MemoryStream packet;
-	int retVal = mSocket->Recv(&packet, sizeof(MemoryStream));
-
-	if (retVal == SOCKET_ERROR)
+	PACKET packet;
+	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
-		int errorCode = WSAGetLastError();
-
-		if (errorCode != WSAEWOULDBLOCK)
+		switch (packet.PacketID)
 		{
-			SocketUtil::ReportError(L"TestScene::ProcessInput", errorCode);
-			mOwner->SetRunning(false);
+		case NOTIFY_MOVE:
+			processNotifyMove(packet);
+			break;
+
+		case NOTIFY_ATTACK:
+			processNotifyAttack(packet);
+			break;
+
+		case NOTIFY_DELETE_ENTITY:
+			processNotifyDeleteEntity(packet);
+			break;
+
+		case NOTIFY_CREATE_ENTITY:
+			processNotifyCreateEntity(packet);
+			break;
+
+		case NOTIFY_GAME_OVER:
+			processGameOver(packet);
+			break;
+
+		default:
+			HB_LOG("Unknown packet id: {0}", packet.PacketID);
+			break;
 		}
-	}
-	else
-	{
-		processPacket(&packet);
+
+		if (mbChangeScene)
+		{
+			switch (mStageCode)
+			{
+			case StageCode::FAIL:
+				doWhenFail();
+				break;
+
+			case StageCode::CLEAR:
+				break;
+
+			default:
+				HB_ASSERT(false, "Unknown stage code!");
+				break;
+			}
+
+			// 패킷 처리 반복문 탈출
+			break;
+		}
 	}
 }
 
 void GameScene::Update(float deltaTime)
 {
-	sendUserInput();
-	updateMainCamera();
+	bool isKeyPressed = pollKeyboardPressed();
+	bool isKeyReleased = pollKeyboardReleased();
+
+	if (isKeyPressed || isKeyReleased)
+	{
+		REQUEST_MOVE_PACKET packet = {};
+		packet.PacketID = REQUEST_MOVE;
+		packet.PacketSize = sizeof(packet);
+		packet.Direction = mDirection;
+		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+	}
+
+	if (Input::IsButtonPressed(KeyCode::A))
+	{
+		REQUEST_ATTACK_PACKET packet = {};
+		packet.PacketID = REQUEST_ATTACK;
+		packet.PacketSize = sizeof(packet);
+
+		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+	}
 }
 
-void GameScene::processPacket(MemoryStream* packet)
+
+void GameScene::createMap(string_view mapFile)
 {
-	int totalLen = packet->GetLength();
-	packet->SetLength(0);
+	const auto& gameMap = gGameMap.GetMap(mapFile);
 
-	while (packet->GetLength() < totalLen)
+	for (const auto& tile : gameMap.Tiles)
 	{
-		uint8 packetType;
-		packet->ReadUByte(&packetType);
+		createTile(tile);
+	}
+}
 
-		switch (static_cast<SCPacket>(packetType))
+void GameScene::createTile(const Tile& tile)
+{
+	switch (tile.TType)
+	{
+	case TileType::BLOCKED:
+		createBlockedTile(tile);
+		break;
+
+	case TileType::MOVABLE:
+		createMovableTile(tile);
+		break;
+
+	case TileType::RAIL:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
+		createRailTile(tile);
+		break;
+
+	case TileType::FAT:
+		createFatTile(tile);
+		break;
+
+	case TileType::TANK_FAT:
+		createTankFatTile(tile);
+		break;
+
+	case TileType::SCAR:
+		createScarTile(tile);
+		break;
+
+	default:
+		HB_ASSERT(false, "Unknown tile type!");
+		break;
+	}
+}
+
+
+void GameScene::createBlockedTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	// BLOCKED 타일은 위아래, 두 개를 생성한다.
+	{
+		Entity top = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			tileTex);
+		top.AddTag<Tag_Tile>();
+		auto& transform = top.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+	}
+
+	{
+		Entity down = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			tileTex);
+		down.AddTag<Tag_Tile>();
+		auto& transform = down.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createMovableTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+	obj.AddTag<Tag_Tile>();
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -Values::TileSide;
+	transform.Position.z = tile.Z;
+}
+
+void GameScene::createRailTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+	obj.AddTag<Tag_Tile>();
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -Values::TileSide;
+	transform.Position.z = tile.Z;
+}
+
+void GameScene::createFatTile(const Tile& tile)
+{
+	// 파괴 가능한 FAT 타일 아래에는 MOVABLE 타일을 생성한다.
+
+	const Texture* fatTex = GetTileTexture(tile.TType);
+	const Texture* movableTex = GetTileTexture(TileType::MOVABLE);
+
+	{
+		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), fatTex,
+			SKELETON("Fat.skel"));
+		fat.AddTag<Tag_Tile>();
+		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
+		auto& transform = fat.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+	}
+
+	// TODO : Fat 타일이 파괴되면 아래 movable 타일을 생성하기
+	{
+		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			movableTex);
+		movable.AddTag<Tag_Tile>();
+		auto& transform = movable.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createTankFatTile(const Tile& tile)
+{
+	// TANK_FAT 타일 아래에는 RAIL 타일을 생성한다.
+
+	const Texture* tankFatTex = GetTileTexture(tile.TType);
+	const Texture* railTex = GetTileTexture(TileType::RAIL);
+
+	{
+		Entity fat = mOwner->CreateSkeletalMeshEntity(MESH("Fat.mesh"), tankFatTex,
+			SKELETON("Fat.skel"));
+		fat.AddTag<Tag_Tile>();
+		fat.AddComponent<IDComponent>(Values::EntityID++); // FAT 타일은 서버와 동기화가 필요하므로 아이디 부여
+		auto& transform = fat.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+	}
+
+	{
+		Entity rail = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			railTex);
+		rail.AddTag<Tag_Tile>();
+		auto& transform = rail.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createScarTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+		tileTex);
+	obj.AddTag<Tag_Tile>();
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = -Values::TileSide;
+	transform.Position.z = tile.Z;
+}
+
+bool GameScene::pollKeyboardPressed()
+{
+	bool bChanged = false;
+
+	if (Input::IsButtonPressed(KeyCode::LEFT))
+	{
+		mDirection.x -= 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonPressed(KeyCode::RIGHT))
+	{
+		mDirection.x += 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonPressed(KeyCode::UP))
+	{
+		mDirection.z += 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonPressed(KeyCode::DOWN))
+	{
+		mDirection.z -= 1.0f;
+		bChanged = true;
+	}
+
+	return bChanged;
+}
+
+bool GameScene::pollKeyboardReleased()
+{
+	bool bChanged = false;
+
+	if (Input::IsButtonReleased(KeyCode::LEFT))
+	{
+		mDirection.x += 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonReleased(KeyCode::RIGHT))
+	{
+		mDirection.x -= 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonReleased(KeyCode::UP))
+	{
+		mDirection.z -= 1.0f;
+		bChanged = true;
+	}
+
+	if (Input::IsButtonReleased(KeyCode::DOWN))
+	{
+		mDirection.z += 1.0f;
+		bChanged = true;
+	}
+
+	return bChanged;
+}
+
+void GameScene::processNotifyMove(const PACKET& packet)
+{
+	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
+
+	auto target = GetEntityByID(nmPacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
+
+	auto& transform = target.GetComponent<TransformComponent>();
+	transform.Position = nmPacket->Position;
+
+	auto& movement = target.GetComponent<MovementComponent>();
+	movement.Direction = nmPacket->Direction;
+}
+
+void GameScene::processNotifyAttack(const PACKET& packet)
+{
+	NOTIFY_ATTACK_PACKET* naPacket = reinterpret_cast<NOTIFY_ATTACK_PACKET*>(packet.DataPtr);
+
+	auto e = GetEntityByID(naPacket->EntityID);
+	HB_ASSERT(e, "Invalid entity!");
+
+	auto& animator = e.GetComponent<AnimatorComponent>();
+	animator.SetTrigger(GetRandomAttackAnimFile());
+
+	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
+	{
+		SoundManager::PlaySound("Punch.mp3");
+	}
+}
+
+void GameScene::processNotifyDeleteEntity(const PACKET& packet)
+{
+	NOTIFY_DELETE_ENTITY_PACKET* ndePacket = reinterpret_cast<NOTIFY_DELETE_ENTITY_PACKET*>(packet.DataPtr);
+
+	auto target = GetEntityByID(ndePacket->EntityID);
+	HB_ASSERT(target, "Invalid entity!");
+
+	switch (static_cast<EntityType>(ndePacket->EntityType))
+	{
+	case EntityType::FAT:
+	{
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Fat_Break.anim"));
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 2.0f);
+	}
+	break;
+
+	case EntityType::DOG:
+	{
+		// TODO : 개 폭발시키기
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
+	}
+	break;
+
+	case EntityType::VIRUS:
+	{
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Virus_Dead.anim"));
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
+	}
+	break;
+
+	default:
+		break;
+	}
+}
+
+void GameScene::processNotifyCreateEntity(const PACKET& packet)
+{
+	NOTIFY_CREATE_ENTITY_PACKET* ncePacket = reinterpret_cast<NOTIFY_CREATE_ENTITY_PACKET*>(packet.DataPtr);
+
+	switch (static_cast<EntityType>(ncePacket->EntityType))
+	{
+	case EntityType::TANK:
+	{
+		Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
+			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID, "../Assets/Boxes/Tank.box");
+		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		tank.AddComponent<MovementComponent>(Values::TankSpeed);
+		auto& animator = tank.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
+	}
+	break;
+
+	case EntityType::CART:
+		break;
+
+	case EntityType::VIRUS:
+	{
+		Entity virus = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
+			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID, "../Assets/Boxes/Virus.box");
+		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
+		virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
+		auto& animator = virus.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
+
+		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
+			TEXTURE("Temp.png"));
+		Helpers::AttachBone(virus, hammer, "Weapon");
+	}
+	break;
+
+	case EntityType::DOG:
+	{
+		Entity dog = mOwner->CreateSkeletalMeshEntity(MESH("Dog.mesh"),
+			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID, "../Assets/Boxes/Dog.box");
+		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
+		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
+		auto& animator = dog.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
+	}
+	break;
+
+	default:
+		break;
+	}
+}
+
+void GameScene::processGameOver(const PACKET& packet)
+{
+	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
+
+	switch (ngoPacket->Result)
+	{
+	case ERROR_CODE::STAGE_CLEAR:
+		HB_ASSERT(false, "Not implemented yet.");
+		mbChangeScene = true;
+		mStageCode = StageCode::CLEAR;
+		break;
+
+	case ERROR_CODE::STAGE_FAIL:
+	{
+		mbChangeScene = true;
+		mStageCode = StageCode::FAIL;
+	}
+		break;
+	}
+}
+
+void GameScene::doWhenFail()
+{
+	// 재시작을 위해 엔티티 아이디 초기화
+	Values::EntityID = 3; 
+
+	auto view = gRegistry.view<Tag_Player>();
+	for (auto entity : view)
+	{
+		Entity player{ entity };
+
+		// 플레이어들의 부착물 삭제(벨트 제외).
+		Helpers::DetachBone(player);
+
+		// 비무장 애니메이션으로 전환.
+		auto& animator = player.GetComponent<AnimatorComponent>();
+		const auto& id = player.GetComponent<IDComponent>();
+		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(id.ID, CharacterAnimationType::IDLE_NONE));
+	}
+	
+	// 업그레이드 씬으로 전환.
+	auto newScene = new UpgradeScene{ mOwner };
+	newScene->SetDirection(mDirection);
+	mOwner->ChangeScene(newScene);
+}
+
+string GetRandomAttackAnimFile(bool isEnemy /*= false*/)
+{
+	if (isEnemy)
+	{
+		return "Attack";
+	}
+	else
+	{
+		switch (Random::RandInt(1, 3))
 		{
-		case SCPacket::eCreateCharacter:
-			processCreateCharacter(packet);
+		case 1:
+			return "Attack1";
 			break;
 
-		case SCPacket::eUpdateTransform:
-			processUpdateTransform(packet);
+		case 2:
+			return "Attack2";
 			break;
 
-		case SCPacket::eCreateEnemy:
-			processCreateEnemy(packet);
-			break;
-
-		case SCPacket::eDeleteEntity:
-			processDeleteEntity(packet);
-			break;
-
-		case SCPacket::eCreateTank:
-			processCreateTank(packet);
-			break;
-
-		case SCPacket::eUpdateCollision:
-			processUpdateCollision(packet);
+		case 3:
+			return "Attack3";
 			break;
 
 		default:
-			HB_LOG("Unknown packet type: {0}", static_cast<int>(packetType));
-			packet->SetLength(totalLen);
+			return "";
 			break;
 		}
 	}
-
-	updateAnimTrigger();
 }
 
-void GameScene::processCreateCharacter(MemoryStream* packet)
+Texture* GetTileTexture(TileType ttype)
 {
-	for (int i = 0; i < MAX_PLAYER; ++i)
+	switch (ttype)
 	{
-		int clientID = -1;
-		uint64 entityID = 0;
+	case TileType::BLOCKED:
+		return TEXTURE("Black.png");
 
-		packet->ReadInt(&clientID);
-		packet->ReadUInt64(&entityID);
+	case TileType::MOVABLE:
+		return TEXTURE("LightGreen.png");
 
-		wstring meshFile;
-		wstring texFile;
-		wstring skelFile;
+	case TileType::RAIL:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
+		return TEXTURE("Brown.png");
 
-		GetCharacterFiles(clientID, &meshFile, &texFile, &skelFile);
+	case TileType::FAT:
+		return TEXTURE("Pink.png");
 
-		Entity e = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, entityID, BOX(L"Character.box"));
-		e.AddTag<Tag_Player>();
-		auto& animator = e.GetComponent<AnimatorComponent>();
+	case TileType::TANK_FAT:
+		return TEXTURE("Orange.png");
 
-		wstring idleAnimFile = GetCharacterAnimation(clientID, CharacterAnimationType::eIdle);
-		ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
+	case TileType::SCAR:
+		return TEXTURE("Red.png");
 
-		// 클라이언트 ID가 나라면, 스크립트를 부착하고 따로 저장해둔다
-		if (clientID == mOwner->GetClientID())
-		{
-			mMyCharacter = e;
-			mMyCharacter.AddComponent<ScriptComponent>(std::make_shared<Character>(mMyCharacter));
-			mMyCharacterID = entityID;
-		}
-	}
-}
-
-void GameScene::processUpdateTransform(MemoryStream* packet)
-{
-	uint64 eid;
-	packet->ReadUInt64(&eid);
-	Vector3 position;
-	packet->ReadVector3(&position);
-
-	float yaw;
-	packet->ReadFloat(&yaw);
-
-	auto entity = mOwner->GetEntityByID(eid);
-	HB_ASSERT((entity != entt::null), "Unknown ID: {0}", eid);
-
-	Entity ent = Entity(entity, mOwner);
-	auto& transform = ent.GetComponent<TransformComponent>();
-	ClientSystems::UpdatePosition(&transform.Position, position, &transform.bDirty);
-	ClientSystems::UpdateYRotation(&transform.Rotation.y, yaw, &transform.bDirty);
-	ent.AddTag<Tag_Moved>();
-}
-
-void GameScene::sendUserInput()
-{
-	if (!mMyCharacter)
-	{
-		return;
-	}
-
-	Vector3 direction = Vector3::Zero;
-	bool bMove = false;
-	bool bClicked = false;
-
-	if (Input::IsButtonRepeat(eKeyCode::Up))
-	{
-		direction.z += 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Down))
-	{
-		direction.z -= 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Left))
-	{
-		direction.x -= 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonRepeat(eKeyCode::Right))
-	{
-		direction.x += 1.0f;
-		bMove = true;
-	}
-
-	if (Input::IsButtonPressed(eKeyCode::D))
-	{
-		bClicked = true;
-	}
-
-	MemoryStream packet;
-	if (bMove)
-	{
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserKeyboardInput));
-		packet.WriteUInt64(mMyCharacterID);
-		packet.WriteVector3(direction);
-	}
-
-	if (bClicked)
-	{
-		packet.WriteUByte(static_cast<uint8>(CSPacket::eUserMouseInput));
-		packet.WriteUInt64(mMyCharacterID);
-	}
-
-	if (packet.GetLength() > 0)
-	{
-		mSocket->Send(&packet, sizeof(packet));
-	}
-}
-
-void GameScene::updateAnimTrigger()
-{
-	// Moved 태그가 붙은 엔티티는 서버로부터 위치 갱신을 받은 것들이다.
-	// Moved 태그가 붙지 않았다면 움직이지 않았다는 것이므로 애니메이션을 Idle로 바꾼다.
-	{
-		auto view = mOwner->GetRegistry().view<Tag_Player>();
-		for (auto entity : view)
-		{
-			Entity e = Entity(entity, mOwner);
-
-			auto& animator = e.GetComponent<AnimatorComponent>();
-			if (!e.HasComponent<Tag_Moved>())
-			{
-				animator.SetTrigger("Idle");
-			}
-			else
-			{
-				animator.SetTrigger("Run");
-				e.RemoveComponent<Tag_Moved>();
-			}
-		}
-	}
-
-	{
-		auto view = mOwner->GetRegistry().view<Tag_Enemy>();
-		for (auto entity : view)
-		{
-			Entity e = Entity(entity, mOwner);
-
-			auto& animator = e.GetComponent<AnimatorComponent>();
-			if (!e.HasComponent<Tag_Moved>())
-			{
-				animator.SetTrigger("Idle");
-			}
-			else
-			{
-				animator.SetTrigger("Run");
-				e.RemoveComponent<Tag_Moved>();
-			}
-		}
-	}
-}
-
-void GameScene::updateChildParentAfterDelete()
-{
-	// HACK: 엔티티 삭제 시 AttachmentChild 컴포넌트의 메모리가 오염됨.
-	// entt 내부의 문제로 생각되며 Attachment 컴포넌트를 가진 엔티티들을
-	// 갱신하는 것으로 해결.
-	auto view = mOwner->GetRegistry().view<AttachmentParentComponent, TransformComponent, AnimatorComponent>();
-
-	for (auto [entity, parent, transform, animator] : view.each())
-	{
-		Entity child(mOwner->GetEntityByID(parent.ChildID), mOwner);
-		auto& attachmentChild = child.GetComponent<AttachmentChildComponent>();
-
-		attachmentChild.ParentPalette = &animator.Palette;
-		attachmentChild.BoneIndex = animator.Skel->GetBoneIndexByName("Weapon");
-		attachmentChild.ParentTransform = &transform;
-	}
-}
-
-void GameScene::updateMainCamera()
-{
-	if (!mMyCharacter)
-	{
-		return;
-	}
-
-	Entity& mainCamera = mOwner->GetMainCamera();
-
-	auto& camera = mainCamera.GetComponent<CameraComponent>();
-
-	auto& characterTransform = mMyCharacter.GetComponent<TransformComponent>();
-	auto& characterPosition = characterTransform.Position;
-
-	camera.Target = characterPosition;
-	camera.Position = Vector3(characterPosition.x, 1000.0f, characterPosition.z - 1000.0f);
-}
-
-void GameScene::processUpdateCollision(MemoryStream* packet)
-{
-	uint64 eid;
-	packet->ReadUInt64(&eid);
-
-	Vector3 position = Vector3::Zero;
-	packet->ReadVector3(&position);
-
-	auto entity = mOwner->GetEntityByID(eid);
-
-	HB_ASSERT((entity != entt::null), "No entity id");
-
-	Entity e = Entity(entity, mOwner);
-
-	auto& transform = e.GetComponent<TransformComponent>();
-	transform.Position = position;
-}
-
-void GameScene::processCreateTank(MemoryStream* packet)
-{
-	uint64 eid;
-	packet->ReadUInt64(&eid);
-
-	Vector3 position = Vector3::Zero;
-	packet->ReadVector3(&position);
-
-	float yaw = 0.0f;
-	packet->ReadFloat(&yaw);
-
-	Entity tank = mOwner->CreateSkeletalMeshEntity(MESH(L"Tank.mesh"), TEXTURE(L"Tank.png"), SKELETON(L"Tank.skel"), eid);
-	tank.AddTag<Tag_Tank>();
-	auto& transform = tank.GetComponent<TransformComponent>();
-
-	transform.Position = position;
-	transform.Rotation.y = yaw;
-
-	auto& animator = tank.GetComponent<AnimatorComponent>();
-	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(ANIM(L"Tank_Run.anim")));
-}
-
-void GameScene::processDeleteEntity(MemoryStream* packet)
-{
-	uint64 eid;
-	packet->ReadUInt64(&eid);
-
-	Entity e{ mOwner->GetEntityByID(eid), mOwner };
-	bool hasChild = false;
-	if (e.HasComponent<AttachmentParentComponent>())
-	{
-		hasChild = true;
-	}
-
-	mOwner->DestroyEntityByID(eid);
-
-	// Attachement 컴포넌트가 있다면 갱신한다.
-	if (hasChild)
-	{
-		updateChildParentAfterDelete();
-	}
-}
-
-void GameScene::processCreateEnemy(MemoryStream* packet)
-{
-	uint64 eid;
-	packet->ReadUInt64(&eid);
-
-	uint8 enemyType;
-	packet->ReadUByte(&enemyType);
-
-	Vector3 position;
-	packet->ReadVector3(&position);
-
-	wstring meshFile;
-	wstring texFile;
-	wstring skelFile;
-
-	GetEnemyFiles(enemyType, &meshFile, &texFile, &skelFile);
-	wstring idleAnimFile = GetEnemyAnimation(enemyType, EnemyAnimationType::eIdle);
-
-	Entity enemy = mOwner->CreateSkeletalMeshEntity(meshFile, texFile, skelFile, eid, BOX(L"Virus.box"));
-	enemy.AddTag<Tag_Enemy>();
-	enemy.AddComponent<ScriptComponent>(std::make_shared<Enemy>(enemy));
-
-	auto& transform = enemy.GetComponent<TransformComponent>();
-	transform.Position = position;
-
-	if (enemyType == Virus)
-	{
-		Entity pickax = mOwner->CreateStaticMeshEntity(MESH(L"Pickax.mesh"), TEXTURE(L"Pickax.png"));
-		ClientSystems::SetBoneAttachment(enemy, pickax, "Weapon");
-	}
-
-	auto& animator = enemy.GetComponent<AnimatorComponent>();
-	ClientSystems::PlayAnimation(&animator, ResourceManager::GetAnimation(idleAnimFile));
-}
-
-wstring GetTileTex(int type)
-{
-	switch (type)
-	{
-	case Grass:
-		return TEXTURE(L"Cube_Pink.png");
-		break;
-	case Rail:
-		return TEXTURE(L"Cube_SkyBlue.png");
-		break;
-	case Obstacle:
-		return TEXTURE(L"Cube_Black.png");
-		break;
 	default:
-		HB_ASSERT(false, "Invalid tile type: {0}", type);
-		break;
+		HB_ASSERT(false, "Unknown tile type!");
+		return nullptr;
 	}
-
-	return L"";
 }

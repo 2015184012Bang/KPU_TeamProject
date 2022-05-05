@@ -2,6 +2,8 @@
 #include "Mesh.h"
 
 #include "ResourceManager.h"
+#include "Utils.h"
+#include "Renderer.h"
 
 Mesh::Mesh()
 	: mVertexBufferView()
@@ -12,17 +14,17 @@ Mesh::Mesh()
 
 }
 
-void Mesh::Load(const wstring& path)
+void Mesh::Load(string_view path)
 {
-	eMeshType meshType;
+	MeshType meshType;
 	rapidjson::Document doc = openMeshFile(path, &meshType);
 
 	switch (meshType)
 	{
-	case eMeshType::Static:
+	case MeshType::STATIC:
 		loadStaticMesh(doc);
 		break;
-	case eMeshType::Skeletal:
+	case MeshType::SKELETAL:
 		loadSkeletalMesh(doc);
 		break;
 	default:
@@ -91,14 +93,13 @@ void Mesh::LoadDebugMesh(const Vector3& minPoint, const Vector3& maxPoint)
 	createIndexBuffer(indices);
 }
 
-rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshType)
+rapidjson::Document Mesh::openMeshFile(string_view path, MeshType* outMeshType)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
-		HB_LOG("Could not open file: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid file path.");
 	}
 
 	std::stringstream fileStream;
@@ -110,8 +111,7 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Invalid json file.");
 	}
 
 	const rapidjson::Value& textures = doc["textures"];
@@ -119,23 +119,22 @@ rapidjson::Document Mesh::openMeshFile(const wstring& path, eMeshType* outMeshTy
 	for (rapidjson::SizeType i = 0; i < textures.Size(); ++i)
 	{
 		string texName = textures[i].GetString();
-		ResourceManager::GetTexture(s2ws(texName));
+		ResourceManager::GetTexture(texName);
 	}
 	
 	string vertexFormat = doc["vertexformat"].GetString();
 
 	if (vertexFormat == "PosNormTex")
 	{
-		*outMeshType = eMeshType::Static;
+		*outMeshType = MeshType::STATIC;
 	}
 	else if (vertexFormat == "PosNormSkinTex")
 	{
-		*outMeshType = eMeshType::Skeletal;
+		*outMeshType = MeshType::SKELETAL;
 	}
 	else
 	{
-		HB_LOG("Unknown vertex format: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Unknown vertex format");
 	}
 
 	return doc;

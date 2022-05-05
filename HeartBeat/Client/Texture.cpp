@@ -2,6 +2,8 @@
 #include "Texture.h"
 
 #include "TableDescriptorHeap.h"
+#include "Renderer.h"
+#include "Utils.h"
 
 uint32 Texture::sNumTextures = 0;
 
@@ -11,48 +13,45 @@ Texture::Texture()
 
 }
 
-void Texture::Load(const wstring& path)
+void Texture::Load(string_view path)
 {
 	bool success = loadTextureFromFile(path);
 
 	if (!success)
 	{
-		HB_LOG("Failed to load texture: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to load texture");
 	}
 
 	success = uploadTextureData();
 
 	if (!success)
 	{
-		HB_LOG("Failed to upload tex data to default buffer: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to upload tex data to default buffer");
 	}
 
 	success = createSRV();
 
 	if (!success)
 	{
-		HB_LOG("Failed to create SRV: {0}", ws2s(path));
-		HB_ASSERT(false, "ASSERTION FAILED");
+		HB_ASSERT(false, "Failed to create SRV");
 	}
 }
 
-bool Texture::loadTextureFromFile(const wstring& path)
+bool Texture::loadTextureFromFile(string_view path)
 {
-	std::wstring ext = std::filesystem::path(path).extension();
+	auto ext = std::filesystem::path(path).extension();
 
-	if (ext == L".dds" || ext == L".DDS")
+	if (ext == ".dds" || ext == ".DDS")
 	{
-		LoadFromDDSFile(path.c_str(), DDS_FLAGS_NONE, nullptr, mRawImage);
+		LoadFromDDSFile(s2ws(path.data()).c_str(), DDS_FLAGS_NONE, nullptr, mRawImage);
 	}
-	else if (ext == L".tga" || ext == L".TGA")
+	else if (ext == ".tga" || ext == ".TGA")
 	{
-		LoadFromTGAFile(path.c_str(), nullptr, mRawImage);
+		LoadFromTGAFile(s2ws(path.data()).c_str(), nullptr, mRawImage);
 	}
 	else
 	{
-		LoadFromWICFile(path.c_str(), WIC_FLAGS_NONE, nullptr, mRawImage);
+		LoadFromWICFile(s2ws(path.data()).c_str(), WIC_FLAGS_NONE, nullptr, mRawImage);
 	}
 
 	HRESULT hr = CreateTexture(gDevice.Get(), mRawImage.GetMetadata(), &mTexture);

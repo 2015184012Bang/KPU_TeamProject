@@ -1,5 +1,11 @@
 #pragma once
 
+#include <string>
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <Windows.h>
+
 #define SAFE_RELEASE(p) if (p) (p)->Release()
 
 inline std::string HrToString(HRESULT hr)

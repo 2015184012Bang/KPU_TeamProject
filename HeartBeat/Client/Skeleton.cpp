@@ -3,13 +3,13 @@
 
 #include <rapidjson/document.h>
 
-void Skeleton::Load(const wstring& path)
+void Skeleton::Load(string_view path)
 {
-	std::ifstream file(path);
+	std::ifstream file(path.data());
 
 	if (!file.is_open())
 	{
-		HB_ASSERT(false, "Could not open skeleton file: {0}", ws2s(path));
+		HB_ASSERT(false, "Could not open skeleton file");
 	}
 
 	std::stringstream fileStream;
@@ -21,7 +21,7 @@ void Skeleton::Load(const wstring& path)
 
 	if (!doc.IsObject())
 	{
-		HB_LOG("{0} is not valid json file!", ws2s(path));
+		HB_ASSERT(false, "Its not valid json file.");
 	}
 
 	const rapidjson::Value& boneCount = doc["bonecount"];
@@ -64,7 +64,7 @@ void Skeleton::Load(const wstring& path)
 	computeGlobalInvBindPose();
 }
 
-uint32 Skeleton::GetBoneIndexByName(const string& name) const
+uint32 Skeleton::GetBoneIndexByName(string_view name) const
 {
 	auto iter = std::find_if(mBones.begin(), mBones.end(), [&name](const Bone& bone) {
 		return bone.Name == name;

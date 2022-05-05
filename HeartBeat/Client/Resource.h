@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
-
-using std::wstring;
+#include <string_view>
+using std::string_view;
 
 class IResource
 {
 public:
-	virtual void Load(const wstring& path) = 0;
+	virtual void Load(string_view path) = 0;
 };

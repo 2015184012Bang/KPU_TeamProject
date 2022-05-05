@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Root>
+  <Server>
+    <Port>9000</Port>
+    <IP>127.0.0.1</IP>
+  </Server>
+  <Values>
+    <TileSide>400</TileSide>
+    <PlayerSpeed>600</PlayerSpeed>
+    <BACooldown>0.7</BACooldown>
+    <BARange>400</BARange>
+    <TankSpeed>300</TankSpeed>
+    <EnemySpeed>300</EnemySpeed>
+    <TankHealth>20</TankHealth>
+    <EnemyHealth>3</EnemyHealth>
+  </Values>
+</Root>

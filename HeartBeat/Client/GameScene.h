@@ -1,38 +1,62 @@
 #pragma once
 
 #include "Scene.h"
+#include "../IOCPServer/Protocol.h"
+#include "Define.h"
+#include "GameMap.h"
+#include "Entity.h"
+
+class Texture;
 
 class GameScene :
     public Scene
 {
 public:
     GameScene(Client* owner);
-    
+
     virtual void Enter() override;
     virtual void Exit() override;
     virtual void ProcessInput() override;
     virtual void Update(float deltaTime) override;
 
-private:
-    void processPacket(MemoryStream* packet);
-    void processCreateCharacter(MemoryStream* packet);
-    void processUpdateTransform(MemoryStream* packet);
-    void processCreateEnemy(MemoryStream* packet);
-    void processDeleteEntity(MemoryStream* packet);
-    void processCreateTank(MemoryStream* packet);
-    void processUpdateCollision(MemoryStream* packet);
-
-    void sendUserInput();
-    void updateAnimTrigger();
-    void updateChildParentAfterDelete();
-    void updateMainCamera();
+    // 업그레이드 씬에서 넘어올 때 방향 동기화를 위해 필요하다.
+    void SetDirection(const Vector3& direction) { mDirection = direction; }
 
 private:
-    TCPSocketPtr mSocket;
+    void createMap(string_view mapFile);
+    void createTile(const Tile& tile);
+    void createBlockedTile(const Tile& tile);
+    void createMovableTile(const Tile& tile);
+    void createRailTile(const Tile& tile);
+    void createFatTile(const Tile& tile);
+    void createTankFatTile(const Tile& tile);
+    void createScarTile(const Tile& tile);
 
-    Entity mMyCharacter;
-    HBID mMyCharacterID;
+	bool pollKeyboardPressed();
+	bool pollKeyboardReleased();
+
+	void processNotifyMove(const PACKET& packet);
+    void processNotifyAttack(const PACKET& packet);
+    void processNotifyDeleteEntity(const PACKET& packet);
+    void processNotifyCreateEntity(const PACKET& packet);
+    void processGameOver(const PACKET& packet);
+
+    void doWhenFail();
+
+private:
+    enum class StageCode
+    {
+        NONE,
+        CLEAR,
+        FAIL,
+    };
+
+    Entity mPlayerCharacter = {};
+    Vector3 mDirection = Vector3::Zero;
+
+    bool mbChangeScene = false;
+    StageCode mStageCode = StageCode::NONE;
 };
 
-wstring GetTileTex(int type);
-
+string GetRandomAttackAnimFile(bool isEnemy = false);
+Texture* GetTileTexture(TileType ttype);

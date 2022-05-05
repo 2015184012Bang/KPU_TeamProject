@@ -1,21 +1,21 @@
 #include "ClientPCH.h"
 #include "ResourceManager.h"
 
-#include "HeartBeat/Define.h"
-
+#include "AABB.h"
 #include "Animation.h"
 #include "Font.h"
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "Texture.h"
+#include "Utils.h"
 
-unordered_map<wstring, Mesh*> ResourceManager::sMeshes;
-unordered_map<wstring, Texture*> ResourceManager::sTextures;
-unordered_map<wstring, Skeleton*> ResourceManager::sSkeletons;
-unordered_map<wstring, Animation*> ResourceManager::sAnimations;
-unordered_map<wstring, AABB*> ResourceManager::sBoxes;
-unordered_map<wstring, Mesh*> ResourceManager::sDebugMeshes;
-unordered_map<wstring, Font*> ResourceManager::sFonts;
+unordered_map<string, Mesh*> ResourceManager::sMeshes;
+unordered_map<string, Texture*> ResourceManager::sTextures;
+unordered_map<string, Skeleton*> ResourceManager::sSkeletons;
+unordered_map<string, Animation*> ResourceManager::sAnimations;
+unordered_map<string, AABB*> ResourceManager::sBoxes;
+unordered_map<string, Mesh*> ResourceManager::sDebugMeshes;
+unordered_map<string, Font*> ResourceManager::sFonts;
 
 void ResourceManager::Shutdown()
 {
@@ -62,9 +62,9 @@ void ResourceManager::Shutdown()
 	sFonts.clear();
 }
 
-Mesh* ResourceManager::GetMesh(const wstring& path)
+Mesh* ResourceManager::GetMesh(string_view path)
 {
-	auto iter = sMeshes.find(path);
+	auto iter = sMeshes.find(path.data());
 
 	if (iter != sMeshes.end())
 	{
@@ -74,15 +74,15 @@ Mesh* ResourceManager::GetMesh(const wstring& path)
 	{
 		Mesh* newMesh = new Mesh;
 		newMesh->Load(path);
-		sMeshes[path] = newMesh;
+		sMeshes[path.data()] = newMesh;
 
 		return newMesh;
 	}
 }
 
-Texture* ResourceManager::GetTexture(const wstring& path)
+Texture* ResourceManager::GetTexture(string_view path)
 {
-	auto iter = sTextures.find(path);
+	auto iter = sTextures.find(path.data());
 
 	if (iter != sTextures.end())
 	{
@@ -92,15 +92,15 @@ Texture* ResourceManager::GetTexture(const wstring& path)
 	{
 		Texture* newTexture = new Texture;
 		newTexture->Load(path);
-		sTextures[path] = newTexture;
+		sTextures[path.data()] = newTexture;
 
 		return newTexture;
 	}
 }
 
-Skeleton* ResourceManager::GetSkeleton(const wstring& path)
+Skeleton* ResourceManager::GetSkeleton(string_view path)
 {
-	auto iter = sSkeletons.find(path);
+	auto iter = sSkeletons.find(path.data());
 	
 	if (iter != sSkeletons.end())
 	{
@@ -110,15 +110,15 @@ Skeleton* ResourceManager::GetSkeleton(const wstring& path)
 	{
 		Skeleton* newSkel = new Skeleton;
 		newSkel->Load(path);
-		sSkeletons[path] = newSkel;
+		sSkeletons[path.data()] = newSkel;
 
 		return newSkel;
 	}
 }
 
-Animation* ResourceManager::GetAnimation(const wstring& path)
+Animation* ResourceManager::GetAnimation(string_view path)
 {
-	auto iter = sAnimations.find(path);
+	auto iter = sAnimations.find(path.data());
 
 	if (iter != sAnimations.end())
 	{
@@ -128,15 +128,15 @@ Animation* ResourceManager::GetAnimation(const wstring& path)
 	{
 		Animation* newAnim = new Animation;
 		newAnim->Load(path);
-		sAnimations[path] = newAnim;
+		sAnimations[path.data()] = newAnim;
 
 		return newAnim;
 	}
 }
 
-AABB* ResourceManager::GetAABB(const wstring& path)
+AABB* ResourceManager::GetAABB(string_view path)
 {
-	auto iter = sBoxes.find(path);
+	auto iter = sBoxes.find(path.data());
 
 	if (iter != sBoxes.end())
 	{
@@ -146,19 +146,19 @@ AABB* ResourceManager::GetAABB(const wstring& path)
 	{
 		AABB* newBox = new AABB;
 		newBox->Load(path);
-		sBoxes[path] = newBox;
+		sBoxes[path.data()] = newBox;
 
 		Mesh* newDebugMesh = new Mesh;
 		newDebugMesh->LoadDebugMesh(newBox->GetMin(), newBox->GetMax());
-		sDebugMeshes[path] = newDebugMesh;
+		sDebugMeshes[path.data()] = newDebugMesh;
 
 		return newBox;
 	}
 }
 
-Mesh* ResourceManager::GetDebugMesh(const wstring& path)
+Mesh* ResourceManager::GetDebugMesh(string_view path)
 {
-	auto iter = sDebugMeshes.find(path);
+	auto iter = sDebugMeshes.find(path.data());
 
 	if (iter != sDebugMeshes.end())
 	{
@@ -166,15 +166,15 @@ Mesh* ResourceManager::GetDebugMesh(const wstring& path)
 	}
 	else
 	{
-		HB_ASSERT(false, "Debug mesh not found: {0}", ws2s(path));
+		HB_ASSERT(false, "Debug mesh file not found");
 	}
 
 	return nullptr;
 }
 
-Font* ResourceManager::GetFont(const wstring& path)
+Font* ResourceManager::GetFont(string_view path)
 {
-	auto iter = sFonts.find(path);
+	auto iter = sFonts.find(path.data());
 
 	if (iter != sFonts.end())
 	{
@@ -184,148 +184,291 @@ Font* ResourceManager::GetFont(const wstring& path)
 	{
 		Font* newFont = new Font;
 		newFont->Load(path);
-		sFonts[path] = newFont;
+		sFonts[path.data()] = newFont;
 
 		return newFont;
 	}
 }
 
+void ResourceManager::MakeAnimTransitions()
+{
+	// 바이러스
+	{
+		Animation* idleAnim = ANIM("Virus_Idle.anim");
+		Animation* runningAnim = ANIM("Virus_Run.anim");
+		Animation* attackingAnim = ANIM("Virus_Attack.anim");
+		attackingAnim->SetLoop(false);
 
-void GetCharacterFiles(int clientID, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		attackingAnim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 개
+	{
+		Animation* idleAnim = ANIM("Dog_Idle.anim");
+		Animation* runningAnim = ANIM("Dog_Run.anim");
+		Animation* attackingAnim = ANIM("Dog_Attack.anim");
+		attackingAnim->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackingAnim);
+		attackingAnim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 캐릭터_그린
+	{
+		Animation* idleAnim = ANIM("CG_Idle.anim");
+		Animation* runningAnim = ANIM("CG_Run.anim");
+		Animation* idleNoneAnim = ANIM("CG_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CG_Run_None.anim");
+		Animation* attack1 = ANIM("CG_Attack1.anim");
+		Animation* attack2 = ANIM("CG_Attack2.anim");
+		Animation* attack3 = ANIM("CG_Attack3.anim");
+
+		// Loop가 false이면 애니메이션이 종료됐을 때 WhenEnd 트리거가 작동한다.
+		attack1->SetLoop(false); 
+		attack2->SetLoop(false);
+		attack3->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack1", attack1);
+		idleAnim->AddTransition("Attack2", attack2);
+		idleAnim->AddTransition("Attack3", attack3);
+
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack1", attack1);
+		runningAnim->AddTransition("Attack2", attack2);
+		runningAnim->AddTransition("Attack3", attack3);
+
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
+
+		attack1->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 캐릭터_핑크
+	{
+		Animation* idleAnim = ANIM("CP_Idle.anim");
+		Animation* runningAnim = ANIM("CP_Run.anim");
+		Animation* idleNoneAnim = ANIM("CP_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CP_Run_None.anim");
+		Animation* attack1 = ANIM("CP_Attack1.anim");
+		Animation* attack2 = ANIM("CP_Attack2.anim");
+		Animation* attack3 = ANIM("CP_Attack3.anim");
+
+		attack1->SetLoop(false);
+		attack2->SetLoop(false);
+		attack3->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack1", attack1);
+		idleAnim->AddTransition("Attack2", attack2);
+		idleAnim->AddTransition("Attack3", attack3);
+
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack1", attack1);
+		runningAnim->AddTransition("Attack2", attack2);
+		runningAnim->AddTransition("Attack3", attack3);
+
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
+
+		attack1->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 캐릭터_레드
+	{
+		Animation* idleAnim = ANIM("CR_Idle.anim");
+		Animation* runningAnim = ANIM("CR_Run.anim");
+		Animation* idleNoneAnim = ANIM("CR_Idle_None.anim");
+		Animation* runningNoneAnim = ANIM("CR_Run_None.anim");
+		Animation* attack1 = ANIM("CR_Attack1.anim");
+		Animation* attack2 = ANIM("CR_Attack2.anim");
+		Animation* attack3 = ANIM("CR_Attack3.anim");
+
+		attack1->SetLoop(false);
+		attack2->SetLoop(false);
+		attack3->SetLoop(false);
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack1", attack1);
+		idleAnim->AddTransition("Attack2", attack2);
+		idleAnim->AddTransition("Attack3", attack3);
+
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack1", attack1);
+		runningAnim->AddTransition("Attack2", attack2);
+		runningAnim->AddTransition("Attack3", attack3);
+
+		idleNoneAnim->AddTransition("Run", runningNoneAnim);
+		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
+
+		attack1->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// NPC(세포)
+	{
+		Animation* idleAnim = ANIM("Cell_Idle.anim");
+		Animation* runningAnim = ANIM("Cell_Run.anim");
+		Animation* attackingAnim = ANIM("Cell_Attack.anim");
+
+		idleAnim->AddTransition("Run", runningAnim);
+		idleAnim->AddTransition("Attack", attackingAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackingAnim);
+	}
+
+	// 탱크
+	{
+		Animation* idleAnim = ANIM("Tank_Idle.anim");
+		Animation* runningAnim = ANIM("Tank_Run.anim");
+		idleAnim->AddTransition("Run", runningAnim);
+		runningAnim->AddTransition("Idle", idleAnim);
+	}
+
+	// 지방
+	{
+		Animation* breakAnim = ANIM("Fat_Break.anim");
+		breakAnim->SetLoop(false);
+	}
+}
+
+std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)
 {
 	switch (clientID)
 	{
 	case 0:
-		*outMeshFile = MESH(L"Character_Green.mesh");
-		*outTexFile = TEXTURE(L"Character_Green.png");
-		*outSkelFile = SKELETON(L"Character_Green.skel");
-		break;
+		return { MESH("Character_Green.mesh"), TEXTURE("Character_Green.png"), SKELETON("Character_Green.skel") };
 
 	case 1:
-		*outMeshFile = MESH(L"Character_Pink.mesh");
-		*outTexFile = TEXTURE(L"Character_Pink.png");
-		*outSkelFile = SKELETON(L"Character_Pink.skel");
-		break;
+		return { MESH("Character_Pink.mesh"), TEXTURE("Character_Pink.png"), SKELETON("Character_Pink.skel") };
 
 	case 2:
-		*outMeshFile = MESH(L"Character_Red.mesh");
-		*outTexFile = TEXTURE(L"Character_Red.png");
-		*outSkelFile = SKELETON(L"Character_Red.skel");
-		break;
+		return { MESH("Character_Red.mesh"), TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel") };
 
 	default:
-		HB_ASSERT(false, "Unknown client id: {0}", clientID);
-		break;
+		HB_LOG("Unknown client id: {0}", clientID);
+		return { nullptr, nullptr, nullptr };
 	}
 }
 
-wstring GetCharacterAnimation(int clientID, CharacterAnimationType type)
+Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 {
-	wstring animFile;
-
 	switch (clientID)
 	{
 	case 0: // Character_Green
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CG_Idle.anim");
-			break;
+		case CharacterAnimationType::IDLE:
+			return ANIM("CG_Idle.anim");
 
-		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CG_Run.anim");
-			break;
+		case CharacterAnimationType::IDLE_NONE:
+			return ANIM("CG_Idle_None.anim");
+			
+		case CharacterAnimationType::RUN:
+			return ANIM("CG_Run.anim");
+			
+		case CharacterAnimationType::RUN_NONE:
+			return ANIM("CG_Run_None.anim");
 		}
 		break;
 
 	case 1: // Character_Pink
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CP_Idle.anim");
-			break;
+		case CharacterAnimationType::IDLE:
+			return ANIM("CP_Idle.anim");
 
-		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CP_Run.anim");
-			break;
+		case CharacterAnimationType::RUN:
+			return ANIM("CP_Run.anim");
+		
+		case CharacterAnimationType::IDLE_NONE:
+			return ANIM("CP_Idle_None.anim");
+
+		case CharacterAnimationType::RUN_NONE:
+			return ANIM("CP_Run_None.anim");
 		}
 		break;
 
 	case 2: // Character_Red
 		switch (type)
 		{
-		case CharacterAnimationType::eIdle:
-			animFile = ANIM(L"CR_Idle.anim");
-			break;
+		case CharacterAnimationType::IDLE:
+			return ANIM("CR_Idle.anim");
 
-		case CharacterAnimationType::eRun:
-			animFile = ANIM(L"CR_Run.anim");
-			break;
+		case CharacterAnimationType::RUN:
+			return ANIM("CR_Run.anim");
+
+		case CharacterAnimationType::IDLE_NONE:
+			return ANIM("CR_Idle_None.anim");
+
+		case CharacterAnimationType::RUN_NONE:
+			return ANIM("CR_Run_None.anim");
 		}
 		break;
 	}
 
-	return animFile;
+	return nullptr;
 }
 
-void GetEnemyFiles(uint8 enemyType, wstring* outMeshFile, wstring* outTexFile, wstring* outSkelFile)
+std::tuple<Mesh*, Texture*, Skeleton*> GetEnemyFiles(EnemyType enemyType)
 {
 	switch (enemyType)
 	{
-	case Virus:
-		*outMeshFile = MESH(L"Virus.mesh");
-		*outTexFile = TEXTURE(L"Virus.png");
-		*outSkelFile = SKELETON(L"Virus.skel");
-		break;
+	case EnemyType::VIRUS:
+		return { MESH("Virus.mesh") , TEXTURE("Virus.png") , SKELETON("Virus.skel") };
 
-	case Dog:
-		*outMeshFile = MESH(L"Dog.mesh");
-		*outTexFile = TEXTURE(L"Dog.png");
-		*outSkelFile = SKELETON(L"Dog.skel");
-		break;
+	case EnemyType::DOG:
+		return { MESH("Dog.mesh") , TEXTURE("Dog.png") , SKELETON("Dog.skel") };
 
 	default:
-		break;
+		HB_LOG("UnKnown Enemy Type!");
+		return { nullptr, nullptr, nullptr };
 	}
 }
 
-wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
+Animation* GetEnemyAnimation(EnemyType enemyType, EnemyAnimationType animType)
 {
-	wstring animFile;
-
 	switch (enemyType)
 	{
-	case Virus:
+	case EnemyType::VIRUS:
 		switch (animType)
 		{
-		case EnemyAnimationType::eIdle:
-			animFile = ANIM(L"Virus_Idle.anim");
-			break;
+		case EnemyAnimationType::IDLE:
+			return ANIM("Virus_Idle.anim");
 
-		case EnemyAnimationType::eRun:
-			animFile = ANIM(L"Virus_Run.anim");
-			break;
+		case EnemyAnimationType::RUN:
+			return ANIM("Virus_Run.anim");
 
-		case EnemyAnimationType::eAttack:
-			animFile = ANIM(L"Virus_Attack.anim");
-			break;
+		case EnemyAnimationType::ATTACK:
+			return ANIM("Virus_Attack.anim");
+
+		case EnemyAnimationType::DEAD:
+			return ANIM("Virus_Dead.anim");
 		}
 		break;
 
-	case Dog:
+	case EnemyType::DOG:
 		switch (animType)
 		{
-		case EnemyAnimationType::eIdle:
-			animFile = ANIM(L"Dog_Idle.anim");
-			break;
+		case EnemyAnimationType::IDLE:
+			return ANIM("Dog_Idle.anim");
 
-		case EnemyAnimationType::eRun:
-			animFile = ANIM(L"Dog_Run.anim");
-			break;
+		case EnemyAnimationType::RUN:
+			return ANIM("Dog_Run.anim");
 
-		case EnemyAnimationType::eAttack:
-			animFile = ANIM(L"Dog_Attack.anim");
-			break;
+		case EnemyAnimationType::ATTACK:
+			return ANIM("Dog_Attack.anim");
 		}
 		break;
 	default:
@@ -333,5 +476,5 @@ wstring GetEnemyAnimation(uint8 enemyType, EnemyAnimationType animType)
 		break;
 	}
 
-	return animFile;
+	return nullptr;
 }
