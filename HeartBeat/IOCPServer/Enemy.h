@@ -1,6 +1,13 @@
 #pragma once
 
+#include "pch.h"
 #include "Script.h"
+#include "Node.h"
+#include "Random.h"
+#include "GameMap.h"
+#include "UserManager.h"
+#include "Timer.h"
+
 
 class Enemy
 	: public Script
@@ -15,12 +22,13 @@ public:
 		graph = gGameMap.GetGraph();
 		if (graph != nullptr)
 		{
-			HB_LOG("Success to make graph");
+			LOG("Success to make graph");
 		}
 		else
 		{
-			HB_ASSERT(graph, "Failed make graph");
+			ASSERT(graph, "Failed make graph");
 		}
+
 		maxRow = gGameMap.GetMaxRow();
 		maxCol = gGameMap.GetMaxCol();
 
@@ -33,7 +41,10 @@ public:
 			auto& playerTransform = p.GetComponent<STransformComponent>();
 			playerPositon.push_back(&playerTransform.Position);
 		}
-		int randomindx = Random::RandInt(0, MAX_PLAYER-1);
+
+		UserManager* userManager;
+		UINT32 curUserCount = userManager->GetCurrentUserCount();
+		int randomindx = Random::RandInt(0, curUserCount- 1);
 		mChasingPlayerPosition = playerPositon[randomindx];
 		
 		SetStartNode();
@@ -104,9 +115,6 @@ public:
 private:
 	vector<Vector3*> playerPositon;
 	Vector3* mChasingPlayerPosition;
-
-	STransformComponent* transform = nullptr;
-	STransformComponent* playerTransform = nullptr;
 
 	std::stack<Tile> mPath;
 	std::tuple<int, int> mGoalIndex;

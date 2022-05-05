@@ -55,20 +55,17 @@ public:
 
 	void Unload(string_view fileName);
 
-	void InitGraph();
-	void DeleteGraph();
+	void InitGraph(UINT32 maxRow, UINT32 maxCol);
+	void DeleteGraph(UINT32 maxRow);
 
 	const Map& GetMap(string_view fileName) const;
-	const vector<Tile>& GetTiles() const { return mTiles; }
 	Tile** GetGraph() const { return graph; }
-	const int& GetMaxRow() const { return maxRow; }
-	const int& GetMaxCol() const { return maxCol; }
 
 private:
 	vector<Tile> mTiles;
 	
-	int maxRow;
-	int maxCol;
 	Tile** graph;
 	vector<Map> mMaps;
 };
+
+extern GameMap gGameMap;

@@ -1,6 +1,4 @@
-#include "ServerPCH.h"
 #include "Enemy.h"
-#include "HeartBeat/Define.h"
 
 void Enemy::GetGoalIndex()
 {	
@@ -9,7 +7,7 @@ void Enemy::GetGoalIndex()
 
 	mGoalIndex = std::make_tuple(goalRow, goalCol);
 	//HB_LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
-	HB_LOG("Get GoalNode : ({0},{1})", goalRow, goalCol);
+	LOG("Get GoalNode : ({0},{1})", goalRow, goalCol);
 }
 
 void Enemy::FindPath()
@@ -40,7 +38,7 @@ void Enemy::FindPath()
 				int row = openNode->ROW;
 				int col = openNode->COL;
 
-				HB_LOG("({0}, {1})", row, col);
+				LOG("({0}, {1})", row, col);
 				if(openNode->CON != nullptr)
 					mPath.push(Tile(openNode->TYPE, col * TILE_WIDTH, row * TILE_WIDTH));
 
@@ -112,7 +110,7 @@ void Enemy::SetStartNode()
 	Node* startNode = new Node(myRow, myCol);
 
 	//HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
-	HB_LOG("Set StartNode : ({0},{1})", myRow, myCol);
+	LOG("Set StartNode : ({0},{1})", myRow, myCol);
 
 	openList.push_back(startNode);
 

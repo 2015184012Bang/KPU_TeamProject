@@ -51,7 +51,8 @@ const Map& GameMap::GetMap(string_view fileName) const
 	ASSERT(iter != mMaps.end(), "Could not find map: {0}", fileName.data());
 	return *iter;
 }
-void GameMap::InitGraph()
+
+void GameMap::InitGraph(UINT32 maxRow, UINT32 maxCol)
 {
 	graph = new Tile * [maxRow];
 	for (int i = 0; i < maxRow; ++i)
@@ -63,7 +64,7 @@ void GameMap::InitGraph()
 	{
 		for (int j = 0; j < maxCol; ++j)
 		{
-			graph[i][j].Type = mTiles[i * maxRow + j].Type;
+			graph[i][j].TType = mTiles[i * maxRow + j].TType;
 			graph[i][j].X = mTiles[i * maxRow + j].X;
 			graph[i][j].Z = mTiles[i * maxRow + j].Z;
 		}
@@ -71,11 +72,11 @@ void GameMap::InitGraph()
 
 	if (graph == nullptr)
 	{
-		HB_LOG("Graph Unloaded");
+		LOG("Graph Unloaded");
 	}
 }
 
-void GameMap::DeleteGraph()
+void GameMap::DeleteGraph(UINT32 maxRow)
 {
 	for (int i = 0; i < maxRow; ++i)
 	{

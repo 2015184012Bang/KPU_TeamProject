@@ -5,8 +5,6 @@
 
 #include "Timer.h"
 
-#include "ServerSystems.h"
-
 class Tank : public Script
 {
 public:
