@@ -51,13 +51,17 @@ PSInput VSMain(VSInput input)
     skinnedPos += input.weight.y * mul(pos, gBoneTransform[input.bone.y]);
     skinnedPos += input.weight.z * mul(pos, gBoneTransform[input.bone.z]);
     skinnedPos += input.weight.w * mul(pos, gBoneTransform[input.bone.w]);
-    
     skinnedPos = mul(skinnedPos, gWorld);
     
     result.fragPos = (float3)skinnedPos;
     result.position = mul(skinnedPos, gViewProj);
     result.uv = input.uv;
-    result.normal = mul(input.normal, (float3x3) gWorld);
+    
+    float3 skinnedNorm = input.weight.x * mul(input.normal, (float3x3) gBoneTransform[input.bone.x]);
+    skinnedNorm += input.weight.y * mul(input.normal, (float3x3) gBoneTransform[input.bone.y]);
+    skinnedNorm += input.weight.z * mul(input.normal, (float3x3) gBoneTransform[input.bone.z]);
+    skinnedNorm += input.weight.w * mul(input.normal, (float3x3) gBoneTransform[input.bone.w]);
+    result.normal = mul((float3)skinnedNorm, (float3x3) gWorld);
 
     return result;
 }
