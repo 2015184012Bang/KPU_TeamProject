@@ -13,11 +13,7 @@ CollisionSystem::CollisionSystem(entt::registry& registry, shared_ptr<Room>&& ro
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	// 플레이어가 공격할 때 사용할 히트박스 생성
-	Box hitbox;
-	hitbox.SetMin(Vector3{ -100.0f, 0.0f, 0.0f });
-	hitbox.SetMax(Vector3{ 100.0f, 0.0f, Values::BaseAttackRange });
-	Box::SetBox(hitbox, "Hitbox");
+	
 }
 
 void CollisionSystem::Update()

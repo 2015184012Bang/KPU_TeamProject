@@ -30,8 +30,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	//mPacketIdToFunction[REQUEST_UPGRADE] = std::bind(&GameManager::processRequestUpgrade, this,
-	//	std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_UPGRADE] = std::bind(&GameManager::processRequestUpgrade, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	//mPacketIdToFunction[REQUEST_ENTER_GAME] = std::bind(&GameManager::processRequestEnterGame, this,
 	//	std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	//mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
@@ -271,29 +271,29 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	room->Broadcast(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 
-//void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
-//{
-//	if (sizeof(REQUEST_UPGRADE_PACKET) != packetSize)
-//	{
-//		return;
-//	}
-//
-//	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
-//	auto user = mUserManager->GetUserByIndex(sessionIndex);
-//
-//	// 유저 공격력, 방어력, 회복력 설정
-//	mCombatSystem->SetPreset(sessionIndex,
-//		static_cast<CombatSystem::UpgradePreset>(ruPacket->UpgradePreset));
-//
-//	// 해당 유저를 비롯한 다른 유저들에게 알림
-//	NOTIFY_UPGRADE_PACKET nuPacket = {};
-//	nuPacket.PacketID = NOTIFY_UPGRADE;
-//	nuPacket.PacketSize = sizeof(nuPacket);
-//	nuPacket.EntityID = sessionIndex;
-//	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
-//	SendToAll(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
-//}
-//
+void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_UPGRADE_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+
+	// 유저 공격력, 방어력, 회복력 설정
+	room->SetPreset(user->GetClientID(), static_cast<CombatSystem::UpgradePreset>(ruPacket->UpgradePreset));
+
+	// 해당 유저를 비롯한 다른 유저들에게 알림
+	NOTIFY_UPGRADE_PACKET nuPacket = {};
+	nuPacket.PacketID = NOTIFY_UPGRADE;
+	nuPacket.PacketSize = sizeof(nuPacket);
+	nuPacket.EntityID = user->GetClientID();
+	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
+	room->Broadcast(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
+}
+
 //void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 //{
 //	if (sizeof(REQUEST_ENTER_GAME_PACKET) != packetSize)

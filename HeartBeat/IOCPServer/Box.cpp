@@ -6,6 +6,8 @@
 
 #include <rapidjson/document.h>
 
+#include "Values.h"
+
 
 std::unordered_map<std::string, Box> Box::sBoxes;
 
@@ -25,6 +27,12 @@ void Box::Init()
 	GetBox("../Assets/Boxes/Dog.box");
 	GetBox("../Assets/Boxes/Tank.box");
 	GetBox("../Assets/Boxes/Virus.box");
+
+	// 플레이어가 공격할 때 사용할 히트박스 생성
+	Box hitbox;
+	hitbox.SetMin(Vector3{ -100.0f, 0.0f, 0.0f });
+	hitbox.SetMax(Vector3{ 100.0f, 0.0f, Values::BaseAttackRange });
+	Box::SetBox(hitbox, "Hitbox");
 }
 
 Box& Box::GetBox(string_view filename)

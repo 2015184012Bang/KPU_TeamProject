@@ -169,6 +169,11 @@ void Room::Update()
 	mEnemySystem->Update();
 }
 
+void Room::SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset)
+{
+	mCombatSystem->SetPreset(clientID, preset);
+}
+
 void Room::createSystems()
 {
 	mMovementSystem = make_unique<MovementSystem>(mRegistry, shared_from_this());

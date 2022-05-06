@@ -42,6 +42,8 @@ public:
 
 	void Update();
 
+	void SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset);
+
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 public:
