@@ -543,6 +543,8 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");
 	TEXTURE("GameOver.png");
+	TEXTURE("RoomEnter.png");
+	TEXTURE("RoomNoEnter.png");
 
 	Font* font = FONT("fontdata.txt");
 	font->SetTexture(TEXTURE("font.dds"));

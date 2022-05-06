@@ -14,6 +14,18 @@ public:
     virtual void ProcessInput() override;
 
 private:
+    void processNotifyRoom(const PACKET& packet);
+
+    void createRoomSprite(int index, bool canEnter = false);
+
+private:
+    enum
+    {
+        AVAILABLE = 0,
+        CANNOT,
+        END
+    };
+
     bool mbChangeScene = false;
 };
 

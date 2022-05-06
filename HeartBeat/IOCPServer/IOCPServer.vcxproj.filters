@@ -91,6 +91,9 @@
     <ClCompile Include="Room.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -175,6 +178,9 @@
       <Filter>Source Files\Scripts</Filter>
     </ClInclude>
     <ClInclude Include="Room.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

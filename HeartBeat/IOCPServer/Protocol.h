@@ -34,6 +34,11 @@ enum PACKET_ID : UINT8
 	REQUEST_LOGIN,
 	ANSWER_LOGIN,
 	NOTIFY_LOGIN,
+
+	// 룸 씬
+	REQUEST_ENTER_ROOM,
+	ANSWER_ENTER_ROOM,
+	NOTIFY_ROOM,
 	
 	// 업그레이드 씬
 	REQUEST_ENTER_UPGRADE,
@@ -112,6 +117,19 @@ struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 struct NOTIFY_LOGIN_PACKET : public PACKET_HEADER
 {
 	UINT8 ClientID;
+};
+
+constexpr UINT8 MAX_ROOM_NUM = 32;
+
+struct NOTIFY_ROOM_PACKET : public PACKET_HEADER
+{
+	char Room[MAX_ROOM_NUM]; // 0이면 입장 가능한 방,
+							 // 1이면 입장 불가능 방
+};
+
+struct REQUEST_ENTER_ROOM_PACKET : public PACKET_HEADER 
+{
+	UINT8 RoomNumber;
 };
 
 struct REQUEST_ENTER_UPGRADE_PACKET : public PACKET_HEADER

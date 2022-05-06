@@ -8,6 +8,7 @@
 #include "CollisionSystem.h"
 #include "ScriptSystem.h"
 #include "EnemySystem.h"
+#include "RoomManager.h"
 #include "GameMap.h"
 
 class GameManager : public enable_shared_from_this<GameManager>
@@ -72,6 +73,9 @@ private:
 
 	// 유저 매니저
 	unique_ptr<UserManager> mUserManager = nullptr;
+
+	// 룸 매니저
+	unique_ptr<RoomManager> mRoomManager = nullptr;
 
 	// 로직 스레드 실행 여부
 	bool mShouldLogicRun = true;

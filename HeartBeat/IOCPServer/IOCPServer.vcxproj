@@ -175,6 +175,7 @@
     </ClCompile>
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="ScriptSystem.cpp" />
     <ClCompile Include="Session.cpp" />
@@ -201,6 +202,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Room.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="ScriptSystem.h" />
     <ClInclude Include="Session.h" />

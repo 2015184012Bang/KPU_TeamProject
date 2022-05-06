@@ -44,6 +44,11 @@ void GameManager::Init(const UINT32 maxSessionCount)
 	mUserManager = make_unique<UserManager>();
 	mUserManager->Init(maxSessionCount);
 
+	// 룸 매니저 생성
+	mRoomManager = make_unique<RoomManager>();
+	mRoomManager->Init(Values::MaxRoomNum);
+	mRoomManager->SendPacketFunction = SendPacketFunction;
+
 	// 게임 맵 생성
 	mGameMap = make_unique<GameMap>();
 	mGameMap->LoadMap("../Assets/Maps/Map01.csv");
@@ -167,6 +172,9 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	ansPacket.PacketSize = sizeof(ANSWER_LOGIN_PACKET);
 	ansPacket.Result = RESULT_CODE::SUCCESS;
 	SendPacketFunction(sessionIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+
+	// Room 정보 클라이언트에게 전송
+	mRoomManager->SendAvailableRoom(sessionIndex);
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
