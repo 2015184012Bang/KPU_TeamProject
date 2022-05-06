@@ -163,7 +163,7 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	ANSWER_LOGIN_PACKET ansPacket;
 	ansPacket.PacketID = ANSWER_LOGIN;
 	ansPacket.PacketSize = sizeof(ANSWER_LOGIN_PACKET);
-	ansPacket.Result = ERROR_CODE::SUCCESS;
+	ansPacket.Result = RESULT_CODE::SUCCESS;
 	ansPacket.ClientID = sessionIndex;	// 클라이언트 ID와 세션 인덱스를 일치시킨다.
 	SendPacketFunction(sessionIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 
@@ -180,7 +180,7 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
 	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
 	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
-	ansPacket.Result = ERROR_CODE::SUCCESS;
+	ansPacket.Result = RESULT_CODE::SUCCESS;
 
 	SendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 }
@@ -241,7 +241,7 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	NOTIFY_ENTER_GAME_PACKET negPacket = {};
 	negPacket.PacketID = NOTIFY_ENTER_GAME;
 	negPacket.PacketSize = sizeof(negPacket);
-	negPacket.Result = ERROR_CODE::SUCCESS;
+	negPacket.Result = RESULT_CODE::SUCCESS;
 
 	SendToAll(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
 
@@ -267,7 +267,7 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 	// 공격이 허가됐다면, 해당 유저를 포함한 다른 유저들에게 알려준다.
 	NOTIFY_ATTACK_PACKET naPacket = {};
 	naPacket.EntityID = sessionIndex;
-	naPacket.Result = bHit ? ERROR_CODE::ATTACK_SUCCESS : ERROR_CODE::ATTACK_MISS;
+	naPacket.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
 	naPacket.PacketID = NOTIFY_ATTACK;
 	naPacket.PacketSize = sizeof(naPacket);
 	SendToAll(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
@@ -344,7 +344,7 @@ void GameManager::DoGameOver()
 	NOTIFY_GAME_OVER_PACKET packet = {};
 	packet.PacketID = NOTIFY_GAME_OVER;
 	packet.PacketSize = sizeof(packet);
-	packet.Result = ERROR_CODE::STAGE_FAIL;
+	packet.Result = RESULT_CODE::STAGE_FAIL;
 	SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
 
 	// 엔티티 초기화

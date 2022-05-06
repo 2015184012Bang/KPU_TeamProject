@@ -130,6 +130,9 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="RoomScene.cpp">
+      <Filter>Source Files\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClientPCH.h">
@@ -254,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomScene.h">
+      <Filter>Source Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

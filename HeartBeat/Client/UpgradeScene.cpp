@@ -268,7 +268,7 @@ void UpgradeScene::processNotifyEnterGame(const PACKET& packet)
 {
 	NOTIFY_ENTER_GAME_PACKET* nmgPacket = reinterpret_cast<NOTIFY_ENTER_GAME_PACKET*>(packet.DataPtr);
 
-	if (nmgPacket->Result != ERROR_CODE::SUCCESS)
+	if (nmgPacket->Result != RESULT_CODE::SUCCESS)
 	{
 		HB_LOG("Unable to enter game scene.");
 		return;

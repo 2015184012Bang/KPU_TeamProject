@@ -7,10 +7,10 @@
 #include "Client.h"
 #include "Define.h"
 #include "Input.h"
-#include "LobbyScene.h"
 #include "PacketManager.h"
 #include "Utils.h"
 #include "ResourceManager.h"
+#include "RoomScene.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -34,7 +34,7 @@ void LoginScene::Exit()
 void LoginScene::ProcessInput()
 {
 	PACKET packet;
-	if (mOwner->GetPacketManager()->GetPacket(packet))
+	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
 		switch (packet.PacketID)
 		{
@@ -44,6 +44,13 @@ void LoginScene::ProcessInput()
 
 		default:
 			HB_LOG("Unknown packet type: {0}", packet.PacketID);
+			break;
+		}
+
+		// Login -> Room 씬으로 전환.
+		if (mbChangeScene)
+		{
+			mOwner->ChangeScene(new RoomScene{ mOwner });
 			break;
 		}
 	}
@@ -69,12 +76,6 @@ void LoginScene::Update(float deltaTime)
 			CopyMemory(packet.ID, mOwner->GetClientName().data(), MAX_ID_LEN);
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(REQUEST_LOGIN_PACKET));
 		}
-	}
-
-	// 서버로부터 ANSWER_LOGIN_PACKET 패킷 받으면 씬 변경.
-	if (mbChangeScene)
-	{
-		mOwner->ChangeScene(new LobbyScene(mOwner));
 	}
 }
 

@@ -374,7 +374,7 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetRandomAttackAnimFile());
 
-	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
+	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS)
 	{
 		SoundManager::PlaySound("Punch.mp3", 0.15f);
 	}
@@ -476,13 +476,13 @@ void GameScene::processGameOver(const PACKET& packet)
 
 	switch (ngoPacket->Result)
 	{
-	case ERROR_CODE::STAGE_CLEAR:
+	case RESULT_CODE::STAGE_CLEAR:
 		HB_ASSERT(false, "Not implemented yet.");
 		mbChangeScene = true;
 		mStageCode = StageCode::CLEAR;
 		break;
 
-	case ERROR_CODE::STAGE_FAIL:
+	case RESULT_CODE::STAGE_FAIL:
 	{
 		mbChangeScene = true;
 		mStageCode = StageCode::FAIL;

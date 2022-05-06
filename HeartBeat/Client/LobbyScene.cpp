@@ -156,7 +156,7 @@ void LobbyScene::processNotifyEnterUpgrade(const PACKET& packet)
 {
 	NOTIFY_ENTER_UPGRADE_PACKET* neuPacket = reinterpret_cast<NOTIFY_ENTER_UPGRADE_PACKET*>(packet.DataPtr);
 
-	if (neuPacket->Result != ERROR_CODE::SUCCESS)
+	if (neuPacket->Result != RESULT_CODE::SUCCESS)
 	{
 		HB_LOG("Unable to enter upgrade scene.");
 		return;
