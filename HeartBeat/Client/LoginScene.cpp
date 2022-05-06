@@ -89,6 +89,5 @@ void LoginScene::processAnswerLogin(const PACKET& packet)
 		return;
 	}
 
-	mOwner->SetClientID(loginPacket->ClientID);
 	mbChangeScene = true;
 }

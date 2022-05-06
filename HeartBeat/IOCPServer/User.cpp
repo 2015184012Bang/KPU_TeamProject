@@ -25,32 +25,28 @@ void User::Init(const INT32 index)
 
 void User::Reset()
 {
+	mUserState = UserState::IN_LOGIN;
 	mConnected = false;
 	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
-	gRegistry.destroy(mCharacter);
+
+	if (mCharacter)
+	{
+		gRegistry.destroy(mCharacter);
+	}
+
 	mCharacter = {};
 }
 
 void User::SetLogin(string_view userName)
 {
+	// 유저가 로그인했다는 것은 로그인씬을 벗어나 룸씬에 있다는 걸 의미.
+	mUserState = UserState::IN_ROOM;
+
 	mConnected = true;
 	mUserName = userName.data();
-
-	// 엔티티 생성
-	mCharacter = Entity{ gRegistry.create() };
-
-	// 컴포넌트 부착
-	auto& transform = mCharacter.AddComponent<TransformComponent>();
-	mCharacter.AddComponent<IDComponent>(mIndex);
-	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
-	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
-	mCharacter.AddComponent<CombatComponent>();
-	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
-		transform.Position, transform.Yaw);
-	mCharacter.AddTag<Tag_Player>();
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)
@@ -76,6 +72,22 @@ void User::SetData(const UINT32 dataSize, char* pData)
 
 	CopyMemory(&mDataBuffer[mWritePos], pData, dataSize);
 	mWritePos += dataSize;
+}
+
+void User::CreatePlayerEntity()
+{
+	// 엔티티 생성
+	mCharacter = Entity{ gRegistry.create() };
+
+	// 컴포넌트 부착
+	auto& transform = mCharacter.AddComponent<TransformComponent>();
+	mCharacter.AddComponent<IDComponent>(mIndex);
+	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
+	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
+	mCharacter.AddComponent<CombatComponent>();
+	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
+		transform.Position, transform.Yaw);
+	mCharacter.AddTag<Tag_Player>();
 }
 
 PACKET_INFO User::GetPacket()

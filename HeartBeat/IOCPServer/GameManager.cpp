@@ -156,18 +156,17 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 		return;
 	}
 
+	// 유저 등록
 	REQUEST_LOGIN_PACKET* reqPacket = reinterpret_cast<REQUEST_LOGIN_PACKET*>(packet);
 	auto userName = reqPacket->ID;
 	mUserManager->AddUser(sessionIndex, userName);
-
-	ANSWER_LOGIN_PACKET ansPacket;
+	
+	// ANSWER 패킷 반송
+	ANSWER_LOGIN_PACKET ansPacket = {};
 	ansPacket.PacketID = ANSWER_LOGIN;
 	ansPacket.PacketSize = sizeof(ANSWER_LOGIN_PACKET);
 	ansPacket.Result = RESULT_CODE::SUCCESS;
-	ansPacket.ClientID = sessionIndex;	// 클라이언트 ID와 세션 인덱스를 일치시킨다.
 	SendPacketFunction(sessionIndex, sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
-
-	sendNotifyLoginPacket(sessionIndex);
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

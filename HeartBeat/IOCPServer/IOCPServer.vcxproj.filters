@@ -88,6 +88,9 @@
     <ClCompile Include="EnemySystem.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -170,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Source Files\Scripts</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
