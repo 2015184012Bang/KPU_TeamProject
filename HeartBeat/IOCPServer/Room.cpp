@@ -38,6 +38,11 @@ void Room::AddUser(User* user)
 	user->SetUserState(User::UserState::IN_ROOM);
 
 	mUsers.push_back(user);
+	
+	if (mUsers.size() == ROOM_MAX_USER)
+	{
+		mRoomState = RoomState::Waiting_Full;
+	}
 }
 
 void Room::RemoveUser(User* user)
@@ -52,6 +57,11 @@ void Room::RemoveUser(User* user)
 		(*iter)->SetRoomIndex(-1);
 		(*iter)->SetUserState(User::UserState::IN_LOBBY);
 		mUsers.erase(iter);
+
+		if (mRoomState == RoomState::Waiting_Full)
+		{
+			mRoomState = RoomState::Waiting;
+		}
 	}
 	else
 	{

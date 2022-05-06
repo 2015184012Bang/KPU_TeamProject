@@ -38,7 +38,7 @@ void LobbyScene::ProcessInput()
 			break;
 
 		case ANSWER_ENTER_ROOM:
-			processEnterRoom(packet);
+			processAnswerEnterRoom(packet);
 			break;
 
 		default:
@@ -75,7 +75,7 @@ void LobbyScene::processNotifyRoom(const PACKET& packet)
 	}
 }
 
-void LobbyScene::processEnterRoom(const PACKET& packet)
+void LobbyScene::processAnswerEnterRoom(const PACKET& packet)
 {
 	ANSWER_ENTER_ROOM_PACKET* aerPacket = reinterpret_cast<ANSWER_ENTER_ROOM_PACKET*>(packet.DataPtr);
 

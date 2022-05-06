@@ -15,7 +15,7 @@ public:
 
 private:
     void processNotifyRoom(const PACKET& packet);
-    void processEnterRoom(const PACKET& packet);
+    void processAnswerEnterRoom(const PACKET& packet);
 
     void createRoomSprite(int index, bool canEnter = false);
 

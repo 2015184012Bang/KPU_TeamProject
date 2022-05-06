@@ -191,7 +191,8 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	REQUEST_ENTER_ROOM_PACKET* rerPacket = reinterpret_cast<REQUEST_ENTER_ROOM_PACKET*>(packet);
-	bool bEnter = mRoomManager->CanEnter(rerPacket->RoomNumber);
+	auto roomIndex = rerPacket->RoomNumber;
+	bool bEnter = mRoomManager->CanEnter(roomIndex);
 
 	ANSWER_ENTER_ROOM_PACKET aerPacket = {};
 	aerPacket.PacketID = ANSWER_ENTER_ROOM;
@@ -200,22 +201,22 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	if (!bEnter)
 	{
 		aerPacket.Result = RESULT_CODE::ROOM_ENTER_DENY;
+		SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
 	}
 	else
 	{
 		auto user = mUserManager->GetUserByIndex(sessionIndex);
 		ASSERT(user, "User is nullptr!");
-		mRoomManager->AddUser(rerPacket->RoomNumber, user);
+		mRoomManager->AddUser(roomIndex, user);
 
 		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
 		aerPacket.ClientID = user->GetClientID();
+		SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
+
+		// 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
+		// 기존 유저들에겐 새로운 유저의 정보 송신
+		mRoomManager->NotifyNewbie(roomIndex, user);
 	}
-
-	// ANSWER 패킷 반송
-	SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
-
-	// TODO : 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
-	// 기존 유저들에겐 새로운 유저의 정보 송신
 }
 
 void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

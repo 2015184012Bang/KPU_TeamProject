@@ -25,9 +25,9 @@ private:
 	void createButtons();
 	float getXPosition(int clientID);
 
-	void processNofifyLogin(const PACKET& packet);
 	void processNotifyEnterUpgrade(const PACKET& packet);
 	void processNotifyLeaveRoom(const PACKET& packet);
+	void processNotifyEnterRoom(const PACKET& packet);
 
 	std::tuple<Mesh*, Texture*> getCharacterBelt(int clientID);
 

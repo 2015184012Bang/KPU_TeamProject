@@ -12,6 +12,7 @@ public:
 	enum class RoomState
 	{
 		Waiting,
+		Waiting_Full,
 		Playing,
 	};
 
@@ -22,6 +23,8 @@ public:
 	void RemoveUser(User* user);
 
 	void Broadcast(const UINT32 packetSize, char* packet);
+
+	list<User*>& GetUsers() { return mUsers; }
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 

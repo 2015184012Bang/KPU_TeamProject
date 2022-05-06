@@ -53,8 +53,8 @@ void RoomScene::ProcessInput()
 			processNotifyLeaveRoom(packet);
 			break;
 
-		case NOTIFY_LOGIN:
-			processNofifyLogin(packet);
+		case NOTIFY_ENTER_ROOM:
+			processNotifyEnterRoom(packet);
 			break;
 
 		case NOTIFY_ENTER_UPGRADE:
@@ -110,6 +110,7 @@ void RoomScene::createCharacterMesh(int clientID)
 
 	// 캐릭터에게 벨트 장착
 	auto [beltMesh, beltTex] = getCharacterBelt(clientID);
+	HB_ASSERT(beltMesh && beltTex, "Belt resource is nullptr!");
 	Entity belt = mOwner->CreateStaticMeshEntity(beltMesh, beltTex);
 
 	// 씬을 넘어가면서 벨트가 삭제되지 않도록 태그를 붙여둔다.
@@ -176,12 +177,6 @@ float RoomScene::getXPosition(int clientID)
 	}
 }
 
-void RoomScene::processNofifyLogin(const PACKET& packet)
-{
-	NOTIFY_LOGIN_PACKET* nfyPacket = reinterpret_cast<NOTIFY_LOGIN_PACKET*>(packet.DataPtr);
-	createCharacterMesh(nfyPacket->ClientID);
-}
-
 void RoomScene::processNotifyEnterUpgrade(const PACKET& packet)
 {
 	NOTIFY_ENTER_UPGRADE_PACKET* neuPacket = reinterpret_cast<NOTIFY_ENTER_UPGRADE_PACKET*>(packet.DataPtr);
@@ -237,6 +232,13 @@ void RoomScene::processNotifyLeaveRoom(const PACKET& packet)
 	}
 	else
 	{
-		// TODO : 다른 유저들의 방 나감 구현
+		// 플레이어 캐릭터는 클라이언트 아이디가 곧 엔티티 아이디이다.
+		DestroyEntityByID(clientID);
 	}
+}
+
+void RoomScene::processNotifyEnterRoom(const PACKET& packet)
+{
+	NOTIFY_ENTER_ROOM_PACKET* nerPacket = reinterpret_cast<NOTIFY_ENTER_ROOM_PACKET*>(packet.DataPtr);
+	createCharacterMesh(nerPacket->ClientID);
 }
