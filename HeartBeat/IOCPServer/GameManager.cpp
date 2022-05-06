@@ -21,6 +21,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_ENTER_ROOM] = std::bind(&GameManager::processRequestEnterRoom, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_UPGRADE] = std::bind(&GameManager::processRequestEnterUpgrade, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
@@ -175,6 +177,40 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 
 	// Room 정보 클라이언트에게 전송
 	mRoomManager->SendAvailableRoom(sessionIndex);
+}
+
+void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_ENTER_ROOM_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	REQUEST_ENTER_ROOM_PACKET* rerPacket = reinterpret_cast<REQUEST_ENTER_ROOM_PACKET*>(packet);
+	bool bEnter = mRoomManager->CanEnter(rerPacket->RoomNumber);
+
+	ANSWER_ENTER_ROOM_PACKET aerPacket = {};
+	aerPacket.PacketID = ANSWER_ENTER_ROOM;
+	aerPacket.PacketSize = sizeof(aerPacket);
+
+	if (!bEnter)
+	{
+		aerPacket.Result = RESULT_CODE::ROOM_ENTER_DENY;
+	}
+	else
+	{
+		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
+
+		auto user = mUserManager->GetUserByIndex(sessionIndex);
+		ASSERT(user, "User is nullptr!");
+		mRoomManager->AddUser(rerPacket->RoomNumber, user);
+	}
+
+	// ANSWER 패킷 반송
+	SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
+
+	// TODO : 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
+	// 기존 유저들에겐 새로운 유저의 정보 송신
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

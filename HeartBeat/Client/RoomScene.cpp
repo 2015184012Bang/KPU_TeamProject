@@ -6,6 +6,7 @@
 #include "PacketManager.h"
 #include "ResourceManager.h"
 #include "Components.h"
+#include "LobbyScene.h"
 
 RoomScene::RoomScene(Client* owner)
 	: Scene(owner)
@@ -35,6 +36,10 @@ void RoomScene::ProcessInput()
 			processNotifyRoom(packet);
 			break;
 
+		case ANSWER_ENTER_ROOM:
+			processEnterRoom(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -42,6 +47,7 @@ void RoomScene::ProcessInput()
 
 		if (mbChangeScene)
 		{
+			mOwner->ChangeScene(new LobbyScene{ mOwner });
 			break;
 		}
 	}
@@ -65,6 +71,16 @@ void RoomScene::processNotifyRoom(const PACKET& packet)
 		{
 			break;
 		}
+	}
+}
+
+void RoomScene::processEnterRoom(const PACKET& packet)
+{
+	ANSWER_ENTER_ROOM_PACKET* aerPacket = reinterpret_cast<ANSWER_ENTER_ROOM_PACKET*>(packet.DataPtr);
+
+	if (aerPacket->Result == RESULT_CODE::ROOM_ENTER_SUCCESS)
+	{
+		mbChangeScene = true;
 	}
 }
 

@@ -3,6 +3,7 @@
 
 #include "Room.h"
 #include "Protocol.h"
+#include "User.h"
 
 void RoomManager::Init(const UINT8 maxRoomCount)
 {
@@ -36,4 +37,30 @@ void RoomManager::SendAvailableRoom(const INT32 sessionIndex)
 	packet.Room[mMaxRoomCount] = END;
 
 	SendPacketFunction(sessionIndex, sizeof(packet), reinterpret_cast<char*>(&packet));
+}
+
+bool RoomManager::CanEnter(const INT32 roomIndex)
+{
+	auto& room = GetRoom(roomIndex);
+	if (room->GetState() == Room::RoomState::Waiting &&
+		room->ExistsFreeSlot())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void RoomManager::AddUser(const INT32 roomIndex, User* user)
+{
+	auto& room = GetRoom(roomIndex);
+	room->AddUser(user);
+}
+
+shared_ptr<Room>& RoomManager::GetRoom(const INT32 roomIndex)
+{
+	ASSERT(roomIndex >= 0 && roomIndex < static_cast<INT32>(mMaxRoomCount), "Invalid room index!");
+	return mRooms[roomIndex];
 }

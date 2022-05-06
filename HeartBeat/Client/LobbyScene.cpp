@@ -23,7 +23,8 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	int myClientID = mOwner->GetClientID();
+	//int myClientID = mOwner->GetClientID();
+	int myClientID = 2;
 
 	// 클라이언트가 만일 호스트라면
 	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
