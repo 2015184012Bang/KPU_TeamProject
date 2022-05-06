@@ -18,7 +18,7 @@ EnemySystem::EnemySystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	readStageFile("../Assets/Stages/Stage1.csv");
+	
 }
 
 void EnemySystem::Update()

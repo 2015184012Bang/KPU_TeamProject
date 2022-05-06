@@ -26,10 +26,10 @@ void MovementSystem::Update()
 	SendNotifyMovePackets();
 }
 
-void MovementSystem::SetDirection(const UINT32 eid, const Vector3& direction)
+void MovementSystem::SetDirection(const INT8 clientID, const Vector3& direction)
 {
 	// 아이디에 해당하는 액터를 가져온다.
-	auto actor = GetEntityByID(mRegistry, eid);
+	auto actor = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(actor), "Invalid entity!");
 
 	auto& movement = mRegistry.get<MovementComponent>(actor);

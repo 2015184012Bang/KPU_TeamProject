@@ -85,6 +85,8 @@ void Room::RemoveUser(User* user)
 		// 레지스트리를 초기화한다.
 		if (mUsers.size() == 0)
 		{
+			mEnemySystem->SetGenerate(false);
+			mCollisionSystem->SetStart(false);
 			mRoomState = RoomState::Waiting;
 			mRegistry.clear();
 		}
@@ -136,8 +138,11 @@ void Room::DoEnterGame()
 	// 플레이어들의 시작 위치를 랜덤하게 설정
 	mMovementSystem->SetPlayersStartPos();
 
+	// 스테이지 파일 읽어서 적 생성 시작
+	mEnemySystem->LoadStageFile("../Assets/Stages/Stage1.csv");
 	mEnemySystem->SetGenerate(true);
 
+	// 충돌 체크 시작
 	mCollisionSystem->SetStart(true);
 }
 
@@ -189,6 +194,16 @@ void Room::Update()
 void Room::SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset)
 {
 	mCombatSystem->SetPreset(clientID, preset);
+}
+
+bool Room::CanBaseAttack(const INT8 clientID)
+{
+	return mCombatSystem->CanBaseAttack(clientID);
+}
+
+bool Room::DoAttack(const INT8 clientID)
+{
+	return mCollisionSystem->DoAttack(clientID);
 }
 
 void Room::createSystems()

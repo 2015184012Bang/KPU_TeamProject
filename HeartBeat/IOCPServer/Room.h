@@ -47,6 +47,10 @@ public:
 
 	void SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset);
 
+	bool CanBaseAttack(const INT8 clientID);
+
+	bool DoAttack(const INT8 clientID);
+
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 public:

@@ -23,9 +23,9 @@ void CombatSystem::Update()
 	}
 }
 
-void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
+void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 {
-	auto actor = GetEntityByID(mRegistry, eid);
+	auto actor = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(actor), "Invalid entity!");
 
 	auto& combat = mRegistry.get<CombatComponent>(actor);
@@ -54,9 +54,9 @@ void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
 	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
 }
 
-bool CombatSystem::CanBaseAttack(const UINT32 eid)
+bool CombatSystem::CanBaseAttack(const INT8 clientID)
 {
-	auto actor = GetEntityByID(mRegistry, eid);
+	auto actor = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(actor), "Invalid entity!");
 	auto& combat = mRegistry.get<CombatComponent>(actor);
 

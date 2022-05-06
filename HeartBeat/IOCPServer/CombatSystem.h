@@ -16,9 +16,9 @@ public:
 
 	void Update();
 
-	void SetPreset(const UINT32 eid, UpgradePreset preset);
+	void SetPreset(const INT8 clientID, UpgradePreset preset);
 
-	bool CanBaseAttack(const UINT32 eid);
+	bool CanBaseAttack(const INT8 clientID);
 
 private:
 	entt::registry& mRegistry;

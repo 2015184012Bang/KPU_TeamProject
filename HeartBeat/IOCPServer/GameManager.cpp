@@ -34,8 +34,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_GAME] = std::bind(&GameManager::processRequestEnterGame, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-	//mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
-	//	std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// Back은 IO 워커 스레드들이 패킷을 쓰는 큐를 가리킴.
 	// Front는 로직 스레드가 처리할 패킷을 담은 큐.
@@ -309,29 +309,32 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	room->DoEnterGame();
 }
 
-//void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
-//{
-//	if (sizeof(REQUEST_ATTACK_PACKET) != packetSize)
-//	{
-//		return;
-//	}
-//
-//	bool canAttack = mCombatSystem->CanBaseAttack(sessionIndex);
-//	if (!canAttack)
-//	{
-//		return;
-//	}
-//
-//	bool bHit = mCollisionSystem->DoAttack(sessionIndex);
-//
-//	// 공격이 허가됐다면, 해당 유저를 포함한 다른 유저들에게 알려준다.
-//	NOTIFY_ATTACK_PACKET naPacket = {};
-//	naPacket.EntityID = sessionIndex;
-//	naPacket.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
-//	naPacket.PacketID = NOTIFY_ATTACK;
-//	naPacket.PacketSize = sizeof(naPacket);
-//	SendToAll(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
-//}
+void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_ATTACK_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+
+	bool canAttack = room->CanBaseAttack(user->GetClientID());
+	if (!canAttack)
+	{
+		return;
+	}
+
+	bool bHit = room->DoAttack(user->GetClientID());
+
+	// 공격 허가 여부를, 해당 유저를 포함한 다른 유저들에게 알려준다.
+	NOTIFY_ATTACK_PACKET naPacket = {};
+	naPacket.EntityID = user->GetClientID();
+	naPacket.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
+	naPacket.PacketID = NOTIFY_ATTACK;
+	naPacket.PacketSize = sizeof(naPacket);
+	room->Broadcast(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
+}
 
 
 //void GameManager::DoGameOver()

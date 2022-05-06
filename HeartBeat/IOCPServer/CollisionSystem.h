@@ -11,7 +11,7 @@ public:
 
 	void Update();
 
-	bool DoAttack(const INT32 clientID);
+	bool DoAttack(const INT8 clientID);
 
 	void SetStart(bool value) { mbStart = value; }
 	
