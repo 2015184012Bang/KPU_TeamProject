@@ -346,36 +346,6 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 	SendToAll(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
 }
 
-void GameManager::sendNotifyLoginPacket(const INT32 newlyConnectedIndex)
-{
-	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();
-
-	if (connectedUsers.empty())
-	{
-		return;
-	}
-
-	NOTIFY_LOGIN_PACKET notifyPacket;
-	notifyPacket.PacketID = NOTIFY_LOGIN;
-	notifyPacket.PacketSize = sizeof(NOTIFY_LOGIN_PACKET);
-	notifyPacket.ClientID = newlyConnectedIndex;
-
-	// 기존에 접속해 있던 유저들에게 새로 접속한 유저를 알린다.
-	SendPacketExclude(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
-
-	// 새로 접속한 유저에게 기존 유저들을 알린다.
-	for (auto userIndex : connectedUsers)
-	{
-		if (userIndex == newlyConnectedIndex)
-		{
-			continue;
-		}
-
-		notifyPacket.ClientID = userIndex;
-		SendPacketFunction(newlyConnectedIndex, sizeof(notifyPacket), reinterpret_cast<char*>(&notifyPacket));
-	}
-}
-
 void GameManager::SendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet)
 {
 	auto connectedUsers = mUserManager->GetAllConnectedUsersIndex();

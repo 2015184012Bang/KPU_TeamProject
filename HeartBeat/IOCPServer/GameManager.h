@@ -56,8 +56,6 @@ private:
 	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
-	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
-
 	// 스테이지 생성
 	void initStage(string_view mapFile);
 
