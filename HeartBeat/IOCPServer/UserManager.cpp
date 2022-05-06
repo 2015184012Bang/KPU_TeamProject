@@ -55,3 +55,5 @@ vector<INT32> UserManager::GetAllConnectedUsersIndex()
 
 	return indices;
 }
+
+UserManager gUserManager;

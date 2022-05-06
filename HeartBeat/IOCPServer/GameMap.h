@@ -55,7 +55,7 @@ public:
 
 	void Unload(string_view fileName);
 
-	void InitGraph(UINT32 maxRow, UINT32 maxCol);
+	void InitGraph(Map gameMap);
 	void DeleteGraph(UINT32 maxRow);
 
 	const Map& GetMap(string_view fileName) const;
@@ -67,3 +67,5 @@ private:
 	Tile** graph;
 	vector<Map> mMaps;
 };
+
+extern GameMap gGameMap;

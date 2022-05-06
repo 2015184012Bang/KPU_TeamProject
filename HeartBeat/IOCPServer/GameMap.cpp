@@ -28,7 +28,7 @@ void GameMap::LoadMap(string_view path)
 		}
 	}
 
-	InitGraph(gameMap.MaxRow, gameMap.MaxCol);
+	InitGraph(gameMap);
 	mMaps.push_back(move(gameMap));
 }
 
@@ -53,21 +53,21 @@ const Map& GameMap::GetMap(string_view fileName) const
 	return *iter;
 }
 
-void GameMap::InitGraph(UINT32 maxRow, UINT32 maxCol)
+void GameMap::InitGraph(Map gameMap)
 {
-	graph = new Tile * [maxRow];
-	for (int i = 0; i < maxRow; ++i)
+	graph = new Tile * [gameMap.MaxRow];
+	for (int i = 0; i < gameMap.MaxRow; ++i)
 	{
-		graph[i] = new Tile[maxCol];
+		graph[i] = new Tile[gameMap.MaxCol];
 	}
 
-	for (int i = maxRow - 1; i >= 0; --i)
+	for (int i = gameMap.MaxRow - 1; i >= 0; --i)
 	{
-		for (int j = 0; j < maxCol; ++j)
+		for (int j = 0; j < gameMap.MaxCol; ++j)
 		{
-			graph[i][j].TType = mTiles[i * maxRow + j].TType;
-			graph[i][j].X = mTiles[i * maxRow + j].X;
-			graph[i][j].Z = mTiles[i * maxRow + j].Z;
+			graph[i][j].TType = gameMap.Tiles[i * gameMap.MaxRow + j].TType;
+			graph[i][j].X = gameMap.Tiles[i * gameMap.MaxRow + j].X;
+			graph[i][j].Z = gameMap.Tiles[i * gameMap.MaxRow + j].Z;
 		}
 	}
 
@@ -86,3 +86,5 @@ void GameMap::DeleteGraph(UINT32 maxRow)
 
 	delete[] graph;
 }
+
+GameMap gGameMap;

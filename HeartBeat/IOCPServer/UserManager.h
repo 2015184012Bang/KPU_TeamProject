@@ -29,3 +29,4 @@ private:
 	vector<User*> mUsers;
 };
 
+extern UserManager gUserManager;

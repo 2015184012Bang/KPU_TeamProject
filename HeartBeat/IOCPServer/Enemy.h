@@ -18,12 +18,10 @@ public:
 
 	virtual void Start() override
 	{
-		GameMap* gameMap;
-		graph = gameMap->GetGraph();
+		graph = gGameMap.GetGraph();
 		ASSERT(graph, "Failed to make graph");
 
-
-		Map map = gameMap->GetMap("Map01.csv");
+		Map map = gGameMap.GetMap("Map01.csv");
 		
 		maxRow = map.MaxRow;
 		maxCol = map.MaxCol;
@@ -38,8 +36,7 @@ public:
 			playerPositon.push_back(&playerTransform.Position);
 		}
 
-		UserManager* user;
-		UINT32 curUserCount = user->GetCurrentUserCount();
+		UINT32 curUserCount = gUserManager.GetCurrentUserCount();
 		mChasingPlayerNum = Random::RandInt(0, curUserCount- 1);
 		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
 		
