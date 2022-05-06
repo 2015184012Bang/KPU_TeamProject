@@ -107,9 +107,9 @@ void GameManager::logicThread()
 
 		while (!mFrontPacketQueue->empty())
 		{
-			PACKET_INFO packet = mFrontPacketQueue->front();
-			mFrontPacketQueue->pop();
+			PACKET_INFO& packet = mFrontPacketQueue->front();
 			processPacket(packet.SessionIndex, packet.PacketID, packet.DataSize, packet.DataPtr);
+			mFrontPacketQueue->pop();
 		}
 
 		// 시스템 업데이트

@@ -376,7 +376,7 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 
 	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
 	{
-		SoundManager::PlaySound("Punch.mp3");
+		SoundManager::PlaySound("Punch.mp3", 0.15f);
 	}
 }
 
