@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Enemy.h"
 
 void Enemy::GetGoalIndex()
@@ -104,8 +105,9 @@ void Enemy::FindPath()
 
 void Enemy::SetStartNode()
 {
-	int myRow = GetClosestNode(static_cast<int>(transform->Position.z));
-	int myCol = GetClosestNode(static_cast<int>(transform->Position.x));
+	auto& transform = GetComponent<TransformComponent>();
+	int myRow = GetClosestNode(static_cast<int>(transform.Position.z));
+	int myCol = GetClosestNode(static_cast<int>(transform.Position.x));
 
 	Node* startNode = new Node(myRow, myCol);
 
@@ -132,7 +134,7 @@ void Enemy::CheckGoalNode()
 	}
 }
 
-Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode)
+Node* Enemy::GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* parentNode)
 {
 	auto it_open = find_if(openList.begin(), openList.end(), [&](Node* node)
 		{
@@ -191,27 +193,27 @@ Node* Enemy::GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNod
 	return nullptr;
 }
 
-Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
+Node* Enemy::CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode)
 {
-	int val = graph[rowIndex][colIndex].Type;
+	TileType val = graph[rowIndex][colIndex].TType;
 	//HB_LOG("({0},{1}):Type({2})", rowIndex, colIndex, val);
 
-	if (val == 2) // 장애물
+	if (val == TileType::BLOCKED) // 장애물
 	{
 		return nullptr;
 	}
 
 	Node* node = nullptr;
 	
-	if (val == 0 || val == 1)
+	if (val == TileType::MOVABLE)
 	{
 		node = new Node(val, rowIndex, colIndex);
 		node->G = parentNode->G + 1;
 
-		int goalRowIndex = std::get<0>(mGoalIndex);
-		int goalColIndex = std::get<1>(mGoalIndex);
-
-		int h = abs(goalRowIndex - rowIndex) + abs(goalColIndex - colIndex);
+		UINT32 goalRowIndex = std::get<0>(mGoalIndex);
+		UINT32 goalColIndex = std::get<1>(mGoalIndex);
+		
+		UINT32 h = abs((int)goalRowIndex - (int)rowIndex) + abs((int)goalColIndex - (int)colIndex);
 		node->H = h;
 		node->F = node->G + h;
 		node->CON = parentNode;
@@ -220,7 +222,7 @@ Node* Enemy::CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode)
 	return node;
 }
 
-int Enemy::GetClosestNode(int pos)
+int Enemy::GetClosestNode(UINT32 pos)
 {
 	int nodePos = pos / 500;
 	if ((pos % static_cast<int>(TILE_WIDTH)) < ((static_cast<int>(TILE_WIDTH) / 2 ) - 1))
@@ -238,6 +240,24 @@ bool Enemy::GetNextTarget(Tile* outTarget)
 	}
 	
 	*outTarget = mPath.top();
+	mPath.pop();
+
+	return true;
+}
+
+bool Enemy::GetNextTarget(Vector3* outTarget)
+{
+	if (mPath.empty())
+	{
+		return false;
+	}
+
+	Vector3* position = nullptr;
+	position->x = mPath.top().X;
+	position->y = 0.0;
+	position->z = mPath.top().Z;
+	*outTarget = *position;
+	
 	mPath.pop();
 
 	return true;

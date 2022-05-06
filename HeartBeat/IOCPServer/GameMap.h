@@ -67,5 +67,3 @@ private:
 	Tile** graph;
 	vector<Map> mMaps;
 };
-
-extern GameMap gGameMap;

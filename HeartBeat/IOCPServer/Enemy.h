@@ -18,34 +18,30 @@ public:
 
 	virtual void Start() override
 	{
+		GameMap* gameMap;
+		graph = gameMap->GetGraph();
+		ASSERT(graph, "Failed to make graph");
 
-		graph = gGameMap.GetGraph();
-		if (graph != nullptr)
-		{
-			LOG("Success to make graph");
-		}
-		else
-		{
-			ASSERT(graph, "Failed make graph");
-		}
 
-		maxRow = gGameMap.GetMaxRow();
-		maxCol = gGameMap.GetMaxCol();
+		Map map = gameMap->GetMap("Map01.csv");
+		
+		maxRow = map.MaxRow;
+		maxCol = map.MaxCol;
 
-		transform = &GetComponent<STransformComponent>();
+		auto& transform = GetComponent<TransformComponent>();
+		//transform = &GetComponent<STransformComponent>();
 		
 		auto players = FindObjectsWithTag<Tag_Player>();
-
 		for (auto& p : players)
 		{
-			auto& playerTransform = p.GetComponent<STransformComponent>();
+			auto& playerTransform = p.GetComponent<TransformComponent>();
 			playerPositon.push_back(&playerTransform.Position);
 		}
 
-		UserManager* userManager;
-		UINT32 curUserCount = userManager->GetCurrentUserCount();
-		int randomindx = Random::RandInt(0, curUserCount- 1);
-		mChasingPlayerPosition = playerPositon[randomindx];
+		UserManager* user;
+		UINT32 curUserCount = user->GetCurrentUserCount();
+		mChasingPlayerNum = Random::RandInt(0, curUserCount- 1);
+		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
 		
 		SetStartNode();
 		FindPath();
@@ -54,6 +50,9 @@ public:
 
 	virtual void Update() override
 	{
+		const auto& position = GetComponent<TransformComponent>().Position;
+		const float posToEnd = Vector3::DistanceSquared(position, *mChasingPlayerPosition);
+
 		if (!mbChase)
 		{
 			mbChase = true;
@@ -81,19 +80,21 @@ public:
 				bool retVal = GetNextTarget(&mCurrentTarget);
 			}
 
-			Vector3 to = Vector3(mCurrentTarget.X, 0.0f, mCurrentTarget.Z);
+			const float posToCur = Vector3::DistanceSquared(position, mCurrentTarget);
 
-			ServerSystems::MoveToward(transform, to, Timer::GetDeltaTime());
-			AddTag<Tag_UpdateTransform>();
+			Vector3 direction = XMVectorSubtract(mCurrentTarget, position);
+			direction.Normalize();
+			GetComponent<MovementComponent>().Direction = direction;
 
-			if (NearZero(transform->Position, to))
+			if (posToCur < CLOSE_ENOUGH)
 			{
 				bool retVal = GetNextTarget(&mCurrentTarget);
 
 				if (!retVal)
-	{
+				{
 					mbChase = false;
 				}
+				
 			}
 			
 		}
@@ -104,24 +105,26 @@ public:
 	void FindPath();		
 	void SetStartNode();	// enemy의 positon으로 시작 노드 설정
 	void CheckGoalNode();	// 목표 노드가 변경 됬는지 검사
-	int GetClosestNode(int );	// 위치 정보에서 가장 가까운 노드 찾기
+	int GetClosestNode(UINT32);	// 위치 정보에서 가장 가까운 노드 찾기
 
-	Node* GetChildNodes(int childIndexRow, int childIndexCol, Node* parentNode);
-	Node* CreateNodeByIndex(int rowIndex, int colIndex, Node* parentNode);
+	Node* GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* parentNode);
+	Node* CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode);
 
 
 	bool GetNextTarget(Tile* outTarget);
+	bool GetNextTarget(Vector3* outTarget);
 
 private:
 	vector<Vector3*> playerPositon;
 	Vector3* mChasingPlayerPosition;
+	UINT32 mChasingPlayerNum;
 
 	std::stack<Tile> mPath;
-	std::tuple<int, int> mGoalIndex;
-	Tile mCurrentTarget;
+	std::tuple<UINT32, UINT32> mGoalIndex;
+	Vector3 mCurrentTarget = Vector3::Zero;
 
-	int maxRow, maxCol;
-	int goalRow, goalCol;
+	UINT32 maxRow, maxCol;
+	UINT32 goalRow, goalCol;
 	Tile** graph;
 
 	list<Node*> openList;
@@ -129,4 +132,7 @@ private:
 
 	bool mbIsSamePath = true;
 	bool mbChase = true;
+
+	const float CLOSE_ENOUGH = 10.0f * 10.0f;
+	const float TILE_WIDTH = 500.0f;
 };

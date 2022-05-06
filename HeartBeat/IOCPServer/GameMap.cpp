@@ -28,6 +28,7 @@ void GameMap::LoadMap(string_view path)
 		}
 	}
 
+	InitGraph(gameMap.MaxRow, gameMap.MaxCol);
 	mMaps.push_back(move(gameMap));
 }
 
