@@ -34,7 +34,7 @@ void EnemySystem::Update()
 	{
 		spawn.SpawnTime -= Timer::GetDeltaTime();
 
-		if (spawn.SpawnTime < 0.0f && !spawn.bGenerated)
+		if (spawn.SpawnTime < 0.0f)
 		{
 			auto& transform = mRegistry.emplace<TransformComponent>(entity, Vector3{ spawn.GenPosX, 0.0f, spawn.GenPosZ },
 				0.0f);
@@ -66,11 +66,10 @@ void EnemySystem::Update()
 			packet.PacketID = NOTIFY_CREATE_ENTITY;
 			packet.PacketSize = sizeof(packet);
 			packet.Position = transform.Position;
-
-			// Spawn 컴포넌트를 떼어 내는 게?
-			spawn.bGenerated = true;
-
 			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+			// 다시 생성되지 않도록 Spawn 컴포넌트 제거
+			mRegistry.remove<SpawnComponent>(entity);
 		}
 	}
 

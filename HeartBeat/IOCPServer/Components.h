@@ -87,5 +87,4 @@ struct SpawnComponent
 	float SpawnTime = 0.0f;
 	float GenPosX = 0.0f;
 	float GenPosZ = 0.0f;
-	bool bGenerated = false;
 };
