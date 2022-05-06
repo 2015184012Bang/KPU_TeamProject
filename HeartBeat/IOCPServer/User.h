@@ -11,8 +11,8 @@ public:
 	enum class UserState
 	{
 		IN_LOGIN,
-		IN_ROOM,
 		IN_LOBBY,
+		IN_ROOM,
 		IN_UPGRADE,
 		IN_GAME,
 	};

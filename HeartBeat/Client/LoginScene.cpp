@@ -10,7 +10,7 @@
 #include "PacketManager.h"
 #include "Utils.h"
 #include "ResourceManager.h"
-#include "RoomScene.h"
+#include "LobbyScene.h"
 #include "Tags.h"
 
 LoginScene::LoginScene(Client* owner)
@@ -51,7 +51,7 @@ void LoginScene::ProcessInput()
 		// Login -> Room ¾ÀÀ¸·Î ÀüÈ¯.
 		if (mbChangeScene)
 		{
-			mOwner->ChangeScene(new RoomScene{ mOwner });
+			mOwner->ChangeScene(new LobbyScene{ mOwner });
 			break;
 		}
 	}

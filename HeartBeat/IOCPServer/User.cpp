@@ -44,8 +44,8 @@ void User::Reset()
 
 void User::SetLogin(string_view userName)
 {
-	// 유저가 로그인했다는 것은 로그인씬을 벗어나 룸씬에 있다는 걸 의미.
-	mUserState = UserState::IN_ROOM;
+	// 유저가 로그인했다는 것은 로그인씬을 벗어나 로비씬에 있다는 걸 의미.
+	mUserState = UserState::IN_LOBBY;
 
 	mConnected = true;
 	mUserName = userName.data();

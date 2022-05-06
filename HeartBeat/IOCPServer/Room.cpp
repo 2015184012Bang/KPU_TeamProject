@@ -34,8 +34,8 @@ void Room::AddUser(User* user)
 	// 유저 룸 인덱스 설정
 	user->SetRoomIndex(mRoomIndex);
 
-	// 로비 상태로 설정
-	user->SetUserState(User::UserState::IN_LOBBY);
+	// 룸 상태로 설정
+	user->SetUserState(User::UserState::IN_ROOM);
 
 	mUsers.push_back(user);
 }
@@ -50,7 +50,7 @@ void Room::RemoveUser(User* user)
 		// 반환 후 초기화
 		(*iter)->SetClientID(-1);
 		(*iter)->SetRoomIndex(-1);
-		(*iter)->SetUserState(User::UserState::IN_ROOM);
+		(*iter)->SetUserState(User::UserState::IN_LOBBY);
 		mUsers.erase(iter);
 	}
 	else

@@ -94,7 +94,7 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="LobbyScene.cpp">
+    <ClCompile Include="RoomScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="PacketManager.cpp">
@@ -130,7 +130,7 @@
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="RoomScene.cpp">
+    <ClCompile Include="LobbyScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
@@ -207,7 +207,7 @@
     <ClInclude Include="GameScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="LobbyScene.h">
+    <ClInclude Include="RoomScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
@@ -258,7 +258,7 @@
     <ClInclude Include="SoundManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="RoomScene.h">
+    <ClInclude Include="LobbyScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
   </ItemGroup>
