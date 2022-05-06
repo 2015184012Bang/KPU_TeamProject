@@ -72,6 +72,18 @@ private:
 	entt::entity mHandle;
 };
 
+template<typename T>
+void DestroyExclude()
+{
+	gRegistry.each([](entt::entity entity) {
+		Entity e(entity);
+		if (!e.HasComponent<T>())
+		{
+			gRegistry.destroy(entity);
+		}
+		});
+}
+
 void DestroyAll();
 void DestroyEntityByID(const uint32 id);
 void DestroyEntity(const entt::entity entity);

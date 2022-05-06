@@ -41,14 +41,20 @@ public:
 	Entity& GetCharacter() { return mCharacter; }
 	const Vector3& GetPosition();
 	const Vector3& GetMoveDirection();
+	INT8 GetClientID() const { return mClientID; }
+	INT32 GetRoomIndex() const { return mRoomIndex; }
 
+	void SetClientID(const INT8 id) { mClientID = id; }
 	void SetUserState(UserState state) { mUserState = state; }
+	void SetRoomIndex(const INT32 roomIndex) { mRoomIndex = roomIndex; }
 
 private:
 	UserState mUserState = UserState::IN_LOGIN;
 
 	INT32 mIndex = -1;
+	INT32 mRoomIndex = -1;
 	string mUserName = "";
+	INT8 mClientID = -1;
 
 	bool mConnected = false;
 

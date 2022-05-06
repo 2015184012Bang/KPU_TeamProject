@@ -22,14 +22,19 @@ public:
 
 private:
 	void createCharacterMesh(int clientID);
+	void createButtons();
 	float getXPosition(int clientID);
 
 	void processNofifyLogin(const PACKET& packet);
 	void processNotifyEnterUpgrade(const PACKET& packet);
+	void processNotifyLeaveRoom(const PACKET& packet);
 
 	std::tuple<Mesh*, Texture*> getCharacterBelt(int clientID);
 
+	void doWhenChangeToRoomScene();
+
 private:
-	bool mbChangeScene = false;
+	bool mbToUpgrade = false;
+	bool mbToRoom = false;
 };
 

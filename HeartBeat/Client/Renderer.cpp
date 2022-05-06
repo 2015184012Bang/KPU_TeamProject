@@ -545,6 +545,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("GameOver.png");
 	TEXTURE("RoomEnter.png");
 	TEXTURE("RoomNoEnter.png");
+	TEXTURE("LeaveRoom.png");
 
 	Font* font = FONT("fontdata.txt");
 	font->SetTexture(TEXTURE("font.dds"));

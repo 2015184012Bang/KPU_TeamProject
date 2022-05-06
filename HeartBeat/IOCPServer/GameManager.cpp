@@ -23,6 +23,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_ROOM] = std::bind(&GameManager::processRequestEnterRoom, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_LEAVE_ROOM] = std::bind(&GameManager::processRequestLeaveRoom, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_UPGRADE] = std::bind(&GameManager::processRequestEnterUpgrade, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_MOVE] = std::bind(&GameManager::processRequestMove, this,
@@ -48,8 +50,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 
 	// 룸 매니저 생성
 	mRoomManager = make_unique<RoomManager>();
-	mRoomManager->Init(Values::MaxRoomNum);
 	mRoomManager->SendPacketFunction = SendPacketFunction;
+	mRoomManager->Init(Values::MaxRoomNum);
 
 	// 게임 맵 생성
 	mGameMap = make_unique<GameMap>();
@@ -153,6 +155,8 @@ void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 pa
 {
 	LOG("Process user disconnect packet. Session Index: {0}", sessionIndex);
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	
+	mRoomManager->RemoveUser(user);
 	mUserManager->DeleteUser(user);
 }
 
@@ -199,11 +203,12 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	}
 	else
 	{
-		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
-
 		auto user = mUserManager->GetUserByIndex(sessionIndex);
 		ASSERT(user, "User is nullptr!");
 		mRoomManager->AddUser(rerPacket->RoomNumber, user);
+
+		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
+		aerPacket.ClientID = user->GetClientID();
 	}
 
 	// ANSWER 패킷 반송
@@ -211,6 +216,30 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 
 	// TODO : 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
 	// 기존 유저들에겐 새로운 유저의 정보 송신
+}
+
+void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_LEAVE_ROOM_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	
+	NOTIFY_LEAVE_ROOM_PACKET nlrPacket = {};
+	nlrPacket.ClientID = user->GetClientID();
+	nlrPacket.PacketID = NOTIFY_LEAVE_ROOM;
+	nlrPacket.PacketSize = sizeof(nlrPacket);
+
+	// 해당 방 유저들에게 브로드캐스트
+	mRoomManager->Broadcast(user->GetRoomIndex(), sizeof(nlrPacket), reinterpret_cast<char*>(&nlrPacket));
+
+	// 유저 나감 처리
+	mRoomManager->RemoveUser(user);
+
+	// Room Scene으로 돌아간 유저에게 이용 가능한 방 목록 전송
+	mRoomManager->SendAvailableRoom(sessionIndex);
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

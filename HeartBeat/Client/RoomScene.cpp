@@ -7,6 +7,7 @@
 #include "ResourceManager.h"
 #include "Components.h"
 #include "LobbyScene.h"
+#include "Tags.h"
 
 RoomScene::RoomScene(Client* owner)
 	: Scene(owner)
@@ -22,7 +23,7 @@ void RoomScene::Enter()
 void RoomScene::Exit()
 {
 	HB_LOG("Exited RoomScene...");
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void RoomScene::ProcessInput()
@@ -81,6 +82,7 @@ void RoomScene::processEnterRoom(const PACKET& packet)
 	if (aerPacket->Result == RESULT_CODE::ROOM_ENTER_SUCCESS)
 	{
 		mbChangeScene = true;
+		mOwner->SetClientID(aerPacket->ClientID);
 	}
 }
 

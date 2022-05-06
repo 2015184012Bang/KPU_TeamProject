@@ -30,6 +30,8 @@ void User::Reset()
 	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
+	mClientID = -1;
+	mRoomIndex = -1;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 
 	if (mCharacter)

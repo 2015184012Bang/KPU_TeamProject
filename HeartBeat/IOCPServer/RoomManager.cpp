@@ -12,7 +12,9 @@ void RoomManager::Init(const UINT8 maxRoomCount)
 	mRooms.reserve(mMaxRoomCount);
 	for (UINT8 i = 0; i < mMaxRoomCount; ++i)
 	{
-		mRooms.push_back(move(make_shared<Room>()));
+		auto room = make_shared<Room>();
+		room->Init(i, SendPacketFunction);
+		mRooms.push_back(move(room));
 	}
 }
 
@@ -59,8 +61,27 @@ void RoomManager::AddUser(const INT32 roomIndex, User* user)
 	room->AddUser(user);
 }
 
+void RoomManager::RemoveUser(User* user)
+{
+	// 유저가 방에 들어가 있지 않다면 리턴
+	if (user->GetRoomIndex() == -1)
+	{
+		return;
+	}
+
+	auto roomIndex = user->GetRoomIndex();
+	auto& room = GetRoom(roomIndex);
+	room->RemoveUser(user);
+}
+
 shared_ptr<Room>& RoomManager::GetRoom(const INT32 roomIndex)
 {
 	ASSERT(roomIndex >= 0 && roomIndex < static_cast<INT32>(mMaxRoomCount), "Invalid room index!");
 	return mRooms[roomIndex];
+}
+
+void RoomManager::Broadcast(const INT32 roomIndex, const UINT32 packetSize, char* packet)
+{
+	auto& room = GetRoom(roomIndex);
+	room->Broadcast(packetSize, packet);
 }

@@ -14,7 +14,11 @@ public:
 
 	void AddUser(const INT32 roomIndex, User* user);
 
+	void RemoveUser(User* user);
+
 	shared_ptr<Room>& GetRoom(const INT32 roomIndex);
+
+	void Broadcast(const INT32 roomIndex, const UINT32 packetSize, char* packet);
 	
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 

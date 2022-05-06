@@ -32,7 +32,7 @@ void GameScene::Enter()
 
 void GameScene::Exit()
 {
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void GameScene::ProcessInput()

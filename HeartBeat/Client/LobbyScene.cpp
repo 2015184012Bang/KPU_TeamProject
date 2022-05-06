@@ -13,6 +13,7 @@
 #include "UpgradeScene.h"
 #include "Tags.h"
 #include "Define.h"
+#include "RoomScene.h"
 
 
 LobbyScene::LobbyScene(Client* owner)
@@ -23,27 +24,11 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	//int myClientID = mOwner->GetClientID();
-	int myClientID = 2;
+	// 떠남 버튼, 게임 시작 버튼 생성
+	createButtons();
 
-	// 클라이언트가 만일 호스트라면
-	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
-	if (Values::HostID == myClientID)
-	{
-		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE("Start_Button.png"));
-		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
-		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
-		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
-
-		gameStartButton.AddComponent<ButtonComponent>([this]() {
-			REQUEST_ENTER_UPGRADE_PACKET packet = {};
-			packet.PacketID = REQUEST_ENTER_UPGRADE;
-			packet.PacketSize = sizeof(packet);
-			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
-			});
-	}
-
-	createCharacterMesh(myClientID);
+	// 클라이언트 아이디에 따른 캐릭터 엔티티 생성
+	createCharacterMesh(mOwner->GetClientID());
 
 	// 메인 카메라 위치 조정
 	auto& camera = mOwner->GetMainCamera();
@@ -53,7 +38,7 @@ void LobbyScene::Enter()
 
 void LobbyScene::Exit()
 {
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void LobbyScene::ProcessInput()
@@ -64,6 +49,10 @@ void LobbyScene::ProcessInput()
 	{
 		switch (packet.PacketID)
 		{
+		case NOTIFY_LEAVE_ROOM:
+			processNotifyLeaveRoom(packet);
+			break;
+
 		case NOTIFY_LOGIN:
 			processNofifyLogin(packet);
 			break;
@@ -71,15 +60,21 @@ void LobbyScene::ProcessInput()
 		case NOTIFY_ENTER_UPGRADE:
 			processNotifyEnterUpgrade(packet);
 			break;
-			
+
 		default:
 			HB_LOG("Unknown packet type: {0}", packet.PacketID);
 			break;
 		}
 
-		if (mbChangeScene)
+		if (mbToUpgrade)
 		{
-			mOwner->ChangeScene(new UpgradeScene(mOwner));
+			mOwner->ChangeScene(new UpgradeScene{ mOwner });
+			break;
+		}
+
+		if (mbToRoom)
+		{
+			doWhenChangeToRoomScene();
 			break;
 		}
 	}
@@ -124,6 +119,39 @@ void LobbyScene::createCharacterMesh(int clientID)
 	Helpers::AttachBone(character, belt, "Bip001 Spine");
 }
 
+void LobbyScene::createButtons()
+{
+	Entity leave = mOwner->CreateSpriteEntity(100, 100, TEXTURE("LeaveRoom.png"));
+	auto& transform = leave.GetComponent<RectTransformComponent>();
+	transform.Position = Vector2{ 20.0f, Application::GetScreenHeight() - 120.0f };
+
+	leave.AddComponent<ButtonComponent>([this]()
+		{
+			REQUEST_LEAVE_ROOM_PACKET packet = {};
+			packet.PacketID = REQUEST_LEAVE_ROOM;
+			packet.PacketSize = sizeof(packet);
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet),
+				sizeof(packet));
+		});
+
+	// 클라이언트가 만일 호스트라면
+	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
+	if (Values::HostID == mOwner->GetClientID())
+	{
+		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE("Start_Button.png"));
+		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
+		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
+		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
+
+		gameStartButton.AddComponent<ButtonComponent>([this]() {
+			REQUEST_ENTER_UPGRADE_PACKET packet = {};
+			packet.PacketID = REQUEST_ENTER_UPGRADE;
+			packet.PacketSize = sizeof(packet);
+			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+			});
+	}
+}
+
 float LobbyScene::getXPosition(int clientID)
 {
 	switch (clientID)
@@ -163,7 +191,7 @@ void LobbyScene::processNotifyEnterUpgrade(const PACKET& packet)
 		return;
 	}
 
-	mbChangeScene = true;
+	mbToUpgrade = true;
 }
 
 std::tuple<Mesh*, Texture*> LobbyScene::getCharacterBelt(int clientID)
@@ -184,4 +212,30 @@ std::tuple<Mesh*, Texture*> LobbyScene::getCharacterBelt(int clientID)
 	}
 
 	return { nullptr, nullptr };
+}
+
+void LobbyScene::doWhenChangeToRoomScene()
+{
+	// 플레이어 엔티티는 DontDestroyOnLoad 태그가 붙어 있어서
+	// Scene Exit할 때 삭제되지 않기 때문에 직접 삭제해준다.
+	DestroyByComponent<Tag_Player>();
+	mOwner->ChangeScene(new RoomScene{ mOwner });
+}
+
+void LobbyScene::processNotifyLeaveRoom(const PACKET& packet)
+{
+	NOTIFY_LEAVE_ROOM_PACKET* nlrPacket = reinterpret_cast<NOTIFY_LEAVE_ROOM_PACKET*>(packet.DataPtr);
+
+	auto clientID = nlrPacket->ClientID;
+
+	// 내 LEAVE 요청에 대한 서버의 응답이라면
+	// RoomScene으로 전환한다.
+	if (mOwner->GetClientID() == clientID)
+	{
+		mbToRoom = true;
+	}
+	else
+	{
+		// TODO : 다른 유저들의 방 나감 구현
+	}
 }

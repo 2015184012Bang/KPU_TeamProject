@@ -45,7 +45,7 @@ void UpgradeScene::Exit()
 	// 만일 똑딱 소리가 아직도 재생 중이라면 멈춘다.
 	SoundManager::StopSound("ClockTick.mp3");
 
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void UpgradeScene::ProcessInput()
