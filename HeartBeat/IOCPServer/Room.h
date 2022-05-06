@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Entity.h"
+
 class User;
 
 constexpr INT32 ROOM_MAX_USER = 3;
@@ -24,12 +26,15 @@ public:
 
 	void Broadcast(const UINT32 packetSize, char* packet);
 
-	list<User*>& GetUsers() { return mUsers; }
+	void DoEnterUpgrade();
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 public:
 	RoomState GetState() { return mRoomState; }
+	list<User*>& GetUsers() { return mUsers; }
+
+	void SetState(RoomState state) { mRoomState = state; }
 
 private:
 	INT32 mRoomIndex = -1;
@@ -38,5 +43,7 @@ private:
 	
 	list<INT8> mClientIDs;
 	list<User*> mUsers;
+
+	entt::registry mRegistry;
 };
 

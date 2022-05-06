@@ -250,12 +250,16 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 		return;
 	}
 
-	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
-	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
-	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
-	ansPacket.Result = RESULT_CODE::SUCCESS;
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	auto roomIndex = user->GetRoomIndex();
 
-	SendToAll(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+	if (roomIndex == -1)
+	{
+		LOG("Invalid room Index!");
+		return;
+	}
+
+	mRoomManager->EnterUpgrade(roomIndex);
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -265,11 +269,12 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 		return;
 	}
 
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+
 	// 패킷을 보낸 유저의 Direction 변경
 	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
-	mMovementSystem->SetDirection(sessionIndex, rmPacket->Direction);
+	mMovementSystem->SetDirection(user->GetClientID(), rmPacket->Direction);
 
-	auto user = mUserManager->GetUserByIndex(sessionIndex);
 
 	// 이동 노티파이 패킷 전송
 	NOTIFY_MOVE_PACKET anmPacket = {};
@@ -277,7 +282,7 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
 	anmPacket.Direction = user->GetMoveDirection();
 	anmPacket.Position = user->GetPosition();
-	anmPacket.EntityID = sessionIndex;
+	anmPacket.EntityID = user->GetClientID();
 	SendToAll(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 

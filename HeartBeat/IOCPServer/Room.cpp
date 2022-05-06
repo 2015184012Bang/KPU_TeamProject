@@ -76,3 +76,14 @@ void Room::Broadcast(const UINT32 packetSize, char* packet)
 		SendPacketFunction(user->GetIndex(), packetSize, packet);
 	}
 }
+
+void Room::DoEnterUpgrade()
+{
+	SetState(RoomState::Playing);
+
+	// 플레이어 엔티티 생성
+	for (auto user : mUsers)
+	{
+		user->CreatePlayerEntity();
+	}
+}

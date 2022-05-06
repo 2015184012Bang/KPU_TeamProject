@@ -21,6 +21,8 @@ public:
 	void Broadcast(const INT32 roomIndex, const UINT32 packetSize, char* packet);
 
 	void NotifyNewbie(const INT32 roomIndex, User* newbie);
+
+	void EnterUpgrade(const INT32 roomIndex);
 	
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 

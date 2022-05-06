@@ -118,3 +118,22 @@ void RoomManager::NotifyNewbie(const INT32 roomIndex, User* newbie)
 		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
 	}
 }
+
+void RoomManager::EnterUpgrade(const INT32 roomIndex)
+{
+	auto& room = GetRoom(roomIndex);
+
+	if (room->GetState() == Room::RoomState::Playing)
+	{
+		LOG("This room is playing.");
+		return;
+	}
+
+	room->DoEnterUpgrade();
+
+	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
+	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
+	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
+	ansPacket.Result = RESULT_CODE::SUCCESS;
+	room->Broadcast(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+}

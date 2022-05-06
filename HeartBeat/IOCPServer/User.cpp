@@ -83,8 +83,8 @@ void User::CreatePlayerEntity()
 
 	// ÄÄÆ÷³ÍÆ® ºÎÂø
 	auto& transform = mCharacter.AddComponent<TransformComponent>();
-	mCharacter.AddComponent<IDComponent>(mIndex);
-	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
+	mCharacter.AddComponent<IDComponent>(mClientID);
+	mCharacter.AddComponent<NameComponent>("Player" + to_string(mClientID));
 	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
 	mCharacter.AddComponent<CombatComponent>();
 	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
