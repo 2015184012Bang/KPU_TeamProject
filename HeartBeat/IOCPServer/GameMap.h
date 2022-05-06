@@ -38,8 +38,14 @@ struct Map
 class GameMap
 {
 public:
-	GameMap() = default;
+	GameMap(const GameMap&) = delete;
+	GameMap& operator=(const GameMap&) = delete;
 
+	static GameMap& GetInstance()
+	{
+		static GameMap instance;
+		return instance;
+	}
 	/*
 	* Map └╬╡ж╜║ ▒╕┴╢
 	* 6 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
@@ -56,6 +62,9 @@ public:
 	void Unload(string_view fileName);
 
 	const Map& GetMap(string_view fileName) const;
+
+private:
+	GameMap();
 
 private:
 	vector<Map> mMaps;

@@ -2,7 +2,10 @@
 #include "Room.h"
 
 #include "User.h"
-
+#include "Values.h"
+#include "Tags.h"
+#include "Tank.h"
+#include "Random.h"
 
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
@@ -124,6 +127,20 @@ void Room::DoEnterUpgrade()
 	Broadcast(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
 }
 
+void Room::DoEnterGame()
+{
+	createTiles("../Assets/Maps/Map01.csv");
+
+	createTankAndCart();
+
+	// 플레이어들의 시작 위치를 랜덤하게 설정
+	mMovementSystem->SetPlayersStartPos();
+
+	mEnemySystem->SetGenerate(true);
+
+	mCollisionSystem->SetStart(true);
+}
+
 void Room::NotifyNewbie(User* newbie)
 {
 	NOTIFY_ENTER_ROOM_PACKET nerPacket = {};
@@ -181,4 +198,131 @@ void Room::createSystems()
 	mEnemySystem = make_unique<EnemySystem>(mRegistry, shared_from_this());
 	mCombatSystem = make_unique<CombatSystem>(mRegistry, shared_from_this());
 	mCollisionSystem = make_unique<CollisionSystem>(mRegistry, shared_from_this());
+}
+
+void Room::createTiles(string_view fileName)
+{
+	const auto& gameMap = GameMap::GetInstance().GetMap(fileName);
+
+	mCollisionSystem->SetBorder(Vector3{ (gameMap.MaxCol - 1) * Values::TileSide, 0.0f, (gameMap.MaxRow - 1) * Values::TileSide });
+
+	for (const auto& tile : gameMap.Tiles)
+	{
+		auto obj = mRegistry.create();
+		addTagToTile(obj, tile.TType);
+
+		auto& transform = mRegistry.emplace<TransformComponent>(obj);
+		transform.Position = Vector3{ tile.X, GetTileYPos(tile.TType), tile.Z };
+
+		// 충돌 처리가 필요한 타일의 경우에만 BoxComponent를 부착
+		if (tile.TType == TileType::BLOCKED ||
+			tile.TType == TileType::FAT ||
+			tile.TType == TileType::TANK_FAT)
+		{
+			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
+		}
+
+		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
+		// 탱크가 경로 인식이 가능하다.
+		if (tile.TType == TileType::TANK_FAT)
+		{
+			auto rail = mRegistry.create();
+			addTagToTile(rail, TileType::RAIL);
+
+			auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
+			railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		}
+	}
+}
+
+void Room::createTankAndCart()
+{
+	auto tank = mRegistry.create();
+
+	auto& id = mRegistry.emplace<IDComponent>(tank, GetEntityID());
+	mRegistry.emplace<NameComponent>(tank, "Tank");
+	auto& transform = mRegistry.emplace<TransformComponent>(tank);
+	mRegistry.emplace<MovementComponent>(tank, Vector3::Zero, Values::TankSpeed);
+	mRegistry.emplace<BoxComponent>(tank, &Box::GetBox("../Assets/Boxes/Tank.box"),
+		transform.Position, transform.Yaw);
+	mRegistry.emplace<HealthComponent>(tank, Values::TankHealth);
+	mRegistry.emplace<ScriptComponent>(tank, make_shared<Tank>(mRegistry, tank));
+	mRegistry.emplace<Tag_Tank>(tank);
+
+	NOTIFY_CREATE_ENTITY_PACKET packet = {};
+	packet.EntityID = id.ID;
+	packet.EntityType = static_cast<UINT8>(EntityType::TANK);
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
+	packet.PacketSize = sizeof(packet);
+	packet.Position = transform.Position;
+
+	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+}
+
+void Room::addTagToTile(entt::entity tile, TileType ttype)
+{
+	switch (ttype)
+	{
+	case TileType::BLOCKED:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_BlockingTile>(tile);
+		break;
+
+	case TileType::FAT:
+	case TileType::TANK_FAT:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_BlockingTile>(tile);
+		mRegistry.emplace<Tag_BreakableTile>(tile);
+		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, 3));
+		mRegistry.emplace<IDComponent>(tile, GetEntityID());
+		break;
+
+	case TileType::MOVABLE:
+	case TileType::SCAR:
+		mRegistry.emplace<Tag_Tile>(tile);
+		break;
+
+	case TileType::RAIL:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_RailTile>(tile);
+		break;
+
+	case TileType::START_POINT:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "StartPoint");
+		break;
+
+	case TileType::END_POINT:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "EndPoint");
+		break;
+
+	default:
+		ASSERT(false, "Unknown tile type!");
+		break;
+	}
+}
+
+float GetTileYPos(TileType ttype)
+{
+	switch (ttype)
+	{
+	case TileType::BLOCKED:
+	case TileType::FAT:
+	case TileType::TANK_FAT:
+		return 0.0f;
+
+	case TileType::MOVABLE:
+	case TileType::RAIL:
+	case TileType::SCAR:
+	case TileType::START_POINT:
+	case TileType::END_POINT:
+		return -Values::TileSide;
+
+	default:
+		ASSERT(false, "Unknown tile type!");
+		return 0.0f;
+	}
 }

@@ -6,6 +6,7 @@
 #include "EnemySystem.h"
 #include "CombatSystem.h"
 #include "CollisionSystem.h"
+#include "GameMap.h"
 
 class User;
 
@@ -36,6 +37,8 @@ public:
 
 	void DoEnterUpgrade();
 
+	void DoEnterGame();
+
 	void NotifyNewbie(User* newbie);
 
 	void SetDirection(const INT8 clientID, const Vector3& direction);
@@ -55,6 +58,12 @@ public:
 
 private:
 	void createSystems();
+
+	void createTiles(string_view fileName);
+
+	void createTankAndCart();
+
+	void addTagToTile(entt::entity tile, TileType ttype);
 
 private:
 	INT32 mRoomIndex = -1;
@@ -76,3 +85,4 @@ private:
 	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
 };
 
+float GetTileYPos(TileType ttype);

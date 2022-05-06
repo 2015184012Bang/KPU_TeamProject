@@ -5,6 +5,10 @@
 #include "Values.h"
 #include <rapidcsv.h>
 
+GameMap::GameMap()
+{
+	LoadMap("../Assets/Maps/Map01.csv");
+}
 
 void GameMap::LoadMap(string_view path)
 {

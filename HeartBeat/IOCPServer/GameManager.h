@@ -27,7 +27,6 @@ public:
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 	// 게임오버 처리
-	// CollisionSystem 내부에서 탱크와 FAT이 충돌하면 호출된다.
 	//void DoGameOver();
 
 private:
@@ -44,17 +43,12 @@ private:
 	void processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
-	//void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	//void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
-
-	// 스테이지 생성
-	//void initStage(string_view mapFile);
 
 	// 스테이지 초기화
 	//void clearStage();
 
-	//void createMapTiles(string_view mapFile);
-	//void createTankAndCart();
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
@@ -82,8 +76,5 @@ private:
 	queue<PACKET_INFO> mPacketQueueB;
 	queue<PACKET_INFO>* mBackPacketQueue = nullptr;
 	queue<PACKET_INFO>* mFrontPacketQueue = nullptr;
-
-	// 게임 맵
-	unique_ptr<GameMap> mGameMap = nullptr;
 };
 
