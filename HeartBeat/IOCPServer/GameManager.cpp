@@ -8,6 +8,7 @@
 #include "Random.h"
 #include "Values.h"
 #include "Tank.h"
+#include "Room.h"
 
 float GetTileYPos(TileType ttype);
 void AddTagToTile(Entity& tile, TileType ttype);
@@ -154,9 +155,17 @@ void GameManager::processUserConnect(const INT32 sessionIndex, const UINT8 packe
 void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
 	LOG("Process user disconnect packet. Session Index: {0}", sessionIndex);
-	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	
-	mRoomManager->RemoveUser(user);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+
+	auto roomIndex = user->GetRoomIndex();
+
+	if (roomIndex != -1)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		room->RemoveUser(user);
+	}
+	
 	mUserManager->DeleteUser(user);
 }
 
@@ -191,8 +200,8 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	REQUEST_ENTER_ROOM_PACKET* rerPacket = reinterpret_cast<REQUEST_ENTER_ROOM_PACKET*>(packet);
-	auto roomIndex = rerPacket->RoomNumber;
-	bool bEnter = mRoomManager->CanEnter(roomIndex);
+	auto& room = mRoomManager->GetRoom(rerPacket->RoomNumber);
+	bool bEnter = room->CanEnter();
 
 	ANSWER_ENTER_ROOM_PACKET aerPacket = {};
 	aerPacket.PacketID = ANSWER_ENTER_ROOM;
@@ -207,7 +216,7 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	{
 		auto user = mUserManager->GetUserByIndex(sessionIndex);
 		ASSERT(user, "User is nullptr!");
-		mRoomManager->AddUser(roomIndex, user);
+		room->AddUser(user);
 
 		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
 		aerPacket.ClientID = user->GetClientID();
@@ -215,7 +224,7 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 
 		// 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
 		// 기존 유저들에겐 새로운 유저의 정보 송신
-		mRoomManager->NotifyNewbie(roomIndex, user);
+		room->NotifyNewbie(user);
 	}
 }
 
@@ -233,11 +242,13 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 	nlrPacket.PacketID = NOTIFY_LEAVE_ROOM;
 	nlrPacket.PacketSize = sizeof(nlrPacket);
 
+	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+
 	// 해당 방 유저들에게 브로드캐스트
-	mRoomManager->Broadcast(user->GetRoomIndex(), sizeof(nlrPacket), reinterpret_cast<char*>(&nlrPacket));
+	room->Broadcast(sizeof(nlrPacket), reinterpret_cast<char*>(&nlrPacket));
 
 	// 유저 나감 처리
-	mRoomManager->RemoveUser(user);
+	room->RemoveUser(user);
 
 	// Room Scene으로 돌아간 유저에게 이용 가능한 방 목록 전송
 	mRoomManager->SendAvailableRoom(sessionIndex);
@@ -251,15 +262,9 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto roomIndex = user->GetRoomIndex();
+	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
 
-	if (roomIndex == -1)
-	{
-		LOG("Invalid room Index!");
-		return;
-	}
-
-	mRoomManager->EnterUpgrade(roomIndex);
+	room->DoEnterUpgrade();
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)

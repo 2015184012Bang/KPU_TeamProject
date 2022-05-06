@@ -20,6 +20,8 @@ public:
 
 	bool ExistsFreeSlot();
 
+	bool CanEnter();
+
 	void AddUser(User* user);
 
 	void RemoveUser(User* user);
@@ -27,6 +29,8 @@ public:
 	void Broadcast(const UINT32 packetSize, char* packet);
 
 	void DoEnterUpgrade();
+
+	void NotifyNewbie(User* newbie);
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 

@@ -24,6 +24,18 @@ bool Room::ExistsFreeSlot()
 	return false;
 }
 
+bool Room::CanEnter()
+{
+	if (mRoomState == RoomState::Waiting && ExistsFreeSlot())
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void Room::AddUser(User* user)
 {
 	// 유저 클라이언트 아이디 설정(0~2)
@@ -79,11 +91,54 @@ void Room::Broadcast(const UINT32 packetSize, char* packet)
 
 void Room::DoEnterUpgrade()
 {
+	if (mRoomState == RoomState::Playing)
+	{
+		LOG("This room is now playing!");
+		return;
+	}
+
 	SetState(RoomState::Playing);
 
 	// 플레이어 엔티티 생성
 	for (auto user : mUsers)
 	{
 		user->CreatePlayerEntity();
+	}
+
+	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
+	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
+	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
+	ansPacket.Result = RESULT_CODE::SUCCESS;
+	Broadcast(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+}
+
+void Room::NotifyNewbie(User* newbie)
+{
+	NOTIFY_ENTER_ROOM_PACKET nerPacket = {};
+	nerPacket.ClientID = newbie->GetClientID();
+	nerPacket.PacketID = NOTIFY_ENTER_ROOM;
+	nerPacket.PacketSize = sizeof(nerPacket);
+
+	// 기존 유저들에게 새 유저의 접속을 알림
+	for (auto user : mUsers)
+	{
+		if (newbie == user)
+		{
+			continue;
+		}
+
+		SendPacketFunction(user->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
+	}
+
+	// 새 유저에게 기존 유저들을 알림
+	for (auto user : mUsers)
+	{
+		if (newbie == user)
+		{
+			continue;
+		}
+
+		nerPacket.ClientID = user->GetClientID();
+		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
 	}
 }
