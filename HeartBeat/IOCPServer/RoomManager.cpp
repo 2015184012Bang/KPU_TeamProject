@@ -46,3 +46,14 @@ shared_ptr<Room>& RoomManager::GetRoom(const INT32 roomIndex)
 	ASSERT(roomIndex >= 0 && roomIndex < static_cast<INT32>(mMaxRoomCount), "Invalid room index!");
 	return mRooms[roomIndex];
 }
+
+void RoomManager::Update()
+{
+	for (auto& room : mRooms)
+	{
+		if (room->GetState() == Room::RoomState::Playing)
+		{
+			room->Update();
+		}
+	}
+}

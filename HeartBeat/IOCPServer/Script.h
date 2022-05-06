@@ -5,7 +5,7 @@
 class Script
 {
 public:
-	Script(Entity owner);
+	Script(entt::registry& registry, entt::entity owner);
 	virtual ~Script() = default;
 
 	virtual void Start() abstract;
@@ -14,39 +14,39 @@ public:
 	template<typename T>
 	T& GetComponent()
 	{
-		return mOwner.GetComponent<T>();
+		return mRegistry.get<T>(mOwner);
 	}
 
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{
-		return mOwner.AddComponent<T>(forward<Args>(args)...);
+		return mRegistry.emplace<T>(mOwner, forward<Args>(args)...);
 	}
 
 	template<typename T>
 	void RemoveComponent()
 	{
-		mOwner.RemoveComponent<T>();
+		mRegistry.remove<T>(mOwner);
 	}
 
 	template<typename T>
 	bool HasComponent()
 	{
-		return mOwner.HasComponent<T>();
+		return mRegistry.any_of<T>(mOwner);
 	}
 
 	template<typename T>
 	void AddTag()
 	{
-		mOwner.AddTag<T>();
+		mRegistry.emplace<T>(mOwner);
 	}
 
 	template<typename T>
-	vector<Entity> FindObjectsWithTag()
+	vector<entt::entity> FindObjectsWithTag()
 	{
-		vector<Entity> entities;
+		vector<entt::entity> entities;
 
-		auto view = gRegistry.view<T>();
+		auto view = mRegistry.view<T>();
 		entities.reserve(view.size());
 
 		for (auto entity : view)
@@ -57,9 +57,10 @@ public:
 		return entities;
 	}
 
-	Entity Find(string_view targetName);
+	entt::entity Find(string_view targetName);
 
-private:
-	Entity mOwner = {};
+protected:
+	entt::registry& mRegistry;
+	entt::entity mOwner = entt::null;
 };
 

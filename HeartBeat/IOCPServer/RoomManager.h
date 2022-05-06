@@ -14,6 +14,8 @@ public:
 	
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
+	void Update();
+
 private:
 	enum
 	{

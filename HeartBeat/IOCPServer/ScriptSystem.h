@@ -1,15 +1,16 @@
 #pragma once
 
-class GameManager;
+class Room;
 
 class ScriptSystem
 {
 public:
-	ScriptSystem(shared_ptr<GameManager>&& gm);
+	ScriptSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 };
 

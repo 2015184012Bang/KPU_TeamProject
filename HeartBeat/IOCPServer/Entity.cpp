@@ -1,35 +1,52 @@
 #include "pch.h"
 #include "Entity.h"
 
-entt::registry gRegistry;
 
-Entity GetEntity(const UINT32 eid)
+entt::entity GetEntityByID(entt::registry& registry, const UINT32 id)
 {
-	auto view = gRegistry.view<IDComponent>();
+	auto view = registry.view<IDComponent>();
 
-	for (auto [entity, id] : view.each())
+	for (auto [entity, idc] : view.each())
 	{
-		if (id.ID == eid)
+		if (idc.ID == id)
 		{
-			return Entity{ entity };
+			return entity;
 		}
 	}
 
-	return Entity{};
+	return entt::null;
 }
 
-Entity GetEntityByName(string_view name)
+entt::entity GetEntityByName(entt::registry& registry, string_view targetName)
 {
-	auto view = gRegistry.view<NameComponent>();
+	auto view = registry.view<NameComponent>();
 
-	for (auto [entity, nameComp] : view.each())
+	for (auto [entity, name] : view.each())
 	{
-		if (nameComp.Name == name)
+		if (name.Name == targetName)
 		{
-			return Entity{ entity };
+			return entity;
 		}
 	}
 
-	return Entity{};
+	return entt::null;
 }
 
+extern void DestroyEntityByID(entt::registry& registry, const UINT32 id)
+{
+	auto view = registry.view<IDComponent>();
+
+	for (auto [entity, idc] : view.each())
+	{
+		if (idc.ID == id)
+		{
+			registry.destroy(entity);
+			break;
+		}
+	}
+}
+
+extern void DestroyEntity(entt::registry& registry, entt::entity entity)
+{
+	registry.destroy(entity);
+}

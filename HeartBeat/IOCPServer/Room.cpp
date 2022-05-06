@@ -3,6 +3,7 @@
 
 #include "User.h"
 
+
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
 	mRoomIndex = index;
@@ -12,6 +13,8 @@ void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc
 	{
 		mClientIDs.push_back(i);
 	}
+
+	createSystems();
 }
 
 bool Room::ExistsFreeSlot()
@@ -50,7 +53,7 @@ void Room::AddUser(User* user)
 	user->SetUserState(User::UserState::IN_ROOM);
 
 	mUsers.push_back(user);
-	
+
 	if (mUsers.size() == ROOM_MAX_USER)
 	{
 		mRoomState = RoomState::Waiting_Full;
@@ -73,6 +76,14 @@ void Room::RemoveUser(User* user)
 		if (mRoomState == RoomState::Waiting_Full)
 		{
 			mRoomState = RoomState::Waiting;
+		}
+
+		// 방 안의 모든 유저가 나가면 룸 상태를 Waiting으로 변경하고
+		// 레지스트리를 초기화한다.
+		if (mUsers.size() == 0)
+		{
+			mRoomState = RoomState::Waiting;
+			mRegistry.clear();
 		}
 	}
 	else
@@ -102,6 +113,7 @@ void Room::DoEnterUpgrade()
 	// 플레이어 엔티티 생성
 	for (auto user : mUsers)
 	{
+		user->SetRegistry(&mRegistry);
 		user->CreatePlayerEntity();
 	}
 
@@ -141,4 +153,27 @@ void Room::NotifyNewbie(User* newbie)
 		nerPacket.ClientID = user->GetClientID();
 		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
 	}
+}
+
+void Room::SetDirection(const INT8 clientID, const Vector3& direction)
+{
+	mMovementSystem->SetDirection(clientID, direction);
+}
+
+void Room::Update()
+{
+	mScriptSystem->Update();
+	mCombatSystem->Update();
+	mMovementSystem->Update();
+	mCollisionSystem->Update();
+	mEnemySystem->Update();
+}
+
+void Room::createSystems()
+{
+	mMovementSystem = make_unique<MovementSystem>(mRegistry, shared_from_this());
+	mScriptSystem = make_unique<ScriptSystem>(mRegistry, shared_from_this());
+	mEnemySystem = make_unique<EnemySystem>(mRegistry, shared_from_this());
+	mCombatSystem = make_unique<CombatSystem>(mRegistry, shared_from_this());
+	mCollisionSystem = make_unique<CollisionSystem>(mRegistry, shared_from_this());
 }

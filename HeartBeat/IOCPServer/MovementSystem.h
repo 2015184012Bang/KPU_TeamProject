@@ -1,11 +1,11 @@
 #pragma once
 
-class GameManager;
+class Room;
 
 class MovementSystem
 {
 public:
-	MovementSystem(shared_ptr<GameManager>&& gm);
+	MovementSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
@@ -16,6 +16,7 @@ public:
 	void SetPlayersStartPos();
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 };
 

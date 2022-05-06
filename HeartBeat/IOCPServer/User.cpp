@@ -34,12 +34,12 @@ void User::Reset()
 	mRoomIndex = -1;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 
-	if (mCharacter)
+	if (mRegistry && mRegistry->valid(mCharacter) )
 	{
-		gRegistry.destroy(mCharacter);
+		mRegistry->destroy(mCharacter);
+		mRegistry = nullptr;
+		mCharacter = entt::null;
 	}
-
-	mCharacter = {};
 }
 
 void User::SetLogin(string_view userName)
@@ -79,17 +79,17 @@ void User::SetData(const UINT32 dataSize, char* pData)
 void User::CreatePlayerEntity()
 {
 	// 엔티티 생성
-	mCharacter = Entity{ gRegistry.create() };
+	mCharacter = mRegistry->create();
 
 	// 컴포넌트 부착
-	auto& transform = mCharacter.AddComponent<TransformComponent>();
-	mCharacter.AddComponent<IDComponent>(mClientID);
-	mCharacter.AddComponent<NameComponent>("Player" + to_string(mClientID));
-	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
-	mCharacter.AddComponent<CombatComponent>();
-	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
+	auto& transform = mRegistry->emplace<TransformComponent>(mCharacter);
+	mRegistry->emplace<IDComponent>(mCharacter, mClientID);
+	mRegistry->emplace<NameComponent>(mCharacter, "Player" + to_string(mClientID));
+	mRegistry->emplace<MovementComponent>(mCharacter, Vector3::Zero, Values::PlayerSpeed);
+	mRegistry->emplace<CombatComponent>(mCharacter);
+	mRegistry->emplace<BoxComponent>(mCharacter, &Box::GetBox("../Assets/Boxes/Character.box"),
 		transform.Position, transform.Yaw);
-	mCharacter.AddTag<Tag_Player>();
+	mRegistry->emplace<Tag_Player>(mCharacter);
 }
 
 PACKET_INFO User::GetPacket()
@@ -123,10 +123,12 @@ PACKET_INFO User::GetPacket()
 
 const Vector3& User::GetPosition()
 {
-	return mCharacter.GetComponent<TransformComponent>().Position;
+	ASSERT(mRegistry->valid(mCharacter), "Invalid entity!");
+	return mRegistry->get<TransformComponent>(mCharacter).Position;
 }
 
 const Vector3& User::GetMoveDirection()
 {
-	return mCharacter.GetComponent<MovementComponent>().Direction;
+	ASSERT(mRegistry->valid(mCharacter), "Invalid entity!");
+	return mRegistry->get<MovementComponent>(mCharacter).Direction;
 }

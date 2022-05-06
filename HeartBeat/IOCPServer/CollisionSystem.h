@@ -1,17 +1,17 @@
 #pragma once
 
-#include "Entity.h"
+#include "Components.h"
 
-class GameManager;
+class Room;
 
 class CollisionSystem
 {
 public:
-	CollisionSystem(shared_ptr<GameManager>&& gm);
+	CollisionSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
-	bool DoAttack(const INT32 sessionIndex);
+	bool DoAttack(const INT32 clientID);
 
 	void SetStart(bool value) { mbStart = value; }
 	
@@ -22,10 +22,11 @@ private:
 	void checkTankCollision();
 	void checkPlayerOutOfBound();
 
-	void reposition(BoxComponent& playerBox, Entity&& player, BoxComponent& otherBox);
+	void reposition(BoxComponent& playerBox, entt::entity player, BoxComponent& otherBox);
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 
 	// 面倒 贸府 矫累 咯何
 	bool mbStart = false;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Protocol.h"
-#include "Entity.h"
 
 constexpr UINT32 DATA_BUFFER_SIZE = 8192;
 
@@ -38,7 +37,7 @@ public:
 	INT32 GetIndex() const { return mIndex; }
 	string GetUserName() const { return mUserName; }
 	bool IsConnected() const { return mConnected; }
-	Entity& GetCharacter() { return mCharacter; }
+	entt::entity GetCharacterEntity() { return mCharacter; }
 	const Vector3& GetPosition();
 	const Vector3& GetMoveDirection();
 	INT8 GetClientID() const { return mClientID; }
@@ -47,6 +46,7 @@ public:
 	void SetClientID(const INT8 id) { mClientID = id; }
 	void SetUserState(UserState state) { mUserState = state; }
 	void SetRoomIndex(const INT32 roomIndex) { mRoomIndex = roomIndex; }
+	void SetRegistry(entt::registry* registry) { mRegistry = registry; }
 
 private:
 	UserState mUserState = UserState::IN_LOGIN;
@@ -62,6 +62,8 @@ private:
 	UINT32 mReadPos = 0;
 	char* mDataBuffer = nullptr;
 	
-	Entity mCharacter = {};
+	entt::entity mCharacter = entt::null;
+
+	entt::registry* mRegistry;
 };
 
