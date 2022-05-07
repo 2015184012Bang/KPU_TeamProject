@@ -23,7 +23,7 @@ UpgradeScene::UpgradeScene(Client* owner)
 void UpgradeScene::Enter()
 {
 	// Bgm 재생
-	SoundManager::PlaySound("ClockTick.mp3");
+	SoundManager::PlaySound("ClockTick.mp3", 0.5f);
 
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
@@ -432,5 +432,5 @@ void UpgradeScene::startCountdown()
 {
 	// 시계 똑딱 소리를 멈추고 카운트다운 재생을 시작한다.
 	SoundManager::StopSound("ClockTick.mp3");
-	SoundManager::PlaySound("Countdown.mp3");
+	SoundManager::PlaySound("Countdown.mp3", 0.5f);
 }

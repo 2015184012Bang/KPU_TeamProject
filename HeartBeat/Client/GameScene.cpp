@@ -561,12 +561,12 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("Blocked.png");
 
 	case TileType::MOVABLE:
-		return TEXTURE("LightGreen.png");
+		return TEXTURE("Road.png");
 
 	case TileType::RAIL:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
-		return TEXTURE("Brown.png");
+		return TEXTURE("Rail.png");
 
 	case TileType::FAT:
 		return TEXTURE("Fat.png");
