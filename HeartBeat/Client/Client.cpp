@@ -486,8 +486,8 @@ void Client::drawSkeletalMesh()
 
 void Client::drawStaticMesh()
 {
-	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
-
+	// 조명 미적용 셰이더
+	gCmdList->SetPipelineState(mRenderer->GetNoLightPSO().Get());
 	{
 		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<ChildComponent>);
 		for (auto entity : view)
@@ -501,6 +501,8 @@ void Client::drawStaticMesh()
 		}
 	}
 
+	// 조명 적용 셰이더
+	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 	{
 		auto view = gRegistry.view<Tag_StaticMesh, ChildComponent>();
 		for (auto entity : view)

@@ -275,5 +275,8 @@
     <None Include="sprite.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="default.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
