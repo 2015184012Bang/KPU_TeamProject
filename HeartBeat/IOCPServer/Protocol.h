@@ -96,6 +96,7 @@ enum class EntityType : UINT8
 	CART,
 	VIRUS,
 	DOG,
+	PLAYER,
 	END
 };
 

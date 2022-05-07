@@ -412,6 +412,12 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::PLAYER:
+	{
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
+	}
+	break;
+
 	default:
 		break;
 	}

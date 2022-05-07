@@ -12,6 +12,8 @@ class Font;
 
 using namespace std::string_literals;
 
+extern bool gShouldClose;
+
 class Client
 {
 public:
@@ -40,7 +42,6 @@ public:
     void DeleteChildren(entt::registry& regi, entt::entity entity);
 
 public:
-    bool ShouldClose() { return !mbRunning; }
 	int GetClientID() const { return mClientID; }
 	void SetClientID(int id) { mClientID = id; }
 	const string& GetClientName() const { return mClientName; }
@@ -72,8 +73,6 @@ private:
     void drawSpriteAndText();
 
 private:
-    bool mbRunning = true;
-
     unique_ptr<Scene> mActiveScene = nullptr;
     unique_ptr<Renderer> mRenderer = nullptr;
     unique_ptr<PacketManager> mPacketManager = nullptr;

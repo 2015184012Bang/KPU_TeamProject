@@ -28,6 +28,8 @@
 #include "TestScene.h"
 #include "Random.h"
 
+bool gShouldClose = false;
+
 Client::Client()
 {
 
@@ -240,7 +242,7 @@ void Client::processInput()
 
 	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
-		mbRunning = false;
+		gShouldClose = true;
 	}
 
 	processButton();

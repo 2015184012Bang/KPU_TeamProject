@@ -33,7 +33,7 @@ void TestScene::Update(float deltaTime)
 {
 	static float yaw = 0.0f;
 
-	yaw += deltaTime* 60.0;
+	yaw += deltaTime * 60.0f;
 
 	auto& transform = mCube.GetComponent<TransformComponent>();
 	Helpers::UpdateYRotation(&transform.Rotation.y, yaw, &transform.bDirty);

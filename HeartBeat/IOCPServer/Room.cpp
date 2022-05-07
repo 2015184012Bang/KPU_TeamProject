@@ -45,8 +45,11 @@ bool Room::CanEnter()
 void Room::AddUser(User* user)
 {
 	// 유저 클라이언트 아이디 설정(0~2)
+	// HOST_ID(2)가 먼저 부여되도록 하기 위해 정렬한다.
+	mClientIDs.sort();
 	auto id = mClientIDs.back();
 	mClientIDs.pop_back();
+
 	user->SetClientID(id);
 
 	// 유저 룸 인덱스 설정
@@ -67,6 +70,8 @@ void Room::RemoveUser(User* user)
 {
 	if (auto iter = find(mUsers.begin(), mUsers.end(), user); iter != mUsers.end())
 	{
+		auto erasedClientID = (*iter)->GetClientID();
+
 		// 클라이언트 아이디 반환
 		mClientIDs.push_back((*iter)->GetClientID());
 
@@ -75,6 +80,14 @@ void Room::RemoveUser(User* user)
 		(*iter)->SetRoomIndex(-1);
 		(*iter)->SetUserState(User::UserState::IN_LOBBY);
 		mUsers.erase(iter);
+
+		// 나머지 유저들에게 엔티티 삭제 패킷 송신
+		NOTIFY_DELETE_ENTITY_PACKET packet = {};
+		packet.EntityID = erasedClientID;
+		packet.EntityType = static_cast<UINT8>(EntityType::PLAYER);
+		packet.PacketID = NOTIFY_DELETE_ENTITY;
+		packet.PacketSize = sizeof(packet);
+		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
 		if (mRoomState == RoomState::Waiting_Full)
 		{

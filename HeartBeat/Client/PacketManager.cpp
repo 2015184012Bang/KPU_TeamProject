@@ -1,6 +1,8 @@
 #include "ClientPCH.h"
 #include "PacketManager.h"
 
+#include "Client.h"
+
 PacketManager::~PacketManager()
 {
 	if (!mbShutdown)
@@ -88,6 +90,7 @@ void PacketManager::Recv()
 		if (WSAEWOULDBLOCK != errorCode)
 		{
 			HB_LOG("Recv Error: {0}", WSAGetLastError());
+			gShouldClose = true;
 		}
 		return;
 	}
@@ -95,6 +98,7 @@ void PacketManager::Recv()
 	if (0 == retVal)
 	{
 		HB_LOG("Server disconnected!");
+		gShouldClose = true;
 		return;
 	}
 
