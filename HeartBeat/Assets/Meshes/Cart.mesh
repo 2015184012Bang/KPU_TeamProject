@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Cart.png"
 	],
 	"vertices":[
 		[218.830627,117.809914,316.029480,0.000000,1.000000,0.000000,0,0,0,0,255,0,0,0,0.497986,0.839434],

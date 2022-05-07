@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Thermometer.png"
 	],
 	"vertices":[
 		[-14.516392,264.993347,15.489525,0.409449,0.409449,0.811024,0.421875,0.352051],

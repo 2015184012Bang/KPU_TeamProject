@@ -303,11 +303,11 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	case UpgradePreset::ATTACK:
 	{
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Syringe.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Syringe.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+			TEXTURE("Bag01.png"), SKELETON("Bag.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Pill.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -324,9 +324,9 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
 			TEXTURE("Cotton_Swab.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
-			TEXTURE("Temp.png"), SKELETON("HealPack.skel"));
+			TEXTURE("HealPack.png"), SKELETON("HealPack.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Ringer.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -341,11 +341,11 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	case UpgradePreset::SUPPORT:
 	{
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Thermometer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Thermometer.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+			TEXTURE("Bag02.png"), SKELETON("Bag.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Pill_Pack.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();

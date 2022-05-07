@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Syringe.png"
 	],
 	"vertices":[
 		[8.097947,261.337585,-8.097917,0.417323,0.803150,-0.417323,0.616211,0.590332],

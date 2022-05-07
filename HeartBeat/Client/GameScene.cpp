@@ -454,7 +454,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
 
 		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Hammer.png"));
 		Helpers::AttachBone(virus, hammer, "Weapon");
 	}
 	break;
@@ -567,10 +567,10 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("Brown.png");
 
 	case TileType::FAT:
-		return TEXTURE("Pink.png");
+		return TEXTURE("Fat.png");
 
 	case TileType::TANK_FAT:
-		return TEXTURE("Orange.png");
+		return TEXTURE("Fat.png");
 
 	case TileType::SCAR:
 		return TEXTURE("Red.png");

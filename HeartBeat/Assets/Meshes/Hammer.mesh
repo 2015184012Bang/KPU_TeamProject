@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Hammer.png"
 	],
 	"vertices":[
 		[3.325033,193.469147,3.325043,0.708661,0.000000,0.708661,0.487793,0.594238],
