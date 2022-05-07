@@ -20,7 +20,7 @@ void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc
 	createSystems();
 }
 
-bool Room::ExistsFreeSlot()
+bool Room::existsFreeSlot()
 {
 	if (mUsers.size() < ROOM_MAX_USER)
 	{
@@ -32,7 +32,7 @@ bool Room::ExistsFreeSlot()
 
 bool Room::CanEnter()
 {
-	if (mRoomState == RoomState::Waiting && ExistsFreeSlot())
+	if (mRoomState == RoomState::Waiting && existsFreeSlot())
 	{
 		return true;
 	}
@@ -81,14 +81,11 @@ void Room::RemoveUser(User* user)
 			mRoomState = RoomState::Waiting;
 		}
 
-		// 방 안의 모든 유저가 나가면 룸 상태를 Waiting으로 변경하고
-		// 레지스트리를 초기화한다.
-		if (mUsers.size() == 0)
+		// 방 안의 모든 유저가 나가면 게임 상태를 초기화한다.
+		if (mUsers.size() == 0 && mRoomState == RoomState::Playing)
 		{
-			mEnemySystem->SetGenerate(false);
-			mCollisionSystem->SetStart(false);
 			mRoomState = RoomState::Waiting;
-			mRegistry.clear();
+			clearGame();
 		}
 	}
 	else
@@ -122,7 +119,7 @@ void Room::DoEnterUpgrade()
 		user->CreatePlayerEntity();
 	}
 
-	NOTIFY_ENTER_UPGRADE_PACKET ansPacket;
+	NOTIFY_ENTER_UPGRADE_PACKET ansPacket = {};
 	ansPacket.PacketID = NOTIFY_ENTER_UPGRADE;
 	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
 	ansPacket.Result = RESULT_CODE::SUCCESS;
@@ -318,6 +315,15 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		ASSERT(false, "Unknown tile type!");
 		break;
 	}
+}
+
+void Room::clearGame()
+{
+	mEntityID = 3;	// Entity ID 초기화
+	mEnemySystem->SetGenerate(false);
+	mCollisionSystem->SetStart(false);
+	mRoomState = RoomState::Waiting;
+	mRegistry.clear();
 }
 
 float GetTileYPos(TileType ttype)

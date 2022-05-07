@@ -8,6 +8,7 @@ class RoomManager
 public:
 	void Init(const UINT8 maxRoomCount);
 
+	// 방 각각의 입장 가능 여부를 유저에게 송신
 	void SendAvailableRoom(const INT32 sessionIndex);
 
 	shared_ptr<Room>& GetRoom(const INT32 roomIndex);

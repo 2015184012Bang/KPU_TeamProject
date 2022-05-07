@@ -11,7 +11,7 @@
 #include "RoomManager.h"
 #include "GameMap.h"
 
-class GameManager : public enable_shared_from_this<GameManager>
+class GameManager
 {
 public:
 	void Init(const UINT32 maxSessionCount);
@@ -48,7 +48,6 @@ private:
 
 	// 스테이지 초기화
 	//void clearStage();
-
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
