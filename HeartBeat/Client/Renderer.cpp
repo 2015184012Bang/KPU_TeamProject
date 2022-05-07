@@ -581,7 +581,6 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Tank.skel");
 	SKELETON("Virus.skel");
 
-#ifdef _DEBUG
 	BOX("Cart.box");
 	BOX("Cell.box");
 	BOX("Character.box");
@@ -590,7 +589,6 @@ void Renderer::loadAllAssetsFromFile()
 	BOX("Pickax.box");
 	BOX("Tank.box");
 	BOX("Virus.box");
-#endif
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");

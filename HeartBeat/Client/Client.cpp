@@ -266,10 +266,7 @@ void Client::update()
 	updateMovement(deltaTime);
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
-
-#ifdef _DEBUG
 	updateCollisionBox(deltaTime);
-#endif
 
 	if (mFollowCameraTarget)
 	{
