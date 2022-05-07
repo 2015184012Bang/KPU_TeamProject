@@ -22,6 +22,8 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
+	SoundManager::PlaySound("SteampipeSonata.mp3", 0.3f);
+
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
@@ -556,7 +558,7 @@ Texture* GetTileTexture(TileType ttype)
 	switch (ttype)
 	{
 	case TileType::BLOCKED:
-		return TEXTURE("Black.png");
+		return TEXTURE("Blocked.png");
 
 	case TileType::MOVABLE:
 		return TEXTURE("LightGreen.png");

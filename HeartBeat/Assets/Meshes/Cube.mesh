@@ -6,7 +6,8 @@
 		"../Assets/Textures/LightGreen.png",
 		"../Assets/Textures/Orange.png",
 		"../Assets/Textures/Pink.png",
-		"../Assets/Textures/Red.png"
+		"../Assets/Textures/Red.png",
+		"../Assets/Textures/Blocked.png"
 	],
 	"vertices":[
 		[-200.000000,-0.000000,200.000000,0.000000,-1.000000,0.000000,0.022491,0.977051],

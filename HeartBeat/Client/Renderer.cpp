@@ -498,13 +498,14 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Character_Red.mesh");
 	MESH("Clock.mesh");
 	MESH("Cotton_Swab.mesh");
+	MESH("CO2.mesh");
 	MESH("Cube.mesh");
 	MESH("Dog.mesh");
 	MESH("Fat.mesh");
 	MESH("Hammer.mesh");
 	MESH("HealPack.mesh");
 	MESH("House.mesh");
-	MESH("Oxygen.mesh");
+	MESH("O2.mesh");
 	MESH("Pickax.mesh");
 	MESH("Pill.mesh");
 	MESH("Pill_Pack.mesh");
