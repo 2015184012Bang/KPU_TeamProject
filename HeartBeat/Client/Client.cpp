@@ -222,7 +222,7 @@ void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
 	Entity parent = Entity{ entity };
 	auto& children = parent.GetComponent<ParentComponent>().Children;
 
-	for (auto eid : children) 
+	for (auto eid : children)
 	{
 		// DestroyAll()을 수행하면 부모보다 자식이 먼저 삭제될 수 있다.
 		// 유효성 검사 필수.
@@ -270,7 +270,7 @@ void Client::update()
 #ifdef _DEBUG
 	updateCollisionBox(deltaTime);
 #endif
-	
+
 	if (mFollowCameraTarget)
 	{
 		updateMainCamera();
@@ -448,19 +448,39 @@ void Client::updateMainCamera()
 void Client::drawSkeletalMesh()
 {
 	gCmdList->SetPipelineState(mRenderer->GetSkeletalMeshPSO().Get());
-	auto view = gRegistry.view<Tag_SkeletalMesh>();
-	for (auto entity : view)
+
 	{
-		Entity e = Entity{ entity };
+		auto view = gRegistry.view<Tag_SkeletalMesh>(entt::exclude<ChildComponent>);
+		for (auto entity : view)
+		{
+			Entity e = Entity{ entity };
 
-		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
-		AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
-		Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
+			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
+			Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
 
-		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
-		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
+
+	{
+		auto view = gRegistry.view<Tag_SkeletalMesh, ChildComponent>();
+		for (auto [entity, child] : view.each())
+		{
+			Entity e = Entity{ entity };
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			Helpers::BindWorldMatrixAttached(&transform, &child);
+
+			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
+			Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
+
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
 	}
 }
 
@@ -482,7 +502,7 @@ void Client::drawStaticMesh()
 	}
 
 	{
-		auto view = gRegistry.view<ChildComponent>();
+		auto view = gRegistry.view<Tag_StaticMesh, ChildComponent>();
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };

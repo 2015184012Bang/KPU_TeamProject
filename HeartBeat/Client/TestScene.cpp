@@ -19,14 +19,14 @@ void TestScene::Enter()
 	auto& camera = mOwner->GetMainCamera();
 	camera.GetComponent<CameraComponent>().Position.z = -1000.0f;
 
-	Entity player = mOwner->CreateSkeletalMeshEntity(MESH("Character_Pink.mesh"),
-		TEXTURE("Character_Pink.png"), SKELETON("Character_Pink.skel"));
+	Entity player = mOwner->CreateSkeletalMeshEntity(MESH("Character_Red.mesh"),
+		TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel"));
 	auto& animator = player.GetComponent<AnimatorComponent>();
 
-	auto& transform = player.GetComponent<TransformComponent>();
-	transform.Rotation.y = 180.0f;
+	//auto& transform = player.GetComponent<TransformComponent>();
+	//transform.Rotation.y = 180.0f;
 
-	Helpers::PlayAnimation(&animator, ANIM("CG_Skill2.anim"));
+	Helpers::PlayAnimation(&animator, ANIM("CR_Skill3.anim"));
 
 	auto bagAnim = ANIM("HealPack_Attack.anim");
 	bagAnim->SetLoop(false);
