@@ -22,6 +22,8 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
+	SoundManager::PlaySound("SteampipeSonata.mp3", 0.3f);
+
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
@@ -32,7 +34,7 @@ void GameScene::Enter()
 
 void GameScene::Exit()
 {
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void GameScene::ProcessInput()
@@ -374,9 +376,9 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetRandomAttackAnimFile());
 
-	if (naPacket->Result == ERROR_CODE::ATTACK_SUCCESS)
+	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS)
 	{
-		SoundManager::PlaySound("Punch.mp3");
+		SoundManager::PlaySound("Punch.mp3", 0.15f);
 	}
 }
 
@@ -409,6 +411,12 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Dead.anim"));
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
+	}
+	break;
+
+	case EntityType::PLAYER:
+	{
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
 	}
 	break;
 
@@ -448,7 +456,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
 
 		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Hammer.png"));
 		Helpers::AttachBone(virus, hammer, "Weapon");
 	}
 	break;
@@ -476,13 +484,13 @@ void GameScene::processGameOver(const PACKET& packet)
 
 	switch (ngoPacket->Result)
 	{
-	case ERROR_CODE::STAGE_CLEAR:
+	case RESULT_CODE::STAGE_CLEAR:
 		HB_ASSERT(false, "Not implemented yet.");
 		mbChangeScene = true;
 		mStageCode = StageCode::CLEAR;
 		break;
 
-	case ERROR_CODE::STAGE_FAIL:
+	case RESULT_CODE::STAGE_FAIL:
 	{
 		mbChangeScene = true;
 		mStageCode = StageCode::FAIL;
@@ -550,21 +558,21 @@ Texture* GetTileTexture(TileType ttype)
 	switch (ttype)
 	{
 	case TileType::BLOCKED:
-		return TEXTURE("Black.png");
+		return TEXTURE("Blocked.png");
 
 	case TileType::MOVABLE:
-		return TEXTURE("LightGreen.png");
+		return TEXTURE("Road.png");
 
 	case TileType::RAIL:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
-		return TEXTURE("Brown.png");
+		return TEXTURE("Rail.png");
 
 	case TileType::FAT:
-		return TEXTURE("Pink.png");
+		return TEXTURE("Fat.png");
 
 	case TileType::TANK_FAT:
-		return TEXTURE("Orange.png");
+		return TEXTURE("Fat.png");
 
 	case TileType::SCAR:
 		return TEXTURE("Red.png");

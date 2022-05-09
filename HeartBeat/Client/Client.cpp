@@ -28,6 +28,8 @@
 #include "TestScene.h"
 #include "Random.h"
 
+bool gShouldClose = false;
+
 Client::Client()
 {
 
@@ -60,6 +62,7 @@ bool Client::Init()
 	ResourceManager::MakeAnimTransitions();
 
 	createCameraEntity();
+	createLightEntity();
 
 	mActiveScene = std::make_unique<LoginScene>(this);
 	mActiveScene->Enter();
@@ -219,7 +222,7 @@ void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
 	Entity parent = Entity{ entity };
 	auto& children = parent.GetComponent<ParentComponent>().Children;
 
-	for (auto eid : children) 
+	for (auto eid : children)
 	{
 		// DestroyAll()을 수행하면 부모보다 자식이 먼저 삭제될 수 있다.
 		// 유효성 검사 필수.
@@ -239,7 +242,7 @@ void Client::processInput()
 
 	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
-		mbRunning = false;
+		gShouldClose = true;
 	}
 
 	processButton();
@@ -263,11 +266,8 @@ void Client::update()
 	updateMovement(deltaTime);
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
-
-#ifdef _DEBUG
 	updateCollisionBox(deltaTime);
-#endif
-	
+
 	if (mFollowCameraTarget)
 	{
 		updateMainCamera();
@@ -287,6 +287,11 @@ void Client::render()
 	auto& camera = mMainCamera.GetComponent<CameraComponent>();
 	Helpers::BindViewProjectionMatrix(camera.Position,
 		camera.Target, camera.Up, camera.FOV, camera.Buffer);
+
+	// 조명 설정
+	auto& light = mLight.GetComponent<LightComponent>();
+	light.Light.CameraPosition = camera.Position;
+	Helpers::BindLight(&light);
 
 	drawSkeletalMesh();
 	drawStaticMesh();
@@ -317,6 +322,17 @@ void Client::createCameraEntity()
 	m2dCamera.AddComponent<CameraComponent>();
 	m2dCamera.AddTag<Tag_Camera>();
 	m2dCamera.AddTag<Tag_DontDestroyOnLoad>();
+}
+
+void Client::createLightEntity()
+{
+	mLight = Entity{ gRegistry.create() };
+	mLight.AddTag<Tag_DontDestroyOnLoad>();
+	auto& light = mLight.AddComponent<LightComponent>();
+	light.Light.AmbientColor = Vector3{ 0.2f, 0.2f, 0.2f };
+	light.Light.LightPosition = Vector3{ 10000.0f, 50000.f, 0.0f };
+	light.Light.SpecularStrength = 0.5f;
+	light.Light.CameraPosition = mMainCamera.GetComponent<CameraComponent>().Position;
 }
 
 void Client::processButton()
@@ -429,26 +445,46 @@ void Client::updateMainCamera()
 void Client::drawSkeletalMesh()
 {
 	gCmdList->SetPipelineState(mRenderer->GetSkeletalMeshPSO().Get());
-	auto view = gRegistry.view<Tag_SkeletalMesh>();
-	for (auto entity : view)
+
 	{
-		Entity e = Entity{ entity };
+		auto view = gRegistry.view<Tag_SkeletalMesh>(entt::exclude<ChildComponent>);
+		for (auto entity : view)
+		{
+			Entity e = Entity{ entity };
 
-		TransformComponent& transform = e.GetComponent<TransformComponent>();
-		Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
 
-		AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
-		Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
+			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
+			Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
 
-		MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
-		mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
+
+	{
+		auto view = gRegistry.view<Tag_SkeletalMesh, ChildComponent>();
+		for (auto [entity, child] : view.each())
+		{
+			Entity e = Entity{ entity };
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			Helpers::BindWorldMatrixAttached(&transform, &child);
+
+			AnimatorComponent& animator = e.GetComponent<AnimatorComponent>();
+			Helpers::BindBoneMatrix(animator.Palette, animator.Buffer);
+
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
 	}
 }
 
 void Client::drawStaticMesh()
 {
-	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
-
+	// 조명 미적용 셰이더
+	gCmdList->SetPipelineState(mRenderer->GetNoLightPSO().Get());
 	{
 		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<ChildComponent>);
 		for (auto entity : view)
@@ -462,8 +498,10 @@ void Client::drawStaticMesh()
 		}
 	}
 
+	// 조명 적용 셰이더
+	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 	{
-		auto view = gRegistry.view<ChildComponent>();
+		auto view = gRegistry.view<Tag_StaticMesh, ChildComponent>();
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };

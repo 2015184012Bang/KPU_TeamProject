@@ -1,23 +1,25 @@
 #include "pch.h"
 #include "Script.h"
 
-Script::Script(Entity owner)
-	: mOwner(owner)
+
+Script::Script(entt::registry& registry, entt::entity owner)
+	: mRegistry{ registry }
+	, mOwner{ owner }
 {
 
 }
 
-Entity Script::Find(string_view targetName)
+entt::entity Script::Find(string_view targetName)
 {
-	auto view = gRegistry.view<NameComponent>();
+	auto view = mRegistry.view<NameComponent>();
 
 	for (auto [entity, name] : view.each())
 	{
 		if (name.Name == targetName)
 		{
-			return Entity{ entity };
+			return entity;
 		}
 	}
 
-	return Entity{ };
+	return entt::null;
 }

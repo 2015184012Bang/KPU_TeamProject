@@ -3,7 +3,6 @@
 
 #include "rapidcsv.h"
 
-#include "GameManager.h"
 #include "Entity.h"
 #include "Components.h"
 #include "Tags.h"
@@ -12,11 +11,14 @@
 #include "Box.h"
 #include "Enemy.h"
 #include "Protocol.h"
+#include "Room.h"
 
-EnemySystem::EnemySystem(shared_ptr<GameManager>&& gm)
-	: mGameManager(move(gm))
+
+EnemySystem::EnemySystem(entt::registry& registry, shared_ptr<Room>&& room)
+	: mRegistry{ registry }
+	, mOwner{ move(room) }
 {
-	readStageFile("../Assets/Stages/Stage1.csv");
+	
 }
 
 void EnemySystem::Update()
@@ -26,48 +28,48 @@ void EnemySystem::Update()
 		return;
 	}
 
-	auto view = gRegistry.view<SpawnComponent>();
+	auto view = mRegistry.view<SpawnComponent>();
 
 	for (auto [entity, spawn] : view.each())
 	{
 		spawn.SpawnTime -= Timer::GetDeltaTime();
 
-		if (spawn.SpawnTime < 0.0f && !spawn.bGenerated)
+		if (spawn.SpawnTime < 0.0f)
 		{
-			Entity enemy = Entity{ entity };
-			auto& transform = enemy.AddComponent<TransformComponent>(Vector3{ spawn.GenPosX, 0.0f, spawn.GenPosZ },
+			auto& transform = mRegistry.emplace<TransformComponent>(entity, Vector3{ spawn.GenPosX, 0.0f, spawn.GenPosZ },
 				0.0f);
-			auto& id = enemy.AddComponent<IDComponent>(Values::EntityID++);
-			enemy.AddComponent<MovementComponent>(Vector3::Zero, Values::EnemySpeed);
+			auto& id = mRegistry.emplace<IDComponent>(entity, mOwner->GetEntityID());
 			
+			mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, Values::EnemySpeed);
+
 			if (spawn.EType == EntityType::VIRUS)
 			{
-				enemy.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Virus.box"), transform.Position, transform.Yaw);
+				mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Virus.box"), transform.Position, transform.Yaw);
 			}
 			else if (spawn.EType == EntityType::DOG)
 			{
-				enemy.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Dog.box"), transform.Position, transform.Yaw);
+				mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Dog.box"), transform.Position, transform.Yaw);
 			}
 			else
 			{
 				ASSERT(false, "Unknown enemy type!");
 			}
 
-			enemy.AddComponent<HealthComponent>(Values::EnemyHealth);
-			enemy.AddComponent<ScriptComponent>(make_shared<Enemy>(enemy));
-			enemy.AddTag<Tag_Enemy>();
+			mRegistry.emplace<HealthComponent>(entity, Values::EnemyHealth);
+			mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
+			mRegistry.emplace<Tag_Enemy>(entity);
 
 			NOTIFY_CREATE_ENTITY_PACKET packet = {};
 			packet.EntityID = id.ID;
-			packet.EntityType = spawn.EType == EntityType::VIRUS ? static_cast<UINT8>(EntityType::VIRUS) 
+			packet.EntityType = spawn.EType == EntityType::VIRUS ? static_cast<UINT8>(EntityType::VIRUS)
 				: static_cast<UINT8>(EntityType::DOG);
 			packet.PacketID = NOTIFY_CREATE_ENTITY;
 			packet.PacketSize = sizeof(packet);
 			packet.Position = transform.Position;
+			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
-			spawn.bGenerated = true;
-
-			mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+			// 다시 생성되지 않도록 Spawn 컴포넌트 제거
+			mRegistry.remove<SpawnComponent>(entity);
 		}
 	}
 
@@ -77,8 +79,8 @@ void EnemySystem::Update()
 void EnemySystem::LoadStageFile(string_view fileName)
 {
 	// 이전 스테이지에 생성했던 Enemy 제거
-	DestroyByComponent<Tag_Enemy>();
-	
+	DestroyByComponent<Tag_Enemy>(mRegistry);
+
 	// 새로운 스테이지 파일 읽고 Enemy 생성
 	readStageFile(fileName);
 }
@@ -91,13 +93,13 @@ void EnemySystem::readStageFile(string_view fileName)
 	{
 		vector<string> parsed = doc.GetRow<string>(i);
 
-		Entity enemy = Entity{ gRegistry.create() };
+		auto enemy = mRegistry.create();
 
 		// 생성 시간 체크를 위해 SpawnComponent만 부착한다.
 		EntityType eType = parsed[0] == "Virus" ? EntityType::VIRUS
 			: EntityType::DOG;
 
-		enemy.AddComponent<SpawnComponent>(
+		mRegistry.emplace<SpawnComponent>(enemy, 
 			eType,
 			stof(parsed[1]),
 			stof(parsed[2]),
@@ -111,7 +113,7 @@ void EnemySystem::testDeletion()
 	elapsed += Timer::GetDeltaTime();
 	if (elapsed > 15.0f)
 	{
-		auto view = gRegistry.view<SpawnComponent, IDComponent>();
+		auto view = mRegistry.view<SpawnComponent, IDComponent>();
 
 		for (auto [entity, spawn, id] : view.each())
 		{
@@ -120,9 +122,8 @@ void EnemySystem::testDeletion()
 			packet.EntityType = static_cast<UINT8>(spawn.EType);
 			packet.PacketID = NOTIFY_DELETE_ENTITY;
 			packet.PacketSize = sizeof(packet);
-			mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
-
-			gRegistry.destroy(entity);
+			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+			DestroyEntity(mRegistry, entity);
 		}
 	}
 }

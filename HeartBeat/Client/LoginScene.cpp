@@ -7,10 +7,11 @@
 #include "Client.h"
 #include "Define.h"
 #include "Input.h"
-#include "LobbyScene.h"
 #include "PacketManager.h"
 #include "Utils.h"
 #include "ResourceManager.h"
+#include "LobbyScene.h"
+#include "Tags.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -28,13 +29,13 @@ void LoginScene::Enter()
 void LoginScene::Exit()
 {
 	// DontDestroyOnLoad 태그가 붙어진 엔티티를 제외한 모든 엔티티 삭제
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void LoginScene::ProcessInput()
 {
 	PACKET packet;
-	if (mOwner->GetPacketManager()->GetPacket(packet))
+	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
 		switch (packet.PacketID)
 		{
@@ -44,6 +45,13 @@ void LoginScene::ProcessInput()
 
 		default:
 			HB_LOG("Unknown packet type: {0}", packet.PacketID);
+			break;
+		}
+
+		// Login -> Room 씬으로 전환.
+		if (mbChangeScene)
+		{
+			mOwner->ChangeScene(new LobbyScene{ mOwner });
 			break;
 		}
 	}
@@ -70,12 +78,6 @@ void LoginScene::Update(float deltaTime)
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(REQUEST_LOGIN_PACKET));
 		}
 	}
-
-	// 서버로부터 ANSWER_LOGIN_PACKET 패킷 받으면 씬 변경.
-	if (mbChangeScene)
-	{
-		mOwner->ChangeScene(new LobbyScene(mOwner));
-	}
 }
 
 void LoginScene::processAnswerLogin(const PACKET& packet)
@@ -88,6 +90,5 @@ void LoginScene::processAnswerLogin(const PACKET& packet)
 		return;
 	}
 
-	mOwner->SetClientID(loginPacket->ClientID);
 	mbChangeScene = true;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-class GameManager;
+class Room;
 
 class CombatSystem
 {
@@ -12,15 +12,16 @@ public:
 		SUPPORT,
 	};
 
-	CombatSystem(shared_ptr<GameManager>&& gm);
+	CombatSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
-	void SetPreset(const UINT32 eid, UpgradePreset preset);
+	void SetPreset(const INT8 clientID, UpgradePreset preset);
 
-	bool CanBaseAttack(const UINT32 eid);
+	bool CanBaseAttack(const INT8 clientID);
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 };
 

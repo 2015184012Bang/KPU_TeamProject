@@ -32,7 +32,7 @@ int Application::Run(HINSTANCE hInstance, int nCmdShow, int w /*= 800*/, int h /
 		{
 			client->Run();
 
-			if (client->ShouldClose())
+			if (gShouldClose)
 			{
 				break;
 			}

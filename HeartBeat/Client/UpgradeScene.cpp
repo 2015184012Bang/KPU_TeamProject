@@ -23,7 +23,7 @@ UpgradeScene::UpgradeScene(Client* owner)
 void UpgradeScene::Enter()
 {
 	// Bgm 재생
-	SoundManager::PlaySound("ClockTick.mp3");
+	SoundManager::PlaySound("ClockTick.mp3", 0.5f);
 
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
@@ -45,7 +45,7 @@ void UpgradeScene::Exit()
 	// 만일 똑딱 소리가 아직도 재생 중이라면 멈춘다.
 	SoundManager::StopSound("ClockTick.mp3");
 
-	DestroyAll();
+	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void UpgradeScene::ProcessInput()
@@ -268,7 +268,7 @@ void UpgradeScene::processNotifyEnterGame(const PACKET& packet)
 {
 	NOTIFY_ENTER_GAME_PACKET* nmgPacket = reinterpret_cast<NOTIFY_ENTER_GAME_PACKET*>(packet.DataPtr);
 
-	if (nmgPacket->Result != ERROR_CODE::SUCCESS)
+	if (nmgPacket->Result != RESULT_CODE::SUCCESS)
 	{
 		HB_LOG("Unable to enter game scene.");
 		return;
@@ -303,11 +303,11 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	case UpgradePreset::ATTACK:
 	{
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Syringe.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Syringe.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+			TEXTURE("Bag01.png"), SKELETON("Bag.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Pill.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -324,9 +324,9 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Cotton_Swab.mesh"),
 			TEXTURE("Cotton_Swab.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
-			TEXTURE("Temp.png"), SKELETON("HealPack.skel"));
+			TEXTURE("HealPack.png"), SKELETON("HealPack.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Ringer.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -341,11 +341,11 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 	case UpgradePreset::SUPPORT:
 	{
 		Entity weapon = mOwner->CreateStaticMeshEntity(MESH("Thermometer.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Thermometer.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Bag.skel"));
+			TEXTURE("Bag02.png"), SKELETON("Bag.skel"));
 		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
-			TEXTURE("Temp.png"));
+			TEXTURE("Pill_Pack.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -432,5 +432,5 @@ void UpgradeScene::startCountdown()
 {
 	// 시계 똑딱 소리를 멈추고 카운트다운 재생을 시작한다.
 	SoundManager::StopSound("ClockTick.mp3");
-	SoundManager::PlaySound("Countdown.mp3");
+	SoundManager::PlaySound("Countdown.mp3", 0.5f);
 }

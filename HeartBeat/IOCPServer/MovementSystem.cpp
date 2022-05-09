@@ -4,32 +4,35 @@
 #include "Entity.h"
 #include "Timer.h"
 #include "Tags.h"
-#include "GameManager.h"
 #include "Random.h"
+#include "Room.h"
 
-MovementSystem::MovementSystem(shared_ptr<GameManager>&& gm)
-	: mGameManager(move(gm))
+MovementSystem::MovementSystem(entt::registry& registry, shared_ptr<Room>&& room)
+	: mRegistry{ registry }
+	, mOwner{ move(room) }
 {
 
 }
 
 void MovementSystem::Update()
 {
-	auto view = gRegistry.view<MovementComponent, TransformComponent>();
+	auto view = mRegistry.view<MovementComponent, TransformComponent>();
 
 	for (auto [entity, movement, transform] : view.each())
 	{
 		transform.Position += movement.Direction * movement.Speed * Timer::GetDeltaTime();
 	}
+
+	SendNotifyMovePackets();
 }
 
-void MovementSystem::SetDirection(const UINT32 eid, const Vector3& direction)
+void MovementSystem::SetDirection(const INT8 clientID, const Vector3& direction)
 {
 	// 아이디에 해당하는 액터를 가져온다.
-	auto actor = GetEntity(eid);
-	ASSERT(actor, "Invalid entity!");
+	auto actor = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(actor), "Invalid entity!");
 
-	auto& movement = actor.GetComponent<MovementComponent>();
+	auto& movement = mRegistry.get<MovementComponent>(actor);
 	movement.Direction = direction;
 
 	// 방향이 0이면 yaw를 업데이트할 필요 없으므로 리턴.
@@ -49,49 +52,46 @@ void MovementSystem::SetDirection(const UINT32 eid, const Vector3& direction)
 		scalar = -1.0f;
 	}
 
-	auto& transform = actor.GetComponent<TransformComponent>();
+	auto& transform = mRegistry.get<TransformComponent>(actor);
 	transform.Yaw = scalar * XMConvertToDegrees(rotation.y);
 }
 
 void MovementSystem::SendNotifyMovePackets()
 {
-	auto tank = GetEntityByName("Tank");
+	auto tank = GetEntityByName(mRegistry, "Tank");
 
-	if (!tank)
-	{
-		return;
-	}
-
-	// 탱크 이동 패킷 보내기
 	NOTIFY_MOVE_PACKET packet = {};
 	packet.PacketID = NOTIFY_MOVE;
 	packet.PacketSize = sizeof(packet);
-	packet.EntityID = tank.GetComponent<IDComponent>().ID;
-	packet.Direction = tank.GetComponent<MovementComponent>().Direction;
-	packet.Position = tank.GetComponent<TransformComponent>().Position;
-	mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+	if (mRegistry.valid(tank))
+	{
+		// 탱크 이동 패킷 보내기
+		packet.EntityID = mRegistry.get<IDComponent>(tank).ID;
+		packet.Direction = mRegistry.get<MovementComponent>(tank).Direction;
+		packet.Position = mRegistry.get<TransformComponent>(tank).Position;
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
 
 	// 적 이동 패킷 보내기
-	auto view = gRegistry.view<Tag_Enemy>();
-	Entity enemy = {};
+	auto view = mRegistry.view<Tag_Enemy>();
 	for (auto entity : view)
 	{
-		enemy = Entity{ entity };
-		packet.EntityID = enemy.GetComponent<IDComponent>().ID;
-		packet.Direction = enemy.GetComponent<MovementComponent>().Direction;
-		packet.Position = enemy.GetComponent<TransformComponent>().Position;
-		mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+		packet.Direction = mRegistry.get<MovementComponent>(entity).Direction;
+		packet.Position = mRegistry.get<TransformComponent>(entity).Position;
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 }
 
 void MovementSystem::SetPlayersStartPos()
 {
 	// START_POINT 타일 가져오기
-	auto startTile = GetEntityByName("StartPoint");
-	ASSERT(startTile, "There is no start point.");
-	const auto& startPos = startTile.GetComponent<TransformComponent>().Position;
+	auto startTile = GetEntityByName(mRegistry, "StartPoint");
+	ASSERT(mRegistry.valid(startTile), "There is no start point.");
+	const auto& startPos = mRegistry.get<TransformComponent>(startTile).Position;
 
-	auto view = gRegistry.view<Tag_Player, TransformComponent, IDComponent>();
+	auto view = mRegistry.view<Tag_Player, TransformComponent, IDComponent>();
 
 	for (auto [entity, transform, id] : view.each())
 	{
@@ -101,14 +101,13 @@ void MovementSystem::SetPlayersStartPos()
 			startPos.z + 800.f
 		};
 
-		Entity player = Entity{ entity };
 		NOTIFY_MOVE_PACKET packet = {};
-		packet.Direction = player.GetComponent<MovementComponent>().Direction;
+		packet.Direction = mRegistry.get<MovementComponent>(entity).Direction;
 		packet.EntityID = id.ID;
 		packet.PacketID = NOTIFY_MOVE;
 		packet.PacketSize = sizeof(packet);
 		packet.Position = transform.Position;
 
-		mGameManager->SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 }

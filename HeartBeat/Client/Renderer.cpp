@@ -219,6 +219,7 @@ void Renderer::createPipelineState()
 	params[static_cast<uint32>(RootParameter::VIEWPROJ_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B1), 0, D3D12_SHADER_VISIBILITY_VERTEX);
 	params[static_cast<uint32>(RootParameter::TEX_PARAM)].InitAsDescriptorTable(_countof(descRange), descRange, D3D12_SHADER_VISIBILITY_PIXEL);
 	params[static_cast<uint32>(RootParameter::BONE_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B2), 0, D3D12_SHADER_VISIBILITY_VERTEX);
+	params[static_cast<uint32>(RootParameter::LIGHT_PARAM)].InitAsConstantBufferView(static_cast<uint32>(ShaderRegister::B3), 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	const auto samplerDesc = CD3DX12_STATIC_SAMPLER_DESC(0);
 
@@ -303,6 +304,57 @@ void Renderer::createPipelineState()
 		ComPtr<ID3DBlob> pixelShader;
 		ComPtr<ID3DBlob> errorBlob;
 
+		HRESULT hr = D3DCompileFromFile(L"static.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"static.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		psoDesc.SampleDesc.Count = 1;
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mStaticMeshPSO)));
+	}
+
+	// PSO for no lighting static mesh
+	{
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
+		inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		inputDesc.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+		ComPtr<ID3DBlob> vertexShader;
+		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
+
 		HRESULT hr = D3DCompileFromFile(L"default.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
 
 		if (FAILED(hr))
@@ -340,7 +392,7 @@ void Renderer::createPipelineState()
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 		psoDesc.SampleDesc.Count = 1;
-		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mStaticMeshPSO)));
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mNoLightPSO)));
 	}
 
 	// PSO for skeletal mesh
@@ -497,13 +549,14 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Character_Red.mesh");
 	MESH("Clock.mesh");
 	MESH("Cotton_Swab.mesh");
+	MESH("CO2.mesh");
 	MESH("Cube.mesh");
 	MESH("Dog.mesh");
 	MESH("Fat.mesh");
 	MESH("Hammer.mesh");
 	MESH("HealPack.mesh");
 	MESH("House.mesh");
-	MESH("Oxygen.mesh");
+	MESH("O2.mesh");
 	MESH("Pickax.mesh");
 	MESH("Pill.mesh");
 	MESH("Pill_Pack.mesh");
@@ -528,7 +581,6 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Tank.skel");
 	SKELETON("Virus.skel");
 
-#ifdef _DEBUG
 	BOX("Cart.box");
 	BOX("Cell.box");
 	BOX("Character.box");
@@ -537,11 +589,13 @@ void Renderer::loadAllAssetsFromFile()
 	BOX("Pickax.box");
 	BOX("Tank.box");
 	BOX("Virus.box");
-#endif
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");
 	TEXTURE("GameOver.png");
+	TEXTURE("RoomEnter.png");
+	TEXTURE("RoomNoEnter.png");
+	TEXTURE("LeaveRoom.png");
 
 	Font* font = FONT("fontdata.txt");
 	font->SetTexture(TEXTURE("font.dds"));

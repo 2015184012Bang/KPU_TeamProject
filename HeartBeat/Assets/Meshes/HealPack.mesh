@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/HealPack.png"
 	],
 	"vertices":[
 		[72.990379,-83.747185,-0.278675,0.000000,0.000000,1.000000,0,0,0,0,255,0,0,0,0.148812,0.540689],

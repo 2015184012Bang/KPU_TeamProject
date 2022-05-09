@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Ringer.png"
 	],
 	"vertices":[
 		[-5.308865,-10.417330,-44.726151,-0.921260,0.385827,0.000000,0.013832,0.856934],

@@ -256,13 +256,13 @@ ChildComponent::ChildComponent(const entt::entity parent, const uint32 boneIndex
 IDComponent::IDComponent()
 	: ID(UINT32_MAX)
 {
-	HB_LOG("Entity ID: {0}", ID);
+	//HB_LOG("Entity ID: {0}", ID);
 }
 
 IDComponent::IDComponent(const uint32 id)
 	: ID(id)
 {
-	HB_LOG("Entity ID: {0}", ID);
+	//HB_LOG("Entity ID: {0}", ID);
 }
 
 BoxComponent::BoxComponent()
@@ -328,6 +328,21 @@ MovementComponent::MovementComponent()
 MovementComponent::MovementComponent(float maxSpeed)
 	: MaxSpeed(maxSpeed)
 	, Direction(Vector3::Zero)
+{
+
+}
+
+LightComponent::LightComponent(const Vector3& ambient, const float specularStrength, const Vector3& lightPos, const Vector3& cameraPos)
+	: Buffer(gDevice.Get(), 1, true)
+{
+	Light.AmbientColor = ambient;
+	Light.SpecularStrength = specularStrength;
+	Light.LightPosition = lightPos;
+	Light.CameraPosition = cameraPos;
+}
+
+LightComponent::LightComponent()
+	: Buffer(gDevice.Get(), 1, true)
 {
 
 }

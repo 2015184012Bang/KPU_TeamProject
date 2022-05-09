@@ -184,3 +184,21 @@ struct MovementComponent
 	float MaxSpeed;
 	Vector3 Direction;
 };
+
+struct LightComponent
+{
+	LightComponent();
+	LightComponent(const Vector3& ambient, const float specularStrength,
+		const Vector3& lightPos, const Vector3& cameraPos);
+
+	struct LightInfo
+	{
+		Vector3 AmbientColor = Vector3::Zero;
+		float SpecularStrength = 0.0f;
+		Vector3 LightPosition = Vector3::Zero;
+		Vector3 CameraPosition = Vector3::Zero;
+	};
+
+	LightInfo Light = {};
+	UploadBuffer<LightInfo> Buffer;
+};

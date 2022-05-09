@@ -2,19 +2,20 @@
 #include "CombatSystem.h"
 
 #include "Entity.h"
-#include "GameManager.h"
 #include "Timer.h"
 #include "Values.h"
+#include "Room.h"
 
-CombatSystem::CombatSystem(shared_ptr<GameManager>&& gm)
-	: mGameManager(move(gm))
+CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
+	: mRegistry{ registry }
+	, mOwner{ move(room) }
 {
-	
+
 }
 
 void CombatSystem::Update()
 {
-	auto view = gRegistry.view<CombatComponent>();
+	auto view = mRegistry.view<CombatComponent>();
 
 	for (auto [entity, combat] : view.each())
 	{
@@ -22,12 +23,12 @@ void CombatSystem::Update()
 	}
 }
 
-void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
+void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 {
-	auto actor = GetEntity(eid);
-	ASSERT(actor, "Invalid entity!");
+	auto actor = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(actor), "Invalid entity!");
 
-	auto& combat = actor.GetComponent<CombatComponent>();
+	auto& combat = mRegistry.get<CombatComponent>(actor);
 
 	switch (preset)
 	{
@@ -53,11 +54,11 @@ void CombatSystem::SetPreset(const UINT32 eid, UpgradePreset preset)
 	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
 }
 
-bool CombatSystem::CanBaseAttack(const UINT32 eid)
+bool CombatSystem::CanBaseAttack(const INT8 clientID)
 {
-	auto actor = GetEntity(eid);
-	ASSERT(actor, "Invalid entity!");
-	auto& combat = actor.GetComponent<CombatComponent>();
+	auto actor = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(actor), "Invalid entity!");
+	auto& combat = mRegistry.get<CombatComponent>(actor);
 
 	if (combat.BaseAttackTracker > combat.BaseAttackCooldown)
 	{

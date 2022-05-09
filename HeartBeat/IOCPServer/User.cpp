@@ -25,32 +25,30 @@ void User::Init(const INT32 index)
 
 void User::Reset()
 {
+	mUserState = UserState::IN_LOGIN;
 	mConnected = false;
 	mUserName = "";
 	mReadPos = 0;
 	mWritePos = 0;
+	mClientID = -1;
+	mRoomIndex = -1;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
-	gRegistry.destroy(mCharacter);
-	mCharacter = {};
+
+	if (mRegistry && mRegistry->valid(mCharacter) )
+	{
+		mRegistry->destroy(mCharacter);
+		mRegistry = nullptr;
+		mCharacter = entt::null;
+	}
 }
 
 void User::SetLogin(string_view userName)
 {
+	// 유저가 로그인했다는 것은 로그인씬을 벗어나 로비씬에 있다는 걸 의미.
+	mUserState = UserState::IN_LOBBY;
+
 	mConnected = true;
 	mUserName = userName.data();
-
-	// 엔티티 생성
-	mCharacter = Entity{ gRegistry.create() };
-
-	// 컴포넌트 부착
-	auto& transform = mCharacter.AddComponent<TransformComponent>();
-	mCharacter.AddComponent<IDComponent>(mIndex);
-	mCharacter.AddComponent<NameComponent>("Player" + to_string(mIndex));
-	mCharacter.AddComponent<MovementComponent>(Vector3::Zero, Values::PlayerSpeed);
-	mCharacter.AddComponent<CombatComponent>();
-	mCharacter.AddComponent<BoxComponent>(&Box::GetBox("../Assets/Boxes/Character.box"),
-		transform.Position, transform.Yaw);
-	mCharacter.AddTag<Tag_Player>();
 }
 
 void User::SetData(const UINT32 dataSize, char* pData)
@@ -76,6 +74,22 @@ void User::SetData(const UINT32 dataSize, char* pData)
 
 	CopyMemory(&mDataBuffer[mWritePos], pData, dataSize);
 	mWritePos += dataSize;
+}
+
+void User::CreatePlayerEntity()
+{
+	// 엔티티 생성
+	mCharacter = mRegistry->create();
+
+	// 컴포넌트 부착
+	auto& transform = mRegistry->emplace<TransformComponent>(mCharacter);
+	mRegistry->emplace<IDComponent>(mCharacter, mClientID);
+	mRegistry->emplace<NameComponent>(mCharacter, "Player" + to_string(mClientID));
+	mRegistry->emplace<MovementComponent>(mCharacter, Vector3::Zero, Values::PlayerSpeed);
+	mRegistry->emplace<CombatComponent>(mCharacter);
+	mRegistry->emplace<BoxComponent>(mCharacter, &Box::GetBox("../Assets/Boxes/Character.box"),
+		transform.Position, transform.Yaw);
+	mRegistry->emplace<Tag_Player>(mCharacter);
 }
 
 PACKET_INFO User::GetPacket()
@@ -109,10 +123,12 @@ PACKET_INFO User::GetPacket()
 
 const Vector3& User::GetPosition()
 {
-	return mCharacter.GetComponent<TransformComponent>().Position;
+	ASSERT(mRegistry->valid(mCharacter), "Invalid entity!");
+	return mRegistry->get<TransformComponent>(mCharacter).Position;
 }
 
 const Vector3& User::GetMoveDirection()
 {
-	return mCharacter.GetComponent<MovementComponent>().Direction;
+	ASSERT(mRegistry->valid(mCharacter), "Invalid entity!");
+	return mRegistry->get<MovementComponent>(mCharacter).Direction;
 }

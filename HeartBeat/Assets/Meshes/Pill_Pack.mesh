@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Pill_Pack.png"
 	],
 	"vertices":[
 		[33.180603,-1.304286,32.509193,0.000000,-0.173228,0.984252,0.137695,0.530273],

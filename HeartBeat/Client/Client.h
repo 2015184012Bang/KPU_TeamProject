@@ -12,6 +12,8 @@ class Font;
 
 using namespace std::string_literals;
 
+extern bool gShouldClose;
+
 class Client
 {
 public:
@@ -40,7 +42,6 @@ public:
     void DeleteChildren(entt::registry& regi, entt::entity entity);
 
 public:
-    bool ShouldClose() { return !mbRunning; }
 	int GetClientID() const { return mClientID; }
 	void SetClientID(int id) { mClientID = id; }
 	const string& GetClientName() const { return mClientName; }
@@ -56,6 +57,7 @@ private:
     void render();
 
     void createCameraEntity();
+    void createLightEntity();
 
     void processButton();
     void processPendingEntities(float deltaTime);
@@ -71,14 +73,13 @@ private:
     void drawSpriteAndText();
 
 private:
-    bool mbRunning = true;
-
     unique_ptr<Scene> mActiveScene = nullptr;
     unique_ptr<Renderer> mRenderer = nullptr;
     unique_ptr<PacketManager> mPacketManager = nullptr;
 
-    Entity mMainCamera;
-    Entity m2dCamera;
+    Entity mMainCamera = {};
+    Entity m2dCamera = {};
+    Entity mLight = {};
 
     int mClientID = -1;
     string mClientName = "KimMyungKyu";

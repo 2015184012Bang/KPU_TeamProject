@@ -8,13 +8,7 @@ entt::registry gRegistry;
 
 void DestroyAll()
 {
-	gRegistry.each([](entt::entity entity) {
-		Entity e(entity);
-		if (!e.HasComponent<Tag_DontDestroyOnLoad>())
-		{
-			gRegistry.destroy(entity);
-		}
-		});
+	gRegistry.clear();
 }
 
 void DestroyEntityByID(const uint32 id)

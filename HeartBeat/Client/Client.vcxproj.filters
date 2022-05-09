@@ -94,7 +94,7 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="LobbyScene.cpp">
+    <ClCompile Include="RoomScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
     <ClCompile Include="PacketManager.cpp">
@@ -129,6 +129,9 @@
     </ClCompile>
     <ClCompile Include="Entity.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="LobbyScene.cpp">
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -204,7 +207,7 @@
     <ClInclude Include="GameScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="LobbyScene.h">
+    <ClInclude Include="RoomScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
@@ -255,9 +258,12 @@
     <ClInclude Include="SoundManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="LobbyScene.h">
+      <Filter>Source Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.hlsli">
+    <None Include="static.hlsli">
       <Filter>Shaders</Filter>
     </None>
     <None Include="skeletal.hlsli">
@@ -267,6 +273,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="sprite.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="default.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

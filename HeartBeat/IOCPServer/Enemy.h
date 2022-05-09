@@ -14,8 +14,8 @@ class Enemy
 	: public Script
 {
 public:
-	Enemy(Entity owner)
-		: Script(owner) {}
+	Enemy(entt::registry& registry, entt::entity owner)
+		: Script{ registry, owner } {}
 
 	virtual void Start() override
 	{

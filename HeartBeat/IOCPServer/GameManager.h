@@ -8,9 +8,10 @@
 #include "CollisionSystem.h"
 #include "ScriptSystem.h"
 #include "EnemySystem.h"
+#include "RoomManager.h"
 #include "GameMap.h"
 
-class GameManager : public enable_shared_from_this<GameManager>
+class GameManager
 {
 public:
 	void Init(const UINT32 maxSessionCount);
@@ -25,20 +26,10 @@ public:
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
-	// 노티파이 패킷을 보낼 때 사용.
-	// indexToExclude : 이 세션 인덱스를 제외한 다른 접속 유저들에게 패킷을 보냄
-	void SendPacketExclude(const INT32 userIndexToExclude, const UINT32 packetSize, char* packet);
-
-	// 접속 유저 모두에게 보내기
-	void SendToAll(const INT32 packetSize, char* packet);
-
 	// 게임오버 처리
-	// CollisionSystem 내부에서 탱크와 FAT이 충돌하면 호출된다.
-	void DoGameOver();
+	//void DoGameOver();
 
 private:
-	void initSystems();
-
 	void swapQueues();
 
 	void logicThread();
@@ -47,22 +38,16 @@ private:
 	void processUserConnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestLogin(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestEnterRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
-	void sendNotifyLoginPacket(const INT32 newlyConnectedIndex);
-
-	// 스테이지 생성
-	void initStage(string_view mapFile);
-
 	// 스테이지 초기화
-	void clearStage();
-
-	void createMapTiles(string_view mapFile);
-	void createTankAndCart();
+	//void clearStage();
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;
@@ -72,6 +57,9 @@ private:
 
 	// 유저 매니저
 	unique_ptr<UserManager> mUserManager = nullptr;
+
+	// 룸 매니저
+	unique_ptr<RoomManager> mRoomManager = nullptr;
 
 	// 로직 스레드 실행 여부
 	bool mShouldLogicRun = true;
@@ -87,15 +75,5 @@ private:
 	queue<PACKET_INFO> mPacketQueueB;
 	queue<PACKET_INFO>* mBackPacketQueue = nullptr;
 	queue<PACKET_INFO>* mFrontPacketQueue = nullptr;
-
-	// 시스템
-	unique_ptr<MovementSystem> mMovementSystem = nullptr;
-	unique_ptr<CombatSystem> mCombatSystem = nullptr;
-	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
-	unique_ptr<ScriptSystem> mScriptSystem = nullptr;
-	unique_ptr<EnemySystem> mEnemySystem = nullptr;
-
-	// 게임 맵
-	unique_ptr<GameMap> mGameMap = nullptr;
 };
 

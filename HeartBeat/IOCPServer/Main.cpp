@@ -7,7 +7,7 @@ int main()
 
 	server.Init();
 	server.BindAndListen();
-	server.Run(3);
+	server.Run(6);
 	
 	while (true);
 

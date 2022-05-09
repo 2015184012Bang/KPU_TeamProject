@@ -1,11 +1,11 @@
 #pragma once
 
-class GameManager;
+class Room;
 
 class EnemySystem
 {
 public:
-	EnemySystem(shared_ptr<GameManager>&& gm);
+	EnemySystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
@@ -19,7 +19,8 @@ private:
 	void testDeletion();
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 
 	bool mbGenerate = false;
 };

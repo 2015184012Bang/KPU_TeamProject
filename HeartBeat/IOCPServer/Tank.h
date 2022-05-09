@@ -8,21 +8,21 @@
 class Tank : public Script
 {
 public:
-	Tank(Entity owner)
-		: Script(owner) {}
+	Tank(entt::registry& registry, entt::entity owner)
+		: Script{ registry, owner } {}
 
 	virtual void Start() override
 	{
 		// 최종 타일의 위치를 구한다.
-		Entity endTile = GetEntityByName("EndPoint");
-		ASSERT(endTile, "Invalid entity!");
-		mEndPoint = endTile.GetComponent<TransformComponent>().Position;
+		auto endTile = GetEntityByName(mRegistry, "EndPoint");
+		ASSERT(mRegistry.valid(endTile), "Invalid entity!");
+		mEndPoint = mRegistry.get<TransformComponent>(endTile).Position;
 		mEndPoint.y = 0.0f;
 
 		// 시작 타일의 위치를 구한다.
-		Entity startTile = GetEntityByName("StartPoint");
-		ASSERT(startTile, "Invalid entity!");
-		const auto& tilePosition = startTile.GetComponent<TransformComponent>().Position;
+		auto startTile = GetEntityByName(mRegistry, "StartPoint");
+		ASSERT(mRegistry.valid(startTile), "Invalid entity!");
+		const auto& tilePosition = mRegistry.get<TransformComponent>(startTile).Position;
 
 		// 시작 타일의 위치를 탱크의 시작 위치로 한다.
 		auto& transform = GetComponent<TransformComponent>();
@@ -35,7 +35,7 @@ public:
 		mCurrentTarget = tilePosition;
 		mCurrentTarget.y = 0.0f;
 	
-		auto view = gRegistry.view<Tag_RailTile, TransformComponent>();
+		auto view = mRegistry.view<Tag_RailTile, TransformComponent>();
 		for (auto [entity, tileTransform] : view.each())
 		{
 			mTiles.push_back(tileTransform.Position);

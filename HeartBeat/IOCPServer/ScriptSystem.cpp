@@ -1,18 +1,19 @@
 #include "pch.h"
 #include "ScriptSystem.h"
 
-#include "GameManager.h"
 #include "Script.h"
+#include "Room.h"
 
-ScriptSystem::ScriptSystem(shared_ptr<GameManager>&& gm)
-	: mGameManager(move(gm))
+ScriptSystem::ScriptSystem(entt::registry& registry, shared_ptr<Room>&& room)
+	: mRegistry{ registry }
+	, mOwner{ move(room) }
 {
 
 }
 
 void ScriptSystem::Update()
 {
-	auto view = gRegistry.view<ScriptComponent>();
+	auto view = mRegistry.view<ScriptComponent>();
 
 	for (auto [entity, script] : view.each())
 	{

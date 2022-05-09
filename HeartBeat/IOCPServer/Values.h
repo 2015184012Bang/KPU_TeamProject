@@ -72,6 +72,7 @@ public:
 	static UINT8 TankHealth;
 	static UINT8 EnemyHealth;
 	static UINT32 EntityID;
+	static UINT8 MaxRoomNum;
 };
 
 __declspec(selectany) UINT16 Values::ServerPort = 0;
@@ -84,3 +85,4 @@ __declspec(selectany) float Values::EnemySpeed = 0.0f;
 __declspec(selectany) UINT8 Values::TankHealth = 0;
 __declspec(selectany) UINT8 Values::EnemyHealth = 0;
 __declspec(selectany) UINT32 Values::EntityID = 3;
+__declspec(selectany) UINT8 Values::MaxRoomNum = 6;

@@ -1,21 +1,22 @@
 #pragma once
 
-class GameManager;
+class Room;
 
 class MovementSystem
 {
 public:
-	MovementSystem(shared_ptr<GameManager>&& gm);
+	MovementSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
 
-	void SetDirection(const UINT32 eid, const Vector3& direction);
+	void SetDirection(const INT8 clientID, const Vector3& direction);
 
 	void SendNotifyMovePackets();
 
 	void SetPlayersStartPos();
 
 private:
-	shared_ptr<GameManager> mGameManager = nullptr;
+	entt::registry& mRegistry;
+	shared_ptr<Room> mOwner = nullptr;
 };
 

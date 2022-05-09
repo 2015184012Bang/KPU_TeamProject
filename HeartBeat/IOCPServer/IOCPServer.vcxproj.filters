@@ -88,8 +88,11 @@
     <ClCompile Include="EnemySystem.cpp">
       <Filter>Source Files\ECS</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files\Scripts</Filter>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,7 +177,10 @@
     <ClInclude Include="Enemy.h">
       <Filter>Source Files\Scripts</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
+    <ClInclude Include="Room.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
