@@ -8,8 +8,6 @@
 #include "UserManager.h"
 #include "Timer.h"
 #include "Values.h"
-#include <iostream>
-
 
 class Enemy
 	: public Script
@@ -24,10 +22,8 @@ public:
 
 		maxRow = gameMap.MaxRow;
 		maxCol = gameMap.MaxCol;
-
 		graph = GameMap::GetInstance().GetGraph(gameMap);
 		
-
 		auto& transform = GetComponent<TransformComponent>();
 		
 		auto players = FindObjectsWithTag<Tag_Player>();
@@ -36,7 +32,8 @@ public:
 			auto& playerTransform = mRegistry.get<TransformComponent>(p).Position;
 			playerPositon.push_back(&playerTransform);
 		}
-
+		
+		// 쫒을 플레이어 번호를 받아 지정된 플레이어만 쫒음
 		auto& userManager = UserManager::GetInstance();
 		UINT32 curUserCount = userManager.GetCurrentUserCount();
 		mChasingPlayerNum = Random::RandInt(0, curUserCount);
@@ -62,7 +59,7 @@ public:
 		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
 
 
-		if (mbChase == false)
+		if (mbChase == false)	// 정지상태에서 플레이어와의 거리가 다시 멀어지면 길찾기 재시작
 		{
 			const float posToPlayer = Vector3::DistanceSquared(position, *playerPositon[mChasingPlayerNum]);
 
@@ -86,7 +83,7 @@ public:
 			const float posToCur = Vector3::DistanceSquared(position, mCurrentTarget);
 			const float posToPlayer = Vector3::DistanceSquared(position, *playerPositon[mChasingPlayerNum]);
 
-			if (posToPlayer < FAR_ENOUGH)
+			if (posToPlayer < FAR_ENOUGH) // 플레이어와의 거리가 가까워지면 정지
 			{
 				mbChase = false;
 				Vector3 direction = XMVectorSubtract(position, *playerPositon[mChasingPlayerNum]);
@@ -96,8 +93,8 @@ public:
 				LOG("Done");
 			}
 			else
-			{
-
+			{	
+				
 				Vector3 direction = XMVectorSubtract(mCurrentTarget, position);
 				direction.Normalize();
 				GetComponent<MovementComponent>().Direction = direction;
@@ -118,28 +115,25 @@ public:
 
 	}
 
-	void GetGoalIndex();		// 목표 노드 찾기
-	void FindPath();			// 길찾기 수행
 	void SetStartNode();		// enemy의 positon으로 시작 노드 설정
+	void GetGoalIndex();		// 목표(Player Pos) 노드 찾기
+	void FindPath();			// 길찾기 수행
 	void CheckGoalNode();		// 목표 노드가 변경 됬는지 검사
 	int GetClosestNode(UINT32);	// 위치 정보에서 가장 가까운 노드 찾기
 	void ResetPath();			// 길찾기에 필요한 변수 초기화
+	bool GetNextTarget(Vector3* outTarget);
 
 	Node* GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* parentNode);
 	Node* CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode);
 
-
-	bool GetNextTarget(Vector3* outTarget);
-
 private:
 	vector<Vector3*> playerPositon;
-	Vector3* mChasingPlayerPosition;
+	UINT32 mChasingPlayerNum;			// 에너미가 쫒는 플레이어 번호
+	Vector3* mChasingPlayerPosition;	// 에너미가 쫒는 플레이어 포지션
 	Vector3 mCurrentTarget = Vector3::Zero;
-	UINT32 mChasingPlayerNum;
 
 	Tile** graph;
 
-	tuple<UINT32, UINT32> mGoalIndex;
 	UINT32 maxRow, maxCol;
 	UINT32 goalRow, goalCol;
 
@@ -152,5 +146,5 @@ private:
 
 	const float TILE_WIDTH = Values::TileSide;
 	const float CLOSE_ENOUGH = 5.0f * 5.0f;
-	const float FAR_ENOUGH = TILE_WIDTH*TILE_WIDTH;
+	const float FAR_ENOUGH = TILE_WIDTH*TILE_WIDTH;	// 에너미의 행동패턴이 바뀌는 거리
 };

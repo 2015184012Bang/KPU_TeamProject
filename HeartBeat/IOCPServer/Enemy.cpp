@@ -6,7 +6,6 @@ void Enemy::GetGoalIndex()
 	goalRow = GetClosestNode(static_cast<int>(mChasingPlayerPosition->z));
 	goalCol = GetClosestNode(static_cast<int>(mChasingPlayerPosition->x));
 
-	mGoalIndex = std::make_tuple(goalRow, goalCol);
 	//LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
 	//LOG("Get GoalNode : ({0},{1})", goalCol, goalRow);
 }
@@ -196,7 +195,6 @@ Node* Enemy::GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* par
 Node* Enemy::CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode)
 {
 	TileType val = graph[rowIndex][colIndex].TType;
-
 	//LOG("({0},{1}):Type({2})", colIndex, rowIndex, val);
 
 	if (val == TileType::BLOCKED || val == TileType::FAT || val == TileType::TANK_FAT)
@@ -211,8 +209,8 @@ Node* Enemy::CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNod
 		node = new Node(rowIndex, colIndex);
 		node->G = parentNode->G + 1;
 
-		UINT32 goalRowIndex = std::get<0>(mGoalIndex);
-		UINT32 goalColIndex = std::get<1>(mGoalIndex);
+		UINT32 goalRowIndex = goalRow;
+		UINT32 goalColIndex = goalCol;
 		
 		UINT32 h = abs((int)goalRowIndex - (int)rowIndex) + abs((int)goalColIndex - (int)colIndex);
 		node->H = h;
@@ -273,8 +271,8 @@ bool Enemy::GetNextTarget(Vector3* outTarget)
 
 	position.x = tile.X;
 	position.z = tile.Z;
-
 	*outTarget = position;
+
 	//LOG("to {0},{1}", position.x, position.z);
 
 	mPath.pop();
