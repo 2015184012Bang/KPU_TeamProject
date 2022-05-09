@@ -7,8 +7,8 @@ void Enemy::GetGoalIndex()
 	goalCol = GetClosestNode(static_cast<int>(mChasingPlayerPosition->x));
 
 	mGoalIndex = std::make_tuple(goalRow, goalCol);
-	//HB_LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
-	LOG("Get GoalNode : ({0},{1})", goalRow, goalCol);
+	//LOG("[Player]({0},{1})", mChasingPlayerPosition->x, mChasingPlayerPosition->z);
+	//LOG("Get GoalNode : ({0},{1})", goalCol, goalRow);
 }
 
 void Enemy::FindPath()
@@ -19,7 +19,7 @@ void Enemy::FindPath()
 	}
 
 	Node* openNode = nullptr;
-	int minF = 1000;
+	int minF = 100000;
 
 	for (auto& op : openList)
 	{
@@ -39,7 +39,6 @@ void Enemy::FindPath()
 				int row = openNode->ROW;
 				int col = openNode->COL;
 
-				LOG("({0}, {1})", row, col);
 				if(openNode->CON != nullptr)
 					mPath.push(Tile(openNode->TYPE, col * TILE_WIDTH, row * TILE_WIDTH));
 
@@ -106,13 +105,14 @@ void Enemy::FindPath()
 void Enemy::SetStartNode()
 {
 	auto& transform = GetComponent<TransformComponent>();
+
 	int myRow = GetClosestNode(static_cast<int>(transform.Position.z));
 	int myCol = GetClosestNode(static_cast<int>(transform.Position.x));
 
 	Node* startNode = new Node(myRow, myCol);
 
-	//HB_LOG("[Enemy]({0},{1})", transform->Position.x, transform->Position.z);
-	LOG("Set StartNode : ({0},{1})", myRow, myCol);
+	//LOG("[Enemy]({0},{1})", transform.Position.x, transform.Position.z);
+	//LOG("Set StartNode : ({0},{1})", myCol, myRow);
 
 	openList.push_back(startNode);
 
@@ -121,8 +121,8 @@ void Enemy::SetStartNode()
 
 void Enemy::CheckGoalNode()
 {
-	int curGoalRow = GetClosestNode(static_cast<int>(mChasingPlayerPosition->z));
-	int curGoalCol = GetClosestNode(static_cast<int>(mChasingPlayerPosition->x));
+	UINT32 curGoalRow = GetClosestNode(static_cast<int>(mChasingPlayerPosition->z));
+	UINT32 curGoalCol = GetClosestNode(static_cast<int>(mChasingPlayerPosition->x));
 
 	if (curGoalRow == goalRow && curGoalCol == goalCol)
 	{
@@ -196,18 +196,19 @@ Node* Enemy::GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* par
 Node* Enemy::CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode)
 {
 	TileType val = graph[rowIndex][colIndex].TType;
-	//HB_LOG("({0},{1}):Type({2})", rowIndex, colIndex, val);
 
-	if (val == TileType::BLOCKED) // Àå¾Ö¹°
+	//LOG("({0},{1}):Type({2})", colIndex, rowIndex, val);
+
+	if (val == TileType::BLOCKED || val == TileType::FAT || val == TileType::TANK_FAT)
 	{
 		return nullptr;
 	}
 
 	Node* node = nullptr;
 	
-	if (val == TileType::MOVABLE)
+	if (val != TileType::BLOCKED && val != TileType::FAT && val!= TileType::TANK_FAT)
 	{
-		node = new Node(val, rowIndex, colIndex);
+		node = new Node(rowIndex, colIndex);
 		node->G = parentNode->G + 1;
 
 		UINT32 goalRowIndex = std::get<0>(mGoalIndex);
@@ -224,12 +225,39 @@ Node* Enemy::CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNod
 
 int Enemy::GetClosestNode(UINT32 pos)
 {
-	int nodePos = pos / 500;
-	if ((pos % static_cast<int>(TILE_WIDTH)) < ((static_cast<int>(TILE_WIDTH) / 2 ) - 1))
-		return nodePos;
-	else
-		return nodePos + 1;
+	int nodePos = 0;
 
+	if (pos <= 0) 
+	{
+		nodePos = 0;
+	}
+	else
+	{
+		nodePos = pos / TILE_WIDTH;
+
+		if ((pos % static_cast<int>(TILE_WIDTH)) < ((static_cast<int>(TILE_WIDTH) / 2) - 1))
+		{
+			return nodePos;
+		}
+		else
+		{
+			return nodePos + 1;
+		}
+	}
+
+	return nodePos;
+
+}
+
+void Enemy::ResetPath()
+{
+	openList.clear();
+	closeList.clear();
+	std::stack<Tile> mPath;
+	SetStartNode();
+
+	FindPath();
+	bool retVal = GetNextTarget(&mCurrentTarget);
 }
 
 bool Enemy::GetNextTarget(Tile* outTarget)
@@ -252,12 +280,16 @@ bool Enemy::GetNextTarget(Vector3* outTarget)
 		return false;
 	}
 
-	Vector3* position = nullptr;
-	position->x = mPath.top().X;
-	position->y = 0.0;
-	position->z = mPath.top().Z;
-	*outTarget = *position;
-	
+	Vector3 position = Vector3::Zero;
+	Tile tile;
+	tile = mPath.top();
+
+	position.x = tile.X;
+	position.z = tile.Z;
+
+	*outTarget = position;
+	//LOG("to {0},{1}", position.x, position.z);
+
 	mPath.pop();
 
 	return true;

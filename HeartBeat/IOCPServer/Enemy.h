@@ -7,6 +7,7 @@
 #include "GameMap.h"
 #include "UserManager.h"
 #include "Timer.h"
+#include "Values.h"
 
 
 class Enemy
@@ -18,16 +19,15 @@ public:
 
 	virtual void Start() override
 	{
-		graph = gGameMap.GetGraph();
-		ASSERT(graph, "Failed to make graph");
+		gGameMap.LoadMap("../Assets/Maps/Map01.csv");
+		Map mMap = gGameMap.GetMap("../Assets/Maps/Map01.csv");
 
-		Map map = gGameMap.GetMap("Map01.csv");
-		
-		maxRow = map.MaxRow;
-		maxCol = map.MaxCol;
+		maxRow = mMap.MaxRow;
+		maxCol = mMap.MaxCol;
+
+		graph = gGameMap.GetGraph(0);
 
 		auto& transform = GetComponent<TransformComponent>();
-		//transform = &GetComponent<STransformComponent>();
 		
 		auto players = FindObjectsWithTag<Tag_Player>();
 		for (auto& p : players)
@@ -37,8 +37,9 @@ public:
 		}
 
 		UINT32 curUserCount = gUserManager.GetCurrentUserCount();
-		mChasingPlayerNum = Random::RandInt(0, curUserCount- 1);
+		mChasingPlayerNum = Random::RandInt(0, 2);
 		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
+		LOG("{0}", mChasingPlayerNum);
 		
 		SetStartNode();
 		FindPath();
@@ -50,46 +51,63 @@ public:
 		const auto& position = GetComponent<TransformComponent>().Position;
 		const float posToEnd = Vector3::DistanceSquared(position, *mChasingPlayerPosition);
 
-		if (!mbChase)
+		auto players = FindObjectsWithTag<Tag_Player>();
+		for (auto& p : players)
 		{
-			mbChase = true;
-			openList.clear();
-			closeList.clear();
-			SetStartNode();
-			mbIsSamePath = true;
-
-			FindPath();
-			bool retVal = GetNextTarget(&mCurrentTarget);
+			auto& playerTransform = p.GetComponent<TransformComponent>();
+			playerPositon.push_back(&playerTransform.Position);
 		}
-		else if (mbChase)
+		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
+
+
+		if (mbChase == false)
+		{
+			const float posToPlayer = Vector3::DistanceSquared(position, *playerPositon[mChasingPlayerNum]);
+
+			ResetPath();
+
+			if (posToPlayer > FAR_ENOUGH)
+			{
+				mbChase = true;
+			}
+
+		}
+		else if (mbChase == true)
 		{
 			CheckGoalNode();
 
-			if (!mbIsSamePath)
+			if (mbIsSamePath == false)
 			{
-				openList.clear();
-				closeList.clear();
-				std::stack<Tile> mPath;
-				SetStartNode();
-				mbIsSamePath = true;
-
-				FindPath();
-				bool retVal = GetNextTarget(&mCurrentTarget);
+				ResetPath();
 			}
 
 			const float posToCur = Vector3::DistanceSquared(position, mCurrentTarget);
+			const float posToPlayer = Vector3::DistanceSquared(position, *playerPositon[mChasingPlayerNum]);
 
-			Vector3 direction = XMVectorSubtract(mCurrentTarget, position);
-			direction.Normalize();
-			GetComponent<MovementComponent>().Direction = direction;
-
-			if (posToCur < CLOSE_ENOUGH)
+			if (posToPlayer < FAR_ENOUGH)
 			{
-				bool retVal = GetNextTarget(&mCurrentTarget);
+				mbChase = false;
+				Vector3 direction = XMVectorSubtract(position, *playerPositon[mChasingPlayerNum]);
+				direction.Normalize();
+				GetComponent<MovementComponent>().Direction = Vector3::Zero;
 
-				if (!retVal)
+				LOG("Done");
+			}
+			else
+			{
+
+				Vector3 direction = XMVectorSubtract(mCurrentTarget, position);
+				direction.Normalize();
+				GetComponent<MovementComponent>().Direction = direction;
+
+				if (posToCur < CLOSE_ENOUGH) 
 				{
-					mbChase = false;
+					bool retVal = GetNextTarget(&mCurrentTarget);
+
+					if (!retVal)
+					{
+						mbChase = false;
+					}
 				}
 				
 			}
@@ -98,17 +116,17 @@ public:
 
 	}
 
-	void GetGoalIndex();	// 목표 노드 찾기
-	void FindPath();		
-	void SetStartNode();	// enemy의 positon으로 시작 노드 설정
-	void CheckGoalNode();	// 목표 노드가 변경 됬는지 검사
+	void GetGoalIndex();		// 목표 노드 찾기
+	void FindPath();			// 길찾기 수행
+	void SetStartNode();		// enemy의 positon으로 시작 노드 설정
+	void CheckGoalNode();		// 목표 노드가 변경 됬는지 검사
 	int GetClosestNode(UINT32);	// 위치 정보에서 가장 가까운 노드 찾기
+	void ResetPath();			// 길찾기에 필요한 변수 초기화
 
 	Node* GetChildNodes(UINT32 childIndexRow, UINT32 childIndexCol, Node* parentNode);
 	Node* CreateNodeByIndex(UINT32 rowIndex, UINT32 colIndex, Node* parentNode);
 
 
-	bool GetNextTarget(Tile* outTarget);
 	bool GetNextTarget(Vector3* outTarget);
 
 private:
@@ -128,8 +146,9 @@ private:
 	list<Node*> closeList;
 
 	bool mbIsSamePath = true;
-	bool mbChase = true;
+	bool mbChase = false;
 
-	const float CLOSE_ENOUGH = 10.0f * 10.0f;
-	const float TILE_WIDTH = 500.0f;
+	const float TILE_WIDTH = Values::TileSide;
+	const float CLOSE_ENOUGH = 5.0f * 5.0f;
+	const float FAR_ENOUGH = TILE_WIDTH*TILE_WIDTH;
 };

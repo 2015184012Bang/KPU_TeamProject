@@ -56,15 +56,16 @@ public:
 	void Unload(string_view fileName);
 
 	void InitGraph(Map gameMap);
-	void DeleteGraph(UINT32 maxRow);
+	void DeleteGraph(UINT32 index);
 
 	const Map& GetMap(string_view fileName) const;
-	Tile** GetGraph() const { return graph; }
+	Tile** GetGraph(UINT32 index);
 
 private:
 	vector<Tile> mTiles;
 	
-	Tile** graph;
+	vector<Tile**> mGraphs;
+
 	vector<Map> mMaps;
 };
 
