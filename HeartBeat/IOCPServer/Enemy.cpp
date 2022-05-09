@@ -260,19 +260,6 @@ void Enemy::ResetPath()
 	bool retVal = GetNextTarget(&mCurrentTarget);
 }
 
-bool Enemy::GetNextTarget(Tile* outTarget)
-{
-	if (mPath.empty())
-	{
-		return false;
-	}
-	
-	*outTarget = mPath.top();
-	mPath.pop();
-
-	return true;
-}
-
 bool Enemy::GetNextTarget(Vector3* outTarget)
 {
 	if (mPath.empty())

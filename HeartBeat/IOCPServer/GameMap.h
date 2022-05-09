@@ -63,7 +63,7 @@ public:
 	void LoadMap(string_view path);
 	void Unload(string_view fileName);
 
-	void InitGraph(Map map);
+	Tile** GetGraph(const Map& map);
 
 	const Map& GetMap(string_view fileName) const;
 
