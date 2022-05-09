@@ -33,6 +33,7 @@ void GameMap::LoadMap(string_view path)
 	}
 
 	InitGraph(gameMap);
+
 	mMaps.push_back(move(gameMap));
 }
 
@@ -44,6 +45,7 @@ void GameMap::Unload(string_view fileName)
 		});
 	ASSERT(iter != mMaps.end(), "No map to unload: {0}", fileName.data());
 	iter_swap(iter, mMaps.end() - 1);
+	
 	mMaps.pop_back();
 }
 
@@ -55,11 +57,6 @@ const Map& GameMap::GetMap(string_view fileName) const
 		});
 	ASSERT(iter != mMaps.end(), "Could not find map: {0}", fileName.data());
 	return *iter;
-}
-
-Tile** GameMap::GetGraph(UINT32 index)
-{	
-	return mGraphs.front() + index;
 }
 
 void GameMap::InitGraph(Map gameMap)
@@ -80,19 +77,10 @@ void GameMap::InitGraph(Map gameMap)
 		}
 	}
 
-
 	if (graph == nullptr)
 	{
 		LOG("Graph Unloaded");
 	}
 
-	mGraphs.push_back(graph);
+	gameMap.Graph = graph;
 }
-
-void GameMap::DeleteGraph(UINT32 index)
-{
-	
-
-}
-
-GameMap gGameMap;

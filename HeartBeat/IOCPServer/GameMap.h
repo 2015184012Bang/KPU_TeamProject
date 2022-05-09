@@ -33,6 +33,7 @@ struct Map
 	UINT32 MaxRow = 0;
 	UINT32 MaxCol = 0;
 	vector<Tile> Tiles;
+	Tile** Graph;
 };
 
 class GameMap
@@ -46,6 +47,7 @@ public:
 		static GameMap instance;
 		return instance;
 	}
+
 	/*
 	* Map └╬╡ж╜║ ▒╕┴╢
 	* 6 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
@@ -57,25 +59,17 @@ public:
 	* 0 бр  бр  бр  бр  бр  бр  бр  бр  бр  бр
 	*   0  1  2  3  4  5  6  7  8  9
 	*/
-	void LoadMap(string_view path);
 
+	void LoadMap(string_view path);
 	void Unload(string_view fileName);
 
-	void InitGraph(Map gameMap);
-	void DeleteGraph(UINT32 index);
+	void InitGraph(Map map);
 
 	const Map& GetMap(string_view fileName) const;
-	Tile** GetGraph(UINT32 index);
 
 private:
 	GameMap();
 
-private:
 	vector<Tile> mTiles;
-	
-	vector<Tile**> mGraphs;
-
 	vector<Map> mMaps;
 };
-
-extern GameMap gGameMap;
