@@ -8,6 +8,7 @@
 GameMap::GameMap()
 {
 	LoadMap("../Assets/Maps/Map01.csv");
+	
 }
 
 void GameMap::LoadMap(string_view path)
@@ -32,7 +33,22 @@ void GameMap::LoadMap(string_view path)
 		}
 	}
 
-	InitGraph(gameMap);
+	gameMap.Graph = new Tile * [gameMap.MaxRow];
+	for (int i = 0; i < gameMap.MaxRow; ++i)
+	{
+		gameMap.Graph[i] = new Tile[gameMap.MaxCol];
+	}
+
+	for (int i = gameMap.MaxRow - 1; i >= 0; --i)
+	{
+		for (int j = 0; j < gameMap.MaxCol; ++j)
+		{
+			gameMap.Graph[i][j].TType = gameMap.Tiles[i * gameMap.MaxCol + j].TType;
+			gameMap.Graph[i][j].X = gameMap.Tiles[i * gameMap.MaxCol + j].X;
+			gameMap.Graph[i][j].Z = gameMap.Tiles[i * gameMap.MaxCol + j].Z;
+		}
+	}
+
 	mMaps.push_back(move(gameMap));
 }
 
@@ -44,7 +60,13 @@ void GameMap::Unload(string_view fileName)
 		});
 	ASSERT(iter != mMaps.end(), "No map to unload: {0}", fileName.data());
 	iter_swap(iter, mMaps.end() - 1);
+	
 	mMaps.pop_back();
+}
+
+Tile** GameMap::GetGraph(const Map& map)
+{
+	return map.Graph;
 }
 
 const Map& GameMap::GetMap(string_view fileName) const
@@ -57,42 +79,3 @@ const Map& GameMap::GetMap(string_view fileName) const
 	return *iter;
 }
 
-Tile** GameMap::GetGraph(UINT32 index)
-{	
-	return mGraphs.front() + index;
-}
-
-void GameMap::InitGraph(Map gameMap)
-{
-	Tile** graph = new Tile * [gameMap.MaxRow];
-	for (int i = 0; i < gameMap.MaxRow; ++i)
-	{
-		graph[i] = new Tile[gameMap.MaxCol];
-	}
-
-	for (int i = gameMap.MaxRow - 1; i >= 0; --i)
-	{
-		for (int j = 0; j < gameMap.MaxCol; ++j)
-		{
-			graph[i][j].TType = gameMap.Tiles[i * gameMap.MaxCol + j].TType;
-			graph[i][j].X = gameMap.Tiles[i * gameMap.MaxCol + j].X;
-			graph[i][j].Z = gameMap.Tiles[i * gameMap.MaxCol + j].Z;
-		}
-	}
-
-
-	if (graph == nullptr)
-	{
-		LOG("Graph Unloaded");
-	}
-
-	mGraphs.push_back(graph);
-}
-
-void GameMap::DeleteGraph(UINT32 index)
-{
-	
-
-}
-
-GameMap gGameMap;

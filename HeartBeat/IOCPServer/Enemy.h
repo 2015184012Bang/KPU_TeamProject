@@ -8,6 +8,7 @@
 #include "UserManager.h"
 #include "Timer.h"
 #include "Values.h"
+#include <iostream>
 
 
 class Enemy
@@ -19,25 +20,26 @@ public:
 
 	virtual void Start() override
 	{
-		gGameMap.LoadMap("../Assets/Maps/Map01.csv");
-		Map mMap = gGameMap.GetMap("../Assets/Maps/Map01.csv");
+		auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv");
 
-		maxRow = mMap.MaxRow;
-		maxCol = mMap.MaxCol;
+		maxRow = gameMap.MaxRow;
+		maxCol = gameMap.MaxCol;
 
-		graph = gGameMap.GetGraph(0);
+		graph = GameMap::GetInstance().GetGraph(gameMap);
+		
 
 		auto& transform = GetComponent<TransformComponent>();
 		
 		auto players = FindObjectsWithTag<Tag_Player>();
 		for (auto& p : players)
 		{
-			auto& playerTransform = p.GetComponent<TransformComponent>();
-			playerPositon.push_back(&playerTransform.Position);
+			auto& playerTransform = mRegistry.get<TransformComponent>(p).Position;
+			playerPositon.push_back(&playerTransform);
 		}
 
-		UINT32 curUserCount = gUserManager.GetCurrentUserCount();
-		mChasingPlayerNum = Random::RandInt(0, 2);
+		auto& userManager = UserManager::GetInstance();
+		UINT32 curUserCount = userManager.GetCurrentUserCount();
+		mChasingPlayerNum = Random::RandInt(0, curUserCount);
 		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
 		LOG("{0}", mChasingPlayerNum);
 		
@@ -54,8 +56,8 @@ public:
 		auto players = FindObjectsWithTag<Tag_Player>();
 		for (auto& p : players)
 		{
-			auto& playerTransform = p.GetComponent<TransformComponent>();
-			playerPositon.push_back(&playerTransform.Position);
+			auto& playerTransform = mRegistry.get<TransformComponent>(p).Position;
+			playerPositon.push_back(&playerTransform);
 		}
 		mChasingPlayerPosition = playerPositon[mChasingPlayerNum];
 
@@ -132,16 +134,16 @@ public:
 private:
 	vector<Vector3*> playerPositon;
 	Vector3* mChasingPlayerPosition;
+	Vector3 mCurrentTarget = Vector3::Zero;
 	UINT32 mChasingPlayerNum;
 
-	std::stack<Tile> mPath;
-	std::tuple<UINT32, UINT32> mGoalIndex;
-	Vector3 mCurrentTarget = Vector3::Zero;
-
-	UINT32 maxRow, maxCol;
-	UINT32 goalRow, goalCol;
 	Tile** graph;
 
+	tuple<UINT32, UINT32> mGoalIndex;
+	UINT32 maxRow, maxCol;
+	UINT32 goalRow, goalCol;
+
+	stack<Tile> mPath;
 	list<Node*> openList;
 	list<Node*> closeList;
 
