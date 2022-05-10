@@ -7,6 +7,7 @@
 #include "Protocol.h"
 #include "Values.h"
 #include "Room.h"
+#include "GameMap.h"
 
 
 CollisionSystem::CollisionSystem(entt::registry& registry, shared_ptr<Room>&& room)
@@ -62,6 +63,9 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 
 			if (health.Health <= 0)
 			{
+				// 그래프 속 타일 타입 갱신
+				changeTileTypeInGraph(entity);
+
 				// 엔티티 삭제 패킷 송신
 				NOTIFY_DELETE_ENTITY_PACKET packet = {};
 				packet.PacketID = NOTIFY_DELETE_ENTITY;
@@ -164,6 +168,20 @@ void CollisionSystem::reposition(BoxComponent& playerBox, entt::entity player, B
 	packet.Position = playerTransform.Position;
 
 	mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+}
+
+void CollisionSystem::changeTileTypeInGraph(entt::entity tile)
+{
+	auto& tilePosition = mRegistry.get<TransformComponent>(tile).Position;
+	
+	// 오차 방지용으로 1.0 을 더해준다.
+	UINT32 row = (tilePosition.z + 1.0f) / Values::TileSide;
+	UINT32 col = (tilePosition.x + 1.0f) / Values::TileSide;
+
+	LOG("Row: {0}, Col: {1}", row, col);
+
+	auto graph = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv").Graph;
+	graph[row][col].TType = TileType::MOVABLE;
 }
 
 void CollisionSystem::checkTankCollision()

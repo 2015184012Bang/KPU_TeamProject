@@ -24,6 +24,8 @@ private:
 
 	void reposition(BoxComponent& playerBox, entt::entity player, BoxComponent& otherBox);
 
+	void changeTileTypeInGraph(entt::entity tile);
+
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
