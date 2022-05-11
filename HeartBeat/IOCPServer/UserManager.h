@@ -8,12 +8,6 @@ class UserManager
 public:
 	~UserManager();
 
-	static UserManager& GetInstance()
-	{
-		static UserManager instance;
-		return instance;
-	}
-
 	void Init(const UINT32 maxUserCount);
 
 	void AddUser(const INT32 sessionIndex, string_view userName = "default"sv);

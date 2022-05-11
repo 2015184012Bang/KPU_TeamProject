@@ -34,7 +34,6 @@ struct Map
 	UINT32 MaxRow = 0;
 	UINT32 MaxCol = 0;
 	vector<Tile> Tiles;
-	Tile** Graph;
 };
 
 class GameMap
@@ -63,8 +62,6 @@ public:
 
 	void LoadMap(string_view path);
 	void Unload(string_view fileName);
-
-	Tile** GetGraph(const Map& map);
 
 	const Map& GetMap(string_view fileName) const;
 

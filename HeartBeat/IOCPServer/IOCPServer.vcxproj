@@ -160,7 +160,6 @@
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="CombatSystem.cpp" />
     <ClCompile Include="Components.cpp" />
-    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemySystem.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameManager.cpp" />
