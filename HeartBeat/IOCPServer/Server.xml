@@ -12,6 +12,6 @@
     <TankSpeed>300</TankSpeed>
     <EnemySpeed>300</EnemySpeed>
     <TankHealth>20</TankHealth>
-    <EnemyHealth>3</EnemyHealth>
+    <EnemyHealth>1</EnemyHealth>
   </Values>
 </Root>

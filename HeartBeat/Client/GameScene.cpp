@@ -432,6 +432,8 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	{
 		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Dead.anim"));
+		auto& movement = target.GetComponent<MovementComponent>();
+		movement.Direction = Vector3::Zero;
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
 	}
 	break;

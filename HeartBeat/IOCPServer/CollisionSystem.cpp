@@ -50,9 +50,12 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 
 	auto& transform = mRegistry.get<TransformComponent>(character);
 
+	// 공격을 시도한 플레이어의 Transform으로 
+	// 히트박스를 업데이트한다.
 	Box hitbox = Box::GetBox("Hitbox");
 	hitbox.Update(transform.Position, transform.Yaw);
 
+	// 히트박스와 부술 수 있는 타일과의 충돌 체크
 	auto tiles = mRegistry.view<Tag_BreakableTile, BoxComponent>();
 	for (auto [entity, tileBox] : tiles.each())
 	{
@@ -75,6 +78,31 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 				mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
 				// 레지스트리에서 엔티티 제거
+				DestroyEntity(mRegistry, entity);
+			}
+
+			return true;
+		}
+	}
+
+	// 히트박스와 적과의 충돌 체크
+	auto enemies = mRegistry.view<Tag_Enemy, BoxComponent>();
+	for (auto [entity, enemyBox] : enemies.each())
+	{
+		if (Intersects(hitbox, enemyBox.WorldBox))
+		{
+			auto& health = mRegistry.get<HealthComponent>(entity);
+			--health.Health;
+
+			if (health.Health <= 0)
+			{
+				NOTIFY_DELETE_ENTITY_PACKET packet = {};
+				packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+				packet.EntityType = static_cast<UINT8>(EntityType::VIRUS);
+				packet.PacketID = NOTIFY_DELETE_ENTITY;
+				packet.PacketSize = sizeof(packet);
+				mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+
 				DestroyEntity(mRegistry, entity);
 			}
 
