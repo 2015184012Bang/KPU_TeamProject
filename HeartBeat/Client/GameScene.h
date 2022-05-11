@@ -31,6 +31,7 @@ private:
     void createFatTile(const Tile& tile);
     void createTankFatTile(const Tile& tile);
     void createScarTile(const Tile& tile);
+    void createHouseTile(const Tile& tile);
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();

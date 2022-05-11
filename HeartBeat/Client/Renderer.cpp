@@ -580,12 +580,13 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("HealPack.skel");
 	SKELETON("Tank.skel");
 	SKELETON("Virus.skel");
-
+	
 	BOX("Cart.box");
 	BOX("Cell.box");
 	BOX("Character.box");
 	BOX("Cube.box");
 	BOX("Dog.box");
+	BOX("House.box");
 	BOX("Pickax.box");
 	BOX("Tank.box");
 	BOX("Virus.box");

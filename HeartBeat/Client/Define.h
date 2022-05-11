@@ -21,6 +21,7 @@ enum class TileType : uint8
 	// 그냥 RAIL 타일 취급하면 된다. 서버와 맵 파일을 공유하기 위해서 넣었다.
 	START_POINT,
 	END_POINT,
+	HOUSE,
 	END
 };
 

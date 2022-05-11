@@ -3,13 +3,14 @@
 enum class TileType
 {
 	BLOCKED = 0,
-	MOVABLE,
-	RAIL,
-	FAT,
-	TANK_FAT,
-	SCAR,
-	START_POINT,
-	END_POINT,
+	MOVABLE = 1,
+	RAIL = 2,
+	FAT = 3,
+	TANK_FAT = 4,
+	SCAR = 5,
+	START_POINT = 6,
+	END_POINT = 7,
+	HOUSE = 8,
 	END
 };
 

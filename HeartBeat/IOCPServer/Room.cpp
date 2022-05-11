@@ -249,6 +249,13 @@ void Room::createTiles(string_view fileName)
 		{
 			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
 		}
+		else if (tile.TType == TileType::HOUSE)
+		{
+			// 산소 공급소의 경우, 디폴트 방향이 +z축을 향하고 있다.
+			// 클라에서 180도 돌리므로 서버에서도 돌려준다.
+			transform.Yaw = 180.0f;
+			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/House.box"), transform.Position, transform.Yaw);
+		}
 
 		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
 		// 탱크가 경로 인식이 가능하다.
@@ -327,6 +334,11 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		mRegistry.emplace<NameComponent>(tile, "EndPoint");
 		break;
 
+	case TileType::HOUSE:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_HouseTile>(tile);
+		break;
+
 	default:
 		ASSERT(false, "Unknown tile type!");
 		break;
@@ -349,6 +361,7 @@ float GetTileYPos(TileType ttype)
 	case TileType::BLOCKED:
 	case TileType::FAT:
 	case TileType::TANK_FAT:
+	case TileType::HOUSE:
 		return 0.0f;
 
 	case TileType::MOVABLE:

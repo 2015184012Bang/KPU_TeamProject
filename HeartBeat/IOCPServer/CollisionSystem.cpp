@@ -126,6 +126,19 @@ void CollisionSystem::checkPlayersCollision()
 			}
 		}
 	}
+
+	// 플레이어 - 산소공급소
+	auto houses = mRegistry.view<Tag_HouseTile, BoxComponent>();
+	for (auto [pEnt, playerBox] : players.each())
+	{
+		for (auto [hEnt, houseBox] : houses.each())
+		{
+			if (Intersects(playerBox.WorldBox, houseBox.WorldBox))
+			{
+				reposition(playerBox, pEnt, houseBox);
+			}
+		}
+	}
 }
 
 void CollisionSystem::reposition(BoxComponent& playerBox, entt::entity player, BoxComponent& otherBox)

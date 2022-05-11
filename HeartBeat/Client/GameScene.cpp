@@ -159,6 +159,10 @@ void GameScene::createTile(const Tile& tile)
 		createScarTile(tile);
 		break;
 
+	case TileType::HOUSE:
+		createHouseTile(tile);
+		break;
+
 	default:
 		HB_ASSERT(false, "Unknown tile type!");
 		break;
@@ -291,6 +295,21 @@ void GameScene::createScarTile(const Tile& tile)
 	transform.Position.x = tile.X;
 	transform.Position.y = -Values::TileSide;
 	transform.Position.z = tile.Z;
+}
+
+void GameScene::createHouseTile(const Tile& tile)
+{
+	const Texture* tileTex = GetTileTexture(tile.TType);
+
+	Entity obj = mOwner->CreateStaticMeshEntity(MESH("House.mesh"),
+		tileTex, "../Assets/Boxes/House.box");
+	obj.AddTag<Tag_Tile>();
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = tile.X;
+	transform.Position.y = 0.0f;
+	transform.Position.z = tile.Z;
+	transform.Rotation.y = 180.0f;
 }
 
 bool GameScene::pollKeyboardPressed()
@@ -579,6 +598,9 @@ Texture* GetTileTexture(TileType ttype)
 
 	case TileType::SCAR:
 		return TEXTURE("Red.png");
+
+	case TileType::HOUSE:
+		return TEXTURE("Fat.png");
 
 	default:
 		HB_ASSERT(false, "Unknown tile type!");
