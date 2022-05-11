@@ -47,7 +47,7 @@ void PathSystem::Update()
 	queue<Node> q;
 	for (auto [entity, pathFind] : view.each())
 	{
-		if (!pathFind.bFind)
+		if (!pathFind.bContinue)
 		{
 			continue;
 		}

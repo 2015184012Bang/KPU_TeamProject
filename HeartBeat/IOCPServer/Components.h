@@ -95,5 +95,7 @@ struct PathFindComponent
 
 	Vector3 MyPosition = Vector3::Zero;
 	Vector3 TargetPosition = Vector3::Zero;
-	bool bFind = false;
+
+	// 길찾기 수행을 계속하는 지 여부
+	bool bContinue = false;
 };

@@ -31,7 +31,7 @@ void EnemyChaseState::Enter()
 	setNewTarget();
 
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
-	pathfind.bFind = true;
+	pathfind.bContinue = true;
 	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
 	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(mTargetID).Position;
 }
@@ -55,7 +55,7 @@ void EnemyChaseState::Exit()
 	LOG("Exit chase state...");
 
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
-	pathfind.bFind = false;
+	pathfind.bContinue = false;
 }
 
 void EnemyChaseState::setNewTarget()
