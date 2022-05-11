@@ -29,6 +29,9 @@ public:
 	virtual void Exit() override;
 
 private:
+	void setNewTarget();
+
+private:
 	shared_ptr<Enemy> mOwner = nullptr;
 	entt::entity mTargetID = entt::null;
 };

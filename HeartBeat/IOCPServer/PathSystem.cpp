@@ -69,7 +69,7 @@ void PathSystem::Update()
 				Vector3 direction = Vector3::Zero;
 				direction.x = static_cast<float>(current.Parent.second - goal.Col);
 				direction.z = static_cast<float>(current.Parent.first - goal.Row);
-				//direction.Normalize();
+				direction.Normalize();
 				mRegistry.get<MovementComponent>(entity).Direction = direction;
 				break;
 			}

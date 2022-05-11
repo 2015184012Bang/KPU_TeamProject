@@ -28,24 +28,21 @@ void EnemyChaseState::Enter()
 {
 	LOG("Enter chase state...");
 
+	setNewTarget();
+
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.bFind = true;
-
-	auto players = mOwner->FindObjectsWithTag<Tag_Player>();
-	if (players.empty())
-	{
-		LOG("player is empty!");
-		return;
-	}
-
-	mTargetID = players[Random::RandInt(0, players.size() - 1)];
-
 	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
 	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(mTargetID).Position;
 }
 
 void EnemyChaseState::Update()
 {
+	if (!mOwner->GetRegistry().valid(mTargetID))
+	{
+		setNewTarget();
+	}
+
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
 	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(mTargetID).Position;
@@ -59,6 +56,13 @@ void EnemyChaseState::Exit()
 
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.bFind = false;
+}
+
+void EnemyChaseState::setNewTarget()
+{
+	auto players = mOwner->FindObjectsWithTag<Tag_Player>();
+	ASSERT(!players.empty(), "There are no players!");
+	mTargetID = players[Random::RandInt(0, players.size() - 1)];
 }
 
 /************************************************************************/
