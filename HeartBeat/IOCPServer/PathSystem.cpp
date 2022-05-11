@@ -67,9 +67,14 @@ void PathSystem::Update()
 			if (current == goal)
 			{
 				Vector3 direction = Vector3::Zero;
-				direction.x = static_cast<float>(current.Parent.second - goal.Col);
-				direction.z = static_cast<float>(current.Parent.first - goal.Row);
+				float tileX = current.Parent.second * Values::TileSide;
+				float tileZ = current.Parent.first * Values::TileSide;
+				const auto& position = mRegistry.get<TransformComponent>(entity).Position;
+
+				direction.x = tileX - position.x;
+				direction.z = tileZ - position.z;
 				direction.Normalize();
+
 				mRegistry.get<MovementComponent>(entity).Direction = direction;
 				break;
 			}

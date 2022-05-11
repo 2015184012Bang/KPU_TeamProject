@@ -62,7 +62,7 @@ void EnemyChaseState::setNewTarget()
 {
 	auto players = mOwner->FindObjectsWithTag<Tag_Player>();
 	ASSERT(!players.empty(), "There are no players!");
-	mTargetID = players[Random::RandInt(0, players.size() - 1)];
+	mTargetID = players[Random::RandInt(0, static_cast<INT32>(players.size() - 1))];
 }
 
 /************************************************************************/
