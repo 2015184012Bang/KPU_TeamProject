@@ -60,6 +60,8 @@ public:
 
 	entt::entity Find(string_view targetName);
 
+	entt::registry& GetRegistry() { return mRegistry; }
+
 protected:
 	entt::registry& mRegistry;
 	entt::entity mOwner = entt::null;

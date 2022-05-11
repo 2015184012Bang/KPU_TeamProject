@@ -95,7 +95,10 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="AIState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PathSystem.cpp">
+      <Filter>Source Files\ECS</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -186,11 +189,11 @@
     <ClInclude Include="RoomManager.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Node.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="AIState.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="PathSystem.h">
+      <Filter>Source Files\ECS</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -185,16 +185,13 @@ void CollisionSystem::reposition(BoxComponent& playerBox, entt::entity player, B
 
 void CollisionSystem::changeTileTypeInGraph(entt::entity tile)
 {
-	//auto& tilePosition = mRegistry.get<TransformComponent>(tile).Position;
-	//
-	//// 오차 방지용으로 1.0 을 더해준다.
-	//UINT32 row = (tilePosition.z + 1.0f) / Values::TileSide;
-	//UINT32 col = (tilePosition.x + 1.0f) / Values::TileSide;
+	auto& tilePosition = mRegistry.get<TransformComponent>(tile).Position;
+	
+	// 오차 방지용으로 1.0 을 더해준다.
+	INT32 row = static_cast<INT32>((tilePosition.z + 1.0f) / Values::TileSide);
+	INT32 col = static_cast<INT32>((tilePosition.x + 1.0f) / Values::TileSide);
 
-	//LOG("Row: {0}, Col: {1}", row, col);
-
-	//auto graph = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv").Graph;
-	//graph[row][col].TType = TileType::MOVABLE;
+	mOwner->ChangeTileToRoad(row, col);
 }
 
 void CollisionSystem::checkTankCollision()

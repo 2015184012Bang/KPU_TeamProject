@@ -6,6 +6,7 @@
 #include "EnemySystem.h"
 #include "CombatSystem.h"
 #include "CollisionSystem.h"
+#include "PathSystem.h"
 #include "GameMap.h"
 
 class User;
@@ -62,6 +63,10 @@ public:
 	// 유저가 기본 공격 키(A)를 눌렀을 때 호출되는 함수
 	bool DoAttack(const INT8 clientID);
 
+	// Collision시스템과 Path시스템 사이의 통신
+	// 부서진 타일의 타입을 ROAD로 바꾼다.
+	void ChangeTileToRoad(INT32 row, INT32 col);
+
 	// 패킷 송신 함수
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
@@ -107,6 +112,7 @@ private:
 	unique_ptr<EnemySystem> mEnemySystem = nullptr;
 	unique_ptr<CombatSystem> mCombatSystem = nullptr;
 	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
+	unique_ptr<PathSystem> mPathSystem = nullptr;
 };
 
 // 타일 타입에 따른 y 위치 반환

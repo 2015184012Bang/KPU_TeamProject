@@ -58,6 +58,7 @@ void EnemySystem::Update()
 			mRegistry.emplace<HealthComponent>(entity, Values::EnemyHealth);
 			mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
 			mRegistry.emplace<Tag_Enemy>(entity);
+			mRegistry.emplace<PathFindComponent>(entity);
 
 			NOTIFY_CREATE_ENTITY_PACKET packet = {};
 			packet.EntityID = id.ID;

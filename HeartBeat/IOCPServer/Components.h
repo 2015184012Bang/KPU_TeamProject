@@ -88,3 +88,12 @@ struct SpawnComponent
 	float GenPosX = 0.0f;
 	float GenPosZ = 0.0f;
 };
+
+struct PathFindComponent
+{
+	PathFindComponent() = default;
+
+	Vector3 MyPosition = Vector3::Zero;
+	Vector3 TargetPosition = Vector3::Zero;
+	bool bFind = false;
+};

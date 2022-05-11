@@ -202,6 +202,7 @@ void Room::Update()
 	mMovementSystem->Update();
 	mCollisionSystem->Update();
 	mEnemySystem->Update();
+	mPathSystem->Update();
 }
 
 void Room::SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset)
@@ -219,6 +220,11 @@ bool Room::DoAttack(const INT8 clientID)
 	return mCollisionSystem->DoAttack(clientID);
 }
 
+void Room::ChangeTileToRoad(INT32 row, INT32 col)
+{
+	mPathSystem->ChangeTileToRoad(row, col);
+}
+
 void Room::createSystems()
 {
 	mMovementSystem = make_unique<MovementSystem>(mRegistry, shared_from_this());
@@ -226,6 +232,7 @@ void Room::createSystems()
 	mEnemySystem = make_unique<EnemySystem>(mRegistry, shared_from_this());
 	mCombatSystem = make_unique<CombatSystem>(mRegistry, shared_from_this());
 	mCollisionSystem = make_unique<CollisionSystem>(mRegistry, shared_from_this());
+	mPathSystem = make_unique<PathSystem>(mRegistry, shared_from_this());
 }
 
 void Room::createTiles(string_view fileName)

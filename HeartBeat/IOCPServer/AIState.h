@@ -30,6 +30,7 @@ public:
 
 private:
 	shared_ptr<Enemy> mOwner = nullptr;
+	entt::entity mTargetID = entt::null;
 };
 
 class EnemyAttackState
