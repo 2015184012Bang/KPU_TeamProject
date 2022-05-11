@@ -156,6 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIState.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="CombatSystem.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="UserManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIState.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="CombatSystem.h" />

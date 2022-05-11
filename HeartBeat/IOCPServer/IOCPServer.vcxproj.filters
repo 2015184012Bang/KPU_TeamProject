@@ -94,6 +94,9 @@
     <ClCompile Include="RoomManager.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="AIState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -184,6 +187,9 @@
       <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Node.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AIState.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>

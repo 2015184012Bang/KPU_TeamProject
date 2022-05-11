@@ -3,6 +3,7 @@
 #include "Entity.h"
 
 class Script
+	: public enable_shared_from_this<Script>
 {
 public:
 	Script(entt::registry& registry, entt::entity owner);
