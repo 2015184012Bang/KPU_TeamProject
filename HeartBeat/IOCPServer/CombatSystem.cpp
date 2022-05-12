@@ -91,11 +91,11 @@ void CombatSystem::checkEnemyHit()
 			LOG("Player dead...");
 		}
 
-		NOTIFY_ATTACK_PACKET packet = {};
-		packet.EntityID = hit.HitterID;
-		packet.PacketID = NOTIFY_ATTACK;
+		NOTIFY_ENEMY_ATTACK_PACKET packet = {};
+		packet.HitterID = hit.HitterID;
+		packet.VictimID = hit.VictimID;
 		packet.PacketSize = sizeof(packet);
-		packet.Result = RESULT_CODE::ATTACK_SUCCESS;
+		packet.PacketID = NOTIFY_ENEMY_ATTACK;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
 		mRegistry.remove<IHitYouComponent>(entity);

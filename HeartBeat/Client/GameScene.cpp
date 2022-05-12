@@ -55,6 +55,10 @@ void GameScene::ProcessInput()
 			processNotifyAttack(packet);
 			break;
 
+		case NOTIFY_ENEMY_ATTACK:
+			processNotifyEnemyAttack(packet);
+			break;
+
 		case NOTIFY_DELETE_ENTITY:
 			processNotifyDeleteEntity(packet);
 			break;
@@ -396,12 +400,29 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	HB_ASSERT(e, "Invalid entity!");
 
 	auto& animator = e.GetComponent<AnimatorComponent>();
-	bool isEnemy = e.HasComponent<Tag_Enemy>();
-	animator.SetTrigger(GetRandomAttackAnimFile(isEnemy));
+	animator.SetTrigger(GetAttackAnimTrigger(false));
 
 	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS)
 	{
 		SoundManager::PlaySound("Punch.mp3", 0.15f);
+	}
+}
+
+void GameScene::processNotifyEnemyAttack(const PACKET& packet)
+{
+	NOTIFY_ENEMY_ATTACK_PACKET* neaPacket = reinterpret_cast<NOTIFY_ENEMY_ATTACK_PACKET*>(packet.DataPtr);
+
+	auto hitter = GetEntityByID(neaPacket->HitterID);
+	HB_ASSERT(hitter, "Invalid entity!");
+
+	auto& animator = hitter.GetComponent<AnimatorComponent>();
+	animator.SetTrigger(GetAttackAnimTrigger(true));
+
+	// 적에게 맞은 플레이어가 나라면 사운드 재생
+	const auto& playerID = mPlayerCharacter.GetComponent<IDComponent>().ID;
+	if (neaPacket->VictimID == playerID)
+	{
+		SoundManager::PlaySound("Ouch.mp3", 0.3f);
 	}
 }
 
@@ -551,7 +572,7 @@ void GameScene::doWhenFail()
 	mOwner->ChangeScene(newScene);
 }
 
-string GetRandomAttackAnimFile(bool isEnemy /*= false*/)
+string GetAttackAnimTrigger(bool isEnemy /*= false*/)
 {
 	if (isEnemy)
 	{

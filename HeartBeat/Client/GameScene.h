@@ -37,7 +37,13 @@ private:
 	bool pollKeyboardReleased();
 
 	void processNotifyMove(const PACKET& packet);
+
+    // 플레이어 공격 패킷 처리
     void processNotifyAttack(const PACKET& packet);
+
+    // Enemy 공격 패킷 처리
+    void processNotifyEnemyAttack(const PACKET& packet);
+
     void processNotifyDeleteEntity(const PACKET& packet);
     void processNotifyCreateEntity(const PACKET& packet);
     void processGameOver(const PACKET& packet);
@@ -59,5 +65,5 @@ private:
     StageCode mStageCode = StageCode::NONE;
 };
 
-string GetRandomAttackAnimFile(bool isEnemy = false);
+string GetAttackAnimTrigger(bool isEnemy = false);
 Texture* GetTileTexture(TileType ttype);

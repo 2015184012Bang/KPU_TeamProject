@@ -105,4 +105,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/Countdown.mp3");
 	CreateSound("../Assets/Sounds/Punch.mp3");
 	CreateSound("../Assets/Sounds/SteampipeSonata.mp3", true);
+	CreateSound("../Assets/Sounds/Ouch.mp3");
 }
