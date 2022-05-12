@@ -84,8 +84,18 @@ void MovementSystem::SendNotifyMovePackets()
 	}
 
 	// 적 이동 패킷 보내기
-	auto view = mRegistry.view<Tag_Enemy>();
-	for (auto entity : view)
+	auto enemies = mRegistry.view<Tag_Enemy>();
+	for (auto entity : enemies)
+	{
+		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+		packet.Direction = mRegistry.get<MovementComponent>(entity).Direction;
+		packet.Position = mRegistry.get<TransformComponent>(entity).Position;
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+
+	// 세포 이동 패킷 보내기
+	auto cells = mRegistry.view<Tag_RedCell>();
+	for (auto entity : cells)
 	{
 		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
 		packet.Direction = mRegistry.get<MovementComponent>(entity).Direction;

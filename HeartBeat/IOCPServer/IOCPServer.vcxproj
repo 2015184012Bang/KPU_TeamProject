@@ -206,6 +206,7 @@
     <ClInclude Include="PathSystem.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Random.h" />
+    <ClInclude Include="RedCell.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="Script.h" />

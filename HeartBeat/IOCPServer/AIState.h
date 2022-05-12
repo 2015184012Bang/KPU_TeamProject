@@ -1,6 +1,7 @@
 #pragma once
 
 class Enemy;
+class RedCell;
 
 class AIState
 {
@@ -17,6 +18,10 @@ public:
 private:
 	string mStateName = {};
 };
+
+/************************************************************************/
+/* EnemyChaseState                                                      */
+/************************************************************************/
 
 // Enemy 공격 사거리
 constexpr float RANGESQ_TO_ATTACK = 350.0f * 350.0f;
@@ -35,6 +40,10 @@ private:
 	shared_ptr<Enemy> mOwner = nullptr;
 };
 
+/************************************************************************/
+/* EnemyAttackState                                                     */
+/************************************************************************/
+
 constexpr float ENEMY_ATTACK_ANIM_DURATION = 1.1f;
 
 class EnemyAttackState
@@ -51,4 +60,22 @@ private:
 	shared_ptr<Enemy> mOwner = nullptr;
 
 	float elapsed = 0.0f;
+};
+
+/************************************************************************/
+/* CellDeliverState                                                     */
+/************************************************************************/
+
+class CellDeliverState
+	: public AIState
+{
+public:
+	CellDeliverState(shared_ptr<RedCell>&& owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	shared_ptr<RedCell> mOwner = nullptr;
 };

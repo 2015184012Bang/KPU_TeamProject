@@ -198,5 +198,8 @@
     <ClInclude Include="Cart.h">
       <Filter>Source Files\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="RedCell.h">
+      <Filter>Source Files\Scripts</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

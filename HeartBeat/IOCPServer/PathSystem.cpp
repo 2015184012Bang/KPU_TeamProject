@@ -44,13 +44,14 @@ void PathSystem::Update()
 {
 	auto view = mRegistry.view<PathFindComponent>();
 
-	queue<Node> q;
 	for (auto [entity, pathFind] : view.each())
 	{
 		if (!pathFind.bContinue)
 		{
 			continue;
 		}
+
+		queue<Node> q;
 
 		Node start = { {-1, -1}, getClosetNodeIndex(pathFind.TargetPosition.z)
 			, getClosetNodeIndex(pathFind.TargetPosition.x) };
@@ -120,7 +121,6 @@ bool PathSystem::isBlockedTile(const Tile& tile)
 	case TileType::BLOCKED:
 	case TileType::FAT:
 	case TileType::TANK_FAT:
-	case TileType::HOUSE:
 		return true;
 
 	default:

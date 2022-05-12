@@ -7,6 +7,7 @@
 #include "Tags.h"
 #include "Tank.h"
 #include "Random.h"
+#include "RedCell.h"
 
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
@@ -345,6 +346,8 @@ void Room::createCells()
 		mRegistry.emplace<BoxComponent>(cell, &Box::GetBox("../Assets/Boxes/Cell.box"),
 			transform.Position, transform.Yaw);
 		mRegistry.emplace<Tag_RedCell>(cell);
+		mRegistry.emplace<PathFindComponent>(cell);
+		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
 
 		packet.EntityID = id.ID;
 		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
@@ -429,12 +432,12 @@ Vector3 Room::getCellStartPosition(INT32 index)
 		return cellStartPosition;
 
 	case 1:
-		cellStartPosition.x += 200.0f;
+		cellStartPosition.x += 400.0f;
 		cellStartPosition.z += 400.0f;
 		return cellStartPosition;
 
 	case 2:
-		cellStartPosition.x += 400.0f;
+		cellStartPosition.x += 800.0f;
 		cellStartPosition.z += 400.0f;
 		return cellStartPosition;
 		
@@ -443,12 +446,12 @@ Vector3 Room::getCellStartPosition(INT32 index)
 		return cellStartPosition;
 
 	case 4:
-		cellStartPosition.x += 200.0f;
+		cellStartPosition.x += 400.0f;
 		cellStartPosition.z -= 400.0f;
 		return cellStartPosition;
 
 	case 5:
-		cellStartPosition.x += 400.0f;
+		cellStartPosition.x += 800.0f;
 		cellStartPosition.z -= 400.0f;
 		return cellStartPosition;
 

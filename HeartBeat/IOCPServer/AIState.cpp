@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "AIState.h"
 
+#include "Box.h"
 #include "Enemy.h"
 #include "Timer.h"
 #include "Components.h"
 #include "Random.h"
 #include "Protocol.h"
+#include "RedCell.h"
 
 
 AIState::AIState(string_view stateName)
@@ -99,6 +101,62 @@ void EnemyAttackState::Update()
 }
 
 void EnemyAttackState::Exit()
+{
+
+}
+
+/************************************************************************/
+/* CellDeliverState                                                     */
+/************************************************************************/
+
+CellDeliverState::CellDeliverState(shared_ptr<RedCell>&& owner)
+	: AIState{ "CellDeliverState" }
+	, mOwner{ move(owner) }
+{
+
+}
+
+void CellDeliverState::Enter()
+{
+	if (mOwner->IsTargetValid())
+	{
+		auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+		pathfind.bContinue = true;
+		pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
+		auto target = mOwner->GetTarget();
+		pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
+	}
+}
+
+void CellDeliverState::Update()
+{
+	auto target = mOwner->GetTarget();
+	const auto& myBox = mOwner->GetComponent<BoxComponent>();
+	const auto& targetBox = mOwner->GetRegistry().get<BoxComponent>(target);
+
+	// 타겟과 충돌 검사
+	// 만약 타겟이 산소 공급소라면, 다음 타겟을 카트로 설정
+	// 타겟이 카트일 경우 다음 타겟을 가까운 공급소로 설정
+	if (Intersects(myBox.WorldBox, targetBox.WorldBox))
+	{
+		if (mOwner->GetRegistry().any_of<Tag_HouseTile>(target))
+		{
+			mOwner->SetTargetCart();
+		}
+		else
+		{
+			mOwner->SetTargetHouse();
+		}
+
+		target = mOwner->GetTarget();
+	}
+
+	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
+	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
+}
+
+void CellDeliverState::Exit()
 {
 
 }
