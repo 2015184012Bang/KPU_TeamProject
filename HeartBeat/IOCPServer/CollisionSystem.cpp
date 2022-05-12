@@ -142,6 +142,18 @@ void CollisionSystem::checkPlayersCollision()
 		}
 	}
 
+	// 플레이어 - 카트
+	auto cart = GetEntityByName(mRegistry, "Cart");
+	ASSERT(mRegistry.valid(cart), "Invalid entity!");
+	auto& cartBox = mRegistry.get<BoxComponent>(cart);
+	for (auto [pEnt, playerBox] : players.each())
+	{
+		if (Intersects(playerBox.WorldBox, cartBox.WorldBox))
+		{
+			reposition(playerBox, pEnt, cartBox);
+		}
+	}
+
 	// 플레이어 - 적
 	auto enemies = mRegistry.view<Tag_Enemy, BoxComponent>();
 	for (auto [pEnt, playerBox] : players.each())
