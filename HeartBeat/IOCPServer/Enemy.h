@@ -19,6 +19,8 @@ public:
 
 	virtual void Start() override
 	{
+		SetNewTarget();
+
 		auto chaseState = make_shared<EnemyChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
 		mAIStates.emplace(chaseState->GetStateName(), move(chaseState));
 
@@ -54,6 +56,20 @@ public:
 		}
 	}
 
+	void SetNewTarget()
+	{
+		auto players = FindObjectsWithTag<Tag_Player>();
+		ASSERT(!players.empty(), "There are no players!");
+		mTarget = players[Random::RandInt(0, static_cast<INT32>(players.size() - 1))];
+	}
+
+	bool IsTargetValid()
+	{
+		return mRegistry.valid(mTarget);
+	}
+
+	entt::entity GetTarget() const { return mTarget; }
+
 private:
 	shared_ptr<AIState> getAIState(string_view stateName)
 	{
@@ -73,4 +89,6 @@ private:
 private:
 	unordered_map<string, shared_ptr<AIState>> mAIStates;
 	shared_ptr<AIState> mCurrentState = nullptr;
+
+	entt::entity mTarget = entt::null;
 };

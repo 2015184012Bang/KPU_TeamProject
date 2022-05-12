@@ -396,7 +396,8 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	HB_ASSERT(e, "Invalid entity!");
 
 	auto& animator = e.GetComponent<AnimatorComponent>();
-	animator.SetTrigger(GetRandomAttackAnimFile());
+	bool isEnemy = e.HasComponent<Tag_Enemy>();
+	animator.SetTrigger(GetRandomAttackAnimFile(isEnemy));
 
 	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS)
 	{
@@ -476,6 +477,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
 		virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
+		virus.AddTag<Tag_Enemy>();
 		auto& animator = virus.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
 
@@ -492,6 +494,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
 		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
+		dog.AddTag<Tag_Enemy>();
 		auto& animator = dog.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
 	}
@@ -519,14 +522,14 @@ void GameScene::processGameOver(const PACKET& packet)
 		mbChangeScene = true;
 		mStageCode = StageCode::FAIL;
 	}
-		break;
+	break;
 	}
 }
 
 void GameScene::doWhenFail()
 {
 	// 재시작을 위해 엔티티 아이디 초기화
-	Values::EntityID = 3; 
+	Values::EntityID = 3;
 
 	auto view = gRegistry.view<Tag_Player>();
 	for (auto entity : view)
@@ -541,7 +544,7 @@ void GameScene::doWhenFail()
 		const auto& id = player.GetComponent<IDComponent>();
 		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(id.ID, CharacterAnimationType::IDLE_NONE));
 	}
-	
+
 	// 업그레이드 씬으로 전환.
 	auto newScene = new UpgradeScene{ mOwner };
 	newScene->SetDirection(mDirection);

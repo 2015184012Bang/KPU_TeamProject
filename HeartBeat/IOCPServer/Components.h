@@ -99,3 +99,12 @@ struct PathFindComponent
 	// 길찾기 수행을 계속하는 지 여부
 	bool bContinue = false;
 };
+
+struct IHitYouComponent
+{
+	IHitYouComponent() = default;
+	IHitYouComponent(UINT32 hitter, UINT32 victim);
+
+	UINT32 HitterID = 0;
+	UINT32 VictimID = 0;
+};

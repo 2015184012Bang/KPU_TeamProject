@@ -21,6 +21,10 @@ public:
 	bool CanBaseAttack(const INT8 clientID);
 
 private:
+	void updateCooldown();
+	void checkEnemyHit();
+
+private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
 };

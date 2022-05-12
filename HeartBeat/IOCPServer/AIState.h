@@ -18,6 +18,9 @@ private:
 	string mStateName = {};
 };
 
+// Enemy 공격 사거리
+constexpr float RANGESQ_TO_ATTACK = 350.0f * 350.0f;
+
 class EnemyChaseState
 	: public AIState
 {
@@ -29,12 +32,10 @@ public:
 	virtual void Exit() override;
 
 private:
-	void setNewTarget();
-
-private:
 	shared_ptr<Enemy> mOwner = nullptr;
-	entt::entity mTargetID = entt::null;
 };
+
+constexpr float ENEMY_ATTACK_ANIM_DURATION = 1.1f;
 
 class EnemyAttackState
 	: public AIState
@@ -48,4 +49,6 @@ public:
 
 private:
 	shared_ptr<Enemy> mOwner = nullptr;
+
+	float elapsed = 0.0f;
 };

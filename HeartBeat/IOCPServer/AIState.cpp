@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Components.h"
 #include "Random.h"
+#include "Protocol.h"
 
 
 AIState::AIState(string_view stateName)
@@ -26,44 +27,45 @@ EnemyChaseState::EnemyChaseState(shared_ptr<Enemy>&& owner)
 
 void EnemyChaseState::Enter()
 {
-	LOG("Enter chase state...");
-
-	setNewTarget();
+	if (!mOwner->IsTargetValid())
+	{
+		mOwner->SetNewTarget();
+	}
 
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = true;
 	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(mTargetID).Position;
+	auto target = mOwner->GetTarget();
+	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
 }
 
 void EnemyChaseState::Update()
 {
-	if (!mOwner->GetRegistry().valid(mTargetID))
+	if (!mOwner->IsTargetValid())
 	{
-		setNewTarget();
+		mOwner->SetNewTarget();
 	}
 
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(mTargetID).Position;
+	auto target = mOwner->GetTarget();
+	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
 
-	// TODO : 타겟과의 거리가 충분히 가깝다면 어택스테이트로 전환하기
+	if (Vector3::DistanceSquared(pathfind.MyPosition, pathfind.TargetPosition) < RANGESQ_TO_ATTACK)
+	{
+		mOwner->ChangeState("EnemyAttackState");
+	}
 }
 
 void EnemyChaseState::Exit()
 {
-	LOG("Exit chase state...");
-
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = false;
+
+	auto& movement = mOwner->GetComponent<MovementComponent>();
+	movement.Direction = Vector3::Zero;
 }
 
-void EnemyChaseState::setNewTarget()
-{
-	auto players = mOwner->FindObjectsWithTag<Tag_Player>();
-	ASSERT(!players.empty(), "There are no players!");
-	mTargetID = players[Random::RandInt(0, static_cast<INT32>(players.size() - 1))];
-}
 
 /************************************************************************/
 /* EnemyAttackState                                                     */
@@ -78,15 +80,24 @@ EnemyAttackState::EnemyAttackState(shared_ptr<Enemy>&& owner)
 
 void EnemyAttackState::Enter()
 {
-	LOG("Enter attack state...");
+	auto myID = mOwner->GetComponent<IDComponent>().ID;
+	auto targetID = mOwner->GetRegistry().get<IDComponent>(mOwner->GetTarget()).ID;
+	mOwner->AddComponent<IHitYouComponent>(myID, targetID);
+
+	elapsed = 0.0f;
 }
 
 void EnemyAttackState::Update()
 {
+	elapsed += Timer::GetDeltaTime();
 
+	if (elapsed > ENEMY_ATTACK_ANIM_DURATION)
+	{
+		mOwner->ChangeState("EnemyChaseState");
+	}
 }
 
 void EnemyAttackState::Exit()
 {
-	LOG("Exit attack state...");
+
 }

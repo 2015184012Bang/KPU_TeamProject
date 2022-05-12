@@ -60,6 +60,11 @@ public:
 		elem = elem->NextSiblingElement();
 		string enemyHealth = elem->GetText();
 		Values::EnemyHealth = stoi(enemyHealth);
+
+		// 플레이어 최대 체력
+		elem = elem->NextSiblingElement();
+		string playerHealth = elem->GetText();
+		Values::PlayerHealth = stoi(playerHealth);
 	}
 
 	static UINT16 ServerPort;
@@ -71,6 +76,7 @@ public:
 	static float EnemySpeed;
 	static UINT8 TankHealth;
 	static UINT8 EnemyHealth;
+	static UINT8 PlayerHealth;
 	static UINT32 EntityID;
 	static UINT8 MaxRoomNum;
 };
@@ -84,5 +90,6 @@ __declspec(selectany) float Values::TankSpeed = 0.0f;
 __declspec(selectany) float Values::EnemySpeed = 0.0f;
 __declspec(selectany) UINT8 Values::TankHealth = 0;
 __declspec(selectany) UINT8 Values::EnemyHealth = 0;
+__declspec(selectany) UINT8 Values::PlayerHealth = 0;
 __declspec(selectany) UINT32 Values::EntityID = 3;
 __declspec(selectany) UINT8 Values::MaxRoomNum = 6;

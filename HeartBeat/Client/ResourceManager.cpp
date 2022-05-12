@@ -202,6 +202,7 @@ void ResourceManager::MakeAnimTransitions()
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackingAnim);
 		attackingAnim->AddTransition("WhenEnd", idleAnim);
 	}
 

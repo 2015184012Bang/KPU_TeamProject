@@ -89,6 +89,7 @@ void User::CreatePlayerEntity()
 	mRegistry->emplace<CombatComponent>(mCharacter);
 	mRegistry->emplace<BoxComponent>(mCharacter, &Box::GetBox("../Assets/Boxes/Character.box"),
 		transform.Position, transform.Yaw);
+	mRegistry->emplace<HealthComponent>(mCharacter, Values::PlayerHealth);
 	mRegistry->emplace<Tag_Player>(mCharacter);
 }
 

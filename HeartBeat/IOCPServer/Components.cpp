@@ -69,3 +69,10 @@ SpawnComponent::SpawnComponent(EntityType eType, float spawnTime, float posX, fl
 {
 
 }
+
+IHitYouComponent::IHitYouComponent(UINT32 hitter, UINT32 victim)
+	: HitterID(hitter)
+	, VictimID(victim)
+{
+
+}
