@@ -98,6 +98,7 @@ enum class EntityType : UINT8
 	VIRUS,
 	DOG,
 	PLAYER,
+	RED_CELL,
 	END
 };
 

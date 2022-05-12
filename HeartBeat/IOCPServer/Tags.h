@@ -9,3 +9,4 @@ struct Tag_HouseTile {};
 struct Tag_Tank {};
 struct Tag_Cart {};
 struct Tag_Enemy {};
+struct Tag_RedCell {};

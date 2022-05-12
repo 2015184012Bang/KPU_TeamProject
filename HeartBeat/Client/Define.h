@@ -86,6 +86,11 @@ public:
 		elem = elem->NextSiblingElement();
 		string enemySpeed = elem->GetText();
 		EnemySpeed = stof(enemySpeed);
+
+		// Cell 이동 속도
+		elem = elem->NextSiblingElement();
+		string cellSpeed = elem->GetText();
+		CellSpeed = stof(cellSpeed);
 	}
 
 	static uint16 ServerPort;
@@ -94,6 +99,7 @@ public:
 	static float PlayerSpeed;
 	static float TankSpeed;
 	static float EnemySpeed;
+	static float CellSpeed;
 	static uint32 EntityID;
 	static int HostID;
 };
@@ -104,5 +110,6 @@ __declspec(selectany) float Values::TileSide = 0.0f;
 __declspec(selectany) float Values::PlayerSpeed = 0.0f;
 __declspec(selectany) float Values::TankSpeed = 0.0f;
 __declspec(selectany) float Values::EnemySpeed = 0.0f;
+__declspec(selectany) float Values::CellSpeed = 0.0f;
 __declspec(selectany) uint32 Values::EntityID = 3;
 __declspec(selectany) int Values::HostID = 2;

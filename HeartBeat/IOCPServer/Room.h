@@ -12,6 +12,7 @@
 class User;
 
 constexpr INT32 ROOM_MAX_USER = 3;
+constexpr INT32 MAX_CELL_COUNT = 6;
 
 class Room 
 	: public enable_shared_from_this<Room>
@@ -84,14 +85,16 @@ private:
 	void createSystems();
 
 	void createTiles(string_view fileName);
-
 	void createTankAndCart();
+	void createCells();
 
 	// 매개변수로 전달된 타일 엔티티에 타일 타입에 해당하는 컴포넌트 부착
 	void addTagToTile(entt::entity tile, TileType ttype);
 
 	// 게임 상태 초기화
 	void clearGame();
+
+	Vector3 getCellStartPosition(INT32 index);
 
 private:
 	INT32 mRoomIndex = -1;

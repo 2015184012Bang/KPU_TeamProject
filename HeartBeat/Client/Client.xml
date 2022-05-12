@@ -9,5 +9,6 @@
     <PlayerSpeed>600</PlayerSpeed>
     <TankSpeed>300</TankSpeed>
     <EnemySpeed>300</EnemySpeed>
+    <CellSpeed>500</CellSpeed>
   </Values>
 </Root>

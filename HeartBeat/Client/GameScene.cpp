@@ -529,6 +529,23 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::RED_CELL:
+	{
+		//TODO : Script ºÎÂø
+		Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
+			TEXTURE("Cell_Red.png"), SKELETON("Cell.skel"), ncePacket->EntityID, "../Assets/Boxes/Cell.box");
+		cell.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		cell.AddComponent<MovementComponent>(Values::CellSpeed);
+		cell.AddTag<Tag_RedCell>();
+		auto& animator = cell.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cell_Run.anim"));
+		
+		Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
+			TEXTURE("O2.png"));
+		Helpers::AttachBone(cell, o2, "Weapon");
+	}
+	break;
+
 	default:
 		break;
 	}

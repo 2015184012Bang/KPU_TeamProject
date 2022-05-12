@@ -149,6 +149,8 @@ void Room::DoEnterGame()
 
 	createTankAndCart();
 
+	createCells();
+
 	// 플레이어들의 시작 위치를 랜덤하게 설정
 	mMovementSystem->SetPlayersStartPos();
 
@@ -326,6 +328,32 @@ void Room::createTankAndCart()
 	}
 }
 
+void Room::createCells()
+{
+	NOTIFY_CREATE_ENTITY_PACKET packet = {};
+	packet.PacketSize = sizeof(packet);
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
+
+	for (INT32 i = 0; i < MAX_CELL_COUNT; ++i)
+	{
+		auto cell = mRegistry.create();
+
+		auto& id = mRegistry.emplace<IDComponent>(cell, GetEntityID());
+		auto& transform = mRegistry.emplace<TransformComponent>(cell);
+		transform.Position = getCellStartPosition(i);
+		mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
+		mRegistry.emplace<BoxComponent>(cell, &Box::GetBox("../Assets/Boxes/Cell.box"),
+			transform.Position, transform.Yaw);
+		mRegistry.emplace<Tag_RedCell>(cell);
+
+		packet.EntityID = id.ID;
+		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+		packet.Position = transform.Position;
+
+		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+}
+
 void Room::addTagToTile(entt::entity tile, TileType ttype)
 {
 	switch (ttype)
@@ -384,6 +412,50 @@ void Room::clearGame()
 	mCollisionSystem->SetStart(false);
 	mRoomState = RoomState::Waiting;
 	mRegistry.clear();
+}
+
+Vector3 Room::getCellStartPosition(INT32 index)
+{
+	auto startPoint = GetEntityByName(mRegistry, "StartPoint");
+	ASSERT(mRegistry.valid(startPoint), "Invalid entity!");
+
+	const auto& startPosition = mRegistry.get<TransformComponent>(startPoint).Position;
+	auto cellStartPosition = Vector3{ 0.0f, 0.0f, startPosition.z };
+
+	switch (index)
+	{
+	case 0:
+		cellStartPosition.z += 400.0f;
+		return cellStartPosition;
+
+	case 1:
+		cellStartPosition.x += 200.0f;
+		cellStartPosition.z += 400.0f;
+		return cellStartPosition;
+
+	case 2:
+		cellStartPosition.x += 400.0f;
+		cellStartPosition.z += 400.0f;
+		return cellStartPosition;
+		
+	case 3:
+		cellStartPosition.z -= 400.0f;
+		return cellStartPosition;
+
+	case 4:
+		cellStartPosition.x += 200.0f;
+		cellStartPosition.z -= 400.0f;
+		return cellStartPosition;
+
+	case 5:
+		cellStartPosition.x += 400.0f;
+		cellStartPosition.z -= 400.0f;
+		return cellStartPosition;
+
+	default:
+		LOG("Unknown cell index: {0}", index);
+		return Vector3::Zero;
+	}
 }
 
 float GetTileYPos(TileType ttype)

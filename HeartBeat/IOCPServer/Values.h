@@ -51,6 +51,11 @@ public:
 		string enemySpeed = elem->GetText();
 		Values::EnemySpeed = stof(enemySpeed);
 
+		// Cell 이동 속도
+		elem = elem->NextSiblingElement();
+		string cellSpeed = elem->GetText();
+		Values::CellSpeed = stof(cellSpeed);
+
 		// 탱크 최대 체력
 		elem = elem->NextSiblingElement();
 		string tankHealth = elem->GetText();
@@ -74,6 +79,7 @@ public:
 	static float BaseAttackRange;
 	static float TankSpeed;
 	static float EnemySpeed;
+	static float CellSpeed;
 	static UINT8 TankHealth;
 	static UINT8 EnemyHealth;
 	static UINT8 PlayerHealth;
@@ -88,6 +94,7 @@ __declspec(selectany) float Values::BaseAttackCooldown = 0.0f;
 __declspec(selectany) float Values::BaseAttackRange = 0.0f;
 __declspec(selectany) float Values::TankSpeed = 0.0f;
 __declspec(selectany) float Values::EnemySpeed = 0.0f;
+__declspec(selectany) float Values::CellSpeed = 0.0f;
 __declspec(selectany) UINT8 Values::TankHealth = 0;
 __declspec(selectany) UINT8 Values::EnemyHealth = 0;
 __declspec(selectany) UINT8 Values::PlayerHealth = 0;
