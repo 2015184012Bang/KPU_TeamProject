@@ -189,6 +189,7 @@
   <ItemGroup>
     <ClInclude Include="AIState.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="Cart.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="CombatSystem.h" />
     <ClInclude Include="Components.h" />

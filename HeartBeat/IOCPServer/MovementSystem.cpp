@@ -64,12 +64,22 @@ void MovementSystem::SendNotifyMovePackets()
 	packet.PacketID = NOTIFY_MOVE;
 	packet.PacketSize = sizeof(packet);
 
+	// 탱크 이동 패킷 보내기
 	if (mRegistry.valid(tank))
 	{
-		// 탱크 이동 패킷 보내기
 		packet.EntityID = mRegistry.get<IDComponent>(tank).ID;
 		packet.Direction = mRegistry.get<MovementComponent>(tank).Direction;
 		packet.Position = mRegistry.get<TransformComponent>(tank).Position;
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+
+	// 카트 이동 패킷 보내기
+	auto cart = GetEntityByName(mRegistry, "Cart");
+	if (mRegistry.valid(cart))
+	{
+		packet.EntityID = mRegistry.get<IDComponent>(cart).ID;
+		packet.Direction = mRegistry.get<MovementComponent>(cart).Direction;
+		packet.Position = mRegistry.get<TransformComponent>(cart).Position;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Room.h"
 
+#include "Cart.h"
 #include "User.h"
 #include "Values.h"
 #include "Tags.h"
@@ -279,26 +280,50 @@ void Room::createTiles(string_view fileName)
 
 void Room::createTankAndCart()
 {
-	auto tank = mRegistry.create();
-
-	auto& id = mRegistry.emplace<IDComponent>(tank, GetEntityID());
-	mRegistry.emplace<NameComponent>(tank, "Tank");
-	auto& transform = mRegistry.emplace<TransformComponent>(tank);
-	mRegistry.emplace<MovementComponent>(tank, Vector3::Zero, Values::TankSpeed);
-	mRegistry.emplace<BoxComponent>(tank, &Box::GetBox("../Assets/Boxes/Tank.box"),
-		transform.Position, transform.Yaw);
-	mRegistry.emplace<HealthComponent>(tank, Values::TankHealth);
-	mRegistry.emplace<ScriptComponent>(tank, make_shared<Tank>(mRegistry, tank));
-	mRegistry.emplace<Tag_Tank>(tank);
-
 	NOTIFY_CREATE_ENTITY_PACKET packet = {};
-	packet.EntityID = id.ID;
-	packet.EntityType = static_cast<UINT8>(EntityType::TANK);
-	packet.PacketID = NOTIFY_CREATE_ENTITY;
 	packet.PacketSize = sizeof(packet);
-	packet.Position = transform.Position;
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
 
-	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	// 攀农 积己
+	{
+		auto tank = mRegistry.create();
+
+		auto& id = mRegistry.emplace<IDComponent>(tank, GetEntityID());
+		mRegistry.emplace<NameComponent>(tank, "Tank");
+		auto& transform = mRegistry.emplace<TransformComponent>(tank);
+		mRegistry.emplace<MovementComponent>(tank, Vector3::Zero, Values::TankSpeed);
+		mRegistry.emplace<BoxComponent>(tank, &Box::GetBox("../Assets/Boxes/Tank.box"),
+			transform.Position, transform.Yaw);
+		mRegistry.emplace<HealthComponent>(tank, Values::TankHealth);
+		mRegistry.emplace<ScriptComponent>(tank, make_shared<Tank>(mRegistry, tank));
+		mRegistry.emplace<Tag_Tank>(tank);
+
+		packet.EntityID = id.ID;
+		packet.EntityType = static_cast<UINT8>(EntityType::TANK);
+		packet.Position = transform.Position;
+
+		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+
+	// 墨飘 积己
+	{
+		auto cart = mRegistry.create();
+
+		auto& id = mRegistry.emplace<IDComponent>(cart, GetEntityID());
+		mRegistry.emplace<NameComponent>(cart, "Cart");
+		auto& transform = mRegistry.emplace<TransformComponent>(cart);
+		mRegistry.emplace<MovementComponent>(cart, Vector3::Zero, Values::TankSpeed);
+		mRegistry.emplace<BoxComponent>(cart, &Box::GetBox("../Assets/Boxes/Cart.box"),
+			transform.Position, transform.Yaw);
+		mRegistry.emplace<ScriptComponent>(cart, make_shared<Cart>(mRegistry, cart));
+		mRegistry.emplace<Tag_Cart>(cart);
+
+		packet.EntityID = id.ID;
+		packet.EntityType = static_cast<UINT8>(EntityType::CART);
+		packet.Position = transform.Position;
+
+		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
 }
 
 void Room::addTagToTile(entt::entity tile, TileType ttype)

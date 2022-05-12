@@ -7,4 +7,5 @@ struct Tag_BlockingTile {};
 struct Tag_BreakableTile {};
 struct Tag_HouseTile {};
 struct Tag_Tank {};
+struct Tag_Cart {};
 struct Tag_Enemy {};

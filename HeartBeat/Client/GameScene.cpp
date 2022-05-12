@@ -489,6 +489,14 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	break;
 
 	case EntityType::CART:
+	{
+		Entity cart = mOwner->CreateSkeletalMeshEntity(MESH("Cart.mesh"),
+			TEXTURE("Cart.png"), SKELETON("Cart.skel"), ncePacket->EntityID, "../Assets/Boxes/Cart.box");
+		cart.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		cart.AddComponent<MovementComponent>(Values::TankSpeed);
+		auto& animator = cart.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cart_Run.anim"));
+	}
 		break;
 
 	case EntityType::VIRUS:

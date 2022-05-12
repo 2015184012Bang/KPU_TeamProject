@@ -62,6 +62,7 @@ void EnemyChaseState::Exit()
 	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = false;
 
+	// TODO: 방향을 0으로 만드는 대신 속도를 0으로 만든다.
 	auto& movement = mOwner->GetComponent<MovementComponent>();
 	movement.Direction = Vector3::Zero;
 }
