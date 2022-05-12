@@ -79,3 +79,25 @@ public:
 private:
 	shared_ptr<RedCell> mOwner = nullptr;
 };
+
+/************************************************************************/
+/* CellRestState                                                        */
+/************************************************************************/
+
+constexpr float MAX_CELL_WAIT_TIME = 5.0f;
+
+class CellRestState
+	: public AIState
+{
+public:
+	CellRestState(shared_ptr<RedCell>&& owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	shared_ptr<RedCell> mOwner = nullptr;
+
+	float mWaitTime = 0.0f;
+};

@@ -159,6 +159,7 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="RedCell.h" />
     <ClInclude Include="RoomScene.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="LoginScene.h" />

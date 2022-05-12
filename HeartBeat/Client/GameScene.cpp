@@ -13,6 +13,7 @@
 #include "Tags.h"
 #include "Enemy.h"
 #include "UpgradeScene.h"
+#include "RedCell.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -531,12 +532,12 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 	case EntityType::RED_CELL:
 	{
-		//TODO : Script ºÎÂø
 		Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
 			TEXTURE("Cell_Red.png"), SKELETON("Cell.skel"), ncePacket->EntityID, "../Assets/Boxes/Cell.box");
 		cell.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		cell.AddComponent<MovementComponent>(Values::CellSpeed);
 		cell.AddTag<Tag_RedCell>();
+		cell.AddComponent<ScriptComponent>(std::make_shared<RedCell>(cell));
 		auto& animator = cell.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Cell_Run.anim"));
 		

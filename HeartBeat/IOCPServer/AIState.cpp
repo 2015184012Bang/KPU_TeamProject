@@ -142,10 +142,14 @@ void CellDeliverState::Update()
 		if (mOwner->GetRegistry().any_of<Tag_HouseTile>(target))
 		{
 			mOwner->SetTargetCart();
+			mOwner->ChangeState("CellRestState");
+			return;
 		}
 		else
 		{
 			mOwner->SetTargetHouse();
+			mOwner->ChangeState("CellRestState");
+			return;
 		}
 
 		target = mOwner->GetTarget();
@@ -157,6 +161,41 @@ void CellDeliverState::Update()
 }
 
 void CellDeliverState::Exit()
+{
+	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	pathfind.bContinue = false;
+}
+
+/************************************************************************/
+/* CellRestState                                                        */
+/************************************************************************/
+
+CellRestState::CellRestState(shared_ptr<RedCell>&& owner)
+	: AIState{ "CellRestState" }
+	, mOwner{ move(owner) }
+{
+
+}
+
+void CellRestState::Enter()
+{
+	auto& movement = mOwner->GetComponent<MovementComponent>();
+	movement.Direction = Vector3::Zero;
+
+	mWaitTime = Random::RandFloat(0.5f, MAX_CELL_WAIT_TIME);
+}
+
+void CellRestState::Update()
+{
+	mWaitTime -= Timer::GetDeltaTime();
+
+	if (mWaitTime < 0.0f)
+	{
+		mOwner->ChangeState("CellDeliverState");
+	}
+}
+
+void CellRestState::Exit()
 {
 
 }

@@ -17,6 +17,9 @@ public:
 		auto deliverState = make_shared<CellDeliverState>(static_pointer_cast<RedCell>(shared_from_this()));
 		mAIStates.emplace(deliverState->GetStateName(), move(deliverState));
 
+		auto restState = make_shared<CellRestState>(static_pointer_cast<RedCell>(shared_from_this()));
+		mAIStates.emplace(restState->GetStateName(), move(restState));
+
 		mCart = GetEntityByName(mRegistry, "Cart");
 		ASSERT(mRegistry.valid(mCart), "Invalid entity!");
 

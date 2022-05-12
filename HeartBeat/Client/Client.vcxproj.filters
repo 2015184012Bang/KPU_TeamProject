@@ -261,6 +261,9 @@
     <ClInclude Include="LobbyScene.h">
       <Filter>Source Files\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="RedCell.h">
+      <Filter>Source Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="static.hlsli">

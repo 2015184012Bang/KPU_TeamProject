@@ -30,6 +30,8 @@ public:
 	virtual void Start() = 0;
 	virtual void Update(float deltaTime) = 0;
 
+	Entity& GetOwner() { return mOwner; }
+
 private:
 	Entity mOwner;
 };
