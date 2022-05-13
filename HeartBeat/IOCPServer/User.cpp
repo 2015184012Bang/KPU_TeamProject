@@ -6,6 +6,7 @@
 #include "Tags.h"
 #include "GameManager.h"
 #include "Values.h"
+#include "Entity.h"
 
 User::~User()
 {
@@ -36,7 +37,7 @@ void User::Reset()
 
 	if (mRegistry && mRegistry->valid(mCharacter) )
 	{
-		mRegistry->destroy(mCharacter);
+		DestroyEntity(*mRegistry, mCharacter);
 		mRegistry = nullptr;
 		mCharacter = entt::null;
 	}

@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "Script.h"
 #include "AIState.h"
+#include "Random.h"
 
 class Enemy
 	: public AIScript
@@ -14,16 +15,7 @@ public:
 
 	virtual void Start() override
 	{
-		auto tankChaseState = make_shared<EnemyTankChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
-		AddState(tankChaseState);
-
-		auto playerChaseState = make_shared<EnemyPlayerChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
-		AddState(playerChaseState);
-
-		auto attackState = make_shared<EnemyAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
-		AddState(attackState);
-
-		StartState("EnemyTankChaseState");
+		initByEnemyType();
 	}
 
 	virtual void Update() override
@@ -41,6 +33,25 @@ public:
 	void SetTargetPlayer(entt::entity player)
 	{
 		mTarget = player;
+	}
+
+	void SetTargetNPC()
+	{
+		auto npcs = FindObjectsWithTag<Tag_RedCell>();
+
+		if (npcs.empty())
+		{
+			entt::entity player = entt::null;
+			bool bNear = HasNearPlayer(player);
+
+			if (bNear)
+			{
+				mTarget = player;
+				return;
+			}
+		}
+
+		mTarget = npcs[Random::RandInt(0, static_cast<INT32>(npcs.size() - 1))];
 	}
 
 	bool HasNearPlayer(OUT entt::entity& target)
@@ -77,6 +88,39 @@ public:
 
 	entt::entity GetTarget() const { return mTarget; }
 
+private:
+	void initByEnemyType()
+	{
+		if (HasComponent<Tag_Virus>())
+		{
+			auto tankChaseState = make_shared<EnemyTankChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(tankChaseState);
+
+			auto playerChaseState = make_shared<EnemyPlayerChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(playerChaseState);
+
+			auto attackState = make_shared<EnemyAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(attackState);
+
+			StartState("EnemyTankChaseState");
+		}
+
+		else if (HasComponent<Tag_Dog>())
+		{
+			auto npcChaseState = make_shared<EnemyNPCChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(npcChaseState);
+
+			auto attackState = make_shared<EnemyAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(attackState);
+
+			StartState("EnemyNPCChaseState");
+		}
+
+		else
+		{
+			ASSERT(false, "Unknown enemy type!");
+		}
+	}
 
 private:
 	entt::entity mTarget = entt::null;

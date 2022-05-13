@@ -59,6 +59,24 @@ private:
 };
 
 /************************************************************************/
+/* EnemyNPCChaseState                                                   */
+/************************************************************************/
+
+class EnemyNPCChaseState
+	: public AIState
+{
+public:
+	EnemyNPCChaseState(shared_ptr<Enemy> owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	weak_ptr<Enemy> mOwner;
+};
+
+/************************************************************************/
 /* EnemyAttackState                                                     */
 /************************************************************************/
 

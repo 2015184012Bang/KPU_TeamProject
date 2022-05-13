@@ -12,3 +12,4 @@ struct Tag_Tile {};
 struct Tag_Tank {};
 struct Tag_Plane {};
 struct Tag_RedCell {};
+struct Tag_Dog {};

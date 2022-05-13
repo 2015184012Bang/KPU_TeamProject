@@ -16,7 +16,7 @@ CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
 void CombatSystem::Update()
 {
 	updateCooldown();
-	checkEnemyHit();
+	checkEnemyAttack();
 }
 
 void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
@@ -76,19 +76,23 @@ void CombatSystem::updateCooldown()
 	}
 }
 
-void CombatSystem::checkEnemyHit()
+void CombatSystem::checkEnemyAttack()
 {
 	auto view = mRegistry.view<IHitYouComponent>();
 	for (auto [entity, hit] : view.each())
 	{
 		auto victim = GetEntityByID(mRegistry, hit.VictimID);
+		if (entt::null == victim)
+		{
+			continue;
+		}
+
 		auto& health = mRegistry.get<HealthComponent>(victim);
 		--health.Health;
 
 		if (health.Health <= 0)
 		{
-			// TODO: 플레이어 사망 처리
-			LOG("Player dead...");
+			// TODO: 플레이어/NPC 사망 처리
 		}
 
 		NOTIFY_ENEMY_ATTACK_PACKET packet = {};
@@ -99,5 +103,12 @@ void CombatSystem::checkEnemyHit()
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
 		mRegistry.remove<IHitYouComponent>(entity);
+
+		// Dog인 경우 공격 한 번 하고 삭제.
+		// 클라이언트에선 Dog가 공격한 경우 애니메이션 재생 후 삭제.
+		if (mRegistry.any_of<Tag_Dog>(entity))
+		{
+			DestroyEntity(mRegistry, entity);
+		}
 	}
 }

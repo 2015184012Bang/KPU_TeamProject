@@ -60,6 +60,15 @@ void EnemySystem::Update()
 			mRegistry.emplace<Tag_Enemy>(entity);
 			mRegistry.emplace<PathFindComponent>(entity);
 
+			if (EntityType::VIRUS == spawn.EType)
+			{
+				mRegistry.emplace<Tag_Virus>(entity);
+			}
+			else if (EntityType::DOG == spawn.EType)
+			{
+				mRegistry.emplace<Tag_Dog>(entity);
+			}
+
 			NOTIFY_CREATE_ENTITY_PACKET packet = {};
 			packet.EntityID = id.ID;
 			packet.EntityType = spawn.EType == EntityType::VIRUS ? static_cast<UINT8>(EntityType::VIRUS)

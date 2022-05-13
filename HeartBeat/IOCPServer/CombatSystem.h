@@ -22,7 +22,7 @@ public:
 
 private:
 	void updateCooldown();
-	void checkEnemyHit();
+	void checkEnemyAttack();
 
 private:
 	entt::registry& mRegistry;

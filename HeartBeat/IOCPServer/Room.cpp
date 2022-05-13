@@ -348,6 +348,7 @@ void Room::createCells()
 		mRegistry.emplace<Tag_RedCell>(cell);
 		mRegistry.emplace<PathFindComponent>(cell);
 		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
+		mRegistry.emplace<HealthComponent>(cell, Values::CellHealth);
 
 		packet.EntityID = id.ID;
 		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);

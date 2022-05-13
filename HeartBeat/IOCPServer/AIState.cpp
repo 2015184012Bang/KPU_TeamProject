@@ -43,7 +43,6 @@ void EnemyTankChaseState::Enter()
 	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
 	auto target = owner->GetTarget();
 	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
-
 }
 
 void EnemyTankChaseState::Update()
@@ -148,6 +147,71 @@ void EnemyPlayerChaseState::Update()
 }
 
 void EnemyPlayerChaseState::Exit()
+{
+
+}
+
+/************************************************************************/
+/* EnemyNPCChaseState                                                   */
+/************************************************************************/
+
+EnemyNPCChaseState::EnemyNPCChaseState(shared_ptr<Enemy> owner)
+	: AIState{ "EnemyNPCChaseState" }
+	, mOwner{ owner }
+{
+
+}
+
+void EnemyNPCChaseState::Enter()
+{
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	owner->SetTargetNPC();
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
+	pathfind.bContinue = true;
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	auto target = owner->GetTarget();
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
+}
+
+void EnemyNPCChaseState::Update()
+{
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	if (!owner->IsTargetValid())
+	{
+		owner->SetTargetNPC();
+	}
+
+	auto target = owner->GetTarget();
+	const auto& myBox = owner->GetComponent<BoxComponent>();
+	const auto& targetBox = owner->GetRegistry().get<BoxComponent>(target);
+
+	// NPC와 충돌 검사
+	// True: 공격 상태로 전환
+	if (Intersects(myBox.WorldBox, targetBox.WorldBox))
+	{
+		owner->ChangeState("EnemyAttackState");
+		return;
+	}
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
+}
+
+void EnemyNPCChaseState::Exit()
 {
 
 }
@@ -329,4 +393,5 @@ void CellRestState::Exit()
 {
 
 }
+
 

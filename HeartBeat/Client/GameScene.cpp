@@ -425,6 +425,13 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	{
 		SoundManager::PlaySound("Ouch.mp3", 0.3f);
 	}
+
+	// Dog인 경우 공격 이후 삭제되도록 한다.
+	// 서버에서도 이 엔티티는 삭제됐음.
+	if (hitter.HasComponent<Tag_Dog>())
+	{
+		mOwner->DestroyEntityAfter(neaPacket->HitterID, 1.1f);
+	}
 }
 
 void GameScene::processNotifyDeleteEntity(const PACKET& packet)
@@ -445,8 +452,10 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	break;
 
 	case EntityType::DOG:
-	{
-		// TODO : 개 폭발시키기
+	{	
+		// TODO : dog die 애니메이션
+		auto& movement = target.GetComponent<MovementComponent>();
+		movement.Direction = Vector3::Zero;
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
 	}
 	break;
@@ -525,6 +534,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
 		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
 		dog.AddTag<Tag_Enemy>();
+		dog.AddTag<Tag_Dog>();
 		auto& animator = dog.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
 	}
