@@ -2,6 +2,8 @@
 
 #include "Entity.h"
 
+class AIState;
+
 class Script
 	: public enable_shared_from_this<Script>
 {
@@ -67,3 +69,30 @@ protected:
 	entt::entity mOwner = entt::null;
 };
 
+class AIScript
+	: public Script
+{
+public:
+	AIScript(entt::registry& registry, entt::entity owner)
+		: Script{ registry, owner }
+	{
+
+	}
+
+	virtual void Start() override {}
+
+	virtual void Update() override;
+
+	void AddState(shared_ptr<AIState>&& newState);
+
+	void StartState(string_view stateName);
+	
+	void ChangeState(string_view stateName);
+
+	void ChangeToPreivous();
+
+private:
+	unordered_map<string, shared_ptr<AIState>> mAIStates;
+	shared_ptr<AIState> mCurrentState = nullptr;
+	shared_ptr<AIState> mPreviousState = nullptr;
+};

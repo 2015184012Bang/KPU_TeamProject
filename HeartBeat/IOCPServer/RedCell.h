@@ -5,52 +5,31 @@
 #include "AIState.h"
 
 class RedCell
-	: public Script
+	: public AIScript
 {
 public:
 	RedCell(entt::registry& registry, entt::entity owner)
-		: Script{ registry, owner } {}
+		: AIScript{ registry, owner } {}
 
 
 	virtual void Start() override
 	{
 		auto deliverState = make_shared<CellDeliverState>(static_pointer_cast<RedCell>(shared_from_this()));
-		mAIStates.emplace(deliverState->GetStateName(), move(deliverState));
+		AddState(deliverState);
 
 		auto restState = make_shared<CellRestState>(static_pointer_cast<RedCell>(shared_from_this()));
-		mAIStates.emplace(restState->GetStateName(), move(restState));
+		AddState(restState);
 
 		mCart = GetEntityByName(mRegistry, "Cart");
 		ASSERT(mRegistry.valid(mCart), "Invalid entity!");
 
 		SetTargetHouse();
-
-		mCurrentState = getAIState("CellDeliverState");
-		mCurrentState->Enter();
+		StartState("CellDeliverState");
 	}
 
 	virtual void Update() override
 	{
-		if (mCurrentState)
-		{
-			mCurrentState->Update();
-		}
-	}
-
-	void ChangeState(string_view stateName)
-	{
-		string key{ stateName.data() };
-
-		if (auto iter = mAIStates.find(key); iter != mAIStates.end())
-		{
-			mCurrentState->Exit();
-			mCurrentState = iter->second;
-			mCurrentState->Enter();
-		}
-		else
-		{
-			LOG("There is no AI state named: {0}", stateName);
-		}
+		AIScript::Update();
 	}
 
 	void SetTargetHouse()
@@ -88,25 +67,6 @@ public:
 	entt::entity GetTarget() const { return mTarget; }
 
 private:
-	shared_ptr<AIState> getAIState(string_view stateName)
-	{
-		string key{ stateName.data() };
-
-		if (auto iter = mAIStates.find(key); iter != mAIStates.end())
-		{
-			return iter->second;
-		}
-		else
-		{
-			LOG("There is no AI state named: {0}", stateName);
-			return nullptr;
-		}
-	}
-
-private:
-	unordered_map<string, shared_ptr<AIState>> mAIStates;
-	shared_ptr<AIState> mCurrentState = nullptr;
-
 	entt::entity mTarget = entt::null;
 	entt::entity mCart = entt::null;
 };

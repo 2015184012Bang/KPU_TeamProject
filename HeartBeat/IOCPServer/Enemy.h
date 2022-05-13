@@ -2,68 +2,33 @@
 
 #include "pch.h"
 #include "Script.h"
-#include "Random.h"
-#include "GameMap.h"
-#include "UserManager.h"
-#include "Timer.h"
-#include "Values.h"
 #include "AIState.h"
 
 class Enemy
-	: public Script
+	: public AIScript
 {
 public:
 	Enemy(entt::registry& registry, entt::entity owner)
-		: Script{ registry, owner } {}
+		: AIScript{ registry, owner } {}
 
 
 	virtual void Start() override
 	{
 		auto tankChaseState = make_shared<EnemyTankChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
-		mAIStates.emplace(tankChaseState->GetStateName(), move(tankChaseState));
+		AddState(tankChaseState);
 
 		auto playerChaseState = make_shared<EnemyPlayerChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
-		mAIStates.emplace(playerChaseState->GetStateName(), move(playerChaseState));
+		AddState(playerChaseState);
 
 		auto attackState = make_shared<EnemyAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
-		mAIStates.emplace(attackState->GetStateName(), move(attackState));
+		AddState(attackState);
 
-		mCurrentState = getAIState("EnemyTankChaseState");
-		mPreviousState = mCurrentState;
-		ASSERT(mCurrentState, "CurrentState is nullptr!");
-		mCurrentState->Enter();
+		StartState("EnemyTankChaseState");
 	}
 
 	virtual void Update() override
 	{
-		if (mCurrentState)
-		{
-			mCurrentState->Update();
-		}
-	}
-
-	void ChangeState(string_view stateName)
-	{
-		string key{ stateName.data() };
-
-		if (auto iter = mAIStates.find(key); iter != mAIStates.end())
-		{
-			mPreviousState = mCurrentState;
-			mCurrentState->Exit();
-			mCurrentState = iter->second;
-			mCurrentState->Enter();
-		}
-		else
-		{
-			LOG("There is no AI state named: {0}", stateName);
-		}
-	}
-
-	void ChangeToPreviousState()
-	{
-		mCurrentState->Exit();
-		mPreviousState.swap(mCurrentState);
-		mCurrentState->Enter();
+		AIScript::Update();
 	}
 
 	void SetTargetTank()
@@ -112,26 +77,7 @@ public:
 
 	entt::entity GetTarget() const { return mTarget; }
 
-private:
-	shared_ptr<AIState> getAIState(string_view stateName)
-	{
-		string key{ stateName.data() };
-
-		if (auto iter = mAIStates.find(key); iter != mAIStates.end())
-		{
-			return iter->second;
-		}
-		else
-		{
-			LOG("There is no AI state named: {0}", stateName);
-			return nullptr;
-		}
-	}
 
 private:
-	unordered_map<string, shared_ptr<AIState>> mAIStates;
-	shared_ptr<AIState> mCurrentState = nullptr;
-	shared_ptr<AIState> mPreviousState = nullptr;
-
 	entt::entity mTarget = entt::null;
 };

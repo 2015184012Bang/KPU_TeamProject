@@ -118,14 +118,13 @@ void EnemyPlayerChaseState::Update()
 		return;
 	}
 
-	auto player = owner->GetTarget();
-
-	if (!owner->GetRegistry().valid(player))
+	if (!owner->IsTargetValid())
 	{
 		owner->ChangeState("EnemyTankChaseState");
 		return;
 	}
 
+	auto player = owner->GetTarget();
 	const auto& myPosition = owner->GetComponent<TransformComponent>().Position;
 	const auto& playerPosition = owner->GetRegistry().get<TransformComponent>(player).Position;
 
@@ -152,8 +151,6 @@ void EnemyPlayerChaseState::Exit()
 {
 
 }
-
-
 
 /************************************************************************/
 /* EnemyAttackState                                                     */
@@ -201,7 +198,7 @@ void EnemyAttackState::Update()
 
 	if (elapsed > ENEMY_ATTACK_ANIM_DURATION)
 	{
-		owner->ChangeToPreviousState();
+		owner->ChangeToPreivous();
 	}
 }
 
