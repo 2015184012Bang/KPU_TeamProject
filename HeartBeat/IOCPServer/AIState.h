@@ -27,14 +27,14 @@ class EnemyTankChaseState
 	: public AIState
 {
 public:
-	EnemyTankChaseState(shared_ptr<Enemy>&& owner);
+	EnemyTankChaseState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-	shared_ptr<Enemy> mOwner = nullptr;
+	weak_ptr<Enemy> mOwner;
 };
 
 /************************************************************************/
@@ -48,14 +48,14 @@ class EnemyPlayerChaseState
 	: public AIState
 {
 public:
-	EnemyPlayerChaseState(shared_ptr<Enemy>&& owner);
+	EnemyPlayerChaseState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-	shared_ptr<Enemy> mOwner = nullptr;
+	weak_ptr<Enemy> mOwner;
 };
 
 /************************************************************************/
@@ -68,14 +68,14 @@ class EnemyAttackState
 	: public AIState
 {
 public:
-	EnemyAttackState(shared_ptr<Enemy>&& owner);
+	EnemyAttackState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-	shared_ptr<Enemy> mOwner = nullptr;
+	weak_ptr<Enemy> mOwner;
 
 	float elapsed = 0.0f;
 };
@@ -88,14 +88,14 @@ class CellDeliverState
 	: public AIState
 {
 public:
-	CellDeliverState(shared_ptr<RedCell>&& owner);
+	CellDeliverState(shared_ptr<RedCell> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-	shared_ptr<RedCell> mOwner = nullptr;
+	weak_ptr<RedCell> mOwner;
 };
 
 /************************************************************************/
@@ -108,14 +108,14 @@ class CellRestState
 	: public AIState
 {
 public:
-	CellRestState(shared_ptr<RedCell>&& owner);
+	CellRestState(shared_ptr<RedCell> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
 	virtual void Exit() override;
 
 private:
-	shared_ptr<RedCell> mOwner = nullptr;
+	weak_ptr<RedCell> mOwner;
 
 	float mWaitTime = 0.0f;
 };

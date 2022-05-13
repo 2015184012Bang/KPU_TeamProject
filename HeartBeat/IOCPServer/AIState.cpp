@@ -20,49 +20,64 @@ AIState::AIState(string_view stateName)
 /* EnemyTankChaseState                                                  */
 /************************************************************************/
 
-EnemyTankChaseState::EnemyTankChaseState(shared_ptr<Enemy>&& owner)
+EnemyTankChaseState::EnemyTankChaseState(shared_ptr<Enemy> owner)
 	: AIState{ "EnemyTankChaseState" }
-	, mOwner{ move(owner) }
+	, mOwner{ owner }
 {
 
 }
 
 void EnemyTankChaseState::Enter()
 {
-	mOwner->SetTargetTank();
+	auto owner = mOwner.lock();
 
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	if (!owner)
+	{
+		return;
+	}
+
+	owner->SetTargetTank();
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = true;
-	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	auto target = mOwner->GetTarget();
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	auto target = owner->GetTarget();
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
+
 }
 
 void EnemyTankChaseState::Update()
 {
-	auto tank = mOwner->GetTarget();
-	const auto& myBox = mOwner->GetComponent<BoxComponent>();
-	const auto& tankBox = mOwner->GetRegistry().get<BoxComponent>(tank);
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto tank = owner->GetTarget();
+	const auto& myBox = owner->GetComponent<BoxComponent>();
+	const auto& tankBox = owner->GetRegistry().get<BoxComponent>(tank);
 
 	// 탱크와 충돌 검사
 	// True: 공격 상태로 전환
 	if (Intersects(myBox.WorldBox, tankBox.WorldBox))
 	{
-		mOwner->ChangeState("EnemyAttackState");
+		owner->ChangeState("EnemyAttackState");
 		return;
 	}
 
 	entt::entity player = entt::null;
-	if (mOwner->HasNearPlayer(player))
+	if (owner->HasNearPlayer(player))
 	{
-		mOwner->SetTargetPlayer(player);
-		mOwner->ChangeState("EnemyPlayerChaseState");
+		owner->SetTargetPlayer(player);
+		owner->ChangeState("EnemyPlayerChaseState");
 		return;
 	}
 
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
-	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(tank).Position;
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(tank).Position;
 }
 
 void EnemyTankChaseState::Exit()
@@ -74,49 +89,63 @@ void EnemyTankChaseState::Exit()
 /* EnemyPlayerChaseState                                                */
 /************************************************************************/
 
-EnemyPlayerChaseState::EnemyPlayerChaseState(shared_ptr<Enemy>&& owner)
+EnemyPlayerChaseState::EnemyPlayerChaseState(shared_ptr<Enemy> owner)
 	: AIState{ "EnemyPlayerChaseState" }
-	, mOwner{ move(owner) }
+	, mOwner{ owner }
 {
 
 }
 
 void EnemyPlayerChaseState::Enter()
 {
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = true;
 }
 
 void EnemyPlayerChaseState::Update()
 {
-	auto player = mOwner->GetTarget();
+	auto owner = mOwner.lock();
 
-	if (!mOwner->GetRegistry().valid(player))
+	if (!owner)
 	{
-		mOwner->ChangeState("EnemyTankChaseState");
 		return;
 	}
 
-	const auto& myPosition = mOwner->GetComponent<TransformComponent>().Position;
-	const auto& playerPosition = mOwner->GetRegistry().get<TransformComponent>(player).Position;
+	auto player = owner->GetTarget();
+
+	if (!owner->GetRegistry().valid(player))
+	{
+		owner->ChangeState("EnemyTankChaseState");
+		return;
+	}
+
+	const auto& myPosition = owner->GetComponent<TransformComponent>().Position;
+	const auto& playerPosition = owner->GetRegistry().get<TransformComponent>(player).Position;
 
 	float dist = Vector3::DistanceSquared(myPosition, playerPosition);
 
 	if (dist < ATTACK_DIST_SQ)
 	{
-		mOwner->ChangeState("EnemyAttackState");
+		owner->ChangeState("EnemyAttackState");
 		return;
 	}
 
 	if (dist > DEAGGRO_DIST_SQ)
 	{
-		mOwner->ChangeState("EnemyTankChaseState");
+		owner->ChangeState("EnemyTankChaseState");
 		return;
 	}
 
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
-	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(player).Position;
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(player).Position;
 }
 
 void EnemyPlayerChaseState::Exit()
@@ -130,104 +159,139 @@ void EnemyPlayerChaseState::Exit()
 /* EnemyAttackState                                                     */
 /************************************************************************/
 
-EnemyAttackState::EnemyAttackState(shared_ptr<Enemy>&& owner)
+EnemyAttackState::EnemyAttackState(shared_ptr<Enemy> owner)
 	: AIState{ "EnemyAttackState" }
-	, mOwner{ move(owner) }
+	, mOwner{ owner }
 {
 
 }
 
 void EnemyAttackState::Enter()
 {
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = false;
 
-	auto& movement = mOwner->GetComponent<MovementComponent>();
+	auto& movement = owner->GetComponent<MovementComponent>();
 	movement.Direction = Vector3::Zero;
 
-	auto myID = mOwner->GetComponent<IDComponent>().ID;
-	auto targetID = mOwner->GetRegistry().get<IDComponent>(mOwner->GetTarget()).ID;
-	mOwner->AddComponent<IHitYouComponent>(myID, targetID);
+	auto myID = owner->GetComponent<IDComponent>().ID;
+	auto targetID = owner->GetRegistry().get<IDComponent>(owner->GetTarget()).ID;
+	owner->AddComponent<IHitYouComponent>(myID, targetID);
 
 	elapsed = 0.0f;
 }
 
 void EnemyAttackState::Update()
 {
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
 	elapsed += Timer::GetDeltaTime();
 
 	if (elapsed > ENEMY_ATTACK_ANIM_DURATION)
 	{
-		mOwner->ChangeToPreviousState();
+		owner->ChangeToPreviousState();
 	}
 }
 
 void EnemyAttackState::Exit()
 {
-	
+
 }
 
 /************************************************************************/
 /* CellDeliverState                                                     */
 /************************************************************************/
 
-CellDeliverState::CellDeliverState(shared_ptr<RedCell>&& owner)
+CellDeliverState::CellDeliverState(shared_ptr<RedCell> owner)
 	: AIState{ "CellDeliverState" }
-	, mOwner{ move(owner) }
+	, mOwner{ owner }
 {
 
 }
 
 void CellDeliverState::Enter()
 {
-	if (mOwner->IsTargetValid())
+	auto owner = mOwner.lock();
+
+	if (!owner)
 	{
-		auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+		return;
+	}
+
+	if (owner->IsTargetValid())
+	{
+		auto& pathfind = owner->GetComponent<PathFindComponent>();
 		pathfind.bContinue = true;
-		pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-		auto target = mOwner->GetTarget();
-		pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
+		pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+		auto target = owner->GetTarget();
+		pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
 	}
 }
 
 void CellDeliverState::Update()
 {
-	auto target = mOwner->GetTarget();
-	const auto& myBox = mOwner->GetComponent<BoxComponent>();
-	const auto& targetBox = mOwner->GetRegistry().get<BoxComponent>(target);
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto target = owner->GetTarget();
+	const auto& myBox = owner->GetComponent<BoxComponent>();
+	const auto& targetBox = owner->GetRegistry().get<BoxComponent>(target);
 
 	// 타겟과 충돌 검사
 	// 만약 타겟이 산소 공급소라면, 다음 타겟을 카트로 설정
 	// 타겟이 카트일 경우 다음 타겟을 가까운 공급소로 설정
 	if (Intersects(myBox.WorldBox, targetBox.WorldBox))
 	{
-		if (mOwner->GetRegistry().any_of<Tag_HouseTile>(target))
+		if (owner->GetRegistry().any_of<Tag_HouseTile>(target))
 		{
-			mOwner->SetTargetCart();
-			mOwner->ChangeState("CellRestState");
+			owner->SetTargetCart();
+			owner->ChangeState("CellRestState");
 			return;
 		}
 		else
 		{
-			mOwner->SetTargetHouse();
-			mOwner->ChangeState("CellRestState");
+			owner->SetTargetHouse();
+			owner->ChangeState("CellRestState");
 			return;
 		}
 
-		target = mOwner->GetTarget();
+		target = owner->GetTarget();
 	}
 
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
-	pathfind.MyPosition = mOwner->GetComponent<TransformComponent>().Position;
-	pathfind.TargetPosition = mOwner->GetRegistry().get<TransformComponent>(target).Position;
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
+	pathfind.MyPosition = owner->GetComponent<TransformComponent>().Position;
+	pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
 }
 
 void CellDeliverState::Exit()
 {
-	auto& pathfind = mOwner->GetComponent<PathFindComponent>();
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& pathfind = owner->GetComponent<PathFindComponent>();
 	pathfind.bContinue = false;
 
-	auto& movement = mOwner->GetComponent<MovementComponent>();
+	auto& movement = owner->GetComponent<MovementComponent>();
 	movement.Direction = Vector3::Zero;
 }
 
@@ -235,9 +299,9 @@ void CellDeliverState::Exit()
 /* CellRestState                                                        */
 /************************************************************************/
 
-CellRestState::CellRestState(shared_ptr<RedCell>&& owner)
+CellRestState::CellRestState(shared_ptr<RedCell> owner)
 	: AIState{ "CellRestState" }
-	, mOwner{ move(owner) }
+	, mOwner{ owner }
 {
 
 }
@@ -249,11 +313,18 @@ void CellRestState::Enter()
 
 void CellRestState::Update()
 {
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
 	mWaitTime -= Timer::GetDeltaTime();
 
 	if (mWaitTime < 0.0f)
 	{
-		mOwner->ChangeState("CellDeliverState");
+		owner->ChangeState("CellDeliverState");
 	}
 }
 
