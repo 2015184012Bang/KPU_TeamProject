@@ -20,17 +20,35 @@ private:
 };
 
 /************************************************************************/
-/* EnemyChaseState                                                      */
+/* EnemyTankChaseState                                                  */
 /************************************************************************/
 
-// Enemy 공격 사거리
-constexpr float RANGESQ_TO_ATTACK = 350.0f * 350.0f;
-
-class EnemyChaseState
+class EnemyTankChaseState
 	: public AIState
 {
 public:
-	EnemyChaseState(shared_ptr<Enemy>&& owner);
+	EnemyTankChaseState(shared_ptr<Enemy>&& owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	shared_ptr<Enemy> mOwner = nullptr;
+};
+
+/************************************************************************/
+/* EnemyPlayerChaseState                                                */
+/************************************************************************/
+
+constexpr float DEAGGRO_DIST_SQ = 800.0f * 800.0f;
+constexpr float ATTACK_DIST_SQ = 300.0f * 300.0f;
+
+class EnemyPlayerChaseState
+	: public AIState
+{
+public:
+	EnemyPlayerChaseState(shared_ptr<Enemy>&& owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;

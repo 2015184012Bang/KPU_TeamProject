@@ -19,15 +19,17 @@ public:
 
 	virtual void Start() override
 	{
-		SetNewTarget();
+		auto tankChaseState = make_shared<EnemyTankChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
+		mAIStates.emplace(tankChaseState->GetStateName(), move(tankChaseState));
 
-		auto chaseState = make_shared<EnemyChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
-		mAIStates.emplace(chaseState->GetStateName(), move(chaseState));
+		auto playerChaseState = make_shared<EnemyPlayerChaseState>(static_pointer_cast<Enemy>(shared_from_this()));
+		mAIStates.emplace(playerChaseState->GetStateName(), move(playerChaseState));
 
 		auto attackState = make_shared<EnemyAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
 		mAIStates.emplace(attackState->GetStateName(), move(attackState));
 
-		mCurrentState = getAIState("EnemyChaseState");
+		mCurrentState = getAIState("EnemyTankChaseState");
+		mPreviousState = mCurrentState;
 		ASSERT(mCurrentState, "CurrentState is nullptr!");
 		mCurrentState->Enter();
 	}
@@ -46,6 +48,7 @@ public:
 
 		if (auto iter = mAIStates.find(key); iter != mAIStates.end())
 		{
+			mPreviousState = mCurrentState;
 			mCurrentState->Exit();
 			mCurrentState = iter->second;
 			mCurrentState->Enter();
@@ -56,11 +59,50 @@ public:
 		}
 	}
 
-	void SetNewTarget()
+	void ChangeToPreviousState()
 	{
+		mCurrentState->Exit();
+		mPreviousState.swap(mCurrentState);
+		mCurrentState->Enter();
+	}
+
+	void SetTargetTank()
+	{
+		auto tank = Find("Tank");
+		ASSERT(tank != entt::null, "Invalid entity!");
+		mTarget = tank;
+	}
+
+	void SetTargetPlayer(entt::entity player)
+	{
+		mTarget = player;
+	}
+
+	bool HasNearPlayer(OUT entt::entity& target)
+	{
+		static float aggroDistSq = 800.0f * 800.0f;
+
 		auto players = FindObjectsWithTag<Tag_Player>();
-		ASSERT(!players.empty(), "There are no players!");
-		mTarget = players[Random::RandInt(0, static_cast<INT32>(players.size() - 1))];
+		if (players.empty())
+		{
+			return false;
+		}
+
+		const auto& myPosition = GetComponent<TransformComponent>().Position;
+		for (auto player : players)
+		{
+			const auto& playerPosition = mRegistry.get<TransformComponent>(player).Position;
+
+			float distSq = Vector3::DistanceSquared(playerPosition, myPosition);
+
+			if (distSq < aggroDistSq)
+			{
+				target = player;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	bool IsTargetValid()
@@ -89,6 +131,7 @@ private:
 private:
 	unordered_map<string, shared_ptr<AIState>> mAIStates;
 	shared_ptr<AIState> mCurrentState = nullptr;
+	shared_ptr<AIState> mPreviousState = nullptr;
 
 	entt::entity mTarget = entt::null;
 };
