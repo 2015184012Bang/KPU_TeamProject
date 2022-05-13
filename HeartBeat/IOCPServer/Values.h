@@ -36,6 +36,11 @@ public:
 		string baCooldown = elem->GetText();
 		Values::BaseAttackCooldown = stof(baCooldown);
 
+		// 스킬 재사용 대기 시간
+		elem = elem->NextSiblingElement();
+		string skillCooldown = elem->GetText();
+		Values::SkillCooldown = stof(skillCooldown);
+
 		// 기본 공격 전방 사거리
 		elem = elem->NextSiblingElement();
 		string baRange = elem->GetText();
@@ -81,6 +86,7 @@ public:
 	static float TileSide;
 	static float PlayerSpeed;
 	static float BaseAttackCooldown;
+	static float SkillCooldown;
 	static float BaseAttackRange;
 	static float TankSpeed;
 	static float EnemySpeed;
@@ -97,6 +103,7 @@ __declspec(selectany) UINT16 Values::ServerPort = 0;
 __declspec(selectany) float Values::TileSide = 0.0f;
 __declspec(selectany) float Values::PlayerSpeed = 0.0f;
 __declspec(selectany) float Values::BaseAttackCooldown = 0.0f;
+__declspec(selectany) float Values::SkillCooldown = 0.0f;
 __declspec(selectany) float Values::BaseAttackRange = 0.0f;
 __declspec(selectany) float Values::TankSpeed = 0.0f;
 __declspec(selectany) float Values::EnemySpeed = 0.0f;

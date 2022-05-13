@@ -8,6 +8,7 @@
     <TileSide>400</TileSide>
     <PlayerSpeed>600</PlayerSpeed>
     <BACooldown>0.7</BACooldown>
+    <SkillCooldown>5</SkillCooldown>
     <BARange>400</BARange>
     <TankSpeed>300</TankSpeed>
     <EnemySpeed>500</EnemySpeed>

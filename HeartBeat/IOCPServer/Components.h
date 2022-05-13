@@ -2,6 +2,7 @@
 
 #include "Box.h"
 #include "Protocol.h"
+#include "Defines.h"
 
 class Script;
 
@@ -42,14 +43,15 @@ struct MovementComponent
 struct CombatComponent
 {
 	CombatComponent() = default;
-	CombatComponent(INT32 dmg, INT32 armor, 
-		INT32 regen, const float baseAttackCooldown);
 
+	UpgradePreset Preset = UpgradePreset::ATTACK;
 	INT32 BaseAttackDmg = 0;
 	INT32 Armor = 0;
 	INT32 Regeneration = 0;
 	float BaseAttackCooldown = 0.0f;
 	float BaseAttackTracker = 0.0f;
+	float SkillCooldown = 0.0f;
+	float SkillTracker = 0.0f;
 };
 
 struct BoxComponent

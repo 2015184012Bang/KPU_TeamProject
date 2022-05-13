@@ -1,17 +1,12 @@
 #pragma once
 
+#include "Defines.h"
+
 class Room;
 
 class CombatSystem
 {
 public:
-	enum class UpgradePreset : UINT8
-	{
-		ATTACK = 0,
-		HEAL,
-		SUPPORT,
-	};
-
 	CombatSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
 	void Update();
@@ -19,6 +14,8 @@ public:
 	void SetPreset(const INT8 clientID, UpgradePreset preset);
 
 	bool CanBaseAttack(const INT8 clientID);
+
+	bool CanUseSkill(const INT8 clientID);
 
 private:
 	void updateCooldown();

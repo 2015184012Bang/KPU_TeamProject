@@ -36,6 +36,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ATTACK] = std::bind(&GameManager::processRequestAttack, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_SKILL] = std::bind(&GameManager::processRequestSkill, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	// Back은 IO 워커 스레드들이 패킷을 쓰는 큐를 가리킴.
 	// Front는 로직 스레드가 처리할 패킷을 담은 큐.
@@ -131,7 +133,7 @@ void GameManager::processUserConnect(const INT32 sessionIndex, const UINT8 packe
 void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
 	LOG("Process user disconnect packet. Session Index: {0}", sessionIndex);
-	
+
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 
 	auto roomIndex = user->GetRoomIndex();
@@ -141,7 +143,7 @@ void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 pa
 		auto& room = mRoomManager->GetRoom(roomIndex);
 		room->RemoveUser(user);
 	}
-	
+
 	mUserManager->DeleteUser(user);
 }
 
@@ -156,7 +158,7 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	REQUEST_LOGIN_PACKET* reqPacket = reinterpret_cast<REQUEST_LOGIN_PACKET*>(packet);
 	auto userName = reqPacket->ID;
 	mUserManager->AddUser(sessionIndex, userName);
-	
+
 	// ANSWER 패킷 반송
 	ANSWER_LOGIN_PACKET ansPacket = {};
 	ansPacket.PacketID = ANSWER_LOGIN;
@@ -212,7 +214,7 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	
+
 	NOTIFY_LEAVE_ROOM_PACKET nlrPacket = {};
 	nlrPacket.ClientID = user->GetClientID();
 	nlrPacket.PacketID = NOTIFY_LEAVE_ROOM;
@@ -279,7 +281,7 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
 
 	// 유저 공격력, 방어력, 회복력 설정
-	room->SetPreset(user->GetClientID(), static_cast<CombatSystem::UpgradePreset>(ruPacket->UpgradePreset));
+	room->SetPreset(user->GetClientID(), static_cast<UpgradePreset>(ruPacket->UpgradePreset));
 
 	// 해당 유저를 비롯한 다른 유저들에게 알림
 	NOTIFY_UPGRADE_PACKET nuPacket = {};
@@ -336,6 +338,18 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 	room->Broadcast(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
 }
 
+
+void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_SKILL_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
+	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+	room->DoSkill(user->GetClientID());
+}
 
 //void GameManager::DoGameOver()
 //{

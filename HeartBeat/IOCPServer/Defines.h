@@ -17,3 +17,10 @@ struct OVERLAPPEDEX
 	IOOperation Operation = IOOperation::NONE;
 	INT32 SessionIndex = -1;
 };
+
+enum class UpgradePreset : UINT8
+{
+	ATTACK = 0,
+	HEAL,
+	SUPPORT,
+};

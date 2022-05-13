@@ -72,6 +72,10 @@ void GameScene::ProcessInput()
 			processGameOver(packet);
 			break;
 
+		case NOTIFY_SKILL:
+			processNotifySkill(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -117,6 +121,15 @@ void GameScene::Update(float deltaTime)
 	{
 		REQUEST_ATTACK_PACKET packet = {};
 		packet.PacketID = REQUEST_ATTACK;
+		packet.PacketSize = sizeof(packet);
+
+		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
+	}
+
+	if (Input::IsButtonPressed(KeyCode::S))
+	{
+		REQUEST_SKILL_PACKET packet = {};
+		packet.PacketID = REQUEST_SKILL;
 		packet.PacketSize = sizeof(packet);
 
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
@@ -583,6 +596,15 @@ void GameScene::processGameOver(const PACKET& packet)
 	}
 }
 
+void GameScene::processNotifySkill(const PACKET& packet)
+{
+	NOTIFY_SKILL_PACKET* nsPacket = reinterpret_cast<NOTIFY_SKILL_PACKET*>(packet.DataPtr);
+
+	auto player = GetEntityByID(nsPacket->EntityID);
+	auto& animator = player.GetComponent<AnimatorComponent>();
+	animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
+}
+
 void GameScene::doWhenFail()
 {
 	// 재시작을 위해 엔티티 아이디 초기화
@@ -634,6 +656,25 @@ string GetAttackAnimTrigger(bool isEnemy /*= false*/)
 			return "";
 			break;
 		}
+	}
+}
+
+string GetSkillAnimTrigger(const uint8 preset)
+{
+	switch (preset)
+	{
+	case 0:
+		return "Skill1";
+
+	case 1:
+		return "Skill2";
+
+	case 2:
+		return "Skill3";
+		
+	default:
+		HB_ASSERT(false, "Unknown preset!");
+		return "";
 	}
 }
 

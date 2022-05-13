@@ -209,7 +209,7 @@ void Room::Update()
 	mPathSystem->Update();
 }
 
-void Room::SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset)
+void Room::SetPreset(const INT8 clientID, UpgradePreset preset)
 {
 	mCombatSystem->SetPreset(clientID, preset);
 }
@@ -222,6 +222,26 @@ bool Room::CanBaseAttack(const INT8 clientID)
 bool Room::DoAttack(const INT8 clientID)
 {
 	return mCollisionSystem->DoAttack(clientID);
+}
+
+void Room::DoSkill(const INT8 clientID)
+{
+	if (!mCombatSystem->CanUseSkill(clientID))
+	{
+		return;
+	}
+
+	auto player = GetEntityByID(mRegistry, clientID);
+	const auto& combat = mRegistry.get<CombatComponent>(player);
+
+	NOTIFY_SKILL_PACKET packet = {};
+	packet.EntityID = clientID;
+	packet.PacketID = NOTIFY_SKILL;
+	packet.PacketSize = sizeof(packet);
+	packet.Preset = static_cast<UINT8>(combat.Preset);
+	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+	// TODO : 스킬에 따른 처리
 }
 
 void Room::ChangeTileToRoad(INT32 row, INT32 col)

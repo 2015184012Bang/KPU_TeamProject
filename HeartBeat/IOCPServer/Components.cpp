@@ -32,16 +32,6 @@ MovementComponent::MovementComponent(const Vector3& dir, const float speed)
 }
 
 
-CombatComponent::CombatComponent(INT32 dmg, INT32 armor, INT32 regen, const float baseAttackCooldown)
-	: BaseAttackDmg(dmg)
-	, Armor(armor)
-	, Regeneration(regen)
-	, BaseAttackCooldown(baseAttackCooldown)
-{
-
-}
-
-
 BoxComponent::BoxComponent(const Box* localBox, const Vector3& position, const float yaw)
 	: LocalBox(localBox)
 	, WorldBox(*localBox)

@@ -56,13 +56,15 @@ public:
 	void SetDirection(const INT8 clientID, const Vector3& direction);
 
 	// 업그레이드 씬에서 유저가 상호작용 키를 눌렀을 때 호출되는 함수
-	void SetPreset(const INT8 clientID, CombatSystem::UpgradePreset preset);
+	void SetPreset(const INT8 clientID, UpgradePreset preset);
 
 	// 유저의 공격 가능 여부를 리턴
 	bool CanBaseAttack(const INT8 clientID);
 
 	// 유저가 기본 공격 키(A)를 눌렀을 때 호출되는 함수
 	bool DoAttack(const INT8 clientID);
+
+	void DoSkill(const INT8 clientID);
 
 	// Collision시스템과 Path시스템 사이의 통신
 	// 부서진 타일의 타입을 ROAD로 바꾼다.

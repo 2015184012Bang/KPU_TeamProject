@@ -29,18 +29,21 @@ void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 	switch (preset)
 	{
 	case UpgradePreset::ATTACK:
+		combat.Preset = UpgradePreset::ATTACK;
 		combat.BaseAttackDmg = 3;
 		combat.Armor = 1;
 		combat.Regeneration = 2;
 		break;
 
 	case UpgradePreset::HEAL:
+		combat.Preset = UpgradePreset::HEAL;
 		combat.BaseAttackDmg = 1;
 		combat.Armor = 2;
 		combat.Regeneration = 3;
 		break;
 
 	case UpgradePreset::SUPPORT:
+		combat.Preset = UpgradePreset::SUPPORT;
 		combat.BaseAttackDmg = 2;
 		combat.Armor = 3;
 		combat.Regeneration = 2;
@@ -48,6 +51,9 @@ void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 	}
 
 	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
+	combat.BaseAttackTracker = combat.BaseAttackCooldown;
+	combat.SkillCooldown = Values::SkillCooldown;
+	combat.SkillTracker = combat.SkillCooldown;
 }
 
 bool CombatSystem::CanBaseAttack(const INT8 clientID)
@@ -67,12 +73,30 @@ bool CombatSystem::CanBaseAttack(const INT8 clientID)
 	}
 }
 
+bool CombatSystem::CanUseSkill(const INT8 clientID)
+{
+	auto actor = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(actor), "Invalid entity!");
+	auto& combat = mRegistry.get<CombatComponent>(actor);
+
+	if (combat.SkillTracker > combat.SkillCooldown)
+	{
+		combat.SkillTracker = 0.0f;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void CombatSystem::updateCooldown()
 {
 	auto view = mRegistry.view<CombatComponent>();
 	for (auto [entity, combat] : view.each())
 	{
 		combat.BaseAttackTracker += Timer::GetDeltaTime();
+		combat.SkillTracker += Timer::GetDeltaTime();
 	}
 }
 

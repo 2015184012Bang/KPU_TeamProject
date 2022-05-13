@@ -47,6 +47,7 @@ private:
     void processNotifyDeleteEntity(const PACKET& packet);
     void processNotifyCreateEntity(const PACKET& packet);
     void processGameOver(const PACKET& packet);
+    void processNotifySkill(const PACKET& packet);
 
     void doWhenFail();
 
@@ -66,4 +67,5 @@ private:
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);
+string GetSkillAnimTrigger(const uint8 preset);
 Texture* GetTileTexture(TileType ttype);
