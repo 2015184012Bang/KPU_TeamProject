@@ -478,7 +478,7 @@ void Client::drawStaticMesh()
 	// 조명 미적용 셰이더
 	gCmdList->SetPipelineState(mRenderer->GetNoLightPSO().Get());
 	{
-		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<ChildComponent>);
+		auto view = gRegistry.view<Tag_StaticMesh, Tag_Tile>();
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
@@ -493,14 +493,23 @@ void Client::drawStaticMesh()
 	// 조명 적용 셰이더
 	gCmdList->SetPipelineState(mRenderer->GetStaticMeshPSO().Get());
 	{
-		auto view = gRegistry.view<Tag_StaticMesh, ChildComponent>();
+		auto view = gRegistry.view<Tag_StaticMesh>(entt::exclude<Tag_Tile>);
 		for (auto entity : view)
 		{
 			Entity e = Entity{ entity };
 
 			TransformComponent& transform = e.GetComponent<TransformComponent>();
-			ChildComponent& attach = e.GetComponent<ChildComponent>();
-			Helpers::BindWorldMatrixAttached(&transform, &attach);
+
+			if (e.HasComponent<ChildComponent>())
+			{
+				ChildComponent& attach = e.GetComponent<ChildComponent>();
+				Helpers::BindWorldMatrixAttached(&transform, &attach);
+			}
+			else
+			{
+				Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			}
+
 			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
 			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
 		}

@@ -321,7 +321,9 @@ void GameScene::createHouseTile(const Tile& tile)
 
 	Entity obj = mOwner->CreateStaticMeshEntity(MESH("House.mesh"),
 		tileTex, "../Assets/Boxes/House.box");
-	obj.AddTag<Tag_Tile>();
+
+	// House 타일은 조명 적용해야하므로 Tile 태그 붙이지 않음.
+	//obj.AddTag<Tag_Tile>();
 
 	auto& transform = obj.GetComponent<TransformComponent>();
 	transform.Position.x = tile.X;
