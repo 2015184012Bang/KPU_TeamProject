@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "../IOCPServer/Protocol.h"
 
+#include "Entity.h"
+
 class LoginScene : public Scene
 {
 public:
@@ -19,5 +21,7 @@ private:
 private:
 	bool mbConnected = false;
 	bool mbChangeScene = false;
+
+	Entity mLoginText = {};
 };
 

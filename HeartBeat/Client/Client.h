@@ -81,7 +81,7 @@ private:
     Entity mLight = {};
 
     int mClientID = -1;
-    string mClientName = "KimMyungKyu";
+    string mClientName = {};
 
     Entity mFollowCameraTarget = {}; // 메인 카메라가 따라다닐 대상
     Vector3 mTargetOffset = Vector3::Zero; // 타겟과의 오프셋

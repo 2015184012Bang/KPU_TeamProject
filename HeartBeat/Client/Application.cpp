@@ -3,6 +3,7 @@
 
 #include "Client.h"
 
+string gKeyInput;
 HWND Application::sHwnd;
 int Application::sScreenWidth;
 int Application::sScreenHeight;
@@ -51,6 +52,22 @@ LRESULT CALLBACK Application::windowProc(HWND hwnd, UINT message, WPARAM wParam,
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
+
+	case WM_CHAR:
+		if (wParam == VK_BACK)
+		{
+			if (!gKeyInput.empty())
+			{
+				gKeyInput.pop_back();
+			}
+		}
+
+		if (std::isalnum((int)wParam) && gKeyInput.size() < 7)
+		{
+			gKeyInput += (char)wParam;
+		}
+
+		break;
 	}
 
 	return DefWindowProc(hwnd, message, wParam, lParam);

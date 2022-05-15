@@ -710,6 +710,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("RoomEnter.png");
 	TEXTURE("RoomNoEnter.png");
 	TEXTURE("LeaveRoom.png");
+	TEXTURE("White.png");
 }
 
 void Renderer::loadAssets()

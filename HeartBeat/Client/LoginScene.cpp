@@ -12,6 +12,7 @@
 #include "ResourceManager.h"
 #include "LobbyScene.h"
 #include "Tags.h"
+#include "Components.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -24,6 +25,17 @@ void LoginScene::Enter()
 	// 배경화면 생성
 	mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		TEXTURE("Login_Background.png"), 10);
+
+	// 로그인 폼 생성
+	Entity loginForm = mOwner->CreateSpriteEntity(200, 50, TEXTURE("White.png"), 20);
+	auto& rect = loginForm.GetComponent<RectTransformComponent>();
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 100.0f , Application::GetScreenHeight() - 200.0f };
+
+	// 입력한 글자를 표시할 텍스트
+	mLoginText = Entity{ gRegistry.create() };
+	auto& txt = mLoginText.AddComponent<TextComponent>();
+	txt.X = Application::GetScreenWidth() / 2 - 75.0f;
+	txt.Y = Application::GetScreenHeight() - 200.0f;
 }
 
 void LoginScene::Exit()
@@ -59,9 +71,15 @@ void LoginScene::ProcessInput()
 
 void LoginScene::Update(float deltaTime)
 {
+	// 텍스트 업데이트
+	auto& txt = mLoginText.GetComponent<TextComponent>();
+	txt.Sentence = s2ws(gKeyInput);
+
 	// 엔터 키를 누르면 서버에 접속 요청
 	if (Input::IsButtonPressed(KeyCode::RETURN) && !mbConnected)
 	{
+		mOwner->SetClientName(gKeyInput);
+
 		bool retVal = mOwner->GetPacketManager()->Connect(Values::ServerIP, Values::ServerPort);
 
 		if (retVal)

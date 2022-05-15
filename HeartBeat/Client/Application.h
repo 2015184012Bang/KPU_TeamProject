@@ -2,6 +2,8 @@
 
 class Client;
 
+extern string gKeyInput;
+
 class Application
 {
 public:
