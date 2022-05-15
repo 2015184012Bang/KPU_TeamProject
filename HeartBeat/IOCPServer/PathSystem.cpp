@@ -106,7 +106,21 @@ void PathSystem::Update()
 
 void PathSystem::ResetGraph()
 {
+	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv");
 
+	for (UINT32 row = 0; row < gameMap.MaxRow; ++row)
+	{
+		for (UINT32 col = 0; col < gameMap.MaxCol; ++col)
+		{
+			INT32 index = row * gameMap.MaxCol + col;
+
+			auto& tile = gameMap.Tiles[index];
+
+			INT32 val = isBlockedTile(tile) ? WALL : ROAD;
+			mGraph[row][col] = val;
+			mVisited[row][col] = false;
+		}
+	}
 }
 
 void PathSystem::ChangeTileToRoad(INT32 row, INT32 col)

@@ -68,4 +68,5 @@ private:
 
 string GetAttackAnimTrigger(bool isEnemy = false);
 string GetSkillAnimTrigger(const uint8 preset);
+string GetSkillSound(const uint8 preset);
 Texture* GetTileTexture(TileType ttype);

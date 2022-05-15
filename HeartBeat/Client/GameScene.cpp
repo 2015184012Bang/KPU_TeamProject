@@ -418,7 +418,8 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetAttackAnimTrigger(false));
 
-	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS)
+	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS &&
+		naPacket->EntityID == mOwner->GetClientID())
 	{
 		SoundManager::PlaySound("Punch.mp3", 0.15f);
 	}
@@ -605,6 +606,11 @@ void GameScene::processNotifySkill(const PACKET& packet)
 	auto player = GetEntityByID(nsPacket->EntityID);
 	auto& animator = player.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
+
+	if (nsPacket->EntityID == mOwner->GetClientID())
+	{
+		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
+	}
 }
 
 void GameScene::doWhenFail()
@@ -680,7 +686,22 @@ string GetSkillAnimTrigger(const uint8 preset)
 	}
 }
 
+string GetSkillSound(const uint8 preset)
+{
+	switch (preset)
+	{
+	case 0:
+		return "Skill1.mp3";
+
+	case 1:
+		return "Skill2.mp3";
+
+	case 2:
+		return "Skill3.mp3";
+	}
+}
 Texture* GetTileTexture(TileType ttype)
+
 {
 	switch (ttype)
 	{

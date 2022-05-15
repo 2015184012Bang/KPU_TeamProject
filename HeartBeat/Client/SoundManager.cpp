@@ -106,4 +106,7 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/Punch.mp3");
 	CreateSound("../Assets/Sounds/SteampipeSonata.mp3", true);
 	CreateSound("../Assets/Sounds/Ouch.mp3");
+	CreateSound("../Assets/Sounds/Skill1.mp3");
+	CreateSound("../Assets/Sounds/Skill2.mp3");
+	CreateSound("../Assets/Sounds/Skill3.mp3");
 }

@@ -450,6 +450,7 @@ void Room::clearGame()
 	mEntityID = 3;	// Entity ID ÃÊ±âÈ­
 	mEnemySystem->SetGenerate(false);
 	mCollisionSystem->SetStart(false);
+	mPathSystem->ResetGraph();
 	mRoomState = RoomState::Waiting;
 	mRegistry.clear();
 }
