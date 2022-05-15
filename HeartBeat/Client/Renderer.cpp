@@ -88,9 +88,38 @@ void Renderer::EndRender()
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
+	renderUI();
+
 	ThrowIfFailed(mSwapChain->Present(1, 0));
 
 	waitForPreviousFrame();
+}
+
+void Renderer::renderUI()
+{
+	//mCmdList->SetPipelineState(mFontPSO.Get());
+
+	D2D1_SIZE_F rtSize = mD2DRenderTargets[mBackBufferIndex]->GetSize();
+	D2D1_RECT_F textRect = D2D1::RectF(0, 0, rtSize.width, rtSize.height);
+	static const WCHAR text[] = L"Hello, world!";
+
+	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
+
+	mD2DDeviceContext->SetTarget(mD2DRenderTargets[mBackBufferIndex].Get());
+	mD2DDeviceContext->BeginDraw();
+	mD2DDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+	mD2DDeviceContext->DrawText(
+		text,
+		_countof(text) - 1,
+		mTextFormat.Get(),
+		&textRect,
+		mTextBrush.Get()
+	);
+	ThrowIfFailed(mD2DDeviceContext->EndDraw());
+
+	mD3D11On12Device->ReleaseWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
+
+	mD3D11DeviceContext->Flush();
 }
 
 void Renderer::loadPipeline()
@@ -103,6 +132,8 @@ void Renderer::loadPipeline()
 	createPipelineState();
 	createCmdList();
 	createFence();
+
+	createD3D11onD12();
 
 	loadAssets();
 }
@@ -169,15 +200,6 @@ void Renderer::createRtvHeap()
 	ThrowIfFailed(mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRtvHeap)));
 
 	mRtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
-
-	for (int i = 0; i < BUFFER_COUNT; ++i)
-	{
-		ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i])));
-		mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
-		rtvHandle.Offset(1, mRtvDescriptorSize);
-	}
 }
 
 void Renderer::createCmdAllocator()
@@ -236,6 +258,59 @@ void Renderer::createPipelineState()
 #else
 	uint32 compileFlags = 0;
 #endif
+
+	// font
+	{
+		ComPtr<ID3DBlob> vertexShader;
+		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
+
+		HRESULT hr = D3DCompileFromFile(L"font.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"font.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
+		{
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		};
+
+		// Describe and create the graphics pipeline state object (PSO).
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState.DepthEnable = FALSE;
+		psoDesc.DepthStencilState.StencilEnable = FALSE;
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.SampleDesc.Count = 1;
+
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSpritePSO)));
+	}
 
 	// PSO for sprite
 	{
@@ -535,6 +610,81 @@ void Renderer::waitForPreviousFrame()
 	mBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 }
 
+void Renderer::createD3D11onD12()
+{
+	UINT d3d11DeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+
+	ComPtr<ID3D11Device> d3d11Device;
+	ThrowIfFailed(D3D11On12CreateDevice(
+		mDevice.Get(),
+		d3d11DeviceFlags,
+		nullptr,
+		0,
+		reinterpret_cast<IUnknown**>(mCmdQueue.GetAddressOf()),
+		1,
+		0,
+		&d3d11Device,
+		&mD3D11DeviceContext,
+		nullptr
+	));
+
+	ThrowIfFailed(d3d11Device.As(&mD3D11On12Device));
+
+	{
+		D2D1_FACTORY_OPTIONS d2dFactoryOptions = {};
+		D2D1_DEVICE_CONTEXT_OPTIONS deviceOptions = D2D1_DEVICE_CONTEXT_OPTIONS_NONE;
+		ThrowIfFailed(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory3), &d2dFactoryOptions, &mD2DFactory));
+		ComPtr<IDXGIDevice> dxgiDevice;
+		ThrowIfFailed(mD3D11On12Device.As(&dxgiDevice));
+		ThrowIfFailed(mD2DFactory->CreateDevice(dxgiDevice.Get(), &mD2DDevice));
+		ThrowIfFailed(mD2DDevice->CreateDeviceContext(deviceOptions, &mD2DDeviceContext));
+		ThrowIfFailed(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), &mWriteFactory));
+	}
+
+	float dpiX;
+	float dpiY;
+#pragma warning(push)
+#pragma warning(disable : 4996) // GetDesktopDpi is deprecated.
+	mD2DFactory->GetDesktopDpi(&dpiX, &dpiY);
+#pragma warning(pop)
+	D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(
+		D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+		D2D1::PixelFormat(DXGI_FORMAT_UNKNOWN, D2D1_ALPHA_MODE_PREMULTIPLIED),
+		dpiX,
+		dpiY
+	);
+
+
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart());
+		for (int i = 0; i < BUFFER_COUNT; ++i)
+		{
+			ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i])));
+			mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
+			
+			D3D11_RESOURCE_FLAGS d3d11Flags = { D3D11_BIND_RENDER_TARGET };
+			ThrowIfFailed(mD3D11On12Device->CreateWrappedResource(
+				mRenderTargets[i].Get(),
+				&d3d11Flags,
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_PRESENT,
+				IID_PPV_ARGS(&mWrappedBackBuffers[i])
+			));
+
+			// Create a render target for D2D to draw directly to this back buffer.
+			ComPtr<IDXGISurface> surface;
+			ThrowIfFailed(mWrappedBackBuffers[i].As(&surface));
+			ThrowIfFailed(mD2DDeviceContext->CreateBitmapFromDxgiSurface(
+				surface.Get(),
+				&bitmapProperties,
+				&mD2DRenderTargets[i]
+			));
+
+			rtvHandle.Offset(1, mRtvDescriptorSize);
+		}
+	}
+}
+
 void Renderer::loadAllAssetsFromFile()
 {
 	MESH("Bag.mesh");
@@ -605,6 +755,22 @@ void Renderer::loadAllAssetsFromFile()
 void Renderer::loadAssets()
 {
 	loadAllAssetsFromFile();
+
+	{
+		ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &mTextBrush));
+		ThrowIfFailed(mWriteFactory->CreateTextFormat(
+			L"Verdana",
+			NULL,
+			DWRITE_FONT_WEIGHT_NORMAL,
+			DWRITE_FONT_STYLE_NORMAL,
+			DWRITE_FONT_STRETCH_NORMAL,
+			50,
+			L"en-us",
+			&mTextFormat
+		));
+		ThrowIfFailed(mTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER));
+		ThrowIfFailed(mTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER));
+	}
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };

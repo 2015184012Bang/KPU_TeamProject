@@ -23,6 +23,7 @@ public:
 
 	void BeginRender();
 	void EndRender();
+
 	void Submit(const Mesh* mesh, const Texture* texture);
 	void SubmitDebugMesh(const Mesh* mesh);
 	void SubmitSprite(const SpriteMesh* mesh, const Texture* texture);
@@ -33,6 +34,7 @@ public:
 	const ComPtr<ID3D12PipelineState>& GetWireframePSO() const { return mWireframePSO; }
 	const ComPtr<ID3D12PipelineState>& GetSpritePSO() const { return mSpritePSO; }
 	const ComPtr<ID3D12PipelineState>& GetNoLightPSO() const { return mNoLightPSO; }
+	const ComPtr<ID3D12PipelineState>& GetFontPSO() const { return mFontPSO; }
 
 private:
 	void loadPipeline();
@@ -47,8 +49,11 @@ private:
 	void createPipelineState();
 	void createCmdList();
 	void createFence();
+	void createD3D11onD12();
 
 	void waitForPreviousFrame();
+
+	void renderUI();
 
 private:
 	static const int BUFFER_COUNT = 2;
@@ -73,6 +78,19 @@ private:
 	ComPtr<ID3D12PipelineState> mWireframePSO;
 	ComPtr<ID3D12PipelineState> mSpritePSO;
 	ComPtr<ID3D12PipelineState> mNoLightPSO;
+	ComPtr<ID3D12PipelineState> mFontPSO;
+
+	ComPtr<ID3D11DeviceContext> mD3D11DeviceContext;
+	ComPtr<ID3D11On12Device> mD3D11On12Device;
+	ComPtr<IDWriteFactory> mWriteFactory;
+	ComPtr<ID2D1Factory3> mD2DFactory;
+	ComPtr<ID2D1Device2> mD2DDevice;
+	ComPtr<ID2D1DeviceContext2> mD2DDeviceContext;
+	ComPtr<ID3D11Resource> mWrappedBackBuffers[BUFFER_COUNT];
+	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[BUFFER_COUNT];
+
+	ComPtr<ID2D1SolidColorBrush> mTextBrush;
+	ComPtr<IDWriteTextFormat> mTextFormat;
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;

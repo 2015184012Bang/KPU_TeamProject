@@ -61,9 +61,13 @@ using namespace std::string_view_literals;
 #pragma comment(lib, "d3dcompiler")
 #pragma comment(lib, "DirectXTex")
 #pragma comment(lib, "DirectXTK12")
+#pragma comment(lib, "DWrite")
+#pragma comment(lib, "D2D1")
+#pragma comment(lib, "d3d11")
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#include <d3d11on12.h>
 #include <D3Dcompiler.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
@@ -71,6 +75,8 @@ using namespace std::string_view_literals;
 #include <DirectXTK12/SimpleMath.h>
 #include <DirectXTex.h>
 #include <DirectXTex.inl>
+#include <dwrite_3.h>
+#include <d2d1_3.h>
 #include "d3dx12.h"
 #include "d3dHelper.h"
 
