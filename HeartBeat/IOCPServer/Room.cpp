@@ -241,7 +241,23 @@ void Room::DoSkill(const INT8 clientID)
 	packet.Preset = static_cast<UINT8>(combat.Preset);
 	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 
-	// TODO : 스킬에 따른 처리
+	switch (combat.Preset)
+	{
+	case UpgradePreset::ATTACK:
+		mCollisionSystem->DoWhirlwind(clientID);
+		break;
+
+	case UpgradePreset::HEAL:
+		//mCombatSystem->DoHeal();
+		break;
+
+	case UpgradePreset::SUPPORT:
+		//mCombatSystem->DoBuff();
+		break;
+		
+	default:
+		ASSERT(false, "Unknown upgrade preset!");
+	}
 }
 
 void Room::ChangeTileToRoad(INT32 row, INT32 col)

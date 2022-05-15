@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/House.png"
 	],
 	"vertices":[
 		[599.999939,523.415039,141.096436,0.000000,1.000000,0.000000,1.000000,0.333252],

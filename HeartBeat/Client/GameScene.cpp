@@ -703,7 +703,7 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("Red.png");
 
 	case TileType::HOUSE:
-		return TEXTURE("Fat.png");
+		return TEXTURE("House.png");
 
 	default:
 		HB_ASSERT(false, "Unknown tile type!");

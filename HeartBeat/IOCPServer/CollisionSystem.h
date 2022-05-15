@@ -13,6 +13,8 @@ public:
 
 	bool DoAttack(const INT8 clientID);
 
+	void DoWhirlwind(const INT8 clientID);
+
 	void SetStart(bool value) { mbStart = value; }
 	
 	void SetBorder(const Vector3& border) { mBorder = border; }

@@ -138,6 +138,52 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 	return false;
 }
 
+void CollisionSystem::DoWhirlwind(const INT8 clientID)
+{
+	// 휠윈드 유효범위
+	static float WHIRLWIND_RANGE_SQ = 600.0f * 600.0f;
+
+	auto character = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(character), "Invalid entity!");
+	const auto& characterPosition = mRegistry.get<TransformComponent>(character).Position;
+
+	auto viruses = mRegistry.view<Tag_Virus, TransformComponent>();
+	for (auto [entity, transform] : viruses.each())
+	{
+		float distSq = Vector3::DistanceSquared(characterPosition, transform.Position);
+
+		if (distSq < WHIRLWIND_RANGE_SQ)
+		{
+			NOTIFY_DELETE_ENTITY_PACKET packet = {};
+			packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+			packet.EntityType = static_cast<UINT8>(EntityType::VIRUS);
+			packet.PacketID = NOTIFY_DELETE_ENTITY;
+			packet.PacketSize = sizeof(packet);
+			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+			DestroyEntity(mRegistry, entity);
+		}
+	}
+
+	auto dogs = mRegistry.view<Tag_Dog, TransformComponent>();
+	for (auto [entity, transform] : dogs.each())
+	{
+		float distSq = Vector3::DistanceSquared(characterPosition, transform.Position);
+
+		if (distSq < WHIRLWIND_RANGE_SQ)
+		{
+			NOTIFY_DELETE_ENTITY_PACKET packet = {};
+			packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+			packet.EntityType = static_cast<UINT8>(EntityType::DOG);
+			packet.PacketID = NOTIFY_DELETE_ENTITY;
+			packet.PacketSize = sizeof(packet);
+			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+
+			DestroyEntity(mRegistry, entity);
+		}
+	}
+}
+
 void CollisionSystem::checkPlayersCollision()
 {
 	// 플레이어 - 타일
