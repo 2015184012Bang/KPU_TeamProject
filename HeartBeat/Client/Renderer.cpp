@@ -97,10 +97,10 @@ void Renderer::EndRender()
 
 void Renderer::renderUI()
 {
-	//mCmdList->SetPipelineState(mFontPSO.Get());
+	mCmdList->SetPipelineState(mFontPSO.Get());
 
 	D2D1_SIZE_F rtSize = mD2DRenderTargets[mBackBufferIndex]->GetSize();
-	D2D1_RECT_F textRect = D2D1::RectF(0, 0, rtSize.width, rtSize.height);
+	D2D1_RECT_F textRect = D2D1::RectF(0.0f, 0.0f, rtSize.width, rtSize.height);
 	static const WCHAR text[] = L"Hello, world!";
 
 	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
@@ -293,7 +293,6 @@ void Renderer::createPipelineState()
 			{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
 
-		// Describe and create the graphics pipeline state object (PSO).
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 		psoDesc.pRootSignature = mRootSignature.Get();
@@ -309,7 +308,7 @@ void Renderer::createPipelineState()
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.SampleDesc.Count = 1;
 
-		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mSpritePSO)));
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mFontPSO)));
 	}
 
 	// PSO for sprite
@@ -757,7 +756,7 @@ void Renderer::loadAssets()
 	loadAllAssetsFromFile();
 
 	{
-		ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &mTextBrush));
+		ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &mTextBrush));
 		ThrowIfFailed(mWriteFactory->CreateTextFormat(
 			L"Verdana",
 			NULL,
