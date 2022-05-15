@@ -49,8 +49,8 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 	ASSERT(mRegistry.valid(character), "Invalid entity!");
 
 	auto& transform = mRegistry.get<TransformComponent>(character);
-
-	// 공격을 시도한 플레이어의 Transform으로 
+	
+	// 공격을 시도한 플레이어의 Transform으로
 	// 히트박스를 업데이트한다.
 	Box hitbox = Box::GetBox("Hitbox");
 	hitbox.Update(transform.Position, transform.Yaw);
@@ -105,6 +105,10 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 		}
 	}
 
+	// 버프가 켜져 있으면 타일 공격력 10.
+	auto& combat = mRegistry.get<CombatComponent>(character);
+	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? 10 : 1;
+
 	// 히트박스와 부술 수 있는 타일과의 충돌 체크
 	auto tiles = mRegistry.view<Tag_BreakableTile, BoxComponent>();
 	for (auto [entity, tileBox] : tiles.each())
@@ -112,7 +116,7 @@ bool CollisionSystem::DoAttack(const INT8 clientID)
 		if (Intersects(hitbox, tileBox.WorldBox))
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
-			--health.Health;
+			health.Health -= tileAttackDmg;
 
 			if (health.Health <= 0)
 			{

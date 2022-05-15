@@ -52,6 +52,7 @@ struct CombatComponent
 	float BaseAttackTracker = 0.0f;
 	float SkillCooldown = 0.0f;
 	float SkillTracker = 0.0f;
+	float BuffDuration = 0.0f;
 };
 
 struct BoxComponent
@@ -66,9 +67,9 @@ struct BoxComponent
 struct HealthComponent
 {
 	HealthComponent() = default;
-	HealthComponent(const UINT8 health);
+	HealthComponent(const INT8 health);
 
-	UINT8 Health = 0;
+	INT8 Health = 0;
 };
 
 struct ScriptComponent

@@ -39,7 +39,7 @@ BoxComponent::BoxComponent(const Box* localBox, const Vector3& position, const f
 	WorldBox.Update(position, yaw);
 }
 
-HealthComponent::HealthComponent(const UINT8 health)
+HealthComponent::HealthComponent(const INT8 health)
 	: Health(health)
 {
 

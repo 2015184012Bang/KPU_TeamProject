@@ -17,6 +17,10 @@ public:
 
 	bool CanUseSkill(const INT8 clientID);
 
+	void DoHeal(const INT8 clientID);
+
+	void DoBuff(const INT8 clientID);
+
 private:
 	void updateCooldown();
 	void checkEnemyAttack();

@@ -90,6 +90,30 @@ bool CombatSystem::CanUseSkill(const INT8 clientID)
 	}
 }
 
+void CombatSystem::DoHeal(const INT8 clientID)
+{
+	auto players = mRegistry.view<Tag_Player, HealthComponent>();
+
+	for (auto [entity, health] : players.each())
+	{
+		health.Health += 5;
+		if (health.Health > Values::PlayerHealth)
+		{
+			health.Health = Values::PlayerHealth;
+		}
+	}
+
+	// TODO: 체력 회복을 알리는 패킷 보내기
+}
+
+void CombatSystem::DoBuff(const INT8 clientID)
+{
+	auto player = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(player), "Invalid entity!");
+	auto& combat = mRegistry.get<CombatComponent>(player);
+	combat.BuffDuration = 10.0f;
+}
+
 void CombatSystem::updateCooldown()
 {
 	auto view = mRegistry.view<CombatComponent>();
@@ -97,6 +121,7 @@ void CombatSystem::updateCooldown()
 	{
 		combat.BaseAttackTracker += Timer::GetDeltaTime();
 		combat.SkillTracker += Timer::GetDeltaTime();
+		combat.BuffDuration -= Timer::GetDeltaTime();
 	}
 }
 

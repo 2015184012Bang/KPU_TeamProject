@@ -248,11 +248,11 @@ void Room::DoSkill(const INT8 clientID)
 		break;
 
 	case UpgradePreset::HEAL:
-		//mCombatSystem->DoHeal();
+		mCombatSystem->DoHeal(clientID);
 		break;
 
 	case UpgradePreset::SUPPORT:
-		//mCombatSystem->DoBuff();
+		mCombatSystem->DoBuff(clientID);
 		break;
 		
 	default:
