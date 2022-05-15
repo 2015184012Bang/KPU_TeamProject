@@ -54,6 +54,7 @@ private:
 	void waitForPreviousFrame();
 
 	void renderUI();
+	void loadFont(float fontSize, const D2D1::ColorF fontColor);
 
 private:
 	static const int BUFFER_COUNT = 2;

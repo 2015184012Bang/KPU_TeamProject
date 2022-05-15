@@ -95,33 +95,6 @@ void Renderer::EndRender()
 	waitForPreviousFrame();
 }
 
-void Renderer::renderUI()
-{
-	mCmdList->SetPipelineState(mFontPSO.Get());
-
-	D2D1_SIZE_F rtSize = mD2DRenderTargets[mBackBufferIndex]->GetSize();
-	D2D1_RECT_F textRect = D2D1::RectF(0.0f, 0.0f, rtSize.width, rtSize.height);
-	static const WCHAR text[] = L"Hello, world!";
-
-	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
-
-	mD2DDeviceContext->SetTarget(mD2DRenderTargets[mBackBufferIndex].Get());
-	mD2DDeviceContext->BeginDraw();
-	mD2DDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
-	mD2DDeviceContext->DrawText(
-		text,
-		_countof(text) - 1,
-		mTextFormat.Get(),
-		&textRect,
-		mTextBrush.Get()
-	);
-	ThrowIfFailed(mD2DDeviceContext->EndDraw());
-
-	mD3D11On12Device->ReleaseWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
-
-	mD3D11DeviceContext->Flush();
-}
-
 void Renderer::loadPipeline()
 {
 	createDevice();
@@ -132,7 +105,6 @@ void Renderer::loadPipeline()
 	createPipelineState();
 	createCmdList();
 	createFence();
-
 	createD3D11onD12();
 
 	loadAssets();
@@ -660,7 +632,7 @@ void Renderer::createD3D11onD12()
 		{
 			ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i])));
 			mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, rtvHandle);
-			
+
 			D3D11_RESOURCE_FLAGS d3d11Flags = { D3D11_BIND_RENDER_TARGET };
 			ThrowIfFailed(mD3D11On12Device->CreateWrappedResource(
 				mRenderTargets[i].Get(),
@@ -670,7 +642,6 @@ void Renderer::createD3D11onD12()
 				IID_PPV_ARGS(&mWrappedBackBuffers[i])
 			));
 
-			// Create a render target for D2D to draw directly to this back buffer.
 			ComPtr<IDXGISurface> surface;
 			ThrowIfFailed(mWrappedBackBuffers[i].As(&surface));
 			ThrowIfFailed(mD2DDeviceContext->CreateBitmapFromDxgiSurface(
@@ -716,7 +687,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Thermometer.mesh");
 	MESH("Virus.mesh");
 	MESH("Plane_Big.mesh");
-	
+
 	SKELETON("Bag.skel");
 	SKELETON("Cart.skel");
 	SKELETON("Cell.skel");
@@ -729,7 +700,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("HealPack.skel");
 	SKELETON("Tank.skel");
 	SKELETON("Virus.skel");
-	
+
 	BOX("Cart.box");
 	BOX("Cell.box");
 	BOX("Character.box");
@@ -754,22 +725,7 @@ void Renderer::loadAllAssetsFromFile()
 void Renderer::loadAssets()
 {
 	loadAllAssetsFromFile();
-
-	{
-		ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &mTextBrush));
-		ThrowIfFailed(mWriteFactory->CreateTextFormat(
-			L"Verdana",
-			NULL,
-			DWRITE_FONT_WEIGHT_NORMAL,
-			DWRITE_FONT_STYLE_NORMAL,
-			DWRITE_FONT_STRETCH_NORMAL,
-			50,
-			L"en-us",
-			&mTextFormat
-		));
-		ThrowIfFailed(mTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER));
-		ThrowIfFailed(mTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER));
-	}
+	loadFont(40.0f, D2D1::ColorF::Black);
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
@@ -817,4 +773,48 @@ void Renderer::SubmitText(const Text* text)
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &text->GetVertexBufferView());
 	mCmdList->DrawInstanced(text->GetVertexCount(), 1, 0, 0);
+}
+
+void Renderer::renderUI()
+{
+	mCmdList->SetPipelineState(mFontPSO.Get());
+
+	D2D1_SIZE_F rtSize = mD2DRenderTargets[mBackBufferIndex]->GetSize();
+	D2D1_RECT_F textRect = D2D1::RectF(0.0f, 0.0f, rtSize.width, rtSize.height);
+	static const WCHAR text[] = L"Hello, world! 01234";
+
+	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
+
+	mD2DDeviceContext->SetTarget(mD2DRenderTargets[mBackBufferIndex].Get());
+	mD2DDeviceContext->BeginDraw();
+	mD2DDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+	mD2DDeviceContext->DrawText(
+		text,
+		_countof(text) - 1,
+		mTextFormat.Get(),
+		&textRect,
+		mTextBrush.Get()
+	);
+	ThrowIfFailed(mD2DDeviceContext->EndDraw());
+
+	mD3D11On12Device->ReleaseWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
+
+	mD3D11DeviceContext->Flush();
+}
+
+void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor)
+{
+	ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(fontColor, &mTextBrush));
+	ThrowIfFailed(mWriteFactory->CreateTextFormat(
+		L"Verdana",
+		NULL,
+		DWRITE_FONT_WEIGHT_NORMAL,
+		DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL,
+		fontSize,
+		L"en-us",
+		&mTextFormat
+	));
+	ThrowIfFailed(mTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
+	ThrowIfFailed(mTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
 }
