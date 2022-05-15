@@ -6,7 +6,6 @@
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "Texture.h"
-#include "Text.h"
 
 using namespace std::string_literals;
 
@@ -195,46 +194,6 @@ ButtonComponent::ButtonComponent(std::function<void(void)> f)
 	: CallbackFunc(f)
 {
 
-}
-
-TextComponent::TextComponent()
-	: Txt(nullptr)
-{
-
-}
-
-TextComponent::TextComponent(Text* text)
-	: Txt(text)
-{
-
-}
-
-TextComponent::TextComponent(TextComponent&& other) noexcept
-{
-	Txt = other.Txt;
-
-	other.Txt = nullptr;
-}
-
-TextComponent& TextComponent::operator=(TextComponent&& other) noexcept
-{
-	if (this != &other)
-	{
-		Txt = other.Txt;
-
-		other.Txt = nullptr;
-	}
-
-	return *this;
-}
-
-TextComponent::~TextComponent()
-{
-	if (Txt)
-	{
-		delete Txt;
-		Txt = nullptr;
-	}
 }
 
 ChildComponent::ChildComponent()

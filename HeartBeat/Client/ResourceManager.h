@@ -7,7 +7,6 @@ class Texture;
 class Skeleton;
 class Animation;
 class AABB;
-class Font;
 
 class ResourceManager
 {
@@ -19,7 +18,6 @@ public:
 	static Animation* GetAnimation(string_view path);
 	static AABB* GetAABB(string_view path);
 	static Mesh* GetDebugMesh(string_view path);
-	static Font* GetFont(string_view path);
 
 	static void MakeAnimTransitions();
 
@@ -30,7 +28,6 @@ private:
 	static unordered_map<string, Animation*> sAnimations;
 	static unordered_map<string, AABB*> sBoxes;
 	static unordered_map<string, Mesh*> sDebugMeshes;
-	static unordered_map<string, Font*> sFonts;
 };
 
 enum class CharacterAnimationType
@@ -62,7 +59,6 @@ const string ASSET_PATH = "../Assets/";
 #define ANIM(x) GetAnimFile(x)
 #define BOX(x) GetBoxFile(x)
 #define DEBUGMESH(x) GetBoxFile(x)
-#define FONT(x) GetFontFile(x)
 
 inline Mesh* GetMeshFile(string_view file)
 {
@@ -88,10 +84,4 @@ inline AABB* GetBoxFile(string_view file)
 {
 	return ResourceManager::GetAABB(ASSET_PATH + "Boxes/" + file.data());
 }
-
-inline Font* GetFontFile(string_view file)
-{
-	return ResourceManager::GetFont(ASSET_PATH + "Fonts/" + file.data());
-}
-
 

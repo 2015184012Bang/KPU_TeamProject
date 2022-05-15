@@ -7,7 +7,6 @@
 #include "Mesh.h"
 #include "ResourceManager.h"
 #include "TableDescriptorHeap.h"
-#include "Text.h"
 #include "Texture.h"
 #include "Vertex.h"
 #include "Utils.h"
@@ -87,12 +86,6 @@ void Renderer::EndRender()
 
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
 	mCmdQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-
-	renderUI();
-
-	ThrowIfFailed(mSwapChain->Present(1, 0));
-
-	waitForPreviousFrame();
 }
 
 void Renderer::loadPipeline()
@@ -717,9 +710,6 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("RoomEnter.png");
 	TEXTURE("RoomNoEnter.png");
 	TEXTURE("LeaveRoom.png");
-
-	Font* font = FONT("fontdata.txt");
-	font->SetTexture(TEXTURE("font.dds"));
 }
 
 void Renderer::loadAssets()
@@ -765,41 +755,42 @@ void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
 	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
 }
 
-void Renderer::SubmitText(const Text* text)
-{
-	const Texture* texture = text->GetTexture();
-
-	mCmdList->SetGraphicsRootDescriptorTable(static_cast<uint32>(RootParameter::TEX_PARAM), texture->GetGpuHandle());
-	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	mCmdList->IASetVertexBuffers(0, 1, &text->GetVertexBufferView());
-	mCmdList->DrawInstanced(text->GetVertexCount(), 1, 0, 0);
-}
-
-void Renderer::renderUI()
+void Renderer::RenderFont(const vector<Sentence>& sentences)
 {
 	mCmdList->SetPipelineState(mFontPSO.Get());
 
 	D2D1_SIZE_F rtSize = mD2DRenderTargets[mBackBufferIndex]->GetSize();
-	D2D1_RECT_F textRect = D2D1::RectF(0.0f, 0.0f, rtSize.width, rtSize.height);
-	static const WCHAR text[] = L"Hello, world! 01234";
 
 	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
 
 	mD2DDeviceContext->SetTarget(mD2DRenderTargets[mBackBufferIndex].Get());
 	mD2DDeviceContext->BeginDraw();
 	mD2DDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
-	mD2DDeviceContext->DrawText(
-		text,
-		_countof(text) - 1,
-		mTextFormat.Get(),
-		&textRect,
-		mTextBrush.Get()
-	);
+
+	for (const auto& sent : sentences)
+	{
+		D2D1_RECT_F textRect = D2D1::RectF(sent.X, sent.Y, rtSize.width, rtSize.height);
+
+		mD2DDeviceContext->DrawText(
+			sent.Text->data(),
+			sent.TextLen,
+			mTextFormat.Get(),
+			&textRect,
+			mTextBrush.Get()
+		);
+	}
+
 	ThrowIfFailed(mD2DDeviceContext->EndDraw());
 
 	mD3D11On12Device->ReleaseWrappedResources(mWrappedBackBuffers[mBackBufferIndex].GetAddressOf(), 1);
 
 	mD3D11DeviceContext->Flush();
+}
+
+void Renderer::Present()
+{
+	ThrowIfFailed(mSwapChain->Present(1, 0));
+	waitForPreviousFrame();
 }
 
 void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor)

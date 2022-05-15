@@ -10,8 +10,6 @@ class SpriteMesh;
 class Skeleton;
 class Animation;
 class Script;
-class Text;
-
 
 struct MeshRendererComponent
 {
@@ -108,13 +106,11 @@ struct ButtonComponent
 
 struct TextComponent
 {
-	TextComponent();
-	TextComponent(Text* text);
-	~TextComponent();
-	TextComponent(TextComponent&& other) noexcept;
-	TextComponent& operator=(TextComponent&& other) noexcept;
+	TextComponent() = default;
 
-	Text* Txt;
+	std::wstring Sentence = L"";
+	float X = 0.0f;
+	float Y = 0.0f;
 };
 
 struct ParentComponent

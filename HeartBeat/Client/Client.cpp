@@ -14,14 +14,12 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
-#include "Text.h"
 #include "GameScene.h"
 #include "PacketManager.h"
 #include "Timer.h"
 #include "Utils.h"
 #include "Script.h"
 #include "Mesh.h"
-#include "Font.h"
 #include "Texture.h"
 #include "Skeleton.h"
 #include "SoundManager.h"
@@ -195,17 +193,6 @@ Entity Client::CreateSpriteEntity(int width, int height, const Texture* texFile,
 	return e;
 }
 
-Entity Client::CreateTextEntity(const Font* fontFile)
-{
-	Entity e = Entity{ gRegistry.create() };
-
-	e.AddTag<Tag_Text>();
-	e.AddComponent<RectTransformComponent>(0, 0);
-	e.AddComponent<TextComponent>(new Text(fontFile));
-
-	return e;
-}
-
 void Client::DestroyEntityAfter(const uint32 eid, float secs)
 {
 	mPendingEntities.emplace_back(eid, secs);
@@ -304,11 +291,16 @@ void Client::render()
 	auto& spriteCamera = m2dCamera.GetComponent<CameraComponent>();
 	Helpers::BindViewProjectionMatrixOrtho(spriteCamera.Buffer);
 
-	drawSpriteAndText();
+	drawSprite();
 
 	mActiveScene->Render(mRenderer);
-
+	
 	mRenderer->EndRender();
+
+	// D2D를 이용한 폰트 렌더링
+	drawFont();
+
+	mRenderer->Present();
 }
 
 void Client::createCameraEntity()
@@ -526,7 +518,7 @@ void Client::drawCollisionBox()
 	}
 }
 
-void Client::drawSpriteAndText()
+void Client::drawSprite()
 {
 	gCmdList->SetPipelineState(mRenderer->GetSpritePSO().Get());
 
@@ -538,13 +530,23 @@ void Client::drawSpriteAndText()
 			mRenderer->SubmitSprite(sprite.Mesi, sprite.Tex);
 		}
 	}
+}
 
+void Client::drawFont()
+{
+	auto view = gRegistry.view<TextComponent>();
+
+	if (view.empty())
 	{
-		auto view = gRegistry.view<TextComponent, RectTransformComponent>();
-		for (auto [entity, text, rect] : view.each())
-		{
-			Helpers::BindWorldMatrix(rect.Position, &rect.Buffer, &rect.bDirty);
-			mRenderer->SubmitText(text.Txt);
-		}
+		return;
 	}
+
+	vector<Sentence> sentences;
+	sentences.reserve(view.size());
+	for (auto [entity, text] : view.each())
+	{
+		sentences.emplace_back(&text.Sentence, (UINT32)text.Sentence.size(), text.X, text.Y);
+	}
+
+	mRenderer->RenderFont(sentences);
 }

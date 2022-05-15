@@ -82,12 +82,6 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Font.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source Files\Resources</Filter>
-    </ClCompile>
     <ClCompile Include="LoginScene.cpp">
       <Filter>Source Files\Scene</Filter>
     </ClCompile>
@@ -194,12 +188,6 @@
     </ClInclude>
     <ClInclude Include="Enemy.h">
       <Filter>Source Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Font.h">
-      <Filter>Source Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="Text.h">
-      <Filter>Source Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="LoginScene.h">
       <Filter>Source Files\Scene</Filter>

@@ -3,7 +3,6 @@
 
 #include "AABB.h"
 #include "Animation.h"
-#include "Font.h"
 #include "Mesh.h"
 #include "Skeleton.h"
 #include "Texture.h"
@@ -15,7 +14,6 @@ unordered_map<string, Skeleton*> ResourceManager::sSkeletons;
 unordered_map<string, Animation*> ResourceManager::sAnimations;
 unordered_map<string, AABB*> ResourceManager::sBoxes;
 unordered_map<string, Mesh*> ResourceManager::sDebugMeshes;
-unordered_map<string, Font*> ResourceManager::sFonts;
 
 void ResourceManager::Shutdown()
 {
@@ -54,12 +52,6 @@ void ResourceManager::Shutdown()
 		delete debugMesh;
 	}
 	sDebugMeshes.clear();
-
-	for (auto& [_, font] : sFonts)
-	{
-		delete font;
-	}
-	sFonts.clear();
 }
 
 Mesh* ResourceManager::GetMesh(string_view path)
@@ -170,24 +162,6 @@ Mesh* ResourceManager::GetDebugMesh(string_view path)
 	}
 
 	return nullptr;
-}
-
-Font* ResourceManager::GetFont(string_view path)
-{
-	auto iter = sFonts.find(path.data());
-
-	if (iter != sFonts.end())
-	{
-		return iter->second;
-	}
-	else
-	{
-		Font* newFont = new Font;
-		newFont->Load(path);
-		sFonts[path.data()] = newFont;
-
-		return newFont;
-	}
 }
 
 void ResourceManager::MakeAnimTransitions()

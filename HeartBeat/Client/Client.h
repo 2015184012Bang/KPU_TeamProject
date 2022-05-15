@@ -8,7 +8,6 @@ class PacketManager;
 class Mesh;
 class Texture;
 class Skeleton;
-class Font;
 
 using namespace std::string_literals;
 
@@ -31,7 +30,6 @@ public:
     Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, string_view boxFile = ""sv);
     Entity CreateStaticMeshEntity(const Mesh* meshFile, const Texture* texFile, const uint32 eid, string_view boxFile = ""sv);
     Entity CreateSpriteEntity(int width, int height, const Texture* texFile, int drawOrder = 100);
-    Entity CreateTextEntity(const Font* fontFile);
 
     void DestroyEntityAfter(const uint32 eid, float secs);
    
@@ -70,7 +68,8 @@ private:
     void drawSkeletalMesh();
     void drawStaticMesh();
     void drawCollisionBox();
-    void drawSpriteAndText();
+    void drawSprite();
+    void drawFont();
 
 private:
     unique_ptr<Scene> mActiveScene = nullptr;
