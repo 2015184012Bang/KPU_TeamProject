@@ -11,7 +11,7 @@ public:
 
 	void Update();
 
-	bool DoAttack(const INT8 clientID);
+	bool CheckAttackHit(const INT8 clientID);
 
 	void DoWhirlwind(const INT8 clientID);
 

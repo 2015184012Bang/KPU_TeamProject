@@ -178,32 +178,9 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	REQUEST_ENTER_ROOM_PACKET* rerPacket = reinterpret_cast<REQUEST_ENTER_ROOM_PACKET*>(packet);
+	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(rerPacket->RoomNumber);
-	bool bEnter = room->CanEnter();
-
-	ANSWER_ENTER_ROOM_PACKET aerPacket = {};
-	aerPacket.PacketID = ANSWER_ENTER_ROOM;
-	aerPacket.PacketSize = sizeof(aerPacket);
-
-	if (!bEnter)
-	{
-		aerPacket.Result = RESULT_CODE::ROOM_ENTER_DENY;
-		SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
-	}
-	else
-	{
-		auto user = mUserManager->GetUserByIndex(sessionIndex);
-		ASSERT(user, "User is nullptr!");
-		room->AddUser(user);
-
-		aerPacket.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
-		aerPacket.ClientID = user->GetClientID();
-		SendPacketFunction(sessionIndex, sizeof(aerPacket), reinterpret_cast<char*>(&aerPacket));
-
-		// 새로이 방에 들어온 유저에게 기존에 방에 접속해 있던 유저들의 정보 송신
-		// 기존 유저들에겐 새로운 유저의 정보 송신
-		room->NotifyNewbie(user);
-	}
+	room->DoEnterRoom(user);
 }
 
 void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -214,19 +191,9 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-
-	NOTIFY_LEAVE_ROOM_PACKET nlrPacket = {};
-	nlrPacket.ClientID = user->GetClientID();
-	nlrPacket.PacketID = NOTIFY_LEAVE_ROOM;
-	nlrPacket.PacketSize = sizeof(nlrPacket);
-
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-
-	// 해당 방 유저들에게 브로드캐스트
-	room->Broadcast(sizeof(nlrPacket), reinterpret_cast<char*>(&nlrPacket));
-
-	// 유저 나감 처리
-	room->RemoveUser(user);
+	
+	room->DoLeaveRoom(user);
 
 	// Room Scene으로 돌아간 유저에게 이용 가능한 방 목록 전송
 	mRoomManager->SendAvailableRoom(sessionIndex);
@@ -241,7 +208,6 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-
 	room->DoEnterUpgrade();
 }
 
@@ -255,18 +221,8 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
 
-	// 패킷을 보낸 유저의 Direction 변경
 	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
-	room->SetDirection(user->GetClientID(), rmPacket->Direction);
-
-	// 이동 노티파이 패킷 전송
-	NOTIFY_MOVE_PACKET anmPacket = {};
-	anmPacket.PacketID = NOTIFY_MOVE;
-	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
-	anmPacket.Direction = user->GetMoveDirection();
-	anmPacket.Position = user->GetPosition();
-	anmPacket.EntityID = user->GetClientID();
-	room->Broadcast(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
+	room->DoSetDirection(user, rmPacket->Direction);
 }
 
 void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -276,20 +232,11 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 		return;
 	}
 
-	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
 
-	// 유저 공격력, 방어력, 회복력 설정
-	room->SetPreset(user->GetClientID(), static_cast<UpgradePreset>(ruPacket->UpgradePreset));
-
-	// 해당 유저를 비롯한 다른 유저들에게 알림
-	NOTIFY_UPGRADE_PACKET nuPacket = {};
-	nuPacket.PacketID = NOTIFY_UPGRADE;
-	nuPacket.PacketSize = sizeof(nuPacket);
-	nuPacket.EntityID = user->GetClientID();
-	nuPacket.UpgradePreset = ruPacket->UpgradePreset;
-	room->Broadcast(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
+	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
+	room->DoSetPreset(user, static_cast<UpgradePreset>(ruPacket->UpgradePreset));
 }
 
 void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -301,13 +248,6 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-
-	NOTIFY_ENTER_GAME_PACKET negPacket = {};
-	negPacket.PacketID = NOTIFY_ENTER_GAME;
-	negPacket.PacketSize = sizeof(negPacket);
-	negPacket.Result = RESULT_CODE::SUCCESS;
-	room->Broadcast(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
-
 	room->DoEnterGame();
 }
 
@@ -320,22 +260,7 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-
-	bool canAttack = room->CanBaseAttack(user->GetClientID());
-	if (!canAttack)
-	{
-		return;
-	}
-
-	bool bHit = room->DoAttack(user->GetClientID());
-
-	// 공격 허가 여부를, 해당 유저를 포함한 다른 유저들에게 알려준다.
-	NOTIFY_ATTACK_PACKET naPacket = {};
-	naPacket.EntityID = user->GetClientID();
-	naPacket.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
-	naPacket.PacketID = NOTIFY_ATTACK;
-	naPacket.PacketSize = sizeof(naPacket);
-	room->Broadcast(sizeof(naPacket), reinterpret_cast<char*>(&naPacket));
+	room->DoAttack(user);
 }
 
 
@@ -348,7 +273,7 @@ void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 pack
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	room->DoSkill(user->GetClientID());
+	room->DoSkill(user);
 }
 
 //void GameManager::DoGameOver()

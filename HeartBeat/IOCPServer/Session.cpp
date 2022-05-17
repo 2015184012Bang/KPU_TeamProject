@@ -134,6 +134,8 @@ bool Session::SendMsg(const UINT32 dataSize, char* msg)
 	if (SOCKET_ERROR == retVal && (WSAGetLastError() != WSA_IO_PENDING))
 	{
 		LOG("WSASend() failed: {0}", WSAGetLastError());
+		delete[] sendOver->WsaBuf.buf;
+		delete sendOver;
 		return false;
 	}
 

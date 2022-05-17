@@ -43,7 +43,7 @@ void CollisionSystem::Update()
 	checkPlayerOutOfBound();
 }
 
-bool CollisionSystem::DoAttack(const INT8 clientID)
+bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 {
 	auto character = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(character), "Invalid entity!");

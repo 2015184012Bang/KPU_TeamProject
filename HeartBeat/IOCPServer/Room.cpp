@@ -22,26 +22,14 @@ void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc
 	createSystems();
 }
 
-bool Room::existsFreeSlot()
+void Room::Update()
 {
-	if (mUsers.size() < ROOM_MAX_USER)
-	{
-		return true;
-	}
-
-	return false;
-}
-
-bool Room::CanEnter()
-{
-	if (mRoomState == RoomState::Waiting && existsFreeSlot())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	mScriptSystem->Update();
+	mCombatSystem->Update();
+	mMovementSystem->Update();
+	mCollisionSystem->Update();
+	mEnemySystem->Update();
+	mPathSystem->Update();
 }
 
 void Room::AddUser(User* user)
@@ -120,6 +108,37 @@ void Room::Broadcast(const UINT32 packetSize, char* packet)
 	}
 }
 
+void Room::DoEnterRoom(User* user)
+{
+	if (!canEnterRoom())
+	{
+		return;
+	}
+
+	AddUser(user);
+
+	ANSWER_ENTER_ROOM_PACKET packet = {};
+	packet.PacketID = ANSWER_ENTER_ROOM;
+	packet.PacketSize = sizeof(packet);
+	packet.ClientID = user->GetClientID();
+	packet.Result = RESULT_CODE::ROOM_ENTER_SUCCESS;
+	SendPacketFunction(user->GetIndex(), sizeof(packet), reinterpret_cast<char*>(&packet));
+
+	notifyNewbie(user);
+}
+
+void Room::DoLeaveRoom(User* user)
+{
+	NOTIFY_LEAVE_ROOM_PACKET nlrPacket = {};
+	nlrPacket.ClientID = user->GetClientID();
+	nlrPacket.PacketID = NOTIFY_LEAVE_ROOM;
+	nlrPacket.PacketSize = sizeof(nlrPacket);
+
+	Broadcast(sizeof(nlrPacket), reinterpret_cast<char*>(&nlrPacket));
+
+	RemoveUser(user);
+}
+
 void Room::DoEnterUpgrade()
 {
 	if (mRoomState == RoomState::Playing)
@@ -146,6 +165,12 @@ void Room::DoEnterUpgrade()
 
 void Room::DoEnterGame()
 {
+	NOTIFY_ENTER_GAME_PACKET negPacket = {};
+	negPacket.PacketID = NOTIFY_ENTER_GAME;
+	negPacket.PacketSize = sizeof(negPacket);
+	negPacket.Result = RESULT_CODE::SUCCESS;
+	Broadcast(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
+
 	createTiles("../Assets/Maps/Map01.csv");
 
 	createTankAndCart();
@@ -163,69 +188,61 @@ void Room::DoEnterGame()
 	mCollisionSystem->SetStart(true);
 }
 
-void Room::NotifyNewbie(User* newbie)
+void Room::DoSetDirection(User* user, const Vector3& direction)
 {
-	NOTIFY_ENTER_ROOM_PACKET nerPacket = {};
-	nerPacket.ClientID = newbie->GetClientID();
-	nerPacket.PacketID = NOTIFY_ENTER_ROOM;
-	nerPacket.PacketSize = sizeof(nerPacket);
+	auto clientID = user->GetClientID();
 
-	// 기존 유저들에게 새 유저의 접속을 알림
-	for (auto user : mUsers)
-	{
-		if (newbie == user)
-		{
-			continue;
-		}
-
-		SendPacketFunction(user->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
-	}
-
-	// 새 유저에게 기존 유저들을 알림
-	for (auto user : mUsers)
-	{
-		if (newbie == user)
-		{
-			continue;
-		}
-
-		nerPacket.ClientID = user->GetClientID();
-		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
-	}
-}
-
-void Room::SetDirection(const INT8 clientID, const Vector3& direction)
-{
 	mMovementSystem->SetDirection(clientID, direction);
+
+	auto entity = GetEntityByID(mRegistry, clientID);
+	ASSERT(mRegistry.valid(entity), "Invalid entity!");
+
+	NOTIFY_MOVE_PACKET anmPacket = {};
+	anmPacket.PacketID = NOTIFY_MOVE;
+	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
+	anmPacket.Direction = user->GetMoveDirection();
+	anmPacket.Position = user->GetPosition();
+	anmPacket.EntityID = clientID;
+	Broadcast(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
 }
 
-void Room::Update()
+void Room::DoSetPreset(User* user, UpgradePreset preset)
 {
-	mScriptSystem->Update();
-	mCombatSystem->Update();
-	mMovementSystem->Update();
-	mCollisionSystem->Update();
-	mEnemySystem->Update();
-	mPathSystem->Update();
-}
+	auto clientID = user->GetClientID();
 
-void Room::SetPreset(const INT8 clientID, UpgradePreset preset)
-{
 	mCombatSystem->SetPreset(clientID, preset);
+
+	NOTIFY_UPGRADE_PACKET nuPacket = {};
+	nuPacket.PacketID = NOTIFY_UPGRADE;
+	nuPacket.PacketSize = sizeof(nuPacket);
+	nuPacket.EntityID = clientID;
+	nuPacket.UpgradePreset = static_cast<UINT8>(preset);
+	Broadcast(sizeof(nuPacket), reinterpret_cast<char*>(&nuPacket));
 }
 
-bool Room::CanBaseAttack(const INT8 clientID)
+void Room::DoAttack(User* user)
 {
-	return mCombatSystem->CanBaseAttack(clientID);
+	auto clientID = user->GetClientID();
+
+	if (!mCombatSystem->CanBaseAttack(clientID))
+	{
+		return;
+	}
+
+	bool bHit = mCollisionSystem->CheckAttackHit(clientID);
+
+	NOTIFY_ATTACK_PACKET packet = {};
+	packet.EntityID = clientID;
+	packet.PacketID = NOTIFY_ATTACK;
+	packet.PacketSize = sizeof(packet);
+	packet.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
+	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 }
 
-bool Room::DoAttack(const INT8 clientID)
+void Room::DoSkill(User* user)
 {
-	return mCollisionSystem->DoAttack(clientID);
-}
+	auto clientID = user->GetClientID();
 
-void Room::DoSkill(const INT8 clientID)
-{
 	if (!mCombatSystem->CanUseSkill(clientID))
 	{
 		return;
@@ -263,6 +280,49 @@ void Room::DoSkill(const INT8 clientID)
 void Room::ChangeTileToRoad(INT32 row, INT32 col)
 {
 	mPathSystem->ChangeTileToRoad(row, col);
+}
+
+bool Room::canEnterRoom()
+{
+	if (mRoomState == RoomState::Waiting && mUsers.size() < ROOM_MAX_USER)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void Room::notifyNewbie(User* newbie)
+{
+	NOTIFY_ENTER_ROOM_PACKET nerPacket = {};
+	nerPacket.ClientID = newbie->GetClientID();
+	nerPacket.PacketID = NOTIFY_ENTER_ROOM;
+	nerPacket.PacketSize = sizeof(nerPacket);
+
+	// 기존 유저들에게 새 유저의 접속을 알림
+	for (auto user : mUsers)
+	{
+		if (newbie == user)
+		{
+			continue;
+		}
+
+		SendPacketFunction(user->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
+	}
+
+	// 새 유저에게 기존 유저들을 알림
+	for (auto user : mUsers)
+	{
+		if (newbie == user)
+		{
+			continue;
+		}
+
+		nerPacket.ClientID = user->GetClientID();
+		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
+	}
 }
 
 void Room::createSystems()
