@@ -161,6 +161,12 @@ void Room::DoEnterUpgrade()
 	ansPacket.PacketSize = sizeof(NOTIFY_ENTER_UPGRADE_PACKET);
 	ansPacket.Result = RESULT_CODE::SUCCESS;
 	Broadcast(sizeof(ansPacket), reinterpret_cast<char*>(&ansPacket));
+
+	// 기본 장비 프리셋 설정(ATTACK)
+	for (auto user : mUsers)
+	{
+		DoSetPreset(user, UpgradePreset::ATTACK);
+	}
 }
 
 void Room::DoEnterGame()
