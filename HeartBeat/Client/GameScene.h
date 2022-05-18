@@ -11,6 +11,8 @@ class Texture;
 class GameScene :
     public Scene
 {
+    friend class Timer;
+
 public:
     GameScene(Client* owner);
 
@@ -39,13 +41,8 @@ private:
 	bool pollKeyboardReleased();
 
 	void processNotifyMove(const PACKET& packet);
-
-    // 플레이어 공격 패킷 처리
     void processNotifyAttack(const PACKET& packet);
-
-    // Enemy 공격 패킷 처리
     void processNotifyEnemyAttack(const PACKET& packet);
-
     void processNotifyDeleteEntity(const PACKET& packet);
     void processNotifyCreateEntity(const PACKET& packet);
     void processNotifyGameOver(const PACKET& packet);
@@ -65,11 +62,10 @@ private:
     Entity mPlayerCharacter = {};
     Vector3 mDirection = Vector3::Zero;
 
-    bool mbChangeScene = false;
-    StageCode mStageCode = StageCode::NONE;
-
     Entity mO2Text = {};
     Entity mCO2Text = {};
+
+    bool bIsGameOver = false;
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);

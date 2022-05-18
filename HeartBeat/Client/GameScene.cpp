@@ -1,6 +1,7 @@
 #include "ClientPCH.h"
 #include "GameScene.h"
 
+#include "Application.h"
 #include "Client.h"
 #include "Components.h"
 #include "Define.h"
@@ -15,6 +16,7 @@
 #include "UpgradeScene.h"
 #include "RedCell.h"
 #include "LobbyScene.h"
+#include "Timer.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -41,11 +43,18 @@ void GameScene::Enter()
 
 void GameScene::Exit()
 {
+	SoundManager::StopSound("SteampipeSonata.mp3");
+
 	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 
 void GameScene::ProcessInput()
 {
+	if (bIsGameOver)
+	{
+		return;
+	}
+
 	PACKET packet;
 	while (mOwner->GetPacketManager()->GetPacket(packet))
 	{
@@ -87,25 +96,8 @@ void GameScene::ProcessInput()
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
 		}
-
-		if (mbChangeScene)
-		{
-			switch (mStageCode)
-			{
-			case StageCode::CLEAR:
-				break;
-
-			case StageCode::GAMEOVER:
-				doGameOver();
-				break;
-
-			default:
-				break;
-			}
-
-			break;
-		}
 	}
+
 }
 
 void GameScene::Update(float deltaTime)
@@ -470,7 +462,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	break;
 
 	case EntityType::DOG:
-	{	
+	{
 		// TODO : dog die 애니메이션
 		auto& movement = target.GetComponent<MovementComponent>();
 		movement.Direction = Vector3::Zero;
@@ -525,7 +517,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		auto& animator = cart.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Cart_Run.anim"));
 	}
-		break;
+	break;
 
 	case EntityType::VIRUS:
 	{
@@ -568,7 +560,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		cell.AddComponent<ScriptComponent>(std::make_shared<RedCell>(cell));
 		auto& animator = cell.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Cell_Run.anim"));
-		
+
 		Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
 			TEXTURE("O2.png"));
 		Helpers::AttachBone(cell, o2, "Weapon");
@@ -584,8 +576,35 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
-	mbChangeScene = true;
-	mStageCode = StageCode::GAMEOVER;
+	Entity gameOverUI = Entity{ gRegistry.create() };
+	auto& text = gameOverUI.AddComponent<TextComponent>();
+	text.Sentence = L"CO2: " + std::to_wstring(ngoPacket->CO2) +
+		L" O2: " + std::to_wstring(ngoPacket->O2) +
+		L" PlayTime: " + std::to_wstring(ngoPacket->PlayTimeSec) + L"sec";
+	text.X = 100.0f;
+	text.Y = 100.0f;
+
+	bIsGameOver = true;
+
+	auto tank = GetEntityByName("Tank");
+	mOwner->SetFollowCameraTarget(tank, Vector3{ 0.0f, 1000.0f, -1000.f });
+
+	// 모든 엔티티를 멈추게 한다.
+	auto view = gRegistry.view<MovementComponent>();
+	for (auto [entity, movement] : view.each())
+	{
+		movement.Direction = Vector3::Zero;
+	}
+
+	// '나가기' 버튼 생성
+	Entity button = mOwner->CreateSpriteEntity(200, 100, TEXTURE("OutButton.png"));
+	auto& rect = button.GetComponent<RectTransformComponent>();
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 100.0f,
+		Application::GetScreenHeight() - 125.0f };
+
+	button.AddComponent<ButtonComponent>([this]() {
+		doGameOver();
+		});
 }
 
 void GameScene::processNotifySkill(const PACKET& packet)
@@ -702,7 +721,7 @@ string GetSkillAnimTrigger(const uint8 preset)
 
 	case 2:
 		return "Skill3";
-		
+
 	default:
 		HB_ASSERT(false, "Unknown preset!");
 		return "";
