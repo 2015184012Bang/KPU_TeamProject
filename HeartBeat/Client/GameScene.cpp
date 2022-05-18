@@ -34,6 +34,8 @@ void GameScene::Enter()
 
 	// 맵 생성
 	createMap("../Assets/Maps/Map01.csv");
+
+	createUI();
 }
 
 void GameScene::Exit()
@@ -248,8 +250,6 @@ void GameScene::createRailTile(const Tile& tile)
 
 void GameScene::createFatTile(const Tile& tile)
 {
-	// 파괴 가능한 FAT 타일 아래에는 MOVABLE 타일을 생성한다.
-
 	const Texture* fatTex = GetTileTexture(tile.TType);
 	const Texture* movableTex = GetTileTexture(TileType::MOVABLE);
 
@@ -264,7 +264,6 @@ void GameScene::createFatTile(const Tile& tile)
 		transform.Position.z = tile.Z;
 	}
 
-	// TODO : Fat 타일이 파괴되면 아래 movable 타일을 생성하기
 	{
 		Entity movable = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
 			movableTex);
@@ -621,6 +620,12 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 {
 	NOTIFY_STATE_CHANGE_PACKET* nscPacket = reinterpret_cast<NOTIFY_STATE_CHANGE_PACKET*>(packet.DataPtr);
 	HB_LOG("O2: {0}, CO2: {1}", nscPacket->O2, nscPacket->CO2);
+
+	auto& o2 = mO2Text.GetComponent<TextComponent>();
+	o2.Sentence = std::to_wstring(nscPacket->O2);
+
+	auto& co2 = mCO2Text.GetComponent<TextComponent>();
+	co2.Sentence = std::to_wstring(nscPacket->CO2);
 }
 
 void GameScene::doWhenFail()
@@ -646,6 +651,37 @@ void GameScene::doWhenFail()
 	auto newScene = new UpgradeScene{ mOwner };
 	newScene->SetDirection(mDirection);
 	mOwner->ChangeScene(newScene);
+}
+
+void GameScene::createUI()
+{
+	{
+		auto o2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_O2.png"));
+		auto& rect = o2.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2::Zero;
+	}
+
+	{
+		auto co2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_CO2.png"));
+		auto& rect = co2.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ 0.0f, 100.0f };
+	}
+
+	{
+		mO2Text = Entity{ gRegistry.create() };
+		auto& text = mO2Text.AddComponent<TextComponent>();
+		text.Sentence = L"0";
+		text.X = 100.0f;
+		text.Y = 0.0f;
+	}
+
+	{
+		mCO2Text = Entity{ gRegistry.create() };
+		auto& text = mCO2Text.AddComponent<TextComponent>();
+		text.Sentence = L"0";
+		text.X = 100.0f;
+		text.Y = 100.0f;
+	}
 }
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
@@ -708,6 +744,9 @@ string GetSkillSound(const uint8 preset)
 
 	case 2:
 		return "Skill3.mp3";
+
+	default:
+		return "Skill1.mp3";
 	}
 }
 Texture* GetTileTexture(TileType ttype)

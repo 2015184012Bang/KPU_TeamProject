@@ -33,6 +33,8 @@ private:
     void createScarTile(const Tile& tile);
     void createHouseTile(const Tile& tile);
 
+    void createUI();
+
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();
 
@@ -65,6 +67,9 @@ private:
 
     bool mbChangeScene = false;
     StageCode mStageCode = StageCode::NONE;
+
+    Entity mO2Text = {};
+    Entity mCO2Text = {};
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);
