@@ -24,6 +24,11 @@ void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc
 
 void Room::Update()
 {
+	if (bGameStart)
+	{
+		mPlayTimeSec += Timer::GetDeltaTime();
+	}
+
 	mScriptSystem->Update();
 	mCombatSystem->Update();
 	mMovementSystem->Update();
@@ -92,7 +97,6 @@ void Room::RemoveUser(User* user)
 		// 방 안의 모든 유저가 나가면 게임 상태를 초기화한다.
 		if (mUsers.size() == 0 && mRoomState == RoomState::Playing)
 		{
-			mRoomState = RoomState::Waiting;
 			clearGame();
 		}
 	}
@@ -173,6 +177,8 @@ void Room::DoEnterUpgrade()
 
 void Room::DoEnterGame()
 {
+	bGameStart = true;
+
 	NOTIFY_ENTER_GAME_PACKET negPacket = {};
 	negPacket.PacketID = NOTIFY_ENTER_GAME;
 	negPacket.PacketSize = sizeof(negPacket);
@@ -288,6 +294,20 @@ void Room::DoSkill(User* user)
 	}
 }
 
+void Room::DoGameOver()
+{
+	NOTIFY_GAME_OVER_PACKET packet = {};
+	packet.CO2 = mRegistry.get<PlayStateComponent>(mPlayState).CO2;
+	packet.O2 = mRegistry.get<PlayStateComponent>(mPlayState).O2;
+	packet.PlayTimeSec = static_cast<UINT64>(mPlayTimeSec);
+	packet.PacketID = NOTIFY_GAME_OVER;
+	packet.PacketSize = sizeof(packet);
+	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+
+	clearAllUser();
+	clearGame();
+}
+
 void Room::ChangeTileToRoad(INT32 row, INT32 col)
 {
 	mPathSystem->ChangeTileToRoad(row, col);
@@ -295,7 +315,7 @@ void Room::ChangeTileToRoad(INT32 row, INT32 col)
 
 void Room::checkGameState()
 {
-	if (entt::null == mPlayState)
+	if (!mRegistry.valid(mPlayState))
 	{
 		return;
 	}
@@ -544,6 +564,20 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 	}
 }
 
+void Room::clearAllUser()
+{
+	while (!mUsers.empty())
+	{
+		auto user = mUsers.front();
+		auto clientID = user->GetClientID();
+		mClientIDs.push_back(clientID);
+		user->SetClientID(-1);
+		user->SetRoomIndex(-1);
+		user->SetUserState(User::UserState::IN_LOBBY);
+		mUsers.pop_front();
+	}
+}
+
 void Room::clearGame()
 {
 	mEntityID = 3;	// Entity ID 초기화
@@ -551,6 +585,8 @@ void Room::clearGame()
 	mCollisionSystem->SetStart(false);
 	mPathSystem->ResetGraph();
 	mRoomState = RoomState::Waiting;
+	mPlayTimeSec = 0.0f;
+	bGameStart = false;
 	mRegistry.clear();
 }
 

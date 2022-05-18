@@ -22,6 +22,8 @@ void GameManager::Init(const UINT32 maxSessionCount)
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LOGIN] = std::bind(&GameManager::processRequestLogin, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+	mPacketIdToFunction[REQUEST_ROOM] = std::bind(&GameManager::processRequestRoom, this,
+		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_ENTER_ROOM] = std::bind(&GameManager::processRequestEnterRoom, this,
 		std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 	mPacketIdToFunction[REQUEST_LEAVE_ROOM] = std::bind(&GameManager::processRequestLeaveRoom, this,
@@ -138,7 +140,7 @@ void GameManager::processUserDisconnect(const INT32 sessionIndex, const UINT8 pa
 
 	auto roomIndex = user->GetRoomIndex();
 
-	if (roomIndex != -1)
+	if (-1 != roomIndex)
 	{
 		auto& room = mRoomManager->GetRoom(roomIndex);
 		room->RemoveUser(user);
@@ -170,6 +172,16 @@ void GameManager::processRequestLogin(const INT32 sessionIndex, const UINT8 pack
 	mRoomManager->SendAvailableRoom(sessionIndex);
 }
 
+void GameManager::processRequestRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
+{
+	if (sizeof(REQUEST_ROOM_PACKET) != packetSize)
+	{
+		return;
+	}
+
+	mRoomManager->SendAvailableRoom(sessionIndex);
+}
+
 void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
 {
 	if (sizeof(REQUEST_ENTER_ROOM_PACKET) != packetSize)
@@ -191,12 +203,17 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	
-	room->DoLeaveRoom(user);
+	auto roomIndex = user->GetRoomIndex();
 
-	// Room Scene으로 돌아간 유저에게 이용 가능한 방 목록 전송
-	mRoomManager->SendAvailableRoom(sessionIndex);
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+
+		room->DoLeaveRoom(user);
+
+		// 로비로 돌아간 유저에게 이용 가능한 방 목록 전송
+		mRoomManager->SendAvailableRoom(sessionIndex);
+	}
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -207,8 +224,13 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	room->DoEnterUpgrade();
+	auto roomIndex = user->GetRoomIndex();
+
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		room->DoEnterUpgrade();
+	}
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -219,10 +241,14 @@ void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packe
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+	auto roomIndex = user->GetRoomIndex();
 
-	REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
-	room->DoSetDirection(user, rmPacket->Direction);
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		REQUEST_MOVE_PACKET* rmPacket = reinterpret_cast<REQUEST_MOVE_PACKET*>(packet);
+		room->DoSetDirection(user, rmPacket->Direction);
+	}
 }
 
 void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -233,10 +259,14 @@ void GameManager::processRequestUpgrade(const INT32 sessionIndex, const UINT8 pa
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
+	auto roomIndex = user->GetRoomIndex();
 
-	REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
-	room->DoSetPreset(user, static_cast<UpgradePreset>(ruPacket->UpgradePreset));
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		REQUEST_UPGRADE_PACKET* ruPacket = reinterpret_cast<REQUEST_UPGRADE_PACKET*>(packet);
+		room->DoSetPreset(user, static_cast<UpgradePreset>(ruPacket->UpgradePreset));
+	}
 }
 
 void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -247,8 +277,13 @@ void GameManager::processRequestEnterGame(const INT32 sessionIndex, const UINT8 
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	room->DoEnterGame();
+	auto roomIndex = user->GetRoomIndex();
+
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		room->DoEnterGame();
+	}
 }
 
 void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -259,8 +294,13 @@ void GameManager::processRequestAttack(const INT32 sessionIndex, const UINT8 pac
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	room->DoAttack(user);
+	auto roomIndex = user->GetRoomIndex();
+
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		room->DoAttack(user);
+	}
 }
 
 
@@ -272,8 +312,13 @@ void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 pack
 	}
 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
-	auto& room = mRoomManager->GetRoom(user->GetRoomIndex());
-	room->DoSkill(user);
+	auto roomIndex = user->GetRoomIndex();
+
+	if (-1 != roomIndex)
+	{
+		auto& room = mRoomManager->GetRoom(roomIndex);
+		room->DoSkill(user);
+	}
 }
 
 //void GameManager::DoGameOver()

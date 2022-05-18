@@ -204,6 +204,14 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 	mTargetOffset = offset;
 }
 
+void Client::ResetCamera()
+{
+	mFollowCameraTarget = {};
+	auto& cc = mMainCamera.GetComponent<CameraComponent>();
+	cc.Position = Vector3{ 0.0f, 500.0f, -500.0f };
+	cc.Target = Vector3::Zero;	
+}
+
 void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
 {
 	Entity parent = Entity{ entity };

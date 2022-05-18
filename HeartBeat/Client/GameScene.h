@@ -48,18 +48,18 @@ private:
 
     void processNotifyDeleteEntity(const PACKET& packet);
     void processNotifyCreateEntity(const PACKET& packet);
-    void processGameOver(const PACKET& packet);
+    void processNotifyGameOver(const PACKET& packet);
     void processNotifySkill(const PACKET& packet);
     void processNotifyStateChange(const PACKET& packet);
 
-    void doWhenFail();
+    void doGameOver();
 
 private:
     enum class StageCode
     {
         NONE,
         CLEAR,
-        FAIL,
+        GAMEOVER,
     };
 
     Entity mPlayerCharacter = {};

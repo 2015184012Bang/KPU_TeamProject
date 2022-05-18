@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "UpgradeScene.h"
 #include "RedCell.h"
+#include "LobbyScene.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -71,7 +72,7 @@ void GameScene::ProcessInput()
 			break;
 
 		case NOTIFY_GAME_OVER:
-			processGameOver(packet);
+			processNotifyGameOver(packet);
 			break;
 
 		case NOTIFY_SKILL:
@@ -91,19 +92,17 @@ void GameScene::ProcessInput()
 		{
 			switch (mStageCode)
 			{
-			case StageCode::FAIL:
-				doWhenFail();
-				break;
-
 			case StageCode::CLEAR:
 				break;
 
+			case StageCode::GAMEOVER:
+				doGameOver();
+				break;
+
 			default:
-				HB_ASSERT(false, "Unknown stage code!");
 				break;
 			}
 
-			// 패킷 처리 반복문 탈출
 			break;
 		}
 	}
@@ -581,25 +580,12 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	}
 }
 
-void GameScene::processGameOver(const PACKET& packet)
+void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
-	switch (ngoPacket->Result)
-	{
-	case RESULT_CODE::STAGE_CLEAR:
-		HB_ASSERT(false, "Not implemented yet.");
-		mbChangeScene = true;
-		mStageCode = StageCode::CLEAR;
-		break;
-
-	case RESULT_CODE::STAGE_FAIL:
-	{
-		mbChangeScene = true;
-		mStageCode = StageCode::FAIL;
-	}
-	break;
-	}
+	mbChangeScene = true;
+	mStageCode = StageCode::GAMEOVER;
 }
 
 void GameScene::processNotifySkill(const PACKET& packet)
@@ -619,7 +605,6 @@ void GameScene::processNotifySkill(const PACKET& packet)
 void GameScene::processNotifyStateChange(const PACKET& packet)
 {
 	NOTIFY_STATE_CHANGE_PACKET* nscPacket = reinterpret_cast<NOTIFY_STATE_CHANGE_PACKET*>(packet.DataPtr);
-	HB_LOG("O2: {0}, CO2: {1}", nscPacket->O2, nscPacket->CO2);
 
 	auto& o2 = mO2Text.GetComponent<TextComponent>();
 	o2.Sentence = std::to_wstring(nscPacket->O2);
@@ -628,29 +613,21 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 	co2.Sentence = std::to_wstring(nscPacket->CO2);
 }
 
-void GameScene::doWhenFail()
+void GameScene::doGameOver()
 {
+	mOwner->ResetCamera();
+
+	// Renderable things 삭제
+	DestroyByComponent<Tag_StaticMesh>();
+	DestroyByComponent<Tag_SkeletalMesh>();
+
 	// 재시작을 위해 엔티티 아이디 초기화
 	Values::EntityID = 3;
 
-	auto view = gRegistry.view<Tag_Player>();
-	for (auto entity : view)
-	{
-		Entity player{ entity };
-
-		// 플레이어들의 부착물 삭제(벨트 제외).
-		Helpers::DetachBone(player);
-
-		// 비무장 애니메이션으로 전환.
-		auto& animator = player.GetComponent<AnimatorComponent>();
-		const auto& id = player.GetComponent<IDComponent>();
-		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(id.ID, CharacterAnimationType::IDLE_NONE));
-	}
-
-	// 업그레이드 씬으로 전환.
-	auto newScene = new UpgradeScene{ mOwner };
-	newScene->SetDirection(mDirection);
-	mOwner->ChangeScene(newScene);
+	// 로비씬으로 전환.
+	auto lobbyScene = new LobbyScene{ mOwner };
+	lobbyScene->RequestAvailableRoom();
+	mOwner->ChangeScene(lobbyScene);
 }
 
 void GameScene::createUI()

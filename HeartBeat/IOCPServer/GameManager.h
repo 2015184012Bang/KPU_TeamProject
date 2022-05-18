@@ -38,6 +38,7 @@ private:
 	void processUserConnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processUserDisconnect(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestLogin(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
+	void processRequestRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestEnterRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet);

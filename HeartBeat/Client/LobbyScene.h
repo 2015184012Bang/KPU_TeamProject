@@ -13,6 +13,8 @@ public:
     virtual void Exit() override;
     virtual void ProcessInput() override;
 
+    void RequestAvailableRoom();
+
 private:
     void processNotifyRoom(const PACKET& packet);
     void processAnswerEnterRoom(const PACKET& packet);

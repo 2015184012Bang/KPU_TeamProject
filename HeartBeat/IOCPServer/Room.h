@@ -52,6 +52,8 @@ public:
 
 	void DoSkill(User* user);
 
+	void DoGameOver();
+
 	// 해당 인덱스의 타일 타입을 ROAD로 바꾼다.
 	void ChangeTileToRoad(INT32 row, INT32 col);
 
@@ -80,6 +82,7 @@ private:
 
 	void addTagToTile(entt::entity tile, TileType ttype);
 
+	void clearAllUser();
 	void clearGame();
 
 	Vector3 getCellStartPosition(INT32 index);
@@ -105,6 +108,9 @@ private:
 	unique_ptr<PathSystem> mPathSystem = nullptr;
 
 	entt::entity mPlayState = entt::null;
+
+	float mPlayTimeSec = 0.0f;
+	bool bGameStart = false;
 };
 
 // 타일 타입에 따른 y 위치 반환

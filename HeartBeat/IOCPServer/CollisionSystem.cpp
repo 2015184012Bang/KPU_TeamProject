@@ -321,12 +321,10 @@ void CollisionSystem::checkTankCollision()
 	{
 		if (Intersects(tankBox.WorldBox, tileBox.WorldBox))
 		{
-			//mGameManager->DoGameOver();
+			mOwner->DoGameOver();
 			break;
 		}
 	}
-
-	// TODO : 攀农 - 利 面倒 沤瘤&贸府
 }
 
 void CollisionSystem::checkPlayerOutOfBound()

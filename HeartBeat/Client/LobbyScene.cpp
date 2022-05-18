@@ -54,6 +54,14 @@ void LobbyScene::ProcessInput()
 	}
 }
 
+void LobbyScene::RequestAvailableRoom()
+{
+	REQUEST_ROOM_PACKET packet = {};
+	packet.PacketID = REQUEST_ROOM;
+	packet.PacketSize = sizeof(packet);
+	mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), packet.PacketSize);
+}
+
 void LobbyScene::processNotifyRoom(const PACKET& packet)
 {
 	NOTIFY_ROOM_PACKET* nrPacket = reinterpret_cast<NOTIFY_ROOM_PACKET*>(packet.DataPtr);

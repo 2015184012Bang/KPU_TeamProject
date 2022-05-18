@@ -36,6 +36,7 @@ enum PACKET_ID : UINT8
 	NOTIFY_LOGIN,
 
 	// ·ë ¾À
+	REQUEST_ROOM,
 	NOTIFY_ROOM,
 	REQUEST_ENTER_ROOM,
 	ANSWER_ENTER_ROOM,
@@ -133,6 +134,11 @@ struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 struct NOTIFY_LOGIN_PACKET : public PACKET_HEADER
 {
 	UINT8 ClientID;
+};
+
+struct REQUEST_ROOM_PACKET : public PACKET_HEADER
+{
+
 };
 
 constexpr UINT8 MAX_ROOM_NUM = 32;
@@ -263,7 +269,9 @@ struct NOTIFY_STATE_CHANGE_PACKET : public PACKET_HEADER
 
 struct NOTIFY_GAME_OVER_PACKET : public PACKET_HEADER
 {
-	UINT8 Result;
+	INT32 O2;
+	INT32 CO2;
+	UINT64 PlayTimeSec;
 };
 
 #pragma pack(pop)
