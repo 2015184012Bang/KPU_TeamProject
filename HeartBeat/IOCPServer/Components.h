@@ -111,3 +111,13 @@ struct IHitYouComponent
 	UINT32 HitterID = 0;
 	UINT32 VictimID = 0;
 };
+
+struct PlayStateComponent
+{
+	PlayStateComponent() = default;
+
+	INT32 O2 = 0;
+	INT32 CO2 = 0;
+
+	bool bChanged = false;
+};

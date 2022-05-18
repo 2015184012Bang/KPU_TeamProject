@@ -76,6 +76,10 @@ void GameScene::ProcessInput()
 			processNotifySkill(packet);
 			break;
 
+		case NOTIFY_STATE_CHANGE:
+			processNotifyStateChange(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -611,6 +615,12 @@ void GameScene::processNotifySkill(const PACKET& packet)
 	{
 		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
 	}
+}
+
+void GameScene::processNotifyStateChange(const PACKET& packet)
+{
+	NOTIFY_STATE_CHANGE_PACKET* nscPacket = reinterpret_cast<NOTIFY_STATE_CHANGE_PACKET*>(packet.DataPtr);
+	HB_LOG("O2: {0}, CO2: {1}", nscPacket->O2, nscPacket->CO2);
 }
 
 void GameScene::doWhenFail()

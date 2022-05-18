@@ -113,14 +113,20 @@ public:
 	virtual void Exit() override;
 
 private:
+	void IncreaseCO2();
+	void IncreaseO2();
+
+private:
 	weak_ptr<RedCell> mOwner;
+
+	entt::entity mPlayState = entt::null;
 };
 
 /************************************************************************/
 /* CellRestState                                                        */
 /************************************************************************/
 
-constexpr float MAX_CELL_WAIT_TIME = 5.0f;
+constexpr float MAX_CELL_WAIT_TIME = 2.0f;
 
 class CellRestState
 	: public AIState

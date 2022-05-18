@@ -8,6 +8,7 @@
 #include "Random.h"
 #include "Protocol.h"
 #include "RedCell.h"
+#include "Entity.h"
 
 
 AIState::AIState(string_view stateName)
@@ -299,6 +300,12 @@ void CellDeliverState::Enter()
 		auto target = owner->GetTarget();
 		pathfind.TargetPosition = owner->GetRegistry().get<TransformComponent>(target).Position;
 	}
+
+	mPlayState = GetEntityByName(owner->GetRegistry(), "PlayState");
+	if (entt::null == mPlayState)
+	{
+		LOG("PlayState is not valid entity");
+	}
 }
 
 void CellDeliverState::Update()
@@ -321,12 +328,14 @@ void CellDeliverState::Update()
 	{
 		if (owner->GetRegistry().any_of<Tag_HouseTile>(target))
 		{
+			IncreaseO2();
 			owner->SetTargetCart();
 			owner->ChangeState("CellRestState");
 			return;
 		}
 		else
 		{
+			IncreaseCO2();
 			owner->SetTargetHouse();
 			owner->ChangeState("CellRestState");
 			return;
@@ -354,6 +363,34 @@ void CellDeliverState::Exit()
 
 	auto& movement = owner->GetComponent<MovementComponent>();
 	movement.Direction = Vector3::Zero;
+}
+
+void CellDeliverState::IncreaseCO2()
+{
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& gameState = owner->GetRegistry().get<PlayStateComponent>(mPlayState);
+	++gameState.CO2;
+	gameState.bChanged = true;
+}
+
+void CellDeliverState::IncreaseO2()
+{
+	auto owner = mOwner.lock();
+
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& gameState = owner->GetRegistry().get<PlayStateComponent>(mPlayState);
+	++gameState.O2;
+	gameState.bChanged = true;
 }
 
 /************************************************************************/
@@ -393,5 +430,3 @@ void CellRestState::Exit()
 {
 
 }
-
-

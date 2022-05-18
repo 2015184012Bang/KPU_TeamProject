@@ -65,6 +65,8 @@ public:
 	void SetState(RoomState state) { mRoomState = state; }
 
 private:
+	void checkGameState();
+
 	bool canEnterRoom();
 
 	void notifyNewbie(User* newbie);
@@ -74,6 +76,7 @@ private:
 	void createTiles(string_view fileName);
 	void createTankAndCart();
 	void createCells();
+	void createGameState();
 
 	void addTagToTile(entt::entity tile, TileType ttype);
 
@@ -100,6 +103,8 @@ private:
 	unique_ptr<CombatSystem> mCombatSystem = nullptr;
 	unique_ptr<CollisionSystem> mCollisionSystem = nullptr;
 	unique_ptr<PathSystem> mPathSystem = nullptr;
+
+	entt::entity mPlayState = entt::null;
 };
 
 // 타일 타입에 따른 y 위치 반환

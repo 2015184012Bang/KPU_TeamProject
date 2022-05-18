@@ -30,6 +30,8 @@ void Room::Update()
 	mCollisionSystem->Update();
 	mEnemySystem->Update();
 	mPathSystem->Update();
+
+	checkGameState();
 }
 
 void Room::AddUser(User* user)
@@ -183,6 +185,9 @@ void Room::DoEnterGame()
 
 	createCells();
 
+	// 게임 상태(산소, 이산화탄소 정보 등등)를 기록할 매니저 생성
+	createGameState();
+
 	// 플레이어들의 시작 위치를 랜덤하게 설정
 	mMovementSystem->SetPlayersStartPos();
 
@@ -286,6 +291,27 @@ void Room::DoSkill(User* user)
 void Room::ChangeTileToRoad(INT32 row, INT32 col)
 {
 	mPathSystem->ChangeTileToRoad(row, col);
+}
+
+void Room::checkGameState()
+{
+	if (entt::null == mPlayState)
+	{
+		return;
+	}
+
+	auto& gameState = mRegistry.get<PlayStateComponent>(mPlayState);
+	if (gameState.bChanged)
+	{
+		gameState.bChanged = false;
+
+		NOTIFY_STATE_CHANGE_PACKET packet = {};
+		packet.CO2 = gameState.CO2;
+		packet.O2 = gameState.O2;
+		packet.PacketID = NOTIFY_STATE_CHANGE;
+		packet.PacketSize = sizeof(packet);
+		Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+	}
 }
 
 bool Room::canEnterRoom()
@@ -458,6 +484,13 @@ void Room::createCells()
 
 		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
+}
+
+void Room::createGameState()
+{
+	mPlayState = mRegistry.create();
+	mRegistry.emplace<NameComponent>(mPlayState, "PlayState");
+	mRegistry.emplace<PlayStateComponent>(mPlayState);
 }
 
 void Room::addTagToTile(entt::entity tile, TileType ttype)

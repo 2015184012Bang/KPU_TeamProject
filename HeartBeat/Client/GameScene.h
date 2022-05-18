@@ -48,6 +48,7 @@ private:
     void processNotifyCreateEntity(const PACKET& packet);
     void processGameOver(const PACKET& packet);
     void processNotifySkill(const PACKET& packet);
+    void processNotifyStateChange(const PACKET& packet);
 
     void doWhenFail();
 
