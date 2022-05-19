@@ -105,9 +105,9 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		}
 	}
 
-	// 버프가 켜져 있으면 타일 공격력 10.
+	// 버프가 켜져 있으면 타일 공격력 5(지방 타일의 최대 체력)
 	auto& combat = mRegistry.get<CombatComponent>(character);
-	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? 10 : 1;
+	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? 5 : 1;
 
 	// 히트박스와 부술 수 있는 타일과의 충돌 체크
 	auto tiles = mRegistry.view<Tag_BreakableTile, BoxComponent>();
