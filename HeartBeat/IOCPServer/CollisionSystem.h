@@ -6,6 +6,8 @@ class Room;
 
 class CollisionSystem
 {
+	friend class Timer;
+
 public:
 	CollisionSystem(entt::registry& registry, shared_ptr<Room>&& room);
 
@@ -30,7 +32,10 @@ private:
 
 	void createItem(const Vector3& position);
 
-	void doItemUse(const entt::entity item);
+	void doItemUse(const entt::entity item, const entt::entity player);
+
+	// 카페인 섭취로 증가한 플레이어 능력 원상복귀
+	void backPlayerStatus(const entt::entity player);
 
 private:
 	entt::registry& mRegistry;

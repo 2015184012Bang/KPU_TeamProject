@@ -9,6 +9,7 @@
 #include "Room.h"
 #include "GameMap.h"
 #include "Random.h"
+#include "Timer.h"
 
 CollisionSystem::CollisionSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
@@ -55,6 +56,9 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 	Box hitbox = Box::GetBox("Hitbox");
 	hitbox.Update(transform.Position, transform.Yaw);
 
+	auto& combat = mRegistry.get<CombatComponent>(character);
+	INT32 baseAttackDmg = combat.BaseAttackDmg;
+
 	// 히트박스와 바이러스의 충돌 체크
 	auto viruses = mRegistry.view<Tag_Virus, BoxComponent>();
 	for (auto [entity, enemyBox] : viruses.each())
@@ -62,7 +66,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		if (Intersects(hitbox, enemyBox.WorldBox))
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
-			--health.Health;
+			health.Health -= baseAttackDmg;
 
 			if (health.Health <= 0)
 			{
@@ -106,7 +110,6 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 	}
 
 	// 버프가 켜져 있으면 타일 공격력 5(지방 타일의 최대 체력)
-	auto& combat = mRegistry.get<CombatComponent>(character);
 	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? 5 : 1;
 
 	// 히트박스와 부술 수 있는 타일과의 충돌 체크
@@ -270,7 +273,7 @@ void CollisionSystem::checkPlayersCollision()
 		{
 			if (Intersects(playerBox.WorldBox, itemBox.WorldBox))
 			{
-				doItemUse(iEnt);
+				doItemUse(iEnt, pEnt);
 			}
 		}
 	}
@@ -362,7 +365,7 @@ void CollisionSystem::createItem(const Vector3& position)
 	mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 }
 
-void CollisionSystem::doItemUse(const entt::entity item)
+void CollisionSystem::doItemUse(const entt::entity item, const entt::entity player)
 {
 	EntityType itemType = mRegistry.any_of<Tag_Vitamin>(item) ?
 		EntityType::VITAMIN :
@@ -388,8 +391,30 @@ void CollisionSystem::doItemUse(const entt::entity item)
 	}
 	else
 	{
-		// TODO : 플레이어 공격력, 이동속도 강화
+		//auto& movement = mRegistry.get<MovementComponent>(player);
+		//movement.Speed *= 2.0f;
+		auto& combat = mRegistry.get<CombatComponent>(player);
+		combat.BaseAttackDmg += 5;
+
+		Timer::AddEvent(10.0f, [this, player]() {
+			backPlayerStatus(player);
+			});
 	}
+}
+
+void CollisionSystem::backPlayerStatus(const entt::entity player)
+{
+	if (!mRegistry.valid(player))
+	{
+		return;
+	}
+
+	//auto& movement = mRegistry.get<MovementComponent>(player);
+	//movement.Speed = Values::PlayerSpeed;
+	auto& combat = mRegistry.get<CombatComponent>(player);
+	combat.BaseAttackDmg -= 5;
+
+	LOG("BaseAttackDmg: {0}", combat.BaseAttackDmg);
 }
 
 void CollisionSystem::checkTankCollision()

@@ -4,6 +4,8 @@
 UINT64 Timer::sFrequency;
 UINT64 Timer::sPrevCount;
 float Timer::sDeltaTime;
+vector<TimerEvent> Timer::sTimerEvents;
+
 
 void Timer::Init()
 {
@@ -23,7 +25,27 @@ void Timer::Update()
 		sDeltaTime = 0.05f;
 	}
 
+	auto iter = sTimerEvents.begin();
+	while (iter != sTimerEvents.end())
+	{
+		iter->DueTime -= sDeltaTime;
+
+		if (iter->DueTime < 0.0f)
+		{
+			iter->Func();
+			iter = sTimerEvents.erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 	sPrevCount = currentCount;
 }
 
+void Timer::AddEvent(float dueTime, std::function<void()> func)
+{
+	sTimerEvents.emplace_back(dueTime, func);
+}
 
