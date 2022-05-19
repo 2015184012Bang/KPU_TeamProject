@@ -488,6 +488,18 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::VITAMIN:
+	{
+		DestroyEntityByID(ndePacket->EntityID);
+	}
+	break;
+
+	case EntityType::CAFFEINE:
+	{
+		DestroyEntityByID(ndePacket->EntityID);
+	}
+	break;
+
 	default:
 		break;
 	}
@@ -567,6 +579,24 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
 			TEXTURE("O2.png"));
 		Helpers::AttachBone(cell, o2, "Weapon");
+	}
+	break;
+
+	case EntityType::CAFFEINE:
+	{
+		Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Sphere.mesh"),
+			TEXTURE("Brown.png"), ncePacket->EntityID);
+		caffeine.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		caffeine.AddTag<Tag_Item>();
+	}
+	break;
+
+	case EntityType::VITAMIN:
+	{
+		Entity vitamin = mOwner->CreateStaticMeshEntity(MESH("Sphere.mesh"),
+			TEXTURE("Yellow.png"), ncePacket->EntityID);
+		vitamin.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		vitamin.AddTag<Tag_Item>();
 	}
 	break;
 

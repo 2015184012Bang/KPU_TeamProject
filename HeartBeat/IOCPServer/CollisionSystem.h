@@ -28,6 +28,10 @@ private:
 
 	void changeTileTypeInGraph(entt::entity tile);
 
+	void createItem(const Vector3& position);
+
+	void doItemUse(const entt::entity item);
+
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;

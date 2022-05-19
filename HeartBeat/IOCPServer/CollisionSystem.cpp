@@ -8,7 +8,7 @@
 #include "Values.h"
 #include "Room.h"
 #include "GameMap.h"
-
+#include "Random.h"
 
 CollisionSystem::CollisionSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
@@ -122,6 +122,13 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 			{
 				// 그래프 속 타일 타입 갱신
 				changeTileTypeInGraph(entity);
+
+				// 타일을 부수면 일정 확률로 아이템 생성(비타민, 카페인)
+				if (Random::RandInt(10, 10) > 5)
+				{
+					auto& transform = mRegistry.get<TransformComponent>(entity);
+					createItem(transform.Position);
+				}
 
 				// 엔티티 삭제 패킷 송신
 				NOTIFY_DELETE_ENTITY_PACKET packet = {};
@@ -254,6 +261,19 @@ void CollisionSystem::checkPlayersCollision()
 			}
 		}
 	}
+
+	// 플레이어 - 아이템
+	auto items = mRegistry.view<Tag_Item, BoxComponent>();
+	for (auto [pEnt, playerBox] : players.each())
+	{
+		for (auto [iEnt, itemBox] : items.each())
+		{
+			if (Intersects(playerBox.WorldBox, itemBox.WorldBox))
+			{
+				doItemUse(iEnt);
+			}
+		}
+	}
 }
 
 void CollisionSystem::reposition(BoxComponent& playerBox, entt::entity player, BoxComponent& otherBox)
@@ -307,6 +327,69 @@ void CollisionSystem::changeTileTypeInGraph(entt::entity tile)
 	INT32 col = static_cast<INT32>((tilePosition.x + 1.0f) / Values::TileSide);
 
 	mOwner->ChangeTileToRoad(row, col);
+}
+
+void CollisionSystem::createItem(const Vector3& position)
+{
+	auto item = mRegistry.create();
+	mRegistry.emplace<Tag_Item>(item);
+	auto& id = mRegistry.emplace<IDComponent>(item, mOwner->GetEntityID());
+	auto& transform = mRegistry.emplace<TransformComponent>(item);
+	transform.Position = position;
+
+	EntityType eType = EntityType::END;
+	if (Random::RandInt(0, 1) == 0)
+	{
+		mRegistry.emplace<Tag_Vitamin>(item);
+		mRegistry.emplace<BoxComponent>(item, &Box::GetBox("Sphere.box"),
+			transform.Position, transform.Yaw);
+		eType = EntityType::VITAMIN;
+	}
+	else
+	{
+		mRegistry.emplace<Tag_Caffeine>(item);
+		mRegistry.emplace<BoxComponent>(item, &Box::GetBox("Sphere.box"),
+			transform.Position, transform.Yaw);
+		eType = EntityType::CAFFEINE;
+	}
+
+	NOTIFY_CREATE_ENTITY_PACKET packet = {};
+	packet.EntityID = id.ID;
+	packet.EntityType = static_cast<UINT8>(eType);
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
+	packet.PacketSize = sizeof(packet);
+	packet.Position = transform.Position;
+	mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+}
+
+void CollisionSystem::doItemUse(const entt::entity item)
+{
+	EntityType itemType = mRegistry.any_of<Tag_Vitamin>(item) ?
+		EntityType::VITAMIN :
+		EntityType::CAFFEINE;
+
+	NOTIFY_DELETE_ENTITY_PACKET packet = {};
+	packet.EntityID = mRegistry.get<IDComponent>(item).ID;
+	packet.EntityType = static_cast<UINT8>(itemType);
+	packet.PacketID = NOTIFY_DELETE_ENTITY;
+	packet.PacketSize = sizeof(packet);
+	mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+	DestroyEntity(mRegistry, item);
+
+	if (EntityType::VITAMIN == itemType)
+	{
+		auto e = GetEntityByName(mRegistry, "PlayState");
+		ASSERT(mRegistry.valid(e), "Invalid entity!");
+
+		auto& playState = mRegistry.get<PlayStateComponent>(e);
+		playState.CO2 += 10;
+		playState.O2 += 10;
+		playState.bChanged = true;
+	}
+	else
+	{
+		// TODO : 플레이어 공격력, 이동속도 강화
+	}
 }
 
 void CollisionSystem::checkTankCollision()
