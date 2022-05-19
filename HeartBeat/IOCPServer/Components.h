@@ -116,8 +116,8 @@ struct PlayStateComponent
 {
 	PlayStateComponent() = default;
 
-	INT8 O2 = 0;
-	INT8 CO2 = 0;
+	INT32 O2 = 0;
+	INT32 CO2 = 0;
 	INT8 TankHealth = 0;
 	INT8 P0HP = 0;
 	INT8 P1HP = 0;
