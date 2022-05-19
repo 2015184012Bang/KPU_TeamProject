@@ -22,13 +22,13 @@ public:
 
 	void DoBuff(const INT8 clientID);
 
-	void Start();
+	void SetStart();
 
 private:
 	void updateCooldown();
 	void checkEnemyAttack();
 
-	void updatePlayerHPState(const UINT32 id);
+	void updatePlayerHPState(const INT32 health, const UINT32 id);
 	void doEntityDie(const entt::entity eid, EntityType eType);
 
 private:

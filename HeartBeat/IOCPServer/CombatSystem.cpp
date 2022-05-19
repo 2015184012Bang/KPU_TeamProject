@@ -114,7 +114,7 @@ void CombatSystem::DoBuff(const INT8 clientID)
 	combat.BuffDuration = 10.0f;
 }
 
-void CombatSystem::Start()
+void CombatSystem::SetStart()
 {
 	// PlayState id Ä³½Ì
 	mPlayState = GetEntityByName(mRegistry, "PlayState");
@@ -176,7 +176,7 @@ void CombatSystem::checkEnemyAttack()
 		else // Player
 		{
 			auto& id = mRegistry.get<IDComponent>(victim);
-			updatePlayerHPState(id.ID);
+			updatePlayerHPState(health.Health, id.ID);
 			eType = EntityType::PLAYER;
 		}
 
@@ -187,22 +187,22 @@ void CombatSystem::checkEnemyAttack()
 	}
 }
 
-void CombatSystem::updatePlayerHPState(const UINT32 id)
+void CombatSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
 {
 	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
 
 	switch (id)
 	{
 	case 0:
-		--playState.P0HP;
+		playState.P0HP = health;
 		break;
 
 	case 1:
-		--playState.P1HP;
+		playState.P1HP = health;
 		break;
 
 	case 2:
-		--playState.P2HP;
+		playState.P2HP = health;
 		break;
 
 	default:

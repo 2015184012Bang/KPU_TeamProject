@@ -17,7 +17,7 @@ public:
 
 	void DoWhirlwind(const INT8 clientID);
 
-	void SetStart(bool value) { mbStart = value; }
+	void SetStart(bool value);
 	
 	void SetBorder(const Vector3& border) { mBorder = border; }
 
@@ -37,6 +37,8 @@ private:
 	// 카페인 섭취로 증가한 플레이어 능력 원상복귀
 	void backPlayerStatus(const entt::entity player);
 
+	void updatePlayerHPState(const INT32 health, const UINT32 id);
+
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
@@ -46,5 +48,8 @@ private:
 
 	// 맵 경계
 	Vector3 mBorder = Vector3::Zero;
+
+	entt::entity mPlayState = entt::null;
 };
 
+INT32 GetBaseAttackDmg(UpgradePreset preset);

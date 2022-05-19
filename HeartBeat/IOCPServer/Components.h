@@ -53,6 +53,7 @@ struct CombatComponent
 	float SkillCooldown = 0.0f;
 	float SkillTracker = 0.0f;
 	float BuffDuration = 0.0f;
+	bool bEatCaffeine = false;
 };
 
 struct BoxComponent

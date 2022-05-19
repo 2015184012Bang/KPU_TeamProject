@@ -204,7 +204,7 @@ void Room::DoEnterGame()
 	// 충돌 체크 시작
 	mCollisionSystem->SetStart(true);
 
-	mCombatSystem->Start();
+	mCombatSystem->SetStart();
 }
 
 void Room::DoSetDirection(User* user, const Vector3& direction)
@@ -216,13 +216,13 @@ void Room::DoSetDirection(User* user, const Vector3& direction)
 	auto entity = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(entity), "Invalid entity!");
 
-	NOTIFY_MOVE_PACKET anmPacket = {};
-	anmPacket.PacketID = NOTIFY_MOVE;
-	anmPacket.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
-	anmPacket.Direction = user->GetMoveDirection();
-	anmPacket.Position = user->GetPosition();
-	anmPacket.EntityID = clientID;
-	Broadcast(sizeof(anmPacket), reinterpret_cast<char*>(&anmPacket));
+	NOTIFY_MOVE_PACKET packet = {};
+	packet.PacketID = NOTIFY_MOVE;
+	packet.PacketSize = sizeof(NOTIFY_MOVE_PACKET);
+	packet.Direction = user->GetMoveDirection();
+	packet.Position = user->GetPosition();
+	packet.EntityID = clientID;
+	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 }
 
 void Room::DoSetPreset(User* user, UpgradePreset preset)

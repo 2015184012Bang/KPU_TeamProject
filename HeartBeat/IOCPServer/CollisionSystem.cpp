@@ -198,6 +198,13 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 	}
 }
 
+void CollisionSystem::SetStart(bool value)
+{
+	mbStart = value;
+	mPlayState = GetEntityByName(mRegistry, "PlayState");
+	ASSERT(mRegistry.valid(mPlayState), "Invalid entity!");
+}
+
 void CollisionSystem::checkPlayersCollision()
 {
 	// 플레이어 - 타일
@@ -381,22 +388,29 @@ void CollisionSystem::doItemUse(const entt::entity item, const entt::entity play
 
 	if (EntityType::VITAMIN == itemType)
 	{
-		auto e = GetEntityByName(mRegistry, "PlayState");
-		ASSERT(mRegistry.valid(e), "Invalid entity!");
-
-		auto& playState = mRegistry.get<PlayStateComponent>(e);
+		auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
 		playState.CO2 += 10;
 		playState.O2 += 10;
 		playState.bChanged = true;
 	}
 	else
 	{
-		//auto& movement = mRegistry.get<MovementComponent>(player);
-		//movement.Speed *= 2.0f;
-		auto& combat = mRegistry.get<CombatComponent>(player);
-		combat.BaseAttackDmg += 5;
+		auto& health = mRegistry.get<HealthComponent>(player);
+		++health.Health;
+		if (health.Health > Values::PlayerHealth)
+		{
+			health.Health = Values::PlayerHealth;
+		}
+		updatePlayerHPState(health.Health, mRegistry.get<IDComponent>(player).ID);
 
-		Timer::AddEvent(10.0f, [this, player]() {
+		auto& combat = mRegistry.get<CombatComponent>(player);
+		if (!combat.bEatCaffeine)
+		{
+			combat.bEatCaffeine = true;
+			combat.BaseAttackDmg += 5;
+		}
+
+		Timer::AddEvent(5.0f, [this, player]() {
 			backPlayerStatus(player);
 			});
 	}
@@ -409,12 +423,34 @@ void CollisionSystem::backPlayerStatus(const entt::entity player)
 		return;
 	}
 
-	//auto& movement = mRegistry.get<MovementComponent>(player);
-	//movement.Speed = Values::PlayerSpeed;
 	auto& combat = mRegistry.get<CombatComponent>(player);
-	combat.BaseAttackDmg -= 5;
+	combat.bEatCaffeine = false;
+	combat.BaseAttackDmg = GetBaseAttackDmg(combat.Preset);
+}
 
-	LOG("BaseAttackDmg: {0}", combat.BaseAttackDmg);
+void CollisionSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
+{
+	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
+	playState.bChanged = true;
+
+	switch (id)
+	{
+	case 0:
+		playState.P0HP = health;
+		break;
+
+	case 1:
+		playState.P1HP = health;
+		break;
+
+	case 2:
+		playState.P2HP = health;
+		break;
+
+	default:
+		ASSERT(false, "Invalid player id!");
+		break;
+	}
 }
 
 void CollisionSystem::checkTankCollision()
@@ -466,5 +502,24 @@ void CollisionSystem::checkPlayerOutOfBound()
 
 			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 		}
+	}
+}
+
+INT32 GetBaseAttackDmg(UpgradePreset preset)
+{
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK:
+		return 3;
+		
+	case UpgradePreset::HEAL:
+		return 1;
+
+	case UpgradePreset::SUPPORT:
+		return 2;
+
+	default:
+		ASSERT(false, "Unknown preset!");
+		return 0;
 	}
 }
