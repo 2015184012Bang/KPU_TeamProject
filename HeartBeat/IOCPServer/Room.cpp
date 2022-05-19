@@ -203,6 +203,8 @@ void Room::DoEnterGame()
 
 	// 충돌 체크 시작
 	mCollisionSystem->SetStart(true);
+
+	mCombatSystem->Start();
 }
 
 void Room::DoSetDirection(User* user, const Vector3& direction)
@@ -328,6 +330,7 @@ void Room::checkGameState()
 		NOTIFY_STATE_CHANGE_PACKET packet = {};
 		packet.CO2 = gameState.CO2;
 		packet.O2 = gameState.O2;
+		packet.TankHealth = gameState.TankHealth;
 		packet.PacketID = NOTIFY_STATE_CHANGE;
 		packet.PacketSize = sizeof(packet);
 		Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
@@ -510,7 +513,11 @@ void Room::createGameState()
 {
 	mPlayState = mRegistry.create();
 	mRegistry.emplace<NameComponent>(mPlayState, "PlayState");
-	mRegistry.emplace<PlayStateComponent>(mPlayState);
+	auto& state = mRegistry.emplace<PlayStateComponent>(mPlayState);
+	state.P0HP = Values::PlayerHealth;
+	state.P1HP = Values::PlayerHealth;
+	state.P2HP = Values::PlayerHealth;
+	state.TankHealth = Values::TankHealth;
 }
 
 void Room::addTagToTile(entt::entity tile, TileType ttype)

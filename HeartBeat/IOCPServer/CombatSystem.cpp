@@ -114,6 +114,13 @@ void CombatSystem::DoBuff(const INT8 clientID)
 	combat.BuffDuration = 10.0f;
 }
 
+void CombatSystem::Start()
+{
+	// PlayState id 캐싱
+	mPlayState = GetEntityByName(mRegistry, "PlayState");
+	ASSERT(mRegistry.valid(mPlayState), "Invalid entity!");
+}
+
 void CombatSystem::updateCooldown()
 {
 	auto view = mRegistry.view<CombatComponent>();
@@ -136,21 +143,12 @@ void CombatSystem::checkEnemyAttack()
 			continue;
 		}
 
-		auto& health = mRegistry.get<HealthComponent>(victim);
-		--health.Health;
-
-		if (health.Health <= 0)
-		{
-			// TODO: 플레이어/NPC 사망 처리
-		}
-
 		NOTIFY_ENEMY_ATTACK_PACKET packet = {};
 		packet.HitterID = hit.HitterID;
 		packet.VictimID = hit.VictimID;
 		packet.PacketSize = sizeof(packet);
 		packet.PacketID = NOTIFY_ENEMY_ATTACK;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
 		mRegistry.remove<IHitYouComponent>(entity);
 
 		// Dog인 경우 공격 한 번 하고 삭제.
@@ -159,5 +157,64 @@ void CombatSystem::checkEnemyAttack()
 		{
 			DestroyEntity(mRegistry, entity);
 		}
+
+		auto& health = mRegistry.get<HealthComponent>(victim);
+		--health.Health;
+
+		auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
+		playState.bChanged = true;
+		EntityType eType = EntityType::END;
+		if (mRegistry.any_of<Tag_Tank>(victim))
+		{
+			--playState.TankHealth;
+			eType = EntityType::TANK;
+		}
+		else if(mRegistry.any_of<Tag_RedCell>(victim))
+		{
+			eType = EntityType::RED_CELL;
+		}
+		else // Player
+		{
+			auto& id = mRegistry.get<IDComponent>(victim);
+			updatePlayerHPState(id.ID);
+			eType = EntityType::PLAYER;
+		}
+
+		if (health.Health <= 0)
+		{
+			doEntityDie(victim, eType);
+		}
+	}
+}
+
+void CombatSystem::updatePlayerHPState(const UINT32 id)
+{
+	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
+
+	switch (id)
+	{
+	case 0:
+		--playState.P0HP;
+		break;
+
+	case 1:
+		--playState.P1HP;
+		break;
+
+	case 2:
+		--playState.P2HP;
+		break;
+
+	default:
+		ASSERT(false, "Unknown player id!");
+		break;
+	}
+}
+
+void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
+{
+	if (EntityType::TANK == eType)
+	{
+		mOwner->DoGameOver();
 	}
 }

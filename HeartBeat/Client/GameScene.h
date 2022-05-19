@@ -65,6 +65,9 @@ private:
     Entity mO2Text = {};
     Entity mCO2Text = {};
 
+    int mTankHP = 0;
+    vector<Entity> mTankHpUI;
+
     bool bIsGameOver = false;
 };
 

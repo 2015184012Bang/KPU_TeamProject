@@ -18,6 +18,8 @@
 #include "LobbyScene.h"
 #include "Timer.h"
 
+constexpr int MAX_TANK_HP = 3;
+
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
 {
@@ -503,6 +505,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID, "../Assets/Boxes/Tank.box");
 		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		tank.AddComponent<MovementComponent>(Values::TankSpeed);
+		tank.AddComponent<NameComponent>("Tank");
 		auto& animator = tank.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
 	}
@@ -576,6 +579,14 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
+	// 탱크 Hp UI 삭제
+	for (auto ui : mTankHpUI)
+	{
+		DestroyEntity(ui);
+	}
+	mTankHpUI.clear();
+
+	// 게임 오버 UI 팝업
 	Entity gameOverUI = Entity{ gRegistry.create() };
 	auto& text = gameOverUI.AddComponent<TextComponent>();
 	text.Sentence = L"CO2: " + std::to_wstring(ngoPacket->CO2) +
@@ -584,6 +595,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	text.X = 100.0f;
 	text.Y = 100.0f;
 
+	// 더이상 패킷 처리하지 않도록 flag 값 변경
 	bIsGameOver = true;
 
 	auto tank = GetEntityByName("Tank");
@@ -630,6 +642,13 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 
 	auto& co2 = mCO2Text.GetComponent<TextComponent>();
 	co2.Sentence = std::to_wstring(nscPacket->CO2);
+
+	if (mTankHP > nscPacket->TankHealth)
+	{
+		mTankHP = nscPacket->TankHealth;
+		DestroyEntity(mTankHpUI.back());
+		mTankHpUI.pop_back();
+	}
 }
 
 void GameScene::doGameOver()
@@ -653,18 +672,21 @@ void GameScene::createUI()
 {
 	{
 		auto o2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_O2.png"));
+		o2.AddTag<Tag_UI>();
 		auto& rect = o2.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2::Zero;
 	}
 
 	{
 		auto co2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_CO2.png"));
+		co2.AddTag<Tag_UI>();
 		auto& rect = co2.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ 0.0f, 100.0f };
 	}
 
 	{
 		mO2Text = Entity{ gRegistry.create() };
+		mO2Text.AddTag<Tag_UI>();
 		auto& text = mO2Text.AddComponent<TextComponent>();
 		text.Sentence = L"0";
 		text.X = 100.0f;
@@ -673,10 +695,24 @@ void GameScene::createUI()
 
 	{
 		mCO2Text = Entity{ gRegistry.create() };
+		mCO2Text.AddTag<Tag_UI>();
 		auto& text = mCO2Text.AddComponent<TextComponent>();
 		text.Sentence = L"0";
 		text.X = 100.0f;
 		text.Y = 100.0f;
+	}
+
+	{
+		mTankHP = MAX_TANK_HP;
+		for (int i = 0; i < MAX_TANK_HP; ++i)
+		{
+			auto ui = mOwner->CreateSpriteEntity(40, 20, TEXTURE("Red.png"));
+			ui.AddTag<Tag_UI>();
+			auto& rect = ui.GetComponent<RectTransformComponent>();
+			rect.Position = Vector2{ 600.0f, 150.0f - i * 25.0f };
+
+			mTankHpUI.push_back(ui);
+		}
 	}
 }
 
