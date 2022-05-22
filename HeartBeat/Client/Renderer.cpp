@@ -705,6 +705,7 @@ void Renderer::loadAllAssetsFromFile()
 	BOX("Character.box");
 	BOX("Cube.box");
 	BOX("Dog.box");
+	BOX("Door.box");
 	BOX("House.box");
 	BOX("Pickax.box");
 	BOX("Tank.box");
