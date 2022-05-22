@@ -22,6 +22,11 @@ void MovementSystem::Update()
 	{
 		transform.Position += movement.Direction * movement.Speed * Timer::GetDeltaTime();
 	}
+	
+	if (!mbMidPointFlag)
+	{
+		checkArriveAtMidPoint();
+	}
 
 	SendNotifyMovePackets();
 }
@@ -129,5 +134,43 @@ void MovementSystem::SetPlayersStartPos()
 		packet.Position = transform.Position;
 
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+}
+
+void MovementSystem::checkArriveAtMidPoint()
+{
+	auto tank = GetEntityByName(mRegistry, "Tank");
+	if (!mRegistry.valid(tank))
+	{
+		return;
+	}
+
+	auto midPoint = GetEntityByName(mRegistry, "MidPoint");
+	if (!mRegistry.valid(midPoint))
+	{
+		return;
+	}
+
+	const auto& tankPos = mRegistry.get<TransformComponent>(tank).Position;
+	auto midPos = mRegistry.get<TransformComponent>(midPoint).Position;
+	midPos.y = 0.0f;
+
+	float dist = Vector3::DistanceSquared(tankPos, midPos);
+
+	if (dist < 100.0f)
+	{
+		mRegistry.get<MovementComponent>(tank).Direction = Vector3::Zero;
+		auto cart = GetEntityByName(mRegistry, "Cart");
+		mRegistry.get<MovementComponent>(cart).Direction = Vector3::Zero;
+		mbMidPointFlag = true;
+
+		mRegistry.emplace<Tag_Stop>(tank);
+		mRegistry.emplace<Tag_Stop>(cart);
+
+		Timer::AddEvent(5.0f, [this, tank, cart]()
+			{
+				mRegistry.remove<Tag_Stop>(tank);
+				mRegistry.remove<Tag_Stop>(cart);
+			});
 	}
 }

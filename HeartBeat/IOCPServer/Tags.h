@@ -15,3 +15,4 @@ struct Tag_RedCell {};
 struct Tag_Vitamin {};
 struct Tag_Caffeine {};
 struct Tag_Item {};
+struct Tag_Stop {};

@@ -44,6 +44,11 @@ public:
 
 	virtual void Update() override
 	{
+		if (HasComponent<Tag_Stop>())
+		{
+			return;
+		}
+
 		const auto& position = GetComponent<TransformComponent>().Position;
 		const float posToEnd = Vector3::DistanceSquared(position, mEndPoint);
 
