@@ -17,26 +17,24 @@ TestScene::TestScene(Client* owner)
 void TestScene::Enter()
 {
 	auto& camera = mOwner->GetMainCamera();
-	camera.GetComponent<CameraComponent>().Position.z = -1000.0f;
+	camera.GetComponent<CameraComponent>().Position.z = -5000.0f;
 
-	Entity player = mOwner->CreateSkeletalMeshEntity(MESH("Character_Red.mesh"),
-		TEXTURE("Character_Red.png"), SKELETON("Character_Red.skel"));
-	auto& animator = player.GetComponent<AnimatorComponent>();
+	//Entity boss = mOwner->CreateSkeletalMeshEntity(MESH("Boss.mesh"),
+	//	TEXTURE("Temp.png"), SKELETON("Boss.skel"));
+	//auto& animator = boss.GetComponent<AnimatorComponent>();
 
-	//auto& transform = player.GetComponent<TransformComponent>();
+	//auto& transform = boss.GetComponent<TransformComponent>();
 	//transform.Rotation.y = 180.0f;
 
-	Helpers::PlayAnimation(&animator, ANIM("CR_Skill3.anim"));
+	//Helpers::PlayAnimation(&animator, ANIM("Boss_Idle.anim"));
 
-	auto bagAnim = ANIM("HealPack_Attack.anim");
-	bagAnim->SetLoop(false);
+	//Entity door = mOwner->CreateSkeletalMeshEntity(MESH("Door.mesh"),
+	//	TEXTURE("Temp.png"), SKELETON("Door.skel"));
+	//auto& animator = door.GetComponent<AnimatorComponent>();
 
-	Entity healpack = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
-		TEXTURE("HealPack.png"), SKELETON("HealPack.skel"));
-	auto& hpAnimator = healpack.GetComponent<AnimatorComponent>();
-	Helpers::PlayAnimation(&hpAnimator, ANIM("HealPack_Attack.anim"));
-
-	Helpers::AttachBone(player, healpack, "Bag");
+	//auto openAnim = ANIM("Door_Open.anim");
+	//openAnim->SetLoop(false);
+	//Helpers::PlayAnimation(&animator, openAnim);
 }
 
 void TestScene::Exit()

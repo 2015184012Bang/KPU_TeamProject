@@ -655,6 +655,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Belt_Green.mesh");
 	MESH("Belt_Pink.mesh");
 	MESH("Belt_Red.mesh");
+	MESH("Boss.mesh");
 	MESH("Cart.mesh");
 	MESH("Cell.mesh");
 	MESH("Character_Green.mesh");
@@ -665,6 +666,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("CO2.mesh");
 	MESH("Cube.mesh");
 	MESH("Dog.mesh");
+	MESH("Door.mesh");
 	MESH("Fat.mesh");
 	MESH("Hammer.mesh");
 	MESH("HealPack.mesh");
@@ -683,18 +685,21 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Plane_Big.mesh");
 
 	SKELETON("Bag.skel");
+	SKELETON("Boss.skel");
 	SKELETON("Cart.skel");
 	SKELETON("Cell.skel");
 	SKELETON("Character_Green.skel");
 	SKELETON("Character_Pink.skel");
 	SKELETON("Character_Red.skel");
 	SKELETON("Clock.skel");
+	SKELETON("Door.skel");
 	SKELETON("Dog.skel");
 	SKELETON("Fat.skel");
 	SKELETON("HealPack.skel");
 	SKELETON("Tank.skel");
 	SKELETON("Virus.skel");
 
+	BOX("Boss.box");
 	BOX("Cart.box");
 	BOX("Cell.box");
 	BOX("Character.box");
