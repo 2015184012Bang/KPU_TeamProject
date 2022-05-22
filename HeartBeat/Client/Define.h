@@ -22,6 +22,8 @@ enum class TileType : uint8
 	START_POINT,
 	END_POINT,
 	HOUSE,
+	MID_POINT = 10,
+	DOOR = 11,
 	END
 };
 

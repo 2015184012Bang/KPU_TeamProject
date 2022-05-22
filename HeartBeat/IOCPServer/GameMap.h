@@ -11,6 +11,8 @@ enum class TileType
 	START_POINT = 6,
 	END_POINT = 7,
 	HOUSE = 8,
+	MID_POINT = 10,
+	DOOR = 11,
 	END
 };
 

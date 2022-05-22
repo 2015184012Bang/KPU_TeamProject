@@ -25,6 +25,7 @@ void Box::Init()
 	GetBox("../Assets/Boxes/Cube.box");
 	GetBox("../Assets/Boxes/Character.box");
 	GetBox("../Assets/Boxes/Dog.box");
+	GetBox("../Assets/Boxes/Door.box");
 	GetBox("../Assets/Boxes/Tank.box");
 	GetBox("../Assets/Boxes/Virus.box");
 	GetBox("../Assets/Boxes/House.box");

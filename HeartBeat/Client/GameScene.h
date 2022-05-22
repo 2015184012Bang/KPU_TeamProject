@@ -34,6 +34,7 @@ private:
     void createTankFatTile(const Tile& tile);
     void createScarTile(const Tile& tile);
     void createHouseTile(const Tile& tile);
+    void createDoorTile(const Tile& tile);
 
     void createUI();
 

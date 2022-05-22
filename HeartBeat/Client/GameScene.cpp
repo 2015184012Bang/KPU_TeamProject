@@ -161,6 +161,7 @@ void GameScene::createTile(const Tile& tile)
 	case TileType::RAIL:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
+	case TileType::MID_POINT:
 		createRailTile(tile);
 		break;
 
@@ -178,6 +179,10 @@ void GameScene::createTile(const Tile& tile)
 
 	case TileType::HOUSE:
 		createHouseTile(tile);
+		break;
+
+	case TileType::DOOR:
+		createDoorTile(tile);
 		break;
 
 	default:
@@ -326,6 +331,31 @@ void GameScene::createHouseTile(const Tile& tile)
 	transform.Position.y = 0.0f;
 	transform.Position.z = tile.Z;
 	transform.Rotation.y = 180.0f;
+}
+
+void GameScene::createDoorTile(const Tile& tile)
+{
+	{
+		const Texture* doorTex = GetTileTexture(tile.TType);
+		Entity door = mOwner->CreateSkeletalMeshEntity(MESH("Door.mesh"),
+			doorTex, SKELETON("Door.skel"), "../Assets/Boxes/Door.box");
+		auto& transform = door.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+		transform.Rotation.y = 270.0f;
+	}
+
+	{
+		const Texture* railTex = GetTileTexture(TileType::RAIL);
+		Entity rail = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			railTex);
+		rail.AddTag<Tag_Tile>();
+		auto& transform = rail.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
 }
 
 bool GameScene::pollKeyboardPressed()
@@ -840,7 +870,6 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("House.png");
 
 	default:
-		HB_ASSERT(false, "Unknown tile type!");
-		return nullptr;
+		return TEXTURE("Temp.png");
 	}
 }

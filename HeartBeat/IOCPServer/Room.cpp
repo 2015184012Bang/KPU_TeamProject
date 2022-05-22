@@ -418,10 +418,16 @@ void Room::createTiles(string_view fileName)
 			transform.Yaw = 180.0f;
 			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/House.box"), transform.Position, transform.Yaw);
 		}
+		else if (tile.TType == TileType::DOOR)
+		{
+			transform.Yaw = 270.0f;
+			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Door.box"), transform.Position, transform.Yaw);
+		}
 
 		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
 		// 탱크가 경로 인식이 가능하다.
-		if (tile.TType == TileType::TANK_FAT)
+		if ((tile.TType == TileType::TANK_FAT) || 
+			(tile.TType == TileType::DOOR))
 		{
 			auto rail = mRegistry.create();
 			addTagToTile(rail, TileType::RAIL);
@@ -565,6 +571,18 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		mRegistry.emplace<Tag_HouseTile>(tile);
 		break;
 
+	case TileType::MID_POINT:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "MidPoint");
+		break;
+
+	case TileType::DOOR:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_BlockingTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "Door");
+		break;
+
 	default:
 		ASSERT(false, "Unknown tile type!");
 		break;
@@ -649,6 +667,7 @@ float GetTileYPos(TileType ttype)
 	case TileType::FAT:
 	case TileType::TANK_FAT:
 	case TileType::HOUSE:
+	case TileType::DOOR:
 		return 0.0f;
 
 	case TileType::MOVABLE:
@@ -656,6 +675,7 @@ float GetTileYPos(TileType ttype)
 	case TileType::SCAR:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
+	case TileType::MID_POINT:
 		return -Values::TileSide;
 
 	default:
