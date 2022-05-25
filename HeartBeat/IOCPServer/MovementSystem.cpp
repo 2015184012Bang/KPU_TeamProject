@@ -109,15 +109,15 @@ void MovementSystem::SendNotifyMovePackets()
 	}
 }
 
-void MovementSystem::SetPlayersStartPos()
+void MovementSystem::Start()
 {
 	// START_POINT 타일 가져오기
 	auto startTile = GetEntityByName(mRegistry, "StartPoint");
 	ASSERT(mRegistry.valid(startTile), "There is no start point.");
 	const auto& startPos = mRegistry.get<TransformComponent>(startTile).Position;
 
+	// 플레이어들을 시작 위치로 초기화
 	auto view = mRegistry.view<Tag_Player, TransformComponent, IDComponent>();
-
 	for (auto [entity, transform, id] : view.each())
 	{
 		transform.Position = Vector3{

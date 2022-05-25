@@ -13,7 +13,7 @@ public:
 
 	void SendNotifyMovePackets();
 
-	void SetPlayersStartPos();
+	void Start();
 
 	void Reset();
 

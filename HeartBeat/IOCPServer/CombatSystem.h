@@ -22,7 +22,7 @@ public:
 
 	void DoBuff(const INT8 clientID);
 
-	void SetStart();
+	void Start();
 
 private:
 	void updateCooldown();

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "EnemySystem.h"
 
-#include "rapidcsv.h"
-
 #include "Entity.h"
 #include "Components.h"
 #include "Tags.h"
@@ -18,7 +16,9 @@ EnemySystem::EnemySystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	
+	string stageFile = "../Assets/Stages/Stage1.csv";
+	rapidcsv::Document doc(stageFile, rapidcsv::LabelParams(-1, -1));
+	mStages.emplace(stageFile, doc);
 }
 
 void EnemySystem::Update()
@@ -86,34 +86,44 @@ void EnemySystem::Update()
 	//testDeletion();
 }
 
-void EnemySystem::LoadStageFile(string_view fileName)
+void EnemySystem::Start(string_view fileName)
 {
-	// 이전 스테이지에 생성했던 Enemy 제거
-	DestroyByComponent<Tag_Enemy>(mRegistry);
-
-	// 새로운 스테이지 파일 읽고 Enemy 생성
-	readStageFile(fileName);
+	mbGenerate = true;
+	loadStageFile(fileName);
 }
 
-void EnemySystem::readStageFile(string_view fileName)
+void EnemySystem::Reset()
 {
-	rapidcsv::Document doc(fileName.data(), rapidcsv::LabelParams(-1, -1));
+	mbGenerate = false;
+	DestroyByComponent<Tag_Enemy>(mRegistry);
+}
 
-	for (size_t i = 0; i < doc.GetRowCount(); ++i)
+void EnemySystem::loadStageFile(string_view fileName)
+{
+	if (auto iter = mStages.find(fileName.data()); iter != mStages.end())
 	{
-		vector<string> parsed = doc.GetRow<string>(i);
+		const auto& doc = iter->second;
 
-		auto enemy = mRegistry.create();
+		for (size_t i = 0; i < doc.GetRowCount(); ++i)
+		{
+			vector<string> parsed = doc.GetRow<string>(i);
 
-		// 생성 시간 체크를 위해 SpawnComponent만 부착한다.
-		EntityType eType = parsed[0] == "Virus" ? EntityType::VIRUS
-			: EntityType::DOG;
+			auto enemy = mRegistry.create();
 
-		mRegistry.emplace<SpawnComponent>(enemy, 
-			eType,
-			stof(parsed[1]),
-			stof(parsed[2]),
-			stof(parsed[3]));
+			// 생성 시간 체크를 위해 SpawnComponent만 부착한다.
+			EntityType eType = parsed[0] == "Virus" ? EntityType::VIRUS
+				: EntityType::DOG;
+
+			mRegistry.emplace<SpawnComponent>(enemy,
+				eType,
+				stof(parsed[1]),
+				stof(parsed[2]),
+				stof(parsed[3]));
+		}
+	}
+	else
+	{
+		LOG("There is no stage file: {0}", fileName.data());
 	}
 }
 

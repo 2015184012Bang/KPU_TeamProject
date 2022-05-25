@@ -114,7 +114,7 @@ void CombatSystem::DoBuff(const INT8 clientID)
 	combat.BuffDuration = 10.0f;
 }
 
-void CombatSystem::SetStart()
+void CombatSystem::Start()
 {
 	// PlayState id Ä³½Ì
 	mPlayState = GetEntityByName(mRegistry, "PlayState");

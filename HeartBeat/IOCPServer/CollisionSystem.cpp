@@ -198,11 +198,16 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 	}
 }
 
-void CollisionSystem::SetStart(bool value)
+void CollisionSystem::Start()
 {
-	mbStart = value;
+	mbStart = true;
 	mPlayState = GetEntityByName(mRegistry, "PlayState");
 	ASSERT(mRegistry.valid(mPlayState), "Invalid entity!");
+}
+
+void CollisionSystem::Reset()
+{
+	mbStart = false;
 }
 
 void CollisionSystem::checkPlayersCollision()

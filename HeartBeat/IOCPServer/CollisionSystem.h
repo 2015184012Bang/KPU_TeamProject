@@ -17,7 +17,9 @@ public:
 
 	void DoWhirlwind(const INT8 clientID);
 
-	void SetStart(bool value);
+	void Start();
+
+	void Reset();
 	
 	void SetBorder(const Vector3& border) { mBorder = border; }
 

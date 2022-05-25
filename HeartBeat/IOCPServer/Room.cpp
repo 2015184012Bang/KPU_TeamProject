@@ -194,17 +194,10 @@ void Room::DoEnterGame()
 	// 게임 상태(산소, 이산화탄소 정보 등등)를 기록할 매니저 생성
 	createGameState();
 
-	// 플레이어들의 시작 위치를 랜덤하게 설정
-	mMovementSystem->SetPlayersStartPos();
-
-	// 스테이지 파일 읽어서 적 생성 시작
-	mEnemySystem->LoadStageFile("../Assets/Stages/Stage1.csv");
-	mEnemySystem->SetGenerate(true);
-
-	// 충돌 체크 시작
-	mCollisionSystem->SetStart(true);
-
-	mCombatSystem->SetStart();
+	mMovementSystem->Start();
+	mEnemySystem->Start("../Assets/Stages/Stage1.csv");
+	mCollisionSystem->Start();
+	mCombatSystem->Start();
 }
 
 void Room::DoSetDirection(User* user, const Vector3& direction)
@@ -606,8 +599,8 @@ void Room::clearAllUser()
 void Room::clearGame()
 {
 	mEntityID = 3;	// Entity ID 초기화
-	mEnemySystem->SetGenerate(false);
-	mCollisionSystem->SetStart(false);
+	mEnemySystem->Reset();
+	mCollisionSystem->Reset();
 	mPathSystem->Reset();
 	mMovementSystem->Reset();
 	mRoomState = RoomState::Waiting;

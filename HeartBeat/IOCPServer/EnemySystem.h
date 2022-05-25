@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rapidcsv.h"
+
 class Room;
 
 class EnemySystem
@@ -9,18 +11,20 @@ public:
 
 	void Update();
 
-	void LoadStageFile(string_view fileName);
+	void Start(string_view fileName);
 
-	void SetGenerate(bool value) { mbGenerate = value; }
+	void Reset();
 
 private:
-	void readStageFile(string_view fileName);
+	void loadStageFile(string_view fileName);
 
 	void testDeletion();
 
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
+
+	unordered_map<string, rapidcsv::Document> mStages;
 
 	bool mbGenerate = false;
 };
