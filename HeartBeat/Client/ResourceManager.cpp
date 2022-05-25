@@ -366,6 +366,12 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		ANIM("Cart_Run.anim");
 	}
+
+	// ¹®
+	{
+		Animation* openAnim = ANIM("Door_Open.anim");
+		openAnim->SetLoop(false);
+	}
 }
 
 std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)

@@ -94,6 +94,10 @@ void GameScene::ProcessInput()
 			processNotifyStateChange(packet);
 			break;
 
+		case NOTIFY_EVENT_OCCUR:
+			processNotifyEventOccur(packet);
+			break;
+
 		default:
 			HB_LOG("Unknown packet id: {0}", packet.PacketID);
 			break;
@@ -339,6 +343,7 @@ void GameScene::createDoorTile(const Tile& tile)
 		const Texture* doorTex = GetTileTexture(tile.TType);
 		Entity door = mOwner->CreateSkeletalMeshEntity(MESH("Door.mesh"),
 			doorTex, SKELETON("Door.skel"), "../Assets/Boxes/Door.box");
+		door.AddComponent<NameComponent>("Door");
 		auto& transform = door.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -708,6 +713,30 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 		mTankHP = nscPacket->TankHealth;
 		DestroyEntity(mTankHpUI.back());
 		mTankHpUI.pop_back();
+	}
+}
+
+void GameScene::processNotifyEventOccur(const PACKET& packet)
+{
+	NOTIFY_EVENT_OCCUR_PACKET* neoPacket = reinterpret_cast<NOTIFY_EVENT_OCCUR_PACKET*>(packet.DataPtr);
+
+	switch (static_cast<EventType>(neoPacket->EventType))
+	{
+	case EventType::DOOR_DOWN:
+	{
+		auto door = GetEntityByName("Door");
+		auto& animator = door.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Door_Open.anim"));
+
+		Timer::AddEvent(5.0f, [door]() {
+			DestroyEntity(door);
+			});
+	}
+		break;
+
+	default:
+		HB_ASSERT(false, "Invalid event type!");
+		break;
 	}
 }
 

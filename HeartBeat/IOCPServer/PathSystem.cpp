@@ -104,7 +104,7 @@ void PathSystem::Update()
 	}
 }
 
-void PathSystem::ResetGraph()
+void PathSystem::Reset()
 {
 	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv");
 

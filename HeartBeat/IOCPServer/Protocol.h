@@ -77,6 +77,9 @@ enum PACKET_ID : UINT8
 
 	// 게임오버
 	NOTIFY_GAME_OVER,
+
+	// 이벤트
+	NOTIFY_EVENT_OCCUR,
 };
 
 enum RESULT_CODE : UINT8
@@ -108,6 +111,11 @@ enum class EntityType : UINT8
 	VITAMIN,
 	CAFFEINE,
 	END
+};
+
+enum class EventType : UINT8
+{
+	DOOR_DOWN,
 };
 
 /************************************************************************/
@@ -275,6 +283,11 @@ struct NOTIFY_GAME_OVER_PACKET : public PACKET_HEADER
 	INT32 O2;
 	INT32 CO2;
 	UINT64 PlayTimeSec;
+};
+
+struct NOTIFY_EVENT_OCCUR_PACKET : public PACKET_HEADER
+{
+	UINT8 EventType;
 };
 
 #pragma pack(pop)

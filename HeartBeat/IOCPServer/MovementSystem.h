@@ -15,6 +15,8 @@ public:
 
 	void SetPlayersStartPos();
 
+	void Reset();
+
 private:
 	void checkArriveAtMidPoint();
 

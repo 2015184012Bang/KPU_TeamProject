@@ -329,9 +329,9 @@ void Client::createLightEntity()
 	mLight = Entity{ gRegistry.create() };
 	mLight.AddTag<Tag_DontDestroyOnLoad>();
 	auto& light = mLight.AddComponent<LightComponent>();
-	light.Light.AmbientColor = Vector3{ 0.2f, 0.2f, 0.2f };
-	light.Light.LightPosition = Vector3{ 10000.0f, 50000.f, 0.0f };
-	light.Light.SpecularStrength = 0.5f;
+	light.Light.AmbientColor = Vector3{ 0.35f, 0.35f, 0.35f };
+	light.Light.LightPosition = Vector3{ 10000.0f, 50000.f, 2000.0f };
+	light.Light.SpecularStrength = 0.0f;
 	light.Light.CameraPosition = mMainCamera.GetComponent<CameraComponent>().Position;
 }
 

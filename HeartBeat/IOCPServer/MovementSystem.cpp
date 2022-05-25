@@ -137,6 +137,11 @@ void MovementSystem::SetPlayersStartPos()
 	}
 }
 
+void MovementSystem::Reset()
+{
+	mbMidPointFlag = false;
+}
+
 void MovementSystem::checkArriveAtMidPoint()
 {
 	auto tank = GetEntityByName(mRegistry, "Tank");
@@ -167,10 +172,18 @@ void MovementSystem::checkArriveAtMidPoint()
 		mRegistry.emplace<Tag_Stop>(tank);
 		mRegistry.emplace<Tag_Stop>(cart);
 
+		NOTIFY_EVENT_OCCUR_PACKET packet = {};
+		packet.EventType = static_cast<UINT8>(EventType::DOOR_DOWN);
+		packet.PacketID = NOTIFY_EVENT_OCCUR;
+		packet.PacketSize = sizeof(packet);
+		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+
 		Timer::AddEvent(5.0f, [this, tank, cart]()
 			{
 				mRegistry.remove<Tag_Stop>(tank);
 				mRegistry.remove<Tag_Stop>(cart);
+				auto door = GetEntityByName(mRegistry, "Door");
+				DestroyEntity(mRegistry, door);
 			});
 	}
 }

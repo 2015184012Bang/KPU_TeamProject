@@ -24,7 +24,7 @@ public:
 
 	void Update();
 
-	void ResetGraph();
+	void Reset();
 
 	void ChangeTileToRoad(INT32 row, INT32 col);
 

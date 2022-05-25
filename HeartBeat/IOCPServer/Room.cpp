@@ -608,7 +608,8 @@ void Room::clearGame()
 	mEntityID = 3;	// Entity ID ÃÊ±âÈ­
 	mEnemySystem->SetGenerate(false);
 	mCollisionSystem->SetStart(false);
-	mPathSystem->ResetGraph();
+	mPathSystem->Reset();
+	mMovementSystem->Reset();
 	mRoomState = RoomState::Waiting;
 	mPlayTimeSec = 0.0f;
 	bGameStart = false;

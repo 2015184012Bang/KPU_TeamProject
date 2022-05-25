@@ -49,6 +49,7 @@ private:
     void processNotifyGameOver(const PACKET& packet);
     void processNotifySkill(const PACKET& packet);
     void processNotifyStateChange(const PACKET& packet);
+    void processNotifyEventOccur(const PACKET& packet);
 
     void doGameOver();
 
