@@ -235,11 +235,29 @@ void ResourceManager::MakeAnimTransitions()
 		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
 
 		attack1->AddTransition("WhenEnd", idleAnim);
+		attack1->AddTransition("Skill1", skill1);
+		attack1->AddTransition("Skill2", skill2);
+		attack1->AddTransition("Skill3", skill3);
 		attack2->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("Skill1", skill1);
+		attack2->AddTransition("Skill2", skill2);
+		attack2->AddTransition("Skill3", skill3);
 		attack3->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("Skill1", skill1);
+		attack3->AddTransition("Skill2", skill2);
+		attack3->AddTransition("Skill3", skill3);
 		skill1->AddTransition("WhenEnd", idleAnim);
+		skill1->AddTransition("Attack1", attack1);
+		skill1->AddTransition("Attack2", attack2);
+		skill1->AddTransition("Attack3", attack3);
 		skill2->AddTransition("WhenEnd", idleAnim);
+		skill2->AddTransition("Attack1", attack1);
+		skill2->AddTransition("Attack2", attack2);
+		skill2->AddTransition("Attack3", attack3);
 		skill3->AddTransition("WhenEnd", idleAnim);
+		skill3->AddTransition("Attack1", attack1);
+		skill3->AddTransition("Attack2", attack2);
+		skill3->AddTransition("Attack3", attack3);
 	}
 
 	// 캐릭터_핑크
@@ -282,11 +300,29 @@ void ResourceManager::MakeAnimTransitions()
 		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
 
 		attack1->AddTransition("WhenEnd", idleAnim);
+		attack1->AddTransition("Skill1", skill1);
+		attack1->AddTransition("Skill2", skill2);
+		attack1->AddTransition("Skill3", skill3);
 		attack2->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("Skill1", skill1);
+		attack2->AddTransition("Skill2", skill2);
+		attack2->AddTransition("Skill3", skill3);
 		attack3->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("Skill1", skill1);
+		attack3->AddTransition("Skill2", skill2);
+		attack3->AddTransition("Skill3", skill3);
 		skill1->AddTransition("WhenEnd", idleAnim);
+		skill1->AddTransition("Attack1", attack1);
+		skill1->AddTransition("Attack2", attack2);
+		skill1->AddTransition("Attack3", attack3);
 		skill2->AddTransition("WhenEnd", idleAnim);
+		skill2->AddTransition("Attack1", attack1);
+		skill2->AddTransition("Attack2", attack2);
+		skill2->AddTransition("Attack3", attack3);
 		skill3->AddTransition("WhenEnd", idleAnim);
+		skill3->AddTransition("Attack1", attack1);
+		skill3->AddTransition("Attack2", attack2);
+		skill3->AddTransition("Attack3", attack3);
 	}
 
 	// 캐릭터_레드
@@ -329,11 +365,29 @@ void ResourceManager::MakeAnimTransitions()
 		runningNoneAnim->AddTransition("Idle", idleNoneAnim);
 
 		attack1->AddTransition("WhenEnd", idleAnim);
+		attack1->AddTransition("Skill1", skill1);
+		attack1->AddTransition("Skill2", skill2);
+		attack1->AddTransition("Skill3", skill3);
 		attack2->AddTransition("WhenEnd", idleAnim);
+		attack2->AddTransition("Skill1", skill1);
+		attack2->AddTransition("Skill2", skill2);
+		attack2->AddTransition("Skill3", skill3);
 		attack3->AddTransition("WhenEnd", idleAnim);
+		attack3->AddTransition("Skill1", skill1);
+		attack3->AddTransition("Skill2", skill2);
+		attack3->AddTransition("Skill3", skill3);
 		skill1->AddTransition("WhenEnd", idleAnim);
+		skill1->AddTransition("Attack1", attack1);
+		skill1->AddTransition("Attack2", attack2);
+		skill1->AddTransition("Attack3", attack3);
 		skill2->AddTransition("WhenEnd", idleAnim);
+		skill2->AddTransition("Attack1", attack1);
+		skill2->AddTransition("Attack2", attack2);
+		skill2->AddTransition("Attack3", attack3);
 		skill3->AddTransition("WhenEnd", idleAnim);
+		skill3->AddTransition("Attack1", attack1);
+		skill3->AddTransition("Attack2", attack2);
+		skill3->AddTransition("Attack3", attack3);
 	}
 
 	// NPC(세포)
