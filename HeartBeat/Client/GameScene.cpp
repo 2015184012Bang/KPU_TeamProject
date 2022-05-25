@@ -728,6 +728,13 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 		auto& animator = door.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Door_Open.anim"));
 
+		Timer::AddEvent(3.0f, []() {
+			auto door = GetEntityByName("Door");
+			auto& movement = door.AddComponent<MovementComponent>();
+			movement.MaxSpeed = 1600.0f;
+			movement.Direction = Vector3{ 0.0f, -1.0f, 0.0f };
+		});
+
 		Timer::AddEvent(5.0f, [door]() {
 			DestroyEntity(door);
 			});
