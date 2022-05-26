@@ -57,6 +57,8 @@ public:
 	// 해당 인덱스의 타일 타입을 ROAD로 바꾼다.
 	void ChangeTileToRoad(INT32 row, INT32 col);
 
+	UINT32 CreateCell(const Vector3& position);
+
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
 public:
@@ -78,6 +80,7 @@ private:
 	void createTiles(string_view fileName);
 	void createTankAndCart();
 	void createCells();
+	
 	void createGameState();
 
 	void addTagToTile(entt::entity tile, TileType ttype);

@@ -308,6 +308,24 @@ void Room::ChangeTileToRoad(INT32 row, INT32 col)
 	mPathSystem->ChangeTileToRoad(row, col);
 }
 
+UINT32 Room::CreateCell(const Vector3& position)
+{
+	auto cell = mRegistry.create();
+
+	auto& id = mRegistry.emplace<IDComponent>(cell, GetEntityID());
+	auto& transform = mRegistry.emplace<TransformComponent>(cell);
+	transform.Position = position;
+	mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
+	mRegistry.emplace<BoxComponent>(cell, &Box::GetBox("../Assets/Boxes/Cell.box"),
+		transform.Position, transform.Yaw);
+	mRegistry.emplace<Tag_RedCell>(cell);
+	mRegistry.emplace<PathFindComponent>(cell);
+	mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
+	mRegistry.emplace<HealthComponent>(cell, Values::CellHealth);
+
+	return id.ID;
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))
@@ -487,23 +505,11 @@ void Room::createCells()
 
 	for (INT32 i = 0; i < MAX_CELL_COUNT; ++i)
 	{
-		auto cell = mRegistry.create();
-
-		auto& id = mRegistry.emplace<IDComponent>(cell, GetEntityID());
-		auto& transform = mRegistry.emplace<TransformComponent>(cell);
-		transform.Position = getCellStartPosition(i);
-		mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
-		mRegistry.emplace<BoxComponent>(cell, &Box::GetBox("../Assets/Boxes/Cell.box"),
-			transform.Position, transform.Yaw);
-		mRegistry.emplace<Tag_RedCell>(cell);
-		mRegistry.emplace<PathFindComponent>(cell);
-		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
-		mRegistry.emplace<HealthComponent>(cell, Values::CellHealth);
-
-		packet.EntityID = id.ID;
+		auto position = getCellStartPosition(i);
+		auto entityID = CreateCell(position);
+		packet.EntityID = entityID;
 		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
-		packet.Position = transform.Position;
-
+		packet.Position = position;
 		Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 }

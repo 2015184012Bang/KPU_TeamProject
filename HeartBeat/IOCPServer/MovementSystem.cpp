@@ -185,5 +185,21 @@ void MovementSystem::checkArriveAtMidPoint()
 				auto door = GetEntityByName(mRegistry, "Door");
 				DestroyEntity(mRegistry, door);
 			});
+
+		// 적혈구 3체 추가
+		NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
+		createPacket.PacketSize = sizeof(createPacket);
+		createPacket.PacketID = NOTIFY_CREATE_ENTITY;
+		const auto& cartPosition = mRegistry.get<TransformComponent>(cart).Position;
+		auto cellPosition = Vector3{ cartPosition.x - 400.0f, cartPosition.y, cartPosition.z };
+		for (int i = 0; i < 3; ++i)
+		{
+			cellPosition.z += 100.0f * i;
+			auto entityID = mOwner->CreateCell(cellPosition);
+			createPacket.EntityID = entityID;
+			createPacket.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+			createPacket.Position = cellPosition;
+			mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+		}
 	}
 }
