@@ -17,3 +17,7 @@
 
 ** 2022.05.25 **
 [Event(Door down), Mid_point test]
+
+** 2022.05.27 **
+[중계지점 적혈구 추가 test]
+> Enemy가 Door와 충돌체크하지 않음
