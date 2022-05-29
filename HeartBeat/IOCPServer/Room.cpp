@@ -326,6 +326,16 @@ UINT32 Room::CreateCell(const Vector3& position)
 	return id.ID;
 }
 
+void Room::SendDeleteEntityPacket(const UINT32 id, EntityType eType)
+{
+	NOTIFY_DELETE_ENTITY_PACKET packet = {};
+	packet.EntityID = id;
+	packet.EntityType = static_cast<UINT8>(eType);
+	packet.PacketID = NOTIFY_DELETE_ENTITY;
+	packet.PacketSize = sizeof(packet);
+	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))

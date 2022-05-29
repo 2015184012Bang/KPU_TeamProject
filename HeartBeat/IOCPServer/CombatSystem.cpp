@@ -152,17 +152,14 @@ void CombatSystem::checkEnemyAttack()
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 		mRegistry.remove<IHitYouComponent>(entity);
 
-		// Dog인 경우 공격 한 번 하고 삭제.
-		// 클라이언트에선 Dog가 공격한 경우 애니메이션 재생 후 삭제.
+		INT8 enemyAttack = 1;
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
-			DestroyEntity(mRegistry, entity);
-			doEntityDie(victim, EntityType::RED_CELL);
-			continue;
+			enemyAttack = 3;
 		}
 
 		auto& health = mRegistry.get<HealthComponent>(victim);
-		--health.Health;
+		health.Health -= enemyAttack;
 
 		auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
 		playState.bChanged = true;
@@ -174,9 +171,18 @@ void CombatSystem::checkEnemyAttack()
 		}
 		else if(mRegistry.any_of<Tag_Player>(victim))
 		{
-			auto& id = mRegistry.get<IDComponent>(victim);
-			updatePlayerHPState(health.Health, id.ID);
+			updatePlayerHPState(health.Health, hit.VictimID);
 			eType = EntityType::PLAYER;
+		}
+		else if (mRegistry.any_of<Tag_RedCell>(victim))
+		{
+			eType = EntityType::RED_CELL;
+		}
+
+		if (mRegistry.any_of<Tag_Dog>(entity))
+		{
+			mOwner->SendDeleteEntityPacket(hit.HitterID, EntityType::DOG);
+			DestroyEntity(mRegistry, entity);
 		}
 
 		if (health.Health <= 0)
@@ -220,12 +226,8 @@ void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
 
 	case EntityType::RED_CELL:
 	{
-		NOTIFY_DELETE_ENTITY_PACKET packet = {};
-		packet.EntityID = mRegistry.get<IDComponent>(eid).ID;
-		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
-		packet.PacketID = NOTIFY_DELETE_ENTITY;
-		packet.PacketSize = sizeof(packet);
-		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+		auto id = mRegistry.get<IDComponent>(eid).ID;
+		mOwner->SendDeleteEntityPacket(id, EntityType::RED_CELL);
 		DestroyEntity(mRegistry, eid);
 	}
 		break;

@@ -242,6 +242,11 @@ void EnemyAttackState::Enter()
 
 	auto& movement = owner->GetComponent<MovementComponent>();
 	movement.Direction = Vector3::Zero;
+	
+	if (owner->HasComponent<IHitYouComponent>())
+	{
+		owner->RemoveComponent<IHitYouComponent>();
+	}
 
 	auto myID = owner->GetComponent<IDComponent>().ID;
 	auto targetID = owner->GetRegistry().get<IDComponent>(owner->GetTarget()).ID;

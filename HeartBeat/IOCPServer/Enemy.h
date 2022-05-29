@@ -41,14 +41,8 @@ public:
 
 		if (npcs.empty())
 		{
-			entt::entity player = entt::null;
-			bool bNear = HasNearPlayer(player);
-
-			if (bNear)
-			{
-				mTarget = player;
-				return;
-			}
+			SetTargetTank();
+			return;
 		}
 
 		mTarget = npcs[Random::RandInt(0, static_cast<INT32>(npcs.size() - 1))];

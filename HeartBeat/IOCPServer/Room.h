@@ -61,6 +61,8 @@ public:
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
+	void SendDeleteEntityPacket(const UINT32 id, EntityType eType);
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }
