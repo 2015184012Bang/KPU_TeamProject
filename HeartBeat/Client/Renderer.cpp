@@ -657,6 +657,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Belt_Red.mesh");
 	MESH("Boss.mesh");
 	MESH("Cart.mesh");
+	MESH("Caffeine.mesh");
 	MESH("Cell.mesh");
 	MESH("Character_Green.mesh");
 	MESH("Character_Pink.mesh");
@@ -681,8 +682,10 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Tank.mesh");
 	MESH("Thermometer.mesh");
 	MESH("Virus.mesh");
+	MESH("Vitamin.mesh");
 	MESH("Sphere.mesh");
 	MESH("Plane_Big.mesh");
+	MESH("Missile.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");

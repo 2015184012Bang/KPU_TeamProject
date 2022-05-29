@@ -619,18 +619,22 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 	case EntityType::CAFFEINE:
 	{
-		Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Sphere.mesh"),
-			TEXTURE("Brown.png"), ncePacket->EntityID);
-		caffeine.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Caffeine.mesh"),
+			TEXTURE("Caffeine.png"), ncePacket->EntityID);
+		auto& transform = caffeine.GetComponent<TransformComponent>();
+		transform.Position = ncePacket->Position;
+		transform.Rotation.y = 180.0f;
 		caffeine.AddTag<Tag_Item>();
 	}
 	break;
 
 	case EntityType::VITAMIN:
 	{
-		Entity vitamin = mOwner->CreateStaticMeshEntity(MESH("Sphere.mesh"),
-			TEXTURE("Yellow.png"), ncePacket->EntityID);
-		vitamin.GetComponent<TransformComponent>().Position = ncePacket->Position;
+		Entity vitamin = mOwner->CreateStaticMeshEntity(MESH("Vitamin.mesh"),
+			TEXTURE("Vitamin.png"), ncePacket->EntityID);
+		auto& transform = vitamin.GetComponent<TransformComponent>();
+		transform.Position = ncePacket->Position;
+		transform.Rotation.y = 180.0f;
 		vitamin.AddTag<Tag_Item>();
 	}
 	break;
