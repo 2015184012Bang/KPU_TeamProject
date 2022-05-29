@@ -82,8 +82,6 @@ void EnemySystem::Update()
 			mRegistry.remove<SpawnComponent>(entity);
 		}
 	}
-
-	//testDeletion();
 }
 
 void EnemySystem::Start(string_view fileName)
@@ -124,26 +122,5 @@ void EnemySystem::loadStageFile(string_view fileName)
 	else
 	{
 		LOG("There is no stage file: {0}", fileName.data());
-	}
-}
-
-void EnemySystem::testDeletion()
-{
-	static float elapsed = 0.0f;
-	elapsed += Timer::GetDeltaTime();
-	if (elapsed > 15.0f)
-	{
-		auto view = mRegistry.view<SpawnComponent, IDComponent>();
-
-		for (auto [entity, spawn, id] : view.each())
-		{
-			NOTIFY_DELETE_ENTITY_PACKET packet = {};
-			packet.EntityID = id.ID;
-			packet.EntityType = static_cast<UINT8>(spawn.EType);
-			packet.PacketID = NOTIFY_DELETE_ENTITY;
-			packet.PacketSize = sizeof(packet);
-			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-			DestroyEntity(mRegistry, entity);
-		}
 	}
 }

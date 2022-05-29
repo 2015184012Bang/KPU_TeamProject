@@ -80,13 +80,7 @@ void Room::RemoveUser(User* user)
 
 		if (mRoomState == RoomState::Playing)
 		{
-			// 나머지 유저들에게 엔티티 삭제 패킷 송신
-			NOTIFY_DELETE_ENTITY_PACKET packet = {};
-			packet.EntityID = erasedClientID;
-			packet.EntityType = static_cast<UINT8>(EntityType::PLAYER);
-			packet.PacketID = NOTIFY_DELETE_ENTITY;
-			packet.PacketSize = sizeof(packet);
-			Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+			SendDeleteEntityPacket(erasedClientID, EntityType::PLAYER);
 		}
 
 		if (mRoomState == RoomState::Waiting_Full)

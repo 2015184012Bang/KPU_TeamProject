@@ -70,13 +70,8 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 
 			if (health.Health <= 0)
 			{
-				NOTIFY_DELETE_ENTITY_PACKET packet = {};
-				packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
-				packet.EntityType = static_cast<UINT8>(EntityType::VIRUS);
-				packet.PacketID = NOTIFY_DELETE_ENTITY;
-				packet.PacketSize = sizeof(packet);
-				mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
+				const auto id = mRegistry.get<IDComponent>(entity).ID;
+				mOwner->SendDeleteEntityPacket(id, EntityType::VIRUS);
 				DestroyEntity(mRegistry, entity);
 			}
 
@@ -95,13 +90,8 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 
 			if (health.Health <= 0)
 			{
-				NOTIFY_DELETE_ENTITY_PACKET packet = {};
-				packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
-				packet.EntityType = static_cast<UINT8>(EntityType::DOG);
-				packet.PacketID = NOTIFY_DELETE_ENTITY;
-				packet.PacketSize = sizeof(packet);
-				mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
+				const auto id = mRegistry.get<IDComponent>(entity).ID;
+				mOwner->SendDeleteEntityPacket(id, EntityType::DOG);
 				DestroyEntity(mRegistry, entity);
 			}
 
@@ -133,15 +123,8 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 					createItem(transform.Position);
 				}
 
-				// 엔티티 삭제 패킷 송신
-				NOTIFY_DELETE_ENTITY_PACKET packet = {};
-				packet.PacketID = NOTIFY_DELETE_ENTITY;
-				packet.PacketSize = sizeof(packet);
-				packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
-				packet.EntityType = static_cast<UINT8>(EntityType::FAT);
-				mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
-				// 레지스트리에서 엔티티 제거
+				const auto id = mRegistry.get<IDComponent>(entity).ID;
+				mOwner->SendDeleteEntityPacket(id, EntityType::FAT);
 				DestroyEntity(mRegistry, entity);
 			}
 
@@ -168,13 +151,8 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 
 		if (distSq < WHIRLWIND_RANGE_SQ)
 		{
-			NOTIFY_DELETE_ENTITY_PACKET packet = {};
-			packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
-			packet.EntityType = static_cast<UINT8>(EntityType::VIRUS);
-			packet.PacketID = NOTIFY_DELETE_ENTITY;
-			packet.PacketSize = sizeof(packet);
-			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
+			const auto id = mRegistry.get<IDComponent>(entity).ID;
+			mOwner->SendDeleteEntityPacket(id, EntityType::VIRUS);
 			DestroyEntity(mRegistry, entity);
 		}
 	}
@@ -186,13 +164,8 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 
 		if (distSq < WHIRLWIND_RANGE_SQ)
 		{
-			NOTIFY_DELETE_ENTITY_PACKET packet = {};
-			packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
-			packet.EntityType = static_cast<UINT8>(EntityType::DOG);
-			packet.PacketID = NOTIFY_DELETE_ENTITY;
-			packet.PacketSize = sizeof(packet);
-			mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-
+			const auto id = mRegistry.get<IDComponent>(entity).ID;
+			mOwner->SendDeleteEntityPacket(id, EntityType::DOG);
 			DestroyEntity(mRegistry, entity);
 		}
 	}
@@ -383,12 +356,8 @@ void CollisionSystem::doItemUse(const entt::entity item, const entt::entity play
 		EntityType::VITAMIN :
 		EntityType::CAFFEINE;
 
-	NOTIFY_DELETE_ENTITY_PACKET packet = {};
-	packet.EntityID = mRegistry.get<IDComponent>(item).ID;
-	packet.EntityType = static_cast<UINT8>(itemType);
-	packet.PacketID = NOTIFY_DELETE_ENTITY;
-	packet.PacketSize = sizeof(packet);
-	mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+	const auto id = mRegistry.get<IDComponent>(item).ID;
+	mOwner->SendDeleteEntityPacket(id, itemType);
 	DestroyEntity(mRegistry, item);
 
 	if (EntityType::VITAMIN == itemType)

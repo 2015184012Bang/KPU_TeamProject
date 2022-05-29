@@ -18,8 +18,6 @@ public:
 private:
 	void loadStageFile(string_view fileName);
 
-	void testDeletion();
-
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
