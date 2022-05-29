@@ -517,6 +517,16 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::RED_CELL:
+	{
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cell_Dead.anim"));
+		auto& movement = target.GetComponent<MovementComponent>();
+		movement.Direction = Vector3::Zero;
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
+	}
+	break;
+
 	case EntityType::PLAYER:
 	{
 		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
@@ -718,6 +728,10 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 		DestroyEntity(mTankHpUI.back());
 		mTankHpUI.pop_back();
 	}
+
+	HB_LOG("{0} {1} {2}", nscPacket->P0Health,
+		nscPacket->P1Health,
+		nscPacket->P2Health);
 }
 
 void GameScene::processNotifyEventOccur(const PACKET& packet)
@@ -734,13 +748,20 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 
 		Timer::AddEvent(3.0f, []() {
 			auto door = GetEntityByName("Door");
-			auto& movement = door.AddComponent<MovementComponent>();
-			movement.MaxSpeed = 1600.0f;
-			movement.Direction = Vector3{ 0.0f, -1.0f, 0.0f };
+			if (door)
+			{
+				auto& movement = door.AddComponent<MovementComponent>();
+				movement.MaxSpeed = 1600.0f;
+				movement.Direction = Vector3{ 0.0f, -1.0f, 0.0f };
+			}
 		});
 
-		Timer::AddEvent(5.0f, [door]() {
-			DestroyEntity(door);
+		Timer::AddEvent(5.0f, []() {
+			auto door = GetEntityByName("Door");
+			if (door)
+			{
+				DestroyEntity(door);
+			}
 			});
 	}
 		break;

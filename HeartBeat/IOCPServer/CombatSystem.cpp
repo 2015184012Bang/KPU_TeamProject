@@ -138,7 +138,8 @@ void CombatSystem::checkEnemyAttack()
 	for (auto [entity, hit] : view.each())
 	{
 		auto victim = GetEntityByID(mRegistry, hit.VictimID);
-		if (entt::null == victim)
+		if (entt::null == victim ||
+			!mRegistry.valid(entity))
 		{
 			continue;
 		}
@@ -156,6 +157,8 @@ void CombatSystem::checkEnemyAttack()
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
 			DestroyEntity(mRegistry, entity);
+			doEntityDie(victim, EntityType::RED_CELL);
+			continue;
 		}
 
 		auto& health = mRegistry.get<HealthComponent>(victim);
@@ -169,11 +172,7 @@ void CombatSystem::checkEnemyAttack()
 			--playState.TankHealth;
 			eType = EntityType::TANK;
 		}
-		else if(mRegistry.any_of<Tag_RedCell>(victim))
-		{
-			eType = EntityType::RED_CELL;
-		}
-		else // Player
+		else if(mRegistry.any_of<Tag_Player>(victim))
 		{
 			auto& id = mRegistry.get<IDComponent>(victim);
 			updatePlayerHPState(health.Health, id.ID);
@@ -213,8 +212,25 @@ void CombatSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
 
 void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
 {
-	if (EntityType::TANK == eType)
+	switch(eType)
 	{
+	case EntityType::TANK:
 		mOwner->DoGameOver();
+		break;
+
+	case EntityType::RED_CELL:
+	{
+		NOTIFY_DELETE_ENTITY_PACKET packet = {};
+		packet.EntityID = mRegistry.get<IDComponent>(eid).ID;
+		packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+		packet.PacketID = NOTIFY_DELETE_ENTITY;
+		packet.PacketSize = sizeof(packet);
+		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+		DestroyEntity(mRegistry, eid);
+	}
+		break;
+
+	case EntityType::PLAYER:
+		break;
 	}
 }

@@ -395,6 +395,8 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* idleAnim = ANIM("Cell_Idle.anim");
 		Animation* runningAnim = ANIM("Cell_Run.anim");
 		Animation* attackingAnim = ANIM("Cell_Attack.anim");
+		Animation* dieAnim = ANIM("Cell_Dead.anim");
+		dieAnim->SetLoop(false);
 
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);

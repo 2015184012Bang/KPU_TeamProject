@@ -342,6 +342,9 @@ void Room::checkGameState()
 		packet.CO2 = gameState.CO2;
 		packet.O2 = gameState.O2;
 		packet.TankHealth = gameState.TankHealth;
+		packet.P0Health = gameState.P0HP;
+		packet.P1Health = gameState.P1HP;
+		packet.P2Health = gameState.P2HP;
 		packet.PacketID = NOTIFY_STATE_CHANGE;
 		packet.PacketSize = sizeof(packet);
 		Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));

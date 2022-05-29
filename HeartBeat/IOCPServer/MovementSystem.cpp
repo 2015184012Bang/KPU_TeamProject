@@ -22,7 +22,7 @@ void MovementSystem::Update()
 	{
 		transform.Position += movement.Direction * movement.Speed * Timer::GetDeltaTime();
 	}
-	
+
 	if (!mbMidPointFlag)
 	{
 		checkArriveAtMidPoint();
@@ -180,10 +180,14 @@ void MovementSystem::checkArriveAtMidPoint()
 
 		Timer::AddEvent(5.0f, [this, tank, cart]()
 			{
-				mRegistry.remove<Tag_Stop>(tank);
-				mRegistry.remove<Tag_Stop>(cart);
-				auto door = GetEntityByName(mRegistry, "Door");
-				DestroyEntity(mRegistry, door);
+				if (mRegistry.valid(tank) &&
+					mRegistry.valid(cart))
+				{
+					mRegistry.remove<Tag_Stop>(tank);
+					mRegistry.remove<Tag_Stop>(cart);
+					auto door = GetEntityByName(mRegistry, "Door");
+					DestroyEntity(mRegistry, door);
+				}
 			});
 
 		// 적혈구 3체 추가

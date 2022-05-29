@@ -416,7 +416,10 @@ void CollisionSystem::doItemUse(const entt::entity item, const entt::entity play
 		}
 
 		Timer::AddEvent(5.0f, [this, player]() {
-			backPlayerStatus(player);
+			if (mRegistry.valid(player))
+			{
+				backPlayerStatus(player);
+			}
 			});
 	}
 }
