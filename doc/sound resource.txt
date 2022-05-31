@@ -1,27 +1,24 @@
 전체적으로 소리가 너무 현실미 있어서 게임에 어울리지 않음. 레트로, 고전이라고 태그 붙은 자료 위주로 찾기를 권함
-+ 마인크래프트 효과음으로 찾으면 매우 잘어울릴 것 같음
++ 마인크래프트 효과음으로 찾으면 매우 잘어울릴 것 같음 (유튜브: 브금저장소 - 재생목록 - 마인크래프트 사운드)
 
 
 
 1. 적혈구 죽는 소리
-https://freesound.org/people/DrMinky/sounds/167074/
+-> 메이플스토리 주황버섯 죽는 소리같은 귀여운 느낌 원함
 
 2. 피격 소리 (캐릭터, 세균, 개 등 살아있는 놈들)
 - 캐릭터
-https://freesound.org/people/deleted_user_3330286/sounds/188549/
-https://freesound.org/people/Michel88/sounds/76968/
+- 세균
 -> 너무 현실감 넘침, 귀여운 느낌나게, 꼭 사람 목소리 아니어도 죽는다는 거 표현만 되면 됨
 
-- 세균
-https://freesound.org/people/tonsil5/sounds/555412/  -> Enemy 죽음으로 활용
 - 개
-https://freesound.org/people/KFerentchak/sounds/235927/ -> 다른 소리로 부탁 (따올 만한 부분이 없음, 그냥 짖는 소리로)
+다른 소리로 부탁 (따올 만한 부분이 없음, 소형견이 짖는 소리로)
 
 3. 피격 소리 (지방)
-https://freesound.org/people/newlocknew/sounds/593909/ -> 마인크래프트 효과음으로 대체 ㄱㄱ
+-> 마인크래프트 블럭 효과음으로 변경 요청
 
 4. 몬스터 죽는 소리(Enemy 죽을때 용)
-https://freesound.org/people/ThatGuyWithTheBeard/sounds/253478/ -> 세균 피격소리 활용
+https://freesound.org/people/tonsil5/sounds/555412/
 
 5. 타이머 소리
 
@@ -38,23 +35,17 @@ https://freesound.org/people/newlocknew/sounds/564807/ -> 보류 (다른 거 좋
 
 9. 폭발 소리 2종류 (탱크 터질 때, Dog 터질 때)
 - 탱크
-https://freesound.org/people/derplayer/sounds/587184/
-https://freesound.org/people/derplayer/sounds/587194/
 - 개
-https://freesound.org/people/unfa/sounds/609588/
-https://freesound.org/people/Walking.With.Microphones/sounds/559842/
--> 너무 현실감 넘침 (예시: https://www.mewpot.com/sound-effects/3347)
+-> 너무 현실감 넘침 (변경 예시: https://www.mewpot.com/sound-effects/3347)
 -> 마인크래프트 폭발음 몇개 찾아서 링크 올려주면 따봄(유튜브: 브금저장소)
 
 10. 괴수 소리 (보스 몬스터)
 - 괴수 등장
-https://freesound.org/people/XavTech/sounds/238548/ -> 그대로 활용
+https://freesound.org/people/XavTech/sounds/238548/
 - 괴수 죽음
-https://freesound.org/people/ThefitzyG/sounds/414296/ -> 그대로 활용
-https://freesound.org/people/bevibeldesign/sounds/366096/ -> 지우기
+https://freesound.org/people/ThefitzyG/sounds/414296/
 
 11. 경고음
-https://freesound.org/people/Serithi/sounds/150326/ -> X 너무 안어울림
 https://freesound.org/people/Nkone_M/sounds/408722/ -> 이런 사이렌 계열로(비슷한 계열: 어몽어스 산소부족 시 나오는 사운드)
 
 12. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
@@ -62,28 +53,22 @@ https://freesound.org/people/bolkmar/sounds/539178/ -> 보류 (다른 거 좋은
 
 13. 팝업(등장) 소리 2종류 (적혈구가 나올때, 세균이 나올때)
 - 적혈구
-https://freesound.org/people/SophronsineSoundDesign/sounds/260844/ -> 그대로 활용
+https://freesound.org/people/SophronsineSoundDesign/sounds/260844/
 - 세균
+-> 위와 비슷한 느낌으로
 
 
 14. 게임 클리어 소리
-https://freesound.org/people/qubodup/sounds/212766/
-( 성공하면 계속 심장이 뛰고 실패하면 심정지되는것으로 전환 )
 -> 게임에 너무 안어울림 '체내'라는 요소에 너무 얽매이지 말 것. 그냥 아케이드 계열 게임 소리가 좋을 것으로 예상
 
 15. 클리어 실패 소리
-https://freesound.org/people/xtrgamr/sounds/257796/
 -> 위와 동일(예시: https://www.mewpot.com/sound-effects/3568)
 
 16. 아이템 획득 소리 2종류 (비타민, 카페인)
-https://freesound.org/people/EminYILDIRIM/sounds/540568/
-https://freesound.org/people/Ranner/sounds/487588/
 -> 하이톤으로 변경(너무 안들림) (예시: https://www.mewpot.com/sound-effects/3565)
 
 17. 장비 변경 소리 (게임 시작 장비 변경될 때 용)
-https://freesound.org/people/ryanconway/sounds/240800/
-https://freesound.org/people/jcallison/sounds/258269/ -> 2번째꺼로 활용
-https://freesound.org/people/Headphaze/sounds/277033/
+https://freesound.org/people/jcallison/sounds/258269/
 
 18. 긴박한 브금 2종류 (중간전투, 보스전 용)
 https://freesound.org/people/Loyalty_Freak_Music/sounds/407476/ -> 보류 (다른 거 좋은거 있으면 그거로 활용)
