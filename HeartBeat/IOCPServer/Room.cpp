@@ -81,6 +81,7 @@ void Room::RemoveUser(User* user)
 		if (mRoomState == RoomState::Playing)
 		{
 			SendDeleteEntityPacket(erasedClientID, EntityType::PLAYER);
+			DestroyEntityByID(mRegistry, erasedClientID);
 		}
 
 		if (mRoomState == RoomState::Waiting_Full)
@@ -353,28 +354,6 @@ void Room::SendEventOccurPacket(const INT32 addtionalData, EventType eType)
 	packet.EventType = static_cast<UINT8>(eType);
 	packet.AdditionalData = addtionalData;
 	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
-}
-
-void Room::SetPlayerDead(const UINT32 id, bool value)
-{
-	for (auto user : mUsers)
-	{
-		if (user->GetClientID() == id)
-		{
-			user->SetDead(value);
-		}
-	}
-}
-
-bool Room::IsPlayerDead(const UINT32 id)
-{
-	for (auto user : mUsers)
-	{
-		if (user->GetClientID() == id)
-		{
-			return user->IsDead();
-		}
-	}
 }
 
 void Room::checkGameState()

@@ -29,7 +29,7 @@ private:
 	void checkEnemyAttack();
 
 	void updatePlayerHPState(const INT32 health, const UINT32 id);
-	void doEntityDie(const entt::entity eid, EntityType eType);
+	void doEntityDie(const UINT32 id, EntityType eType);
 
 private:
 	entt::registry& mRegistry;

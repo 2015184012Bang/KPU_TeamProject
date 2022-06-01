@@ -42,13 +42,12 @@ public:
 	const Vector3& GetMoveDirection();
 	INT8 GetClientID() const { return mClientID; }
 	INT32 GetRoomIndex() const { return mRoomIndex; }
-	bool IsDead() const { return mbDead; }
+	bool IsDead() const;
 
 	void SetClientID(const INT8 id) { mClientID = id; }
 	void SetUserState(UserState state) { mUserState = state; }
 	void SetRoomIndex(const INT32 roomIndex) { mRoomIndex = roomIndex; }
 	void SetRegistry(entt::registry* registry) { mRegistry = registry; }
-	void SetDead(const bool value) { mbDead = value; }
 
 private:
 	UserState mUserState = UserState::IN_LOGIN;
@@ -57,7 +56,6 @@ private:
 	INT32 mRoomIndex = -1;
 	string mUserName = "";
 	INT8 mClientID = -1;
-	bool mbDead = false;
 
 	bool mConnected = false;
 

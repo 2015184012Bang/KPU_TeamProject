@@ -16,3 +16,4 @@ struct Tag_Vitamin {};
 struct Tag_Caffeine {};
 struct Tag_Item {};
 struct Tag_Stop {};
+struct Tag_Dead {};

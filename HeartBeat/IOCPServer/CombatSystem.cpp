@@ -187,7 +187,7 @@ void CombatSystem::checkEnemyAttack()
 
 		if (health.Health <= 0)
 		{
-			doEntityDie(victim, eType);
+			doEntityDie(hit.VictimID, eType);
 		}
 	}
 }
@@ -216,7 +216,7 @@ void CombatSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
 	}
 }
 
-void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
+void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 {
 	switch(eType)
 	{
@@ -226,31 +226,30 @@ void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
 
 	case EntityType::RED_CELL:
 	{
-		auto id = mRegistry.get<IDComponent>(eid).ID;
 		mOwner->SendDeleteEntityPacket(id, EntityType::RED_CELL);
-		DestroyEntity(mRegistry, eid);
+		DestroyEntityByID(mRegistry, id);
 	}
 		break;
 
 	case EntityType::PLAYER:
 	{
-		auto id = mRegistry.get<IDComponent>(eid).ID;
-
-		if (mOwner->IsPlayerDead(id))
+		auto player = GetEntityByID(mRegistry, id);
+		if (mRegistry.any_of<Tag_Dead>(player))
 		{
 			return;
 		}
 
 		mOwner->SendEventOccurPacket(id, EventType::PLAYER_DEAD);
-		mOwner->SetPlayerDead(id, true);
-		auto& movement = mRegistry.get<MovementComponent>(eid);
+		mRegistry.emplace<Tag_Dead>(player);
+		auto& movement = mRegistry.get<MovementComponent>(player);
 		movement.Direction = Vector3::Zero;
 
-		Timer::AddEvent(3.0f, [this, eid, id]() {
-			if (mRegistry.valid(eid))
+		Timer::AddEvent(3.0f, [this, id]() {
+			auto player = GetEntityByID(mRegistry, id);
+			if (player != entt::null)
 			{
-				mOwner->SetPlayerDead(id, false);
-				auto& health = mRegistry.get<HealthComponent>(eid);
+				mRegistry.remove<Tag_Dead>(player);
+				auto& health = mRegistry.get<HealthComponent>(player);
 				health.Health = Values::PlayerHealth;
 			}
 			});

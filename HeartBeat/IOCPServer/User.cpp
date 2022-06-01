@@ -33,7 +33,6 @@ void User::Reset()
 	mWritePos = 0;
 	mClientID = -1;
 	mRoomIndex = -1;
-	mbDead = false;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 
 	if (mRegistry && mRegistry->valid(mCharacter) )
@@ -134,4 +133,14 @@ const Vector3& User::GetMoveDirection()
 {
 	ASSERT(mRegistry->valid(mCharacter), "Invalid entity!");
 	return mRegistry->get<MovementComponent>(mCharacter).Direction;
+}
+
+bool User::IsDead() const
+{
+	if (mCharacter == entt::null)
+	{
+		return true;
+	}
+
+	return mRegistry->any_of<Tag_Dead>(mCharacter);
 }
