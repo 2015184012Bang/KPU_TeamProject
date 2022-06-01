@@ -63,6 +63,12 @@ public:
 
 	void SendDeleteEntityPacket(const UINT32 id, EntityType eType);
 
+	void SendEventOccurPacket(const INT32 addtionalData, EventType eType);
+
+	void SetPlayerDead(const UINT32 id, bool value);
+
+	bool IsPlayerDead(const UINT32 id);
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }

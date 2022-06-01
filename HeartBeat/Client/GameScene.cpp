@@ -766,6 +766,30 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 	}
 		break;
 
+	case EventType::PLAYER_DEAD:
+	{
+		auto id = neoPacket->AdditionalData;
+		auto player = GetEntityByID(id);
+
+		if (player)
+		{
+			auto& animator = player.GetComponent<AnimatorComponent>();
+			const auto deadAnim = GetCharacterAnimationFile(id, CharacterAnimationType::DEAD);
+			Helpers::PlayAnimation(&animator, deadAnim);
+
+			Timer::AddEvent(3.0f, [id]() {
+				auto player = GetEntityByID(id);
+				if(player)
+				{
+					auto& animator = player.GetComponent<AnimatorComponent>();
+					const auto idleAnim = GetCharacterAnimationFile(id, CharacterAnimationType::IDLE);
+					Helpers::PlayAnimation(&animator, idleAnim);
+				}
+				});
+		}
+	}
+		break;
+
 	default:
 		HB_ASSERT(false, "Invalid event type!");
 		break;

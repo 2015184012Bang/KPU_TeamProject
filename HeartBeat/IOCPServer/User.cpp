@@ -33,6 +33,7 @@ void User::Reset()
 	mWritePos = 0;
 	mClientID = -1;
 	mRoomIndex = -1;
+	mbDead = false;
 	ZeroMemory(mDataBuffer, DATA_BUFFER_SIZE);
 
 	if (mRegistry && mRegistry->valid(mCharacter) )

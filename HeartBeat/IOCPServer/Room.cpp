@@ -196,6 +196,11 @@ void Room::DoEnterGame()
 
 void Room::DoSetDirection(User* user, const Vector3& direction)
 {
+	if (user->IsDead())
+	{
+		return;
+	}
+
 	auto clientID = user->GetClientID();
 
 	mMovementSystem->SetDirection(clientID, direction);
@@ -228,6 +233,11 @@ void Room::DoSetPreset(User* user, UpgradePreset preset)
 
 void Room::DoAttack(User* user)
 {
+	if (user->IsDead())
+	{
+		return;
+	}
+
 	auto clientID = user->GetClientID();
 
 	if (!mCombatSystem->CanBaseAttack(clientID))
@@ -247,6 +257,11 @@ void Room::DoAttack(User* user)
 
 void Room::DoSkill(User* user)
 {
+	if (user->IsDead())
+	{
+		return;
+	}
+
 	auto clientID = user->GetClientID();
 
 	if (!mCombatSystem->CanUseSkill(clientID))
@@ -328,6 +343,38 @@ void Room::SendDeleteEntityPacket(const UINT32 id, EntityType eType)
 	packet.PacketID = NOTIFY_DELETE_ENTITY;
 	packet.PacketSize = sizeof(packet);
 	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+}
+
+void Room::SendEventOccurPacket(const INT32 addtionalData, EventType eType)
+{
+	NOTIFY_EVENT_OCCUR_PACKET packet = {};
+	packet.PacketID = NOTIFY_EVENT_OCCUR;
+	packet.PacketSize = sizeof(packet);
+	packet.EventType = static_cast<UINT8>(eType);
+	packet.AdditionalData = addtionalData;
+	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+}
+
+void Room::SetPlayerDead(const UINT32 id, bool value)
+{
+	for (auto user : mUsers)
+	{
+		if (user->GetClientID() == id)
+		{
+			user->SetDead(value);
+		}
+	}
+}
+
+bool Room::IsPlayerDead(const UINT32 id)
+{
+	for (auto user : mUsers)
+	{
+		if (user->GetClientID() == id)
+		{
+			return user->IsDead();
+		}
+	}
 }
 
 void Room::checkGameState()

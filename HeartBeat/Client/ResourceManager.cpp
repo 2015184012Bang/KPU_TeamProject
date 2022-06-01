@@ -200,6 +200,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* runningAnim = ANIM("CG_Run.anim");
 		Animation* idleNoneAnim = ANIM("CG_Idle_None.anim");
 		Animation* runningNoneAnim = ANIM("CG_Run_None.anim");
+		Animation* deadAnim = ANIM("CG_Dead.anim");
 		Animation* attack1 = ANIM("CG_Attack1.anim");
 		Animation* attack2 = ANIM("CG_Attack2.anim");
 		Animation* attack3 = ANIM("CG_Attack3.anim");
@@ -208,6 +209,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* skill3 = ANIM("CG_Skill3.anim");
 
 		// Loop가 false이면 애니메이션이 종료됐을 때 WhenEnd 트리거가 작동한다.
+		deadAnim->SetLoop(false);
 		attack1->SetLoop(false); 
 		attack2->SetLoop(false);
 		attack3->SetLoop(false);
@@ -266,6 +268,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* runningAnim = ANIM("CP_Run.anim");
 		Animation* idleNoneAnim = ANIM("CP_Idle_None.anim");
 		Animation* runningNoneAnim = ANIM("CP_Run_None.anim");
+		Animation* deadAnim = ANIM("CP_Dead.anim");
 		Animation* attack1 = ANIM("CP_Attack1.anim");
 		Animation* attack2 = ANIM("CP_Attack2.anim");
 		Animation* attack3 = ANIM("CP_Attack3.anim");
@@ -273,6 +276,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* skill2 = ANIM("CP_Skill2.anim");
 		Animation* skill3 = ANIM("CP_Skill3.anim");
 
+		deadAnim->SetLoop(false);
 		attack1->SetLoop(false);
 		attack2->SetLoop(false);
 		attack3->SetLoop(false);
@@ -331,6 +335,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* runningAnim = ANIM("CR_Run.anim");
 		Animation* idleNoneAnim = ANIM("CR_Idle_None.anim");
 		Animation* runningNoneAnim = ANIM("CR_Run_None.anim");
+		Animation* deadAnim = ANIM("CR_Dead.anim");
 		Animation* attack1 = ANIM("CR_Attack1.anim");
 		Animation* attack2 = ANIM("CR_Attack2.anim");
 		Animation* attack3 = ANIM("CR_Attack3.anim");
@@ -338,6 +343,7 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* skill2 = ANIM("CR_Skill2.anim");
 		Animation* skill3 = ANIM("CR_Skill3.anim");
 
+		deadAnim->SetLoop(false);
 		attack1->SetLoop(false);
 		attack2->SetLoop(false);
 		attack3->SetLoop(false);
@@ -467,6 +473,9 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 			
 		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CG_Run_None.anim");
+
+		case CharacterAnimationType::DEAD:
+			return ANIM("CG_Dead.anim");
 		}
 		break;
 
@@ -484,6 +493,9 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 
 		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CP_Run_None.anim");
+
+		case CharacterAnimationType::DEAD:
+			return ANIM("CP_Dead.anim");
 		}
 		break;
 
@@ -501,6 +513,9 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 
 		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CR_Run_None.anim");
+
+		case CharacterAnimationType::DEAD:
+			return ANIM("CR_Dead.anim");
 		}
 		break;
 	}

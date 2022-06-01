@@ -233,6 +233,28 @@ void CombatSystem::doEntityDie(const entt::entity eid, EntityType eType)
 		break;
 
 	case EntityType::PLAYER:
+	{
+		auto id = mRegistry.get<IDComponent>(eid).ID;
+
+		if (mOwner->IsPlayerDead(id))
+		{
+			return;
+		}
+
+		mOwner->SendEventOccurPacket(id, EventType::PLAYER_DEAD);
+		mOwner->SetPlayerDead(id, true);
+		auto& movement = mRegistry.get<MovementComponent>(eid);
+		movement.Direction = Vector3::Zero;
+
+		Timer::AddEvent(3.0f, [this, eid, id]() {
+			if (mRegistry.valid(eid))
+			{
+				mOwner->SetPlayerDead(id, false);
+				auto& health = mRegistry.get<HealthComponent>(eid);
+				health.Health = Values::PlayerHealth;
+			}
+			});
+	}
 		break;
 	}
 }

@@ -116,6 +116,7 @@ enum class EntityType : UINT8
 enum class EventType : UINT8
 {
 	DOOR_DOWN,
+	PLAYER_DEAD,
 };
 
 /************************************************************************/
@@ -291,6 +292,7 @@ struct NOTIFY_GAME_OVER_PACKET : public PACKET_HEADER
 struct NOTIFY_EVENT_OCCUR_PACKET : public PACKET_HEADER
 {
 	UINT8 EventType;
+	INT32 AdditionalData;
 };
 
 #pragma pack(pop)

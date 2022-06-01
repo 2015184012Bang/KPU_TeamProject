@@ -36,6 +36,7 @@ enum class CharacterAnimationType
 	IDLE_NONE,
 	RUN,
 	RUN_NONE,
+	DEAD,
 };
 
 enum class EnemyAnimationType
