@@ -241,6 +241,7 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 
 		mOwner->SendEventOccurPacket(id, EventType::PLAYER_DEAD);
 		mRegistry.emplace<Tag_Dead>(player);
+		mRegistry.remove<BoxComponent>(player);
 		auto& movement = mRegistry.get<MovementComponent>(player);
 		movement.Direction = Vector3::Zero;
 
@@ -251,6 +252,9 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 				mRegistry.remove<Tag_Dead>(player);
 				auto& health = mRegistry.get<HealthComponent>(player);
 				health.Health = Values::PlayerHealth;
+				const auto& transform = mRegistry.get<TransformComponent>(player);
+				mRegistry.emplace<BoxComponent>(player, &Box::GetBox("../Assets/Boxes/Character.box"),
+					transform.Position, transform.Yaw);
 			}
 			});
 	}

@@ -773,6 +773,9 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 
 		if (player)
 		{
+			auto& movement = player.GetComponent<MovementComponent>();
+			movement.Direction = Vector3::Zero;
+
 			auto& animator = player.GetComponent<AnimatorComponent>();
 			const auto deadAnim = GetCharacterAnimationFile(id, CharacterAnimationType::DEAD);
 			Helpers::PlayAnimation(&animator, deadAnim);

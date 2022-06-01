@@ -61,6 +61,11 @@ public:
 		const auto& myPosition = GetComponent<TransformComponent>().Position;
 		for (auto player : players)
 		{
+			if (mRegistry.any_of<Tag_Dead>(player))
+			{
+				continue;
+			}
+
 			const auto& playerPosition = mRegistry.get<TransformComponent>(player).Position;
 
 			float distSq = Vector3::DistanceSquared(playerPosition, myPosition);
@@ -77,7 +82,7 @@ public:
 
 	bool IsTargetValid()
 	{
-		return mRegistry.valid(mTarget);
+		return mRegistry.valid(mTarget) && !mRegistry.any_of<Tag_Dead>(mTarget);
 	}
 
 	entt::entity GetTarget() const { return mTarget; }
