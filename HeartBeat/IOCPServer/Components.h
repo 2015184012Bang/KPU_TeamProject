@@ -48,6 +48,7 @@ struct CombatComponent
 	INT32 BaseAttackDmg = 0;
 	INT32 Armor = 0;
 	INT32 Regeneration = 0;
+	INT32 Life = 0;
 	float BaseAttackCooldown = 0.0f;
 	float BaseAttackTracker = 0.0f;
 	float SkillCooldown = 0.0f;

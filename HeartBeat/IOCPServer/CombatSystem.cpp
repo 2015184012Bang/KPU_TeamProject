@@ -6,6 +6,8 @@
 #include "Values.h"
 #include "Room.h"
 
+constexpr INT32 MAX_PLAYER_LIFE = 3;
+
 CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
@@ -50,6 +52,7 @@ void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 		break;
 	}
 
+	combat.Life = MAX_PLAYER_LIFE;
 	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
 	combat.BaseAttackTracker = combat.BaseAttackCooldown;
 	combat.SkillCooldown = Values::SkillCooldown;
@@ -239,24 +242,41 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 			return;
 		}
 
-		mOwner->SendEventOccurPacket(id, EventType::PLAYER_DEAD);
+		auto& combat = mRegistry.get<CombatComponent>(player);
+		combat.Life -= 1;
 		mRegistry.emplace<Tag_Dead>(player);
 		mRegistry.remove<BoxComponent>(player);
 		auto& movement = mRegistry.get<MovementComponent>(player);
 		movement.Direction = Vector3::Zero;
 
-		Timer::AddEvent(3.0f, [this, id]() {
-			auto player = GetEntityByID(mRegistry, id);
-			if (player != entt::null)
+		if (combat.Life > 0)
+		{
+			mOwner->SendEventOccurPacket(id, EventType::PLAYER_DEAD);
+
+			Timer::AddEvent(3.0f, [this, id]() {
+				auto player = GetEntityByID(mRegistry, id);
+				if (player != entt::null)
+				{
+					mRegistry.remove<Tag_Dead>(player);
+					auto& health = mRegistry.get<HealthComponent>(player);
+					health.Health = Values::PlayerHealth;
+					const auto& transform = mRegistry.get<TransformComponent>(player);
+					mRegistry.emplace<BoxComponent>(player, &Box::GetBox("../Assets/Boxes/Character.box"),
+						transform.Position, transform.Yaw);
+				}
+				});
+		}
+		else
+		{
+			mOwner->SendDeleteEntityPacket(id, EntityType::PLAYER);
+
+			// 모든 플레이어가 Life를 소진했다면 게임오버 처리
+			auto deads = mRegistry.view<Tag_Dead>();
+			if (deads.size() == mOwner->GetCurrentUsers())
 			{
-				mRegistry.remove<Tag_Dead>(player);
-				auto& health = mRegistry.get<HealthComponent>(player);
-				health.Health = Values::PlayerHealth;
-				const auto& transform = mRegistry.get<TransformComponent>(player);
-				mRegistry.emplace<BoxComponent>(player, &Box::GetBox("../Assets/Boxes/Character.box"),
-					transform.Position, transform.Yaw);
+				mOwner->DoGameOver();
 			}
-			});
+		}
 	}
 		break;
 	}

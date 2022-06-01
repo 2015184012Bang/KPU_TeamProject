@@ -479,10 +479,13 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	animator.SetTrigger(GetAttackAnimTrigger(true));
 
 	// 적에게 맞은 플레이어가 나라면 사운드 재생
-	const auto& playerID = mPlayerCharacter.GetComponent<IDComponent>().ID;
-	if (neaPacket->VictimID == playerID)
+	if (gRegistry.valid(mPlayerCharacter))
 	{
-		SoundManager::PlaySound("Ouch.mp3", 0.3f);
+		const auto& playerID = mPlayerCharacter.GetComponent<IDComponent>().ID;
+		if (neaPacket->VictimID == playerID)
+		{
+			SoundManager::PlaySound("Ouch.mp3", 0.3f);
+		}
 	}
 
 	// Dog인 경우 공격 이후 삭제되도록 한다.
@@ -545,7 +548,45 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::PLAYER:
 	{
-		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
+		auto player = GetEntityByID(ndePacket->EntityID);
+		if (!player)
+		{
+			HB_LOG("Invalid entity: {0}", __FUNCTION__);
+			return;
+		}
+
+		auto& movement = player.GetComponent<MovementComponent>();
+		movement.Direction = Vector3::Zero;
+
+		auto& animator = player.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(ndePacket->EntityID, CharacterAnimationType::DEAD));
+
+		auto entityID = ndePacket->EntityID;
+		Timer::AddEvent(3.0f, [this, entityID]() {
+			auto player = GetEntityByID(entityID);
+			if (gRegistry.valid(player))
+			{
+				auto& parent = player.GetComponent<ParentComponent>();
+				for (auto child : parent.Children)
+				{
+					DestroyEntity(child);
+				}
+				player.RemoveComponent<Tag_SkeletalMesh>();
+				player.RemoveComponent<DebugDrawComponent>();
+			}
+			});
+
+		if (mOwner->GetClientID() == ndePacket->EntityID)
+		{
+			auto tank = GetEntityByName("Tank");
+			if (!tank)
+			{
+				HB_LOG("Invalid entity: {0}", __FUNCTION__);
+				return;
+			}
+
+			mOwner->SetFollowCameraTarget(tank, Vector3{ 0.0f, 1000.0f, -1000.0f });
+		}
 	}
 	break;
 

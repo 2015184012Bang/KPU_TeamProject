@@ -262,12 +262,20 @@ void Helpers::DetachBone(Entity& parent)
 {
 	auto view = gRegistry.view<ChildComponent>();
 
+	auto& parentComp = parent.GetComponent<ParentComponent>();
+
 	for (auto [entity, hierarchy] : view.each())
 	{
 		// 벨트인 경우엔 삭제하지 않는다.
 		if (hierarchy.Parent == parent
 			&& hierarchy.BoneName != "Bip001 Spine")
 		{
+			if (auto iter = std::find(begin(parentComp.Children), end(parentComp.Children), entity);
+				iter != end(parentComp.Children))
+			{
+				parentComp.Children.erase(iter);
+			}
+
 			gRegistry.destroy(entity);
 		}
 	}

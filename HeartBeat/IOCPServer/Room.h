@@ -69,6 +69,7 @@ public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }
 	UINT32 GetEntityID() { return mEntityID++; }
+	size_t GetCurrentUsers() { return mUsers.size(); }
 
 	void SetState(RoomState state) { mRoomState = state; }
 
