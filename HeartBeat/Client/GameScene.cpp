@@ -430,7 +430,11 @@ void GameScene::processNotifyMove(const PACKET& packet)
 	NOTIFY_MOVE_PACKET* nmPacket = reinterpret_cast<NOTIFY_MOVE_PACKET*>(packet.DataPtr);
 
 	auto target = GetEntityByID(nmPacket->EntityID);
-	HB_ASSERT(target, "Invalid entity!");
+	if (!target)
+	{
+		HB_LOG("Invalid entity!");
+		return;
+	}
 
 	auto& transform = target.GetComponent<TransformComponent>();
 	transform.Position = nmPacket->Position;
@@ -444,7 +448,11 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 	NOTIFY_ATTACK_PACKET* naPacket = reinterpret_cast<NOTIFY_ATTACK_PACKET*>(packet.DataPtr);
 
 	auto e = GetEntityByID(naPacket->EntityID);
-	HB_ASSERT(e, "Invalid entity!");
+	if (!e)
+	{
+		HB_LOG("Invalid entity!");
+		return;
+	}
 
 	auto& animator = e.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetAttackAnimTrigger(false));
@@ -461,7 +469,11 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	NOTIFY_ENEMY_ATTACK_PACKET* neaPacket = reinterpret_cast<NOTIFY_ENEMY_ATTACK_PACKET*>(packet.DataPtr);
 
 	auto hitter = GetEntityByID(neaPacket->HitterID);
-	HB_ASSERT(hitter, "Invalid entity!");
+	if (!hitter)
+	{
+		HB_LOG("Invalid entity!");
+		return;
+	}
 
 	auto& animator = hitter.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetAttackAnimTrigger(true));
@@ -486,7 +498,11 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	NOTIFY_DELETE_ENTITY_PACKET* ndePacket = reinterpret_cast<NOTIFY_DELETE_ENTITY_PACKET*>(packet.DataPtr);
 
 	auto target = GetEntityByID(ndePacket->EntityID);
-	HB_ASSERT(target, "Invalid entity!");
+	if (!target)
+	{
+		HB_LOG("Invalid entity!");
+		return;
+	}
 
 	switch (static_cast<EntityType>(ndePacket->EntityType))
 	{
@@ -659,11 +675,11 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
 	// ÅÊÅ© Hp UI »èÁ¦
-	for (auto ui : mTankHpUI)
-	{
-		DestroyEntity(ui);
-	}
-	mTankHpUI.clear();
+	//for (auto ui : mTankHpUI)
+	//{
+	//	DestroyEntity(ui);
+	//}
+	//mTankHpUI.clear();
 
 	// °ÔÀÓ ¿À¹ö UI ÆË¾÷
 	Entity gameOverUI = Entity{ gRegistry.create() };
@@ -703,6 +719,12 @@ void GameScene::processNotifySkill(const PACKET& packet)
 	NOTIFY_SKILL_PACKET* nsPacket = reinterpret_cast<NOTIFY_SKILL_PACKET*>(packet.DataPtr);
 
 	auto player = GetEntityByID(nsPacket->EntityID);
+	if (!player)
+	{
+		HB_LOG("Invalid entity!");
+		return;
+	}
+
 	auto& animator = player.GetComponent<AnimatorComponent>();
 	animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
 
@@ -721,17 +743,6 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 
 	auto& co2 = mCO2Text.GetComponent<TextComponent>();
 	co2.Sentence = std::to_wstring(nscPacket->CO2);
-
-	if (mTankHP > nscPacket->TankHealth)
-	{
-		mTankHP = nscPacket->TankHealth;
-		DestroyEntity(mTankHpUI.back());
-		mTankHpUI.pop_back();
-	}
-
-	HB_LOG("{0} {1} {2}", nscPacket->P0Health,
-		nscPacket->P1Health,
-		nscPacket->P2Health);
 }
 
 void GameScene::processNotifyEventOccur(const PACKET& packet)
@@ -789,6 +800,11 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 					Helpers::PlayAnimation(&animator, idleAnim);
 				}
 				});
+		}
+		else
+		{
+			HB_LOG("Invalid entity!");
+			return;
 		}
 	}
 		break;
@@ -850,18 +866,19 @@ void GameScene::createUI()
 		text.Y = 100.0f;
 	}
 
-	{
-		mTankHP = MAX_TANK_HP;
-		for (int i = 0; i < MAX_TANK_HP; ++i)
-		{
-			auto ui = mOwner->CreateSpriteEntity(40, 20, TEXTURE("Red.png"));
-			ui.AddTag<Tag_UI>();
-			auto& rect = ui.GetComponent<RectTransformComponent>();
-			rect.Position = Vector2{ 600.0f, 150.0f - i * 25.0f };
+	// TODO : Tank UI
+	//{
+		//mTankHP = MAX_TANK_HP;
+		//for (int i = 0; i < MAX_TANK_HP; ++i)
+		//{
+		//	auto ui = mOwner->CreateSpriteEntity(40, 20, TEXTURE("Red.png"));
+		//	ui.AddTag<Tag_UI>();
+		//	auto& rect = ui.GetComponent<RectTransformComponent>();
+		//	rect.Position = Vector2{ 600.0f, 150.0f - i * 25.0f };
 
-			mTankHpUI.push_back(ui);
-		}
-	}
+		//	mTankHpUI.push_back(ui);
+		//}
+	//}
 }
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
