@@ -8,11 +8,6 @@ class Texture;
 
 class RoomScene : public Scene
 {
-	const float WIDTH_BETWEEN_CHARACTERS = 700.0f;
-	const int START_BUTTON_WIDTH = 200;
-	const int START_BUTTON_HEIGHT = 100;
-	const float START_BUTTON_DIST_FROM_BOTTOM = 150.0f;
-
 public:
 	RoomScene(Client* owner);
 

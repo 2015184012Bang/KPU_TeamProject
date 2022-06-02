@@ -15,6 +15,7 @@
 #include "Define.h"
 #include "LobbyScene.h"
 
+constexpr float WIDTH_BETWEEN_CHARACTERS = 700.0f;
 
 RoomScene::RoomScene(Client* owner)
 	: Scene(owner)
@@ -123,7 +124,7 @@ void RoomScene::createCharacterMesh(int clientID)
 void RoomScene::createButtons()
 {
 	// 방 나가기 버튼 생성
-	Entity leave = mOwner->CreateSpriteEntity(100, 100, TEXTURE("LeaveRoom.png"));
+	Entity leave = mOwner->CreateSpriteEntity(239, 78, TEXTURE("Back_Button.png"));
 	auto& transform = leave.GetComponent<RectTransformComponent>();
 	transform.Position = Vector2{ 20.0f, Application::GetScreenHeight() - 120.0f };
 
@@ -140,10 +141,10 @@ void RoomScene::createButtons()
 	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
 	if (Values::HostID == mOwner->GetClientID())
 	{
-		Entity gameStartButton = mOwner->CreateSpriteEntity(START_BUTTON_WIDTH, START_BUTTON_HEIGHT, TEXTURE("Start_Button.png"));
+		Entity gameStartButton = mOwner->CreateSpriteEntity(302, 85, TEXTURE("Start_Button.png"));
 		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
 		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
-		transform.Position.y = Application::GetScreenHeight() - START_BUTTON_DIST_FROM_BOTTOM;
+		transform.Position.y = Application::GetScreenHeight() - 150.f;
 
 		gameStartButton.AddComponent<ButtonComponent>([this]() {
 			REQUEST_ENTER_UPGRADE_PACKET packet = {};
