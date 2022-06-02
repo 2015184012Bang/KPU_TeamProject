@@ -65,6 +65,8 @@ public:
 
 	void SendEventOccurPacket(const INT32 addtionalData, EventType eType);
 
+	void UpdatePlayerHpInState(const INT32 hp, const UINT32 id);
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }

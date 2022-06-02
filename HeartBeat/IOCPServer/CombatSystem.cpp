@@ -95,18 +95,17 @@ bool CombatSystem::CanUseSkill(const INT8 clientID)
 
 void CombatSystem::DoHeal(const INT8 clientID)
 {
-	auto players = mRegistry.view<Tag_Player, HealthComponent>();
+	auto players = mRegistry.view<Tag_Player, HealthComponent, IDComponent>();
 
-	for (auto [entity, health] : players.each())
+	for (auto [entity, health, id] : players.each())
 	{
 		health.Health += 5;
 		if (health.Health > Values::PlayerHealth)
 		{
 			health.Health = Values::PlayerHealth;
 		}
+		mOwner->UpdatePlayerHpInState(health.Health, id.ID);
 	}
-
-	// TODO: 체력 회복을 알리는 패킷 보내기
 }
 
 void CombatSystem::DoBuff(const INT8 clientID)
@@ -174,7 +173,7 @@ void CombatSystem::checkEnemyAttack()
 		}
 		else if(mRegistry.any_of<Tag_Player>(victim))
 		{
-			updatePlayerHPState(health.Health, hit.VictimID);
+			mOwner->UpdatePlayerHpInState(health.Health, hit.VictimID);
 			eType = EntityType::PLAYER;
 		}
 		else if (mRegistry.any_of<Tag_RedCell>(victim))
@@ -192,30 +191,6 @@ void CombatSystem::checkEnemyAttack()
 		{
 			doEntityDie(hit.VictimID, eType);
 		}
-	}
-}
-
-void CombatSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
-{
-	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
-
-	switch (id)
-	{
-	case 0:
-		playState.P0HP = health;
-		break;
-
-	case 1:
-		playState.P1HP = health;
-		break;
-
-	case 2:
-		playState.P2HP = health;
-		break;
-
-	default:
-		ASSERT(false, "Unknown player id!");
-		break;
 	}
 }
 
@@ -263,16 +238,7 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 					const auto& transform = mRegistry.get<TransformComponent>(player);
 					mRegistry.emplace<BoxComponent>(player, &Box::GetBox("../Assets/Boxes/Character.box"),
 						transform.Position, transform.Yaw);
-
-					auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
-					playState.bChanged = true;
-
-					switch (id)
-					{
-					case 0: playState.P0HP = health.Health; break;
-					case 1: playState.P1HP = health.Health; break;
-					case 2: playState.P2HP = health.Health; break;
-					}
+					mOwner->UpdatePlayerHpInState(health.Health, id);
 				}
 				});
 		}

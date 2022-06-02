@@ -39,8 +39,6 @@ private:
 	// 카페인 섭취로 증가한 플레이어 능력 원상복귀
 	void backPlayerStatus(const entt::entity player);
 
-	void updatePlayerHPState(const INT32 health, const UINT32 id);
-
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;

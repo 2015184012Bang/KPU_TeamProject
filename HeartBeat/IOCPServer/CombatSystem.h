@@ -27,8 +27,6 @@ public:
 private:
 	void updateCooldown();
 	void checkEnemyAttack();
-
-	void updatePlayerHPState(const INT32 health, const UINT32 id);
 	void doEntityDie(const UINT32 id, EntityType eType);
 
 private:

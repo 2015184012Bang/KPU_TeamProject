@@ -356,6 +356,20 @@ void Room::SendEventOccurPacket(const INT32 addtionalData, EventType eType)
 	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 }
 
+void Room::UpdatePlayerHpInState(const INT32 hp, const UINT32 id)
+{
+	auto& gameState = mRegistry.get<PlayStateComponent>(mPlayState);
+	gameState.bChanged = true;
+
+	switch (id)
+	{
+	case 0: gameState.P0HP = hp; break;
+	case 1: gameState.P1HP = hp; break;
+	case 2: gameState.P2HP = hp; break;
+	default: LOG("Unknown player id: {0}", __FUNCTION__);
+	}
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))

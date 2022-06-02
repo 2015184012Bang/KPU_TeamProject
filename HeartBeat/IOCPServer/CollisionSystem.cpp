@@ -375,7 +375,7 @@ void CollisionSystem::doItemUse(const entt::entity item, const entt::entity play
 		{
 			health.Health = Values::PlayerHealth;
 		}
-		updatePlayerHPState(health.Health, mRegistry.get<IDComponent>(player).ID);
+		mOwner->UpdatePlayerHpInState(health.Health, mRegistry.get<IDComponent>(player).ID);
 
 		auto& combat = mRegistry.get<CombatComponent>(player);
 		if (!combat.bEatCaffeine)
@@ -403,31 +403,6 @@ void CollisionSystem::backPlayerStatus(const entt::entity player)
 	auto& combat = mRegistry.get<CombatComponent>(player);
 	combat.bEatCaffeine = false;
 	combat.BaseAttackDmg = GetBaseAttackDmg(combat.Preset);
-}
-
-void CollisionSystem::updatePlayerHPState(const INT32 health, const UINT32 id)
-{
-	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
-	playState.bChanged = true;
-
-	switch (id)
-	{
-	case 0:
-		playState.P0HP = health;
-		break;
-
-	case 1:
-		playState.P1HP = health;
-		break;
-
-	case 2:
-		playState.P2HP = health;
-		break;
-
-	default:
-		ASSERT(false, "Invalid player id!");
-		break;
-	}
 }
 
 void CollisionSystem::checkTankCollision()
