@@ -739,10 +739,10 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	}
 
 	// '나가기' 버튼 생성
-	Entity button = mOwner->CreateSpriteEntity(200, 100, TEXTURE("OutButton.png"));
+	Entity button = mOwner->CreateSpriteEntity(249, 78, TEXTURE("Next_Button.png"));
 	auto& rect = button.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 100.0f,
-		Application::GetScreenHeight() - 125.0f };
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 124.0f,
+		Application::GetScreenHeight() - 250.0f };
 
 	button.AddComponent<ButtonComponent>([this]() {
 		doGameOver();

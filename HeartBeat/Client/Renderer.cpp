@@ -726,7 +726,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("White.png");
 	TEXTURE("UI_O2.png");
 	TEXTURE("UI_CO2.png");
-	TEXTURE("OutButton.png");
+	TEXTURE("Next_Button.png");
 	TEXTURE("Login_Button.png");
 	TEXTURE("Login_Form.png");
 	TEXTURE("Back_Button.png");
