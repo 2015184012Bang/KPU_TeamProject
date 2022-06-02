@@ -15,7 +15,7 @@
     <CellSpeed>500</CellSpeed>
     <TankHealth>20</TankHealth>
     <EnemyHealth>5</EnemyHealth>
-    <PlayerHealth>3</PlayerHealth>
+    <PlayerHealth>10</PlayerHealth>
     <CellHealth>3</CellHealth>
   </Values>
 </Root>

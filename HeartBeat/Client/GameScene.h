@@ -8,6 +8,13 @@
 
 class Texture;
 
+enum class HpIdx
+{
+    RED,
+    PINK,
+    GREEN
+};
+
 class GameScene :
     public Scene
 {
@@ -37,6 +44,7 @@ private:
     void createDoorTile(const Tile& tile);
 
     void createUI();
+    void createHpbar();
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();
@@ -53,6 +61,8 @@ private:
 
     void doGameOver();
 
+    void updateHpUI(const INT8 hp, HpIdx idx);
+
 private:
     enum class StageCode
     {
@@ -64,11 +74,11 @@ private:
     Entity mPlayerCharacter = {};
     Vector3 mDirection = Vector3::Zero;
 
+    // UI things
     Entity mO2Text = {};
     Entity mCO2Text = {};
 
-    //int mTankHP = 0;
-    //vector<Entity> mTankHpUI;
+    vector<vector<Entity>> mHps;
 
     bool bIsGameOver = false;
 };

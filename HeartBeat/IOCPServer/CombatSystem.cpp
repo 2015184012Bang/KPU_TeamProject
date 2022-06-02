@@ -263,6 +263,16 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 					const auto& transform = mRegistry.get<TransformComponent>(player);
 					mRegistry.emplace<BoxComponent>(player, &Box::GetBox("../Assets/Boxes/Character.box"),
 						transform.Position, transform.Yaw);
+
+					auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
+					playState.bChanged = true;
+
+					switch (id)
+					{
+					case 0: playState.P0HP = health.Health; break;
+					case 1: playState.P1HP = health.Health; break;
+					case 2: playState.P2HP = health.Health; break;
+					}
 				}
 				});
 		}

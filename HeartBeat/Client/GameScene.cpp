@@ -20,6 +20,7 @@
 
 constexpr int MAX_TANK_HP = 3;
 
+
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
 {
@@ -715,13 +716,6 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
-	// 탱크 Hp UI 삭제
-	//for (auto ui : mTankHpUI)
-	//{
-	//	DestroyEntity(ui);
-	//}
-	//mTankHpUI.clear();
-
 	// 게임 오버 UI 팝업
 	Entity gameOverUI = Entity{ gRegistry.create() };
 	auto& text = gameOverUI.AddComponent<TextComponent>();
@@ -784,6 +778,10 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 
 	auto& co2 = mCO2Text.GetComponent<TextComponent>();
 	co2.Sentence = std::to_wstring(nscPacket->CO2);
+
+	updateHpUI(nscPacket->P2Health, HpIdx::RED);
+	updateHpUI(nscPacket->P1Health, HpIdx::PINK);
+	updateHpUI(nscPacket->P0Health, HpIdx::GREEN);
 }
 
 void GameScene::processNotifyEventOccur(const PACKET& packet)
@@ -873,6 +871,45 @@ void GameScene::doGameOver()
 	mOwner->ChangeScene(lobbyScene);
 }
 
+void GameScene::updateHpUI(const INT8 hp, HpIdx idx)
+{
+	auto players = gRegistry.view<Tag_Player>();
+
+	int pIdx = static_cast<int>(idx);
+
+	if (players.size() < pIdx + 1)
+	{
+		return;
+	}
+	auto curHealth = mHps[pIdx].size();
+	int diff = static_cast<int>(hp - curHealth);
+
+	if (diff < 0)
+	{
+		for (int i = 0; i < abs(diff); ++i)
+		{
+			DestroyEntity(mHps[pIdx].back());
+			mHps[pIdx].pop_back();
+		}
+	}
+	else
+	{
+		const int hpWidth = 26;
+		const int hpHeight = 68;
+
+		const float startX = 158.0f + pIdx * 404.0f;
+
+		for (auto i = curHealth; i < curHealth + diff; ++i)
+		{
+			Entity hp = mOwner->CreateSpriteEntity(hpWidth, hpHeight, TEXTURE("Hp.png"));
+			auto& hprect = hp.GetComponent<RectTransformComponent>();
+			hprect.Position.x = startX + (26.0f * i); // HUD에서 119 오른쪽으로
+			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
+			mHps[pIdx].push_back(hp);
+		}
+	}
+}
+
 void GameScene::createUI()
 {
 	{
@@ -907,46 +944,74 @@ void GameScene::createUI()
 		text.Y = 100.0f;
 	}
 
+	createHpbar();
+}
+
+void GameScene::createHpbar()
+{
+	auto players = gRegistry.view<Tag_Player>();
+
+	const auto connectedPlayers = players.size();
+
+	/// 
+	/// [39][394][10][394][10][394][39] = 1280
+	///
+	
+	const int hpWidth = 26;
+	const int hpHeight = 68;
+
+	mHps.resize(connectedPlayers);
+
+	if (connectedPlayers >= 1)
 	{
 		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Red.png"));
 		auto& rect = hpbar.GetComponent<RectTransformComponent>();
-		rect.Position.x = 10.0f;
+		rect.Position.x = 39.0f;
 		rect.Position.y = Application::GetScreenHeight() - 120.0f;
 
-		Entity hp = mOwner->CreateSpriteEntity(26, 68, TEXTURE("Hp.png"));
-		auto& hprect = hp.GetComponent<RectTransformComponent>();
-		hprect.Position.x = 129.0f;
-		hprect.Position.y = Application::GetScreenHeight() - 96.0f;
+		for (int i = 0; i < 10; ++i)
+		{
+			Entity hp = mOwner->CreateSpriteEntity(hpWidth, hpHeight, TEXTURE("Hp.png"));
+			auto& hprect = hp.GetComponent<RectTransformComponent>();
+			hprect.Position.x = 158.0f + (26.0f * i); // HUD에서 119 오른쪽으로
+			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
+			mHps[static_cast<int>(HpIdx::RED)].push_back(hp);
+		}
 	}
-	
+
+	if (connectedPlayers >= 2)
 	{
 		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Pink.png"));
 		auto& rect = hpbar.GetComponent<RectTransformComponent>();
-		rect.Position.x = 414.0f;
+		rect.Position.x = 443.0f; // 39 + 404
 		rect.Position.y = Application::GetScreenHeight() - 120.0f;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			Entity hp = mOwner->CreateSpriteEntity(hpWidth, hpHeight, TEXTURE("Hp.png"));
+			auto& hprect = hp.GetComponent<RectTransformComponent>();
+			hprect.Position.x = 562.0f + (26.0f * i); // HUD에서 119 오른쪽으로
+			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
+			mHps[static_cast<int>(HpIdx::PINK)].push_back(hp);
+		}
 	}
 
+	if (connectedPlayers >= 3)
 	{
 		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Green.png"));
 		auto& rect = hpbar.GetComponent<RectTransformComponent>();
-		rect.Position.x = 818.0f;
+		rect.Position.x = 847.0f; // 443 + 404
 		rect.Position.y = Application::GetScreenHeight() - 120.0f;
+
+		for (int i = 0; i < 10; ++i)
+		{
+			Entity hp = mOwner->CreateSpriteEntity(hpWidth, hpHeight, TEXTURE("Hp.png"));
+			auto& hprect = hp.GetComponent<RectTransformComponent>();
+			hprect.Position.x = 966.0f + (26.0f * i); // HUD에서 119 오른쪽으로
+			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
+			mHps[static_cast<int>(HpIdx::GREEN)].push_back(hp);
+		}
 	}
-
-
-	// TODO : Tank UI
-	//{
-		//mTankHP = MAX_TANK_HP;
-		//for (int i = 0; i < MAX_TANK_HP; ++i)
-		//{
-		//	auto ui = mOwner->CreateSpriteEntity(40, 20, TEXTURE("Red.png"));
-		//	ui.AddTag<Tag_UI>();
-		//	auto& rect = ui.GetComponent<RectTransformComponent>();
-		//	rect.Position = Vector2{ 600.0f, 150.0f - i * 25.0f };
-
-		//	mTankHpUI.push_back(ui);
-		//}
-	//}
 }
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
