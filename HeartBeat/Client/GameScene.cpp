@@ -907,6 +907,33 @@ void GameScene::createUI()
 		text.Y = 100.0f;
 	}
 
+	{
+		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Red.png"));
+		auto& rect = hpbar.GetComponent<RectTransformComponent>();
+		rect.Position.x = 10.0f;
+		rect.Position.y = Application::GetScreenHeight() - 120.0f;
+
+		Entity hp = mOwner->CreateSpriteEntity(26, 68, TEXTURE("Hp.png"));
+		auto& hprect = hp.GetComponent<RectTransformComponent>();
+		hprect.Position.x = 129.0f;
+		hprect.Position.y = Application::GetScreenHeight() - 96.0f;
+	}
+	
+	{
+		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Pink.png"));
+		auto& rect = hpbar.GetComponent<RectTransformComponent>();
+		rect.Position.x = 414.0f;
+		rect.Position.y = Application::GetScreenHeight() - 120.0f;
+	}
+
+	{
+		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, TEXTURE("Hpbar_Green.png"));
+		auto& rect = hpbar.GetComponent<RectTransformComponent>();
+		rect.Position.x = 818.0f;
+		rect.Position.y = Application::GetScreenHeight() - 120.0f;
+	}
+
+
 	// TODO : Tank UI
 	//{
 		//mTankHP = MAX_TANK_HP;

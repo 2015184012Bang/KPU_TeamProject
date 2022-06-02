@@ -730,6 +730,10 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Login_Button.png");
 	TEXTURE("Login_Form.png");
 	TEXTURE("Back_Button.png");
+	TEXTURE("Hp.png");
+	TEXTURE("Hpbar_Green.png");
+	TEXTURE("Hpbar_Pink.png");
+	TEXTURE("Hpbar_Red.png");
 }
 
 void Renderer::loadAssets()
