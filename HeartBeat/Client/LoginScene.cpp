@@ -27,15 +27,49 @@ void LoginScene::Enter()
 		TEXTURE("Login_Background.png"), 10);
 
 	// 로그인 폼 생성
-	Entity loginForm = mOwner->CreateSpriteEntity(200, 50, TEXTURE("White.png"), 20);
-	auto& rect = loginForm.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 100.0f , Application::GetScreenHeight() - 200.0f };
+	{
+		Entity loginForm = mOwner->CreateSpriteEntity(250, 55, TEXTURE("Login_Form.png"), 20);
+		auto& rect = loginForm.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 125.0f , Application::GetScreenHeight() - 185.0f };
+	}
+
+	// 로그인 버튼 생성
+	{
+		Entity loginButton = mOwner->CreateSpriteEntity(240, 74, TEXTURE("Login_Button.png"));
+		auto& rect = loginButton.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2 - 120.0f, Application::GetScreenHeight() - 125.0f };
+		loginButton.AddComponent<ButtonComponent>([this]()
+			{
+				if (mbConnected)
+				{
+					return;
+				}
+
+				mOwner->SetClientName(gKeyInput);
+
+				bool retVal = mOwner->GetPacketManager()->Connect(Values::ServerIP, Values::ServerPort);
+
+				if (retVal)
+				{
+					// 접속에 성공하면 클라이언트 소켓을 논블로킹 모드로 바꾸고
+					// REQUEST_LOGIN 패킷을 보낸다.
+					mbConnected = true;
+					mOwner->GetPacketManager()->SetNonblocking(true);
+
+					REQUEST_LOGIN_PACKET packet = {};
+					packet.PacketID = REQUEST_LOGIN;
+					packet.PacketSize = sizeof(REQUEST_LOGIN_PACKET);
+					CopyMemory(packet.ID, mOwner->GetClientName().data(), MAX_ID_LEN);
+					mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(REQUEST_LOGIN_PACKET));
+				}
+			});
+	}
 
 	// 입력한 글자를 표시할 텍스트
 	mLoginText = Entity{ gRegistry.create() };
 	auto& txt = mLoginText.AddComponent<TextComponent>();
-	txt.X = Application::GetScreenWidth() / 2 - 75.0f;
-	txt.Y = Application::GetScreenHeight() - 200.0f;
+	txt.X = Application::GetScreenWidth() / 2 - 115.0f;
+	txt.Y = Application::GetScreenHeight() - 185.0f;
 }
 
 void LoginScene::Exit()
@@ -74,28 +108,6 @@ void LoginScene::Update(float deltaTime)
 	// 텍스트 업데이트
 	auto& txt = mLoginText.GetComponent<TextComponent>();
 	txt.Sentence = s2ws(gKeyInput);
-
-	// 엔터 키를 누르면 서버에 접속 요청
-	if (Input::IsButtonPressed(KeyCode::RETURN) && !mbConnected)
-	{
-		mOwner->SetClientName(gKeyInput);
-
-		bool retVal = mOwner->GetPacketManager()->Connect(Values::ServerIP, Values::ServerPort);
-
-		if (retVal)
-		{
-			// 접속에 성공하면 클라이언트 소켓을 논블로킹 모드로 바꾸고
-			// REQUEST_LOGIN 패킷을 보낸다.
-			mbConnected = true;
-			mOwner->GetPacketManager()->SetNonblocking(true);
-
-			REQUEST_LOGIN_PACKET packet = {};
-			packet.PacketID = REQUEST_LOGIN;
-			packet.PacketSize = sizeof(REQUEST_LOGIN_PACKET);
-			CopyMemory(packet.ID, mOwner->GetClientName().data(), MAX_ID_LEN);
-			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(REQUEST_LOGIN_PACKET));
-		}
-	}
 }
 
 void LoginScene::processAnswerLogin(const PACKET& packet)

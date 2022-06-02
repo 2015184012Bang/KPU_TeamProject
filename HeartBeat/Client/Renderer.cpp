@@ -728,6 +728,8 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("UI_O2.png");
 	TEXTURE("UI_CO2.png");
 	TEXTURE("OutButton.png");
+	TEXTURE("Login_Button.png");
+	TEXTURE("Login_Form.png");
 }
 
 void Renderer::loadAssets()
@@ -815,7 +817,7 @@ void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor)
 {
 	ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(fontColor, &mTextBrush));
 	ThrowIfFailed(mWriteFactory->CreateTextFormat(
-		L"Verdana",
+		L"»ﬁ∏’µ’±Ÿ«ÏµÂ∂Û¿Œ",
 		NULL,
 		DWRITE_FONT_WEIGHT_NORMAL,
 		DWRITE_FONT_STYLE_NORMAL,
