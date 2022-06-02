@@ -69,7 +69,7 @@ void Renderer::BeginRender()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE renderTagetView(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), mBackBufferIndex, mRtvDescriptorSize);
 	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
 
-	mCmdList->ClearRenderTargetView(renderTagetView, Colors::CornflowerBlue, 0, nullptr);
+	mCmdList->ClearRenderTargetView(renderTagetView, mBackgroundColor, 0, nullptr);
 	mCmdList->ClearDepthStencilView(depthStencilView, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	mCmdList->OMSetRenderTargets(1, &renderTagetView, FALSE, &depthStencilView);
 
@@ -773,6 +773,11 @@ void Renderer::SubmitSprite(const SpriteMesh* mesh, const Texture* texture)
 	mCmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	mCmdList->IASetVertexBuffers(0, 1, &mesh->GetVertexBufferView());
 	mCmdList->DrawInstanced(mesh->GetVertexCount(), 1, 0, 0);
+}
+
+void Renderer::SetBackgroundColor(const XMVECTORF32& color)
+{
+	mBackgroundColor = color;
 }
 
 void Renderer::RenderFont(const vector<Sentence>& sentences)

@@ -47,6 +47,8 @@ public:
 	void SubmitDebugMesh(const Mesh* mesh);
 	void SubmitSprite(const SpriteMesh* mesh, const Texture* texture);
 
+	void SetBackgroundColor(const XMVECTORF32& color);
+
 	const ComPtr<ID3D12PipelineState>& GetStaticMeshPSO() const { return mStaticMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetSkeletalMeshPSO() const { return mSkeletalMeshPSO; }
 	const ComPtr<ID3D12PipelineState>& GetWireframePSO() const { return mWireframePSO; }
@@ -115,5 +117,7 @@ private:
 	uint64 mFenceValue;
 
 	HANDLE mFenceEvent;
+
+	XMVECTORF32 mBackgroundColor = {};
 };
 

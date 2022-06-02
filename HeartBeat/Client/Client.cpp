@@ -231,6 +231,11 @@ void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
 	}
 }
 
+void Client::SetBackgroundColor(const XMVECTORF32& color)
+{
+	mRenderer->SetBackgroundColor(color);
+}
+
 void Client::processInput()
 {
 	Input::Update();

@@ -41,6 +41,8 @@ public:
     // Parent에 붙은 Children들 삭제
     void DeleteChildren(entt::registry& regi, entt::entity entity);
 
+    void SetBackgroundColor(const XMVECTORF32& color);
+
 public:
 	int GetClientID() const { return mClientID; }
 	void SetClientID(int id) { mClientID = id; }

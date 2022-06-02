@@ -17,12 +17,11 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	HB_LOG("Entered LobbyScene...");
+	mOwner->SetBackgroundColor(Colors::Black);
 }
 
 void LobbyScene::Exit()
 {
-	HB_LOG("Exited LobbyScene...");
 	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 

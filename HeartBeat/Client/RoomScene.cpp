@@ -24,6 +24,8 @@ RoomScene::RoomScene(Client* owner)
 
 void RoomScene::Enter()
 {
+	mOwner->SetBackgroundColor(Colors::CornflowerBlue);
+
 	// 방 나가기 버튼, 게임 시작 버튼 생성
 	createButtons();
 
