@@ -362,9 +362,7 @@ void CollisionSystem::doItemUse(const entt::entity item, const entt::entity play
 
 	if (EntityType::VITAMIN == itemType)
 	{
-		auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
-		playState.Score += 10;
-		playState.bChanged = true;
+		mOwner->UpdateScore(10);
 	}
 	else
 	{

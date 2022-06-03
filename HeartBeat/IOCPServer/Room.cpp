@@ -369,6 +369,18 @@ void Room::UpdatePlayerHpInState(const INT32 hp, const UINT32 id)
 	}
 }
 
+void Room::UpdateScore(const INT32 delta)
+{
+	if (!mRegistry.valid(mPlayState))
+	{
+		return;
+	}
+
+	auto& playState = mRegistry.get<PlayStateComponent>(mPlayState);
+	playState.Score += delta;
+	playState.bChanged = true;
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))

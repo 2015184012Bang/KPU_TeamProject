@@ -67,6 +67,8 @@ public:
 
 	void UpdatePlayerHpInState(const INT32 hp, const UINT32 id);
 
+	void UpdateScore(INT32 delta);
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }
@@ -95,7 +97,7 @@ private:
 	void clearAllUser();
 	void clearGame();
 
-	Vector3 getCellStartPosition(INT32 index);
+	Vector3 getCellStartPosition(const INT32 index);
 
 private:
 	INT32 mRoomIndex = -1;
