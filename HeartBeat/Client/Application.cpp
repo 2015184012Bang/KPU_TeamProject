@@ -62,6 +62,11 @@ LRESULT CALLBACK Application::windowProc(HWND hwnd, UINT message, WPARAM wParam,
 			}
 		}
 
+		if (!isascii((int)wParam))
+		{
+			break;
+		}
+
 		if (std::isalnum((int)wParam) && gKeyInput.size() < 7)
 		{
 			gKeyInput += tolower((char)wParam);

@@ -17,6 +17,7 @@
 #include "RedCell.h"
 #include "LobbyScene.h"
 #include "Timer.h"
+#include "Utils.h"
 
 constexpr int MAX_TANK_HP = 3;
 
@@ -974,6 +975,14 @@ void GameScene::createHpbar()
 			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
 			mHps[id].push_back(hp);
 		}
+
+		const auto& name = player.GetComponent<NameComponent>().Name;
+
+		Entity nameText = Entity{ gRegistry.create() };
+		auto& text = nameText.AddComponent<TextComponent>();
+		text.Sentence = s2ws(name);
+		text.X = rect.Position.x + 121.0f;
+		text.Y = rect.Position.y - 40.0f;
 	}
 }
 
