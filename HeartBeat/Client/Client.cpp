@@ -49,7 +49,7 @@ bool Client::Init()
 	// Parent 엔티티가 삭제될 때 Child도 삭제하도록 한다.
 	gRegistry.on_destroy<ParentComponent>().connect<&Client::DeleteChildren>(this);
 
-	gGameMap.LoadMap("../Assets/Maps/Map01.csv");
+	gGameMap.LoadMap("../Assets/Maps/Map.csv");
 
 	mPacketManager = std::make_unique<PacketManager>();
 	mPacketManager->Init();

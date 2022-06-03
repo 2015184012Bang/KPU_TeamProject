@@ -7,7 +7,7 @@
 
 GameMap::GameMap()
 {
-	LoadMap("../Assets/Maps/Map01.csv");
+	LoadMap("../Assets/Maps/Map.csv");
 	
 }
 

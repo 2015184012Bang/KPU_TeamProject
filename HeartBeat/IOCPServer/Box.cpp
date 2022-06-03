@@ -30,6 +30,7 @@ void Box::Init()
 	GetBox("../Assets/Boxes/Virus.box");
 	GetBox("../Assets/Boxes/House.box");
 	GetBox("../Assets/Boxes/Sphere.box");
+	GetBox("../Assets/Boxes/Wall.box");
 
 	// 플레이어가 공격할 때 사용할 히트박스 생성
 	Box hitbox;

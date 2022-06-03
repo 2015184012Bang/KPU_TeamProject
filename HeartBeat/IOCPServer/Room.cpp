@@ -180,7 +180,7 @@ void Room::DoEnterGame()
 	negPacket.Result = RESULT_CODE::SUCCESS;
 	Broadcast(sizeof(negPacket), reinterpret_cast<char*>(&negPacket));
 
-	createTiles("../Assets/Maps/Map01.csv");
+	createTiles("../Assets/Maps/Map.csv");
 
 	createTankAndCart();
 
@@ -190,7 +190,7 @@ void Room::DoEnterGame()
 	createGameState();
 
 	mMovementSystem->Start();
-	mEnemySystem->Start("../Assets/Stages/Stage1.csv");
+	mEnemySystem->Start("../Assets/Stages/Stage.csv");
 	mCollisionSystem->Start();
 	mCombatSystem->Start();
 }
@@ -482,11 +482,17 @@ void Room::createTiles(string_view fileName)
 			transform.Yaw = 270.0f;
 			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Door.box"), transform.Position, transform.Yaw);
 		}
+		else if (tile.TType == TileType::SCAR_WALL)
+		{
+			transform.Yaw = 270.0f;
+			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Wall.box"), transform.Position, transform.Yaw);
+		}
 
 		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
 		// 탱크가 경로 인식이 가능하다.
 		if ((tile.TType == TileType::TANK_FAT) || 
-			(tile.TType == TileType::DOOR))
+			(tile.TType == TileType::DOOR) ||
+			(tile.TType == TileType::SCAR_WALL))
 		{
 			auto rail = mRegistry.create();
 			addTagToTile(rail, TileType::RAIL);
@@ -593,7 +599,13 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 
 	case TileType::MOVABLE:
 	case TileType::SCAR:
+	case TileType::SCAR_DOG:
 		mRegistry.emplace<Tag_Tile>(tile);
+		break;
+
+	case TileType::BATTLE_TRIGGER:
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "BattleTrigger");
 		break;
 
 	case TileType::RAIL:
@@ -628,6 +640,22 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		mRegistry.emplace<Tag_Tile>(tile);
 		mRegistry.emplace<Tag_BlockingTile>(tile);
 		mRegistry.emplace<NameComponent>(tile, "Door");
+		break;
+
+	case TileType::SCAR_WALL:
+		mRegistry.emplace<Tag_Tile>(tile);
+		mRegistry.emplace<Tag_BlockingTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "Wall");
+		break;
+
+	case TileType::BOSS_TRIGGER:
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "BossTrigger");
+		break;
+
+	case TileType::SCAR_BOSS:
+		mRegistry.emplace<Tag_RailTile>(tile);
+		mRegistry.emplace<NameComponent>(tile, "ScarBoss");
 		break;
 
 	default:
@@ -721,9 +749,14 @@ float GetTileYPos(TileType ttype)
 	case TileType::MOVABLE:
 	case TileType::RAIL:
 	case TileType::SCAR:
+	case TileType::SCAR_DOG:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
 	case TileType::MID_POINT:
+	case TileType::BATTLE_TRIGGER:
+	case TileType::SCAR_WALL:
+	case TileType::BOSS_TRIGGER:
+	case TileType::SCAR_BOSS:
 		return -Values::TileSide;
 
 	default:

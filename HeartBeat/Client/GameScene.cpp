@@ -40,7 +40,7 @@ void GameScene::Enter()
 	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
 
 	// ¸Ê »ý¼º
-	createMap("../Assets/Maps/Map01.csv");
+	createMap("../Assets/Maps/Map.csv");
 
 	createUI();
 }
@@ -168,6 +168,8 @@ void GameScene::createTile(const Tile& tile)
 	case TileType::START_POINT:
 	case TileType::END_POINT:
 	case TileType::MID_POINT:
+	case TileType::BATTLE_TRIGGER:
+	case TileType::BOSS_TRIGGER:
 		createRailTile(tile);
 		break;
 
@@ -180,6 +182,8 @@ void GameScene::createTile(const Tile& tile)
 		break;
 
 	case TileType::SCAR:
+	case TileType::SCAR_DOG:
+	case TileType::SCAR_BOSS:
 		createScarTile(tile);
 		break;
 
@@ -189,6 +193,10 @@ void GameScene::createTile(const Tile& tile)
 
 	case TileType::DOOR:
 		createDoorTile(tile);
+		break;
+
+	case TileType::SCAR_WALL:
+		createWallTile(tile);
 		break;
 
 	default:
@@ -347,6 +355,32 @@ void GameScene::createDoorTile(const Tile& tile)
 			doorTex, SKELETON("Door.skel"), "../Assets/Boxes/Door.box");
 		door.AddComponent<NameComponent>("Door");
 		auto& transform = door.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+		transform.Rotation.y = 270.0f;
+	}
+
+	{
+		const Texture* railTex = GetTileTexture(TileType::RAIL);
+		Entity rail = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			railTex);
+		rail.AddTag<Tag_Tile>();
+		auto& transform = rail.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createWallTile(const Tile& tile)
+{
+	{
+		const Texture* wallTex = GetTileTexture(tile.TType);
+		Entity wall = mOwner->CreateSkeletalMeshEntity(MESH("Wall.mesh"),
+			wallTex, SKELETON("Wall.skel"), "../Assets/Boxes/Wall.box");
+		wall.AddComponent<NameComponent>("Wall");
+		auto& transform = wall.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
 		transform.Position.z = tile.Z;
@@ -1052,7 +1086,6 @@ string GetSkillSound(const uint8 preset)
 	}
 }
 Texture* GetTileTexture(TileType ttype)
-
 {
 	switch (ttype)
 	{
@@ -1074,6 +1107,8 @@ Texture* GetTileTexture(TileType ttype)
 		return TEXTURE("Fat.png");
 
 	case TileType::SCAR:
+	case TileType::SCAR_DOG:
+	case TileType::SCAR_BOSS:
 		return TEXTURE("Red.png");
 
 	case TileType::HOUSE:

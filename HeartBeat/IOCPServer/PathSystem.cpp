@@ -15,7 +15,7 @@ PathSystem::PathSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv");
+	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map.csv");
 
 	mGraph.resize(gameMap.MaxRow);
 	mVisited.resize(gameMap.MaxRow);
@@ -106,7 +106,7 @@ void PathSystem::Update()
 
 void PathSystem::Reset()
 {
-	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map01.csv");
+	auto& gameMap = GameMap::GetInstance().GetMap("../Assets/Maps/Map.csv");
 
 	for (UINT32 row = 0; row < gameMap.MaxRow; ++row)
 	{

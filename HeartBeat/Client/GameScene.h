@@ -35,6 +35,7 @@ private:
     void createScarTile(const Tile& tile);
     void createHouseTile(const Tile& tile);
     void createDoorTile(const Tile& tile);
+    void createWallTile(const Tile& tile);
 
     void createUI();
     void createHpbar();

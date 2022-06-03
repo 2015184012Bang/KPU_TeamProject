@@ -717,6 +717,7 @@ void Renderer::loadAllAssetsFromFile()
 	BOX("Pickax.box");
 	BOX("Tank.box");
 	BOX("Virus.box");
+	BOX("Wall.box");
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");

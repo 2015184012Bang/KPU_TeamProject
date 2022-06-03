@@ -16,7 +16,7 @@ EnemySystem::EnemySystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	string stageFile = "../Assets/Stages/Stage1.csv";
+	string stageFile = "../Assets/Stages/Stage.csv";
 	rapidcsv::Document doc(stageFile, rapidcsv::LabelParams(-1, -1));
 	mStages.emplace(stageFile, doc);
 }

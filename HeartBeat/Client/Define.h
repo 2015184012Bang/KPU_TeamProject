@@ -22,8 +22,13 @@ enum class TileType : uint8
 	START_POINT,
 	END_POINT,
 	HOUSE,
+	SCAR_DOG,
 	MID_POINT = 10,
 	DOOR = 11,
+	BATTLE_TRIGGER = 12,
+	SCAR_WALL = 13,
+	BOSS_TRIGGER = 14,
+	SCAR_BOSS = 15,
 	END
 };
 

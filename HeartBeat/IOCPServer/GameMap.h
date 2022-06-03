@@ -11,8 +11,13 @@ enum class TileType
 	START_POINT = 6,
 	END_POINT = 7,
 	HOUSE = 8,
+	SCAR_DOG = 9,
 	MID_POINT = 10,
 	DOOR = 11,
+	BATTLE_TRIGGER = 12,
+	SCAR_WALL = 13,
+	BOSS_TRIGGER = 14,
+	SCAR_BOSS = 15,
 	END
 };
 

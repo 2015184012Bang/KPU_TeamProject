@@ -112,6 +112,8 @@ void GameManager::logicThread()
 
 		mRoomManager->Update();
 
+		//LOG("Time: {0}", duration_cast<milliseconds>(high_resolution_clock::now() - start).count());
+
 		while (duration_cast<milliseconds>(high_resolution_clock::now() - start).count() < 33);
 
 		// 백 큐와 프론트 큐를 스왑
@@ -320,63 +322,3 @@ void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 pack
 		room->DoSkill(user);
 	}
 }
-
-//void GameManager::DoGameOver()
-//{
-//	// 게임 오버 패킷 송신
-//	NOTIFY_GAME_OVER_PACKET packet = {};
-//	packet.PacketID = NOTIFY_GAME_OVER;
-//	packet.PacketSize = sizeof(packet);
-//	packet.Result = RESULT_CODE::STAGE_FAIL;
-//	SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
-//
-//	// 엔티티 초기화
-//	clearStage();
-//}
-//
-
-//void GameManager::clearStage()
-//{
-//	// 엔티티 ID 초기화
-//	Values::EntityID = 3;
-//
-//	// 플레이어 엔티티를 제외한 엔티티 삭제
-//	DestroyExclude<Tag_Player>();
-//
-//	// 시스템 작동 정지
-//	mCollisionSystem->SetStart(false);
-//	mEnemySystem->SetGenerate(false);
-//
-//	// 이 함수에서 Spawn 컴포넌트를 부착한 엔티티를 생성하므로
-//	// 플레이어 엔티티를 제외한 전체 삭제는 미리 해둬야 한다.
-//	mEnemySystem->LoadStageFile("../Assets/Stages/Stage1.csv");
-//
-//	// 플레이어의 이동 방향, 위치, 전투 능력 초기화하고
-//	// 위치를 초기화시키기 위한 패킷을 보낸다.
-//	auto view = gRegistry.view<Tag_Player>();
-//	for (auto entity : view)
-//	{
-//		Entity player{ entity };
-//
-//		auto& movement = player.GetComponent<MovementComponent>();
-//		movement.Direction = Vector3::Zero;
-//
-//		auto& transform = player.GetComponent<TransformComponent>();
-//		transform.Position = Vector3::Zero;
-//
-//		auto& combat = player.GetComponent<CombatComponent>();
-//		combat.Armor = 0;
-//		combat.BaseAttackCooldown = 0.0f;
-//		combat.BaseAttackDmg = 0;
-//		combat.BaseAttackTracker = 0.0f;
-//		combat.Regeneration = 0;
-//
-//		NOTIFY_MOVE_PACKET packet = {};
-//		packet.Direction = movement.Direction;
-//		packet.EntityID = player.GetComponent<IDComponent>().ID;
-//		packet.PacketID = NOTIFY_MOVE;
-//		packet.PacketSize = sizeof(packet);
-//		packet.Position = transform.Position;
-//		SendToAll(sizeof(packet), reinterpret_cast<char*>(&packet));
-//	}
-//}
