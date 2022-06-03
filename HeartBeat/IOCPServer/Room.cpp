@@ -433,7 +433,7 @@ void Room::notifyNewbie(User* newbie)
 		{
 			continue;
 		}
-
+		CopyMemory(nerPacket.UserName, user->GetName().data(), MAX_ID_LEN);
 		nerPacket.ClientID = user->GetClientID();
 		SendPacketFunction(newbie->GetIndex(), sizeof(nerPacket), reinterpret_cast<char*>(&nerPacket));
 	}
