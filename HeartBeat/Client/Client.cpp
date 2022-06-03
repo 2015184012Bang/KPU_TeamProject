@@ -6,7 +6,6 @@
 #include "Tags.h"
 #include "Animation.h"
 #include "Components.h"
-#include "Define.h"
 #include "GameMap.h"
 #include "Helpers.h"
 #include "Input.h"

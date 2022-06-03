@@ -51,6 +51,13 @@ enum class ShaderRegister
 	END
 };
 
+enum class UpgradePreset
+{
+	ATTACK = 0,
+	HEAL = 1,
+	SUPPORT = 2,
+};
+
 class Values
 {
 public:

@@ -81,3 +81,4 @@ string GetSkillAnimTrigger(const uint8 preset);
 string GetSkillSound(const uint8 preset);
 Texture* GetTileTexture(TileType ttype);
 Texture* GetHpbarTexture(const int clientID);
+Texture* GetSkillTexture(UpgradePreset preset);

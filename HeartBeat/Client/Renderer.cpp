@@ -733,6 +733,9 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Hpbar_Pink.png");
 	TEXTURE("Hpbar_Red.png");
 	TEXTURE("Trophy.png");
+	TEXTURE("Arm.png");
+	TEXTURE("Potion.png");
+	TEXTURE("Sword.png");
 }
 
 void Renderer::loadAssets()

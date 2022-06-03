@@ -4,6 +4,7 @@
 #include "../IOCPServer/Protocol.h"
 
 #include "Entity.h"
+#include "Define.h"
 
 class UpgradeScene :
     public Scene
@@ -12,13 +13,6 @@ class UpgradeScene :
     const float FIVE_SECS_BEFORE_START = 25.8f;
     const float SECS_TO_START = 3.0f; // 테스트를 위해 30초에서 3초로 변경
 	
-    enum class UpgradePreset
-	{
-		ATTACK = 0,
-		HEAL = 1,
-		SUPPORT = 2,
-	};
-
 public:
     UpgradeScene(Client* owner);
 

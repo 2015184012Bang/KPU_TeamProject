@@ -995,12 +995,21 @@ void GameScene::createHpbar()
 		}
 
 		const auto& name = player.GetComponent<NameComponent>().Name;
-
 		Entity nameText = Entity{ gRegistry.create() };
 		auto& text = nameText.AddComponent<TextComponent>();
 		text.Sentence = s2ws(name);
 		text.X = rect.Position.x + 121.0f;
 		text.Y = rect.Position.y - 40.0f;
+
+		if (id == mOwner->GetClientID())
+		{
+			UpgradePreset preset = mOwner->GetPreset();
+			auto skillTex = GetSkillTexture(preset);
+			Entity skill = mOwner->CreateSpriteEntity(50, 50, skillTex);
+			auto& cooldownRect = skill.GetComponent<RectTransformComponent>();
+			cooldownRect.Position.x = 39.0f + (404.0f * id) + 25.0f;
+			cooldownRect.Position.y = Application::GetScreenHeight() - 120.0f - 55.0f;
+		}
 	}
 }
 
@@ -1111,5 +1120,16 @@ Texture* GetHpbarTexture(const int clientID)
 	case 1: return TEXTURE("Hpbar_Pink.png");
 	case 2: return TEXTURE("Hpbar_Red.png");
 	default: HB_ASSERT(false, "Unknown client id: {0}", clientID); return nullptr;
+	}
+}
+
+Texture* GetSkillTexture(UpgradePreset preset)
+{
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK: return TEXTURE("Sword.png");
+	case UpgradePreset::HEAL: return TEXTURE("Potion.png");
+	case UpgradePreset::SUPPORT: return TEXTURE("Arm.png");
+	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return nullptr;
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Define.h"
 
 class Scene;
 class Renderer;
@@ -48,6 +49,8 @@ public:
 	void SetClientID(int id) { mClientID = id; }
 	const string& GetClientName() const { return mClientName; }
 	void SetClientName(string_view nickname) { mClientName = nickname.data(); }
+    UpgradePreset GetPreset() const { return mPreset; }
+    void SetPreset(UpgradePreset value) { mPreset = value; }
 
 	unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
@@ -86,6 +89,7 @@ private:
 
     int mClientID = -1;
     string mClientName = {};
+    UpgradePreset mPreset = UpgradePreset::ATTACK;
 
     Entity mFollowCameraTarget = {}; // 메인 카메라가 따라다닐 대상
     Vector3 mTargetOffset = Vector3::Zero; // 타겟과의 오프셋

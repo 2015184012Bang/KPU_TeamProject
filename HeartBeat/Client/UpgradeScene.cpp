@@ -4,7 +4,6 @@
 #include "Client.h"
 #include "Components.h"
 #include "Character.h"
-#include "Define.h"
 #include "GameScene.h"
 #include "PacketManager.h"
 #include "Input.h"
@@ -261,6 +260,17 @@ void UpgradeScene::processNotifyUpgrade(const PACKET& packet)
 	Helpers::PlayAnimation(&animator, GetCharacterAnimationFile(nuPacket->EntityID, CharacterAnimationType::IDLE));
 	
 	equipPresetToCharacter(target, static_cast<UpgradePreset>(nuPacket->UpgradePreset));
+
+	if (nuPacket->EntityID == mOwner->GetClientID())
+	{
+		switch (static_cast<UpgradePreset>(nuPacket->UpgradePreset))
+		{
+		case UpgradePreset::ATTACK: mOwner->SetPreset(UpgradePreset::ATTACK); break;
+		case UpgradePreset::HEAL: mOwner->SetPreset(UpgradePreset::HEAL); break;
+		case UpgradePreset::SUPPORT: mOwner->SetPreset(UpgradePreset::SUPPORT); break;
+		default: HB_ASSERT(false, "Unknown preset: {0}", nuPacket->UpgradePreset); break;
+		}
+	}
 }
 
 
