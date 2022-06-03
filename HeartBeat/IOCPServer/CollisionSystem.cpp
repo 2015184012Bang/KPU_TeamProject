@@ -86,7 +86,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		if (Intersects(hitbox, enemyBox.WorldBox))
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
-			--health.Health;
+			health.Health -= baseAttackDmg;
 
 			if (health.Health <= 0)
 			{
