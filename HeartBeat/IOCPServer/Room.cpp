@@ -97,7 +97,7 @@ void Room::RemoveUser(User* user)
 	}
 	else
 	{
-		LOG("There is no user named: {0}", user->GetUserName());
+		LOG("There is no user named: {0}", user->GetName());
 	}
 }
 
@@ -411,6 +411,7 @@ void Room::notifyNewbie(User* newbie)
 {
 	NOTIFY_ENTER_ROOM_PACKET nerPacket = {};
 	nerPacket.ClientID = newbie->GetClientID();
+	CopyMemory(nerPacket.UserName, newbie->GetName().data(), MAX_ID_LEN);
 	nerPacket.PacketID = NOTIFY_ENTER_ROOM;
 	nerPacket.PacketSize = sizeof(nerPacket);
 

@@ -35,7 +35,7 @@ public:
 public:
 	UserState GetUserState() const { return mUserState; }
 	INT32 GetIndex() const { return mIndex; }
-	string GetUserName() const { return mUserName; }
+	string GetName() const { return mUserName; }
 	bool IsConnected() const { return mConnected; }
 	entt::entity GetCharacterEntity() { return mCharacter; }
 	const Vector3& GetPosition();

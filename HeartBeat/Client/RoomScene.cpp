@@ -31,7 +31,7 @@ void RoomScene::Enter()
 	createButtons();
 
 	// 클라이언트 아이디에 따른 캐릭터 엔티티 생성
-	createCharacterMesh(mOwner->GetClientID());
+	createCharacter(mOwner->GetClientID(), mOwner->GetClientName());
 
 	// 메인 카메라 위치 조정
 	auto& camera = mOwner->GetMainCamera();
@@ -83,7 +83,7 @@ void RoomScene::ProcessInput()
 	}
 }
 
-void RoomScene::createCharacterMesh(int clientID)
+void RoomScene::createCharacter(int clientID, string_view userName)
 {
 	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
 
@@ -100,6 +100,7 @@ void RoomScene::createCharacterMesh(int clientID)
 	character.AddComponent<IDComponent>(clientID);
 	character.AddComponent<MovementComponent>(Values::PlayerSpeed);
 	character.AddComponent<ScriptComponent>(std::make_shared<Character>(character));
+	character.AddComponent<NameComponent>(userName);
 
 	auto& transform = character.GetComponent<TransformComponent>();
 	transform.Position.x = getXPosition(clientID);
@@ -243,5 +244,5 @@ void RoomScene::processNotifyLeaveRoom(const PACKET& packet)
 void RoomScene::processNotifyEnterRoom(const PACKET& packet)
 {
 	NOTIFY_ENTER_ROOM_PACKET* nerPacket = reinterpret_cast<NOTIFY_ENTER_ROOM_PACKET*>(packet.DataPtr);
-	createCharacterMesh(nerPacket->ClientID);
+	createCharacter(nerPacket->ClientID, nerPacket->UserName);
 }

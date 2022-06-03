@@ -16,7 +16,7 @@ public:
 	virtual void ProcessInput() override;
 
 private:
-	void createCharacterMesh(int clientID);
+	void createCharacter(int clientID, string_view clientName);
 	void createButtons();
 	float getXPosition(int clientID);
 

@@ -33,7 +33,6 @@ enum PACKET_ID : UINT8
 	// ·Î±×ÀÎ
 	REQUEST_LOGIN,
 	ANSWER_LOGIN,
-	NOTIFY_LOGIN,
 
 	// ·ë ¾À
 	REQUEST_ROOM,
@@ -142,11 +141,6 @@ struct ANSWER_LOGIN_PACKET : public PACKET_HEADER
 	UINT8 Result;
 };
 
-struct NOTIFY_LOGIN_PACKET : public PACKET_HEADER
-{
-	UINT8 ClientID;
-};
-
 struct REQUEST_ROOM_PACKET : public PACKET_HEADER
 {
 
@@ -174,6 +168,7 @@ struct ANSWER_ENTER_ROOM_PACKET : public PACKET_HEADER
 struct NOTIFY_ENTER_ROOM_PACKET : public PACKET_HEADER
 {
 	UINT8 ClientID;
+	char UserName[MAX_ID_LEN + 1];
 };
 
 struct REQUEST_LEAVE_ROOM_PACKET : public PACKET_HEADER
