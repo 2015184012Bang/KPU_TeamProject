@@ -42,10 +42,10 @@ void Room::Update()
 void Room::AddUser(User* user)
 {
 	// 유저 클라이언트 아이디 설정(0~2)
-	// HOST_ID(2)가 먼저 부여되도록 하기 위해 정렬한다.
+	// HOST_ID(0)이 먼저 부여되도록 하기 위해 정렬한다.
 	mClientIDs.sort();
-	auto id = mClientIDs.back();
-	mClientIDs.pop_back();
+	auto id = mClientIDs.front();
+	mClientIDs.pop_front();
 
 	user->SetClientID(id);
 

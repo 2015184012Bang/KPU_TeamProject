@@ -159,11 +159,11 @@ void RoomScene::createButtons()
 float RoomScene::getXPosition(int clientID)
 {
 	//		  클라이언트 ID에 따른 x 위치
-	//     1(-WIDTH)     2(0)      0(WIDTH)
+	//     1(-WIDTH)     0(0)      2(WIDTH)
 	switch (clientID)
 	{
 	case 0:
-		return WIDTH_BETWEEN_CHARACTERS;
+		return 0.0f;
 		break;
 
 	case 1:
@@ -171,7 +171,7 @@ float RoomScene::getXPosition(int clientID)
 		break;
 
 	case 2:
-		return 0.0f;
+		return WIDTH_BETWEEN_CHARACTERS;
 		break;
 
 	default:

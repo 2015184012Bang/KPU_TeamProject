@@ -8,13 +8,6 @@
 
 class Texture;
 
-enum class HpIdx
-{
-    RED,
-    PINK,
-    GREEN
-};
-
 class GameScene :
     public Scene
 {
@@ -61,7 +54,7 @@ private:
 
     void doGameOver();
 
-    void updateHpUI(const INT8 hp, HpIdx idx);
+    void updateHpUI(const INT8 hp, int clientID);
 
 private:
     enum class StageCode
@@ -87,3 +80,4 @@ string GetAttackAnimTrigger(bool isEnemy = false);
 string GetSkillAnimTrigger(const uint8 preset);
 string GetSkillSound(const uint8 preset);
 Texture* GetTileTexture(TileType ttype);
+Texture* GetHpbarTexture(const int clientID);

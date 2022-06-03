@@ -114,4 +114,4 @@ __declspec(selectany) float Values::TankSpeed = 0.0f;
 __declspec(selectany) float Values::EnemySpeed = 0.0f;
 __declspec(selectany) float Values::CellSpeed = 0.0f;
 __declspec(selectany) uint32 Values::EntityID = 3;
-__declspec(selectany) int Values::HostID = 2;
+__declspec(selectany) int Values::HostID = 0;
