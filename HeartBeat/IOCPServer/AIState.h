@@ -113,8 +113,7 @@ public:
 	virtual void Exit() override;
 
 private:
-	void IncreaseCO2();
-	void IncreaseO2();
+	void IncreaseScore();
 
 private:
 	weak_ptr<RedCell> mOwner;

@@ -721,12 +721,9 @@ void Renderer::loadAllAssetsFromFile()
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");
-	TEXTURE("GameOver.png");
 	TEXTURE("RoomEnter.png");
 	TEXTURE("RoomNoEnter.png");
 	TEXTURE("White.png");
-	TEXTURE("UI_O2.png");
-	TEXTURE("UI_CO2.png");
 	TEXTURE("Next_Button.png");
 	TEXTURE("Login_Button.png");
 	TEXTURE("Login_Form.png");
@@ -735,6 +732,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Hpbar_Green.png");
 	TEXTURE("Hpbar_Pink.png");
 	TEXTURE("Hpbar_Red.png");
+	TEXTURE("Trophy.png");
 }
 
 void Renderer::loadAssets()

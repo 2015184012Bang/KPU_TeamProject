@@ -331,16 +331,16 @@ void CellDeliverState::Update()
 	// 타겟이 카트일 경우 다음 타겟을 가까운 공급소로 설정
 	if (Intersects(myBox.WorldBox, targetBox.WorldBox))
 	{
+		IncreaseScore();
+
 		if (owner->GetRegistry().any_of<Tag_HouseTile>(target))
 		{
-			IncreaseO2();
 			owner->SetTargetCart();
 			owner->ChangeState("CellRestState");
 			return;
 		}
 		else
 		{
-			IncreaseCO2();
 			owner->SetTargetHouse();
 			owner->ChangeState("CellRestState");
 			return;
@@ -370,7 +370,7 @@ void CellDeliverState::Exit()
 	movement.Direction = Vector3::Zero;
 }
 
-void CellDeliverState::IncreaseCO2()
+void CellDeliverState::IncreaseScore()
 {
 	auto owner = mOwner.lock();
 
@@ -380,21 +380,7 @@ void CellDeliverState::IncreaseCO2()
 	}
 
 	auto& gameState = owner->GetRegistry().get<PlayStateComponent>(mPlayState);
-	++gameState.CO2;
-	gameState.bChanged = true;
-}
-
-void CellDeliverState::IncreaseO2()
-{
-	auto owner = mOwner.lock();
-
-	if (!owner)
-	{
-		return;
-	}
-
-	auto& gameState = owner->GetRegistry().get<PlayStateComponent>(mPlayState);
-	++gameState.O2;
+	++gameState.Score;
 	gameState.bChanged = true;
 }
 

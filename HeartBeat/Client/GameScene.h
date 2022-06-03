@@ -69,8 +69,7 @@ private:
     Vector3 mDirection = Vector3::Zero;
 
     // UI things
-    Entity mO2Text = {};
-    Entity mCO2Text = {};
+    Entity mScoreText = {};
 
     vector<vector<Entity>> mHps;
 

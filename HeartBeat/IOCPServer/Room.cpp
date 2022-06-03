@@ -302,8 +302,7 @@ void Room::DoSkill(User* user)
 void Room::DoGameOver()
 {
 	NOTIFY_GAME_OVER_PACKET packet = {};
-	packet.CO2 = mRegistry.get<PlayStateComponent>(mPlayState).CO2;
-	packet.O2 = mRegistry.get<PlayStateComponent>(mPlayState).O2;
+	packet.Score = mRegistry.get<PlayStateComponent>(mPlayState).Score;
 	packet.PlayTimeSec = static_cast<UINT64>(mPlayTimeSec);
 	packet.PacketID = NOTIFY_GAME_OVER;
 	packet.PacketSize = sizeof(packet);
@@ -383,8 +382,7 @@ void Room::checkGameState()
 		gameState.bChanged = false;
 
 		NOTIFY_STATE_CHANGE_PACKET packet = {};
-		packet.CO2 = gameState.CO2;
-		packet.O2 = gameState.O2;
+		packet.Score = gameState.Score;
 		packet.TankHealth = gameState.TankHealth;
 		packet.P0Health = gameState.P0HP;
 		packet.P1Health = gameState.P1HP;

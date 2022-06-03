@@ -754,8 +754,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	// 게임 오버 UI 팝업
 	Entity gameOverUI = Entity{ gRegistry.create() };
 	auto& text = gameOverUI.AddComponent<TextComponent>();
-	text.Sentence = L"CO2: " + std::to_wstring(ngoPacket->CO2) +
-		L" O2: " + std::to_wstring(ngoPacket->O2) +
+	text.Sentence = L"Score: " + std::to_wstring(ngoPacket->Score) +
 		L" PlayTime: " + std::to_wstring(ngoPacket->PlayTimeSec) + L"sec";
 	text.X = 100.0f;
 	text.Y = 100.0f;
@@ -808,11 +807,8 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 {
 	NOTIFY_STATE_CHANGE_PACKET* nscPacket = reinterpret_cast<NOTIFY_STATE_CHANGE_PACKET*>(packet.DataPtr);
 
-	auto& o2 = mO2Text.GetComponent<TextComponent>();
-	o2.Sentence = std::to_wstring(nscPacket->O2);
-
-	auto& co2 = mCO2Text.GetComponent<TextComponent>();
-	co2.Sentence = std::to_wstring(nscPacket->CO2);
+	auto& text = mScoreText.GetComponent<TextComponent>();
+	text.Sentence = std::to_wstring(nscPacket->Score);
 
 	updateHpUI(nscPacket->P0Health, 0);
 	updateHpUI(nscPacket->P1Health, 1);
@@ -945,36 +941,24 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 
 void GameScene::createUI()
 {
+	const int tropyWidth = 56;
+	const int tropyHeight = 48;
+
 	{
-		auto o2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_O2.png"));
-		o2.AddTag<Tag_UI>();
-		auto& rect = o2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2::Zero;
+		auto score = mOwner->CreateSpriteEntity(tropyWidth, tropyHeight, TEXTURE("Trophy.png"));
+		score.AddTag<Tag_UI>();
+		auto& rect = score.GetComponent<RectTransformComponent>();
+		rect.Position.x = (Application::GetScreenWidth() / 2.0f) - (tropyWidth / 2.0f);
+		rect.Position.y = 10.0f;
 	}
 
 	{
-		auto co2 = mOwner->CreateSpriteEntity(100, 100, TEXTURE("UI_CO2.png"));
-		co2.AddTag<Tag_UI>();
-		auto& rect = co2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ 0.0f, 100.0f };
-	}
-
-	{
-		mO2Text = Entity{ gRegistry.create() };
-		mO2Text.AddTag<Tag_UI>();
-		auto& text = mO2Text.AddComponent<TextComponent>();
+		mScoreText = Entity{ gRegistry.create() };
+		mScoreText.AddTag<Tag_UI>();
+		auto& text = mScoreText.AddComponent<TextComponent>();
 		text.Sentence = L"0";
-		text.X = 100.0f;
-		text.Y = 0.0f;
-	}
-
-	{
-		mCO2Text = Entity{ gRegistry.create() };
-		mCO2Text.AddTag<Tag_UI>();
-		auto& text = mCO2Text.AddComponent<TextComponent>();
-		text.Sentence = L"0";
-		text.X = 100.0f;
-		text.Y = 100.0f;
+		text.X = (Application::GetScreenWidth() / 2.0f) - (tropyWidth / 2.0f) + 58.0f;
+		text.Y = 10.0f;
 	}
 
 	createHpbar();
