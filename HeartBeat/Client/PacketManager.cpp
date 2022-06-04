@@ -81,7 +81,7 @@ void PacketManager::Recv()
 		return;
 	}
 
-	int retVal = recv(mSocket, &mRecvBuffer[mWritePos], PACKET_BUFFER_SIZE, 0);
+	int retVal = recv(mSocket, mRecvBuffer, RECV_BUFFER_SIZE, 0);
 
 	if (SOCKET_ERROR == retVal)
 	{
@@ -103,6 +103,7 @@ void PacketManager::Recv()
 	}
 
 	// 받은 바이트 수 만큼 WritePos 전진
+	CopyMemory(&mPacketBuffer[mWritePos], mRecvBuffer, retVal);
 	mWritePos += retVal;
 	UINT32 remainBytes = mWritePos - mReadPos;
 
@@ -110,7 +111,7 @@ void PacketManager::Recv()
 	{
 		if (remainBytes > 0)
 		{
-			CopyMemory(&mRecvBuffer[0], &mRecvBuffer[mReadPos], remainBytes);
+			CopyMemory(&mPacketBuffer[0], &mPacketBuffer[mReadPos], remainBytes);
 			mWritePos = remainBytes;
 		}
 		else
@@ -123,14 +124,14 @@ void PacketManager::Recv()
 	
 	while (remainBytes > 0)
 	{
-		UINT8 packetSize = mRecvBuffer[mReadPos];
+		UINT8 packetSize = mPacketBuffer[mReadPos];
 
 		if (remainBytes >= packetSize)
 		{
 			PACKET packet;
 			packet.DataSize = packetSize;
-			packet.PacketID = mRecvBuffer[mReadPos + 1];
-			packet.DataPtr = &mRecvBuffer[mReadPos];
+			packet.PacketID = mPacketBuffer[mReadPos + 1];
+			packet.DataPtr = &mPacketBuffer[mReadPos];
 			mPackets.push(packet);
 
 			mReadPos += packetSize;

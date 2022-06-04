@@ -43,15 +43,9 @@
 
 #include "Lock.h"
 
-#ifdef _DEBUG
 #define LOG(...) spdlog::info(__VA_ARGS__)
 #undef ASSERT
 #define ASSERT(x, ...) {if(!(x)) { LOG(__VA_ARGS__); __debugbreak();}}
-#else
-#define LOG(...) 
-#undef ASSERT
-#define ASSERT(x, ...)
-#endif
 
 using namespace DirectX::SimpleMath;
 using namespace DirectX;
