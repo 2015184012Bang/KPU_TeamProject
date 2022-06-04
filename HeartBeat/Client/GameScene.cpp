@@ -647,104 +647,106 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 {
 	NOTIFY_CREATE_ENTITY_PACKET* ncePacket = reinterpret_cast<NOTIFY_CREATE_ENTITY_PACKET*>(packet.DataPtr);
 
-	switch (static_cast<EntityType>(ncePacket->EntityType))
-	{
-	case EntityType::TANK:
-	{
-		Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
-			TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID, "../Assets/Boxes/Tank.box");
-		tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		tank.AddComponent<MovementComponent>(Values::TankSpeed);
-		tank.AddComponent<NameComponent>("Tank");
-		auto& animator = tank.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
-	}
-	break;
+	HB_LOG("Create Entity: {0}", GetEntityName(static_cast<EntityType>(ncePacket->EntityType)));
 
-	case EntityType::CART:
-	{
-		Entity cart = mOwner->CreateSkeletalMeshEntity(MESH("Cart.mesh"),
-			TEXTURE("Cart.png"), SKELETON("Cart.skel"), ncePacket->EntityID, "../Assets/Boxes/Cart.box");
-		cart.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		cart.AddComponent<MovementComponent>(Values::TankSpeed);
-		auto& animator = cart.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Cart_Run.anim"));
-	}
-	break;
-
-	case EntityType::VIRUS:
-	{
-		Entity virus = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
-			TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID, "../Assets/Boxes/Virus.box");
-		virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		virus.AddComponent<MovementComponent>(Values::EnemySpeed);
-		virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
-		virus.AddTag<Tag_Enemy>();
-		auto& animator = virus.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
-
-		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
-			TEXTURE("Hammer.png"));
-		Helpers::AttachBone(virus, hammer, "Weapon");
-	}
-	break;
-
-	case EntityType::DOG:
-	{
-		Entity dog = mOwner->CreateSkeletalMeshEntity(MESH("Dog.mesh"),
-			TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID, "../Assets/Boxes/Dog.box");
-		dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		dog.AddComponent<MovementComponent>(Values::EnemySpeed);
-		dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
-		dog.AddTag<Tag_Enemy>();
-		dog.AddTag<Tag_Dog>();
-		auto& animator = dog.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
-	}
-	break;
-
-	case EntityType::RED_CELL:
-	{
-		Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
-			TEXTURE("Cell_Red.png"), SKELETON("Cell.skel"), ncePacket->EntityID, "../Assets/Boxes/Cell.box");
-		cell.GetComponent<TransformComponent>().Position = ncePacket->Position;
-		cell.AddComponent<MovementComponent>(Values::CellSpeed);
-		cell.AddTag<Tag_RedCell>();
-		cell.AddComponent<ScriptComponent>(std::make_shared<RedCell>(cell));
-		auto& animator = cell.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Cell_Run.anim"));
-
-		Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
-			TEXTURE("O2.png"));
-		Helpers::AttachBone(cell, o2, "Weapon");
-	}
-	break;
-
-	case EntityType::CAFFEINE:
-	{
-		Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Caffeine.mesh"),
-			TEXTURE("Caffeine.png"), ncePacket->EntityID);
-		auto& transform = caffeine.GetComponent<TransformComponent>();
-		transform.Position = ncePacket->Position;
-		transform.Rotation.y = 180.0f;
-		caffeine.AddTag<Tag_Item>();
-	}
-	break;
-
-	case EntityType::VITAMIN:
-	{
-		Entity vitamin = mOwner->CreateStaticMeshEntity(MESH("Vitamin.mesh"),
-			TEXTURE("Vitamin.png"), ncePacket->EntityID);
-		auto& transform = vitamin.GetComponent<TransformComponent>();
-		transform.Position = ncePacket->Position;
-		transform.Rotation.y = 180.0f;
-		vitamin.AddTag<Tag_Item>();
-	}
-	break;
-
-	default:
+		switch (static_cast<EntityType>(ncePacket->EntityType))
+		{
+		case EntityType::TANK:
+		{
+			Entity tank = mOwner->CreateSkeletalMeshEntity(MESH("Tank.mesh"),
+				TEXTURE("Tank.png"), SKELETON("Tank.skel"), ncePacket->EntityID, "../Assets/Boxes/Tank.box");
+			tank.GetComponent<TransformComponent>().Position = ncePacket->Position;
+			tank.AddComponent<MovementComponent>(Values::TankSpeed);
+			tank.AddComponent<NameComponent>("Tank");
+			auto& animator = tank.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Tank_Run.anim"));
+		}
 		break;
-	}
+
+		case EntityType::CART:
+		{
+			Entity cart = mOwner->CreateSkeletalMeshEntity(MESH("Cart.mesh"),
+				TEXTURE("Cart.png"), SKELETON("Cart.skel"), ncePacket->EntityID, "../Assets/Boxes/Cart.box");
+			cart.GetComponent<TransformComponent>().Position = ncePacket->Position;
+			cart.AddComponent<MovementComponent>(Values::TankSpeed);
+			auto& animator = cart.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Cart_Run.anim"));
+		}
+		break;
+
+		case EntityType::VIRUS:
+		{
+			Entity virus = mOwner->CreateSkeletalMeshEntity(MESH("Virus.mesh"),
+				TEXTURE("Virus.png"), SKELETON("Virus.skel"), ncePacket->EntityID, "../Assets/Boxes/Virus.box");
+			virus.GetComponent<TransformComponent>().Position = ncePacket->Position;
+			virus.AddComponent<MovementComponent>(Values::EnemySpeed);
+			virus.AddComponent<ScriptComponent>(std::make_shared<Enemy>(virus));
+			virus.AddTag<Tag_Enemy>();
+			auto& animator = virus.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Virus_Idle.anim"));
+
+			Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
+				TEXTURE("Hammer.png"));
+			Helpers::AttachBone(virus, hammer, "Weapon");
+		}
+		break;
+
+		case EntityType::DOG:
+		{
+			Entity dog = mOwner->CreateSkeletalMeshEntity(MESH("Dog.mesh"),
+				TEXTURE("Dog.png"), SKELETON("Dog.skel"), ncePacket->EntityID, "../Assets/Boxes/Dog.box");
+			dog.GetComponent<TransformComponent>().Position = ncePacket->Position;
+			dog.AddComponent<MovementComponent>(Values::EnemySpeed);
+			dog.AddComponent<ScriptComponent>(std::make_shared<Enemy>(dog));
+			dog.AddTag<Tag_Enemy>();
+			dog.AddTag<Tag_Dog>();
+			auto& animator = dog.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
+		}
+		break;
+
+		case EntityType::RED_CELL:
+		{
+			Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
+				TEXTURE("Cell_Red.png"), SKELETON("Cell.skel"), ncePacket->EntityID, "../Assets/Boxes/Cell.box");
+			cell.GetComponent<TransformComponent>().Position = ncePacket->Position;
+			cell.AddComponent<MovementComponent>(Values::CellSpeed);
+			cell.AddTag<Tag_RedCell>();
+			cell.AddComponent<ScriptComponent>(std::make_shared<RedCell>(cell));
+			auto& animator = cell.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Cell_Run.anim"));
+
+			Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
+				TEXTURE("O2.png"));
+			Helpers::AttachBone(cell, o2, "Weapon");
+		}
+		break;
+
+		case EntityType::CAFFEINE:
+		{
+			Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Caffeine.mesh"),
+				TEXTURE("Caffeine.png"), ncePacket->EntityID);
+			auto& transform = caffeine.GetComponent<TransformComponent>();
+			transform.Position = ncePacket->Position;
+			transform.Rotation.y = 180.0f;
+			caffeine.AddTag<Tag_Item>();
+		}
+		break;
+
+		case EntityType::VITAMIN:
+		{
+			Entity vitamin = mOwner->CreateStaticMeshEntity(MESH("Vitamin.mesh"),
+				TEXTURE("Vitamin.png"), ncePacket->EntityID);
+			auto& transform = vitamin.GetComponent<TransformComponent>();
+			transform.Position = ncePacket->Position;
+			transform.Rotation.y = 180.0f;
+			vitamin.AddTag<Tag_Item>();
+		}
+		break;
+
+		default:
+			break;
+		}
 }
 
 void GameScene::processNotifyGameOver(const PACKET& packet)
@@ -835,7 +837,7 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 				movement.MaxSpeed = 1600.0f;
 				movement.Direction = Vector3{ 0.0f, -1.0f, 0.0f };
 			}
-		});
+			});
 
 		Timer::AddEvent(5.0f, []() {
 			auto door = GetEntityByName("Door");
@@ -845,7 +847,7 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 			}
 			});
 	}
-		break;
+	break;
 
 	case EventType::PLAYER_DEAD:
 	{
@@ -863,7 +865,7 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 
 			Timer::AddEvent(3.0f, [id]() {
 				auto player = GetEntityByID(id);
-				if(player)
+				if (player)
 				{
 					auto& animator = player.GetComponent<AnimatorComponent>();
 					const auto idleAnim = GetCharacterAnimationFile(id, CharacterAnimationType::IDLE);
@@ -877,7 +879,7 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 			return;
 		}
 	}
-		break;
+	break;
 
 	default:
 		HB_ASSERT(false, "Invalid event type!");
@@ -971,7 +973,7 @@ void GameScene::createHpbar()
 	///
 	const int hpWidth = 26;
 	const int hpHeight = 68;
-	
+
 	auto players = gRegistry.view<Tag_Player>();
 	mHps.resize(3);
 
@@ -1131,5 +1133,22 @@ Texture* GetSkillTexture(UpgradePreset preset)
 	case UpgradePreset::HEAL: return TEXTURE("Potion.png");
 	case UpgradePreset::SUPPORT: return TEXTURE("Arm.png");
 	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return nullptr;
+	}
+}
+
+string GetEntityName(EntityType eType)
+{
+	switch (eType)
+	{
+	case EntityType::TANK: return "Tank";
+	case EntityType::CAFFEINE: return "Caffeine";
+	case EntityType::CART: return "Cart";
+	case EntityType::DOG: return "Dog";
+	case EntityType::FAT: return "Fat";
+	case EntityType::PLAYER: return "Player";
+	case EntityType::RED_CELL: return "RedCell";
+	case EntityType::VIRUS: return "Virus";
+	case EntityType::VITAMIN: return "Vitamin";
+	default: return "null";
 	}
 }

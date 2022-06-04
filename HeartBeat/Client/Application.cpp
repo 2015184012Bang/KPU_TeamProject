@@ -108,8 +108,8 @@ void Application::initWindow(HINSTANCE hInstance, int nCmdShow, int w, int h)
 		hInstance,
 		nullptr);
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 	AllocConsole();
-#endif
+//#endif
 	ShowWindow(sHwnd, nCmdShow);
 }
