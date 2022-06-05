@@ -25,6 +25,8 @@ public:
     void SetDirection(const Vector3& direction) { mDirection = direction; }
 
 private:
+    void updateUI(float deltaTime);
+
     void createMap(string_view mapFile);
     void createTile(const Tile& tile);
     void createBlockedTile(const Tile& tile);
@@ -72,6 +74,8 @@ private:
     Entity mScoreText = {};
     Entity mPlaytimeText = {};
     float mPlayTime = 0.0f;
+    Entity mCooldownText = {};
+    float mCooldown = 0.0f;
     vector<vector<Entity>> mHps;
 
     bool bIsGameOver = false;

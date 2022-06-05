@@ -20,7 +20,7 @@
 #include "Utils.h"
 
 constexpr int MAX_TANK_HP = 3;
-
+constexpr float SKILL_COOLDOWN = 5.0f;
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -140,11 +140,24 @@ void GameScene::Update(float deltaTime)
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
+	updateUI(deltaTime);
+}
+
+void GameScene::updateUI(float deltaTime)
+{
+	// 플레이타임 텍스트 갱신
 	mPlayTime += deltaTime;
 	auto& text = mPlaytimeText.GetComponent<TextComponent>();
 	text.Sentence = std::to_wstring(static_cast<int>(mPlayTime));
-}
 
+	// 스킬 쿨타임이 돌고 있다면 시간 갱신
+	if (gRegistry.valid(mCooldownText))
+	{
+		mCooldown -= deltaTime;
+		auto& text = mCooldownText.GetComponent<TextComponent>();
+		text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
+	}
+}
 
 void GameScene::createMap(string_view mapFile)
 {
@@ -804,6 +817,22 @@ void GameScene::processNotifySkill(const PACKET& packet)
 	if (nsPacket->EntityID == mOwner->GetClientID())
 	{
 		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
+
+		mCooldown = SKILL_COOLDOWN;
+
+		mCooldownText = Entity{ gRegistry.create() };
+		auto& text = mCooldownText.AddComponent<TextComponent>();
+		text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
+		text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 35.0f;
+		text.Y = Application::GetScreenHeight() - 120.0f - 55.0f;
+
+		Timer::AddEvent(SKILL_COOLDOWN, [this]()
+			{
+				if (gRegistry.valid(mCooldownText))
+				{
+					DestroyEntity(mCooldownText);
+				}
+			});
 	}
 }
 
