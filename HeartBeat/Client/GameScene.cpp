@@ -139,6 +139,10 @@ void GameScene::Update(float deltaTime)
 
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
+
+	mPlayTime += deltaTime;
+	auto& text = mPlaytimeText.GetComponent<TextComponent>();
+	text.Sentence = std::to_wstring(static_cast<int>(mPlayTime));
 }
 
 
@@ -959,6 +963,15 @@ void GameScene::createUI()
 		text.Sentence = L"0";
 		text.X = (Application::GetScreenWidth() / 2.0f) - (tropyWidth / 2.0f) + 58.0f;
 		text.Y = 10.0f;
+	}
+
+	{
+		mPlaytimeText = Entity{ gRegistry.create() };
+		mPlaytimeText.AddTag<Tag_UI>();
+		auto& text = mPlaytimeText.AddComponent<TextComponent>();
+		text.Sentence = L"0.0";
+		text.X = (Application::GetScreenWidth() / 2.0f) - 20.0f;
+		text.Y = 55.0f;
 	}
 
 	createHpbar();
