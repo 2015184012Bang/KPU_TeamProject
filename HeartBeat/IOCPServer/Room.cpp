@@ -643,13 +643,13 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 	case TileType::MID_POINT:
 		mRegistry.emplace<Tag_Tile>(tile);
 		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "MidPoint");
+		mRegistry.emplace<Tag_MidPoint>(tile);
 		break;
 
 	case TileType::DOOR:
 		mRegistry.emplace<Tag_Tile>(tile);
 		mRegistry.emplace<Tag_BlockingTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "Door");
+		mRegistry.emplace<Tag_Door>(tile);
 		break;
 
 	case TileType::SCAR_WALL:
@@ -694,7 +694,7 @@ void Room::clearGame()
 	mEnemySystem->Reset();
 	mCollisionSystem->Reset();
 	mPathSystem->Reset();
-	mMovementSystem->Reset();
+	//mMovementSystem->Reset();
 	mRoomState = RoomState::Waiting;
 	mPlayTimeSec = 0.0f;
 	bGameStart = false;

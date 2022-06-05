@@ -16,17 +16,14 @@ MovementSystem::MovementSystem(entt::registry& registry, shared_ptr<Room>&& room
 
 void MovementSystem::Update()
 {
-	auto view = mRegistry.view<MovementComponent, TransformComponent>();
+	auto view = mRegistry.view<MovementComponent, TransformComponent>(entt::exclude<Tag_Stop>);
 
 	for (auto [entity, movement, transform] : view.each())
 	{
 		transform.Position += movement.Direction * movement.Speed * Timer::GetDeltaTime();
 	}
 
-	if (!mbMidPointFlag)
-	{
-		checkArriveAtMidPoint();
-	}
+	checkArriveAtMidPoint();
 
 	SendNotifyMovePackets();
 }
@@ -137,9 +134,26 @@ void MovementSystem::Start()
 	}
 }
 
-void MovementSystem::Reset()
+entt::entity MovementSystem::getClosestDoor(const Vector3& midPointPos)
 {
-	mbMidPointFlag = false;
+	auto doors = mRegistry.view<Tag_Door>();
+
+	float minDistance = FLT_MAX;
+	entt::entity cloestDoor = entt::null;
+	for (auto door : doors)
+	{
+		const auto& doorPos = mRegistry.get<TransformComponent>(door).Position;
+		
+		float dist = fabs(doorPos.x - midPointPos.x);
+
+		if (dist < minDistance)
+		{
+			minDistance = dist;
+			cloestDoor = door;
+		}
+	}
+
+	return cloestDoor;
 }
 
 void MovementSystem::checkArriveAtMidPoint()
@@ -150,56 +164,57 @@ void MovementSystem::checkArriveAtMidPoint()
 		return;
 	}
 
-	auto midPoint = GetEntityByName(mRegistry, "MidPoint");
-	if (!mRegistry.valid(midPoint))
+	auto midPoints = mRegistry.view<Tag_MidPoint>();
+
+	for (auto midPoint : midPoints)
 	{
-		return;
-	}
+		const auto& tankPos = mRegistry.get<TransformComponent>(tank).Position;
+		auto midPos = mRegistry.get<TransformComponent>(midPoint).Position;
+		midPos.y = 0.0f;
 
-	const auto& tankPos = mRegistry.get<TransformComponent>(tank).Position;
-	auto midPos = mRegistry.get<TransformComponent>(midPoint).Position;
-	midPos.y = 0.0f;
+		float dist = Vector3::DistanceSquared(tankPos, midPos);
 
-	float dist = Vector3::DistanceSquared(tankPos, midPos);
-
-	if (dist < 100.0f)
-	{
-		mRegistry.get<MovementComponent>(tank).Direction = Vector3::Zero;
-		auto cart = GetEntityByName(mRegistry, "Cart");
-		mRegistry.get<MovementComponent>(cart).Direction = Vector3::Zero;
-		mbMidPointFlag = true;
-
-		mRegistry.emplace<Tag_Stop>(tank);
-		mRegistry.emplace<Tag_Stop>(cart);
-
-		mOwner->SendEventOccurPacket(0, EventType::DOOR_DOWN);
-
-		Timer::AddEvent(5.0f, [this, tank, cart]()
-			{
-				if (mRegistry.valid(tank) &&
-					mRegistry.valid(cart))
-				{
-					mRegistry.remove<Tag_Stop>(tank);
-					mRegistry.remove<Tag_Stop>(cart);
-					auto door = GetEntityByName(mRegistry, "Door");
-					DestroyEntity(mRegistry, door);
-				}
-			});
-
-		// 적혈구 3체 추가
-		NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
-		createPacket.PacketSize = sizeof(createPacket);
-		createPacket.PacketID = NOTIFY_CREATE_ENTITY;
-		const auto& cartPosition = mRegistry.get<TransformComponent>(cart).Position;
-		auto cellPosition = Vector3{ cartPosition.x - 400.0f, cartPosition.y, cartPosition.z };
-		for (int i = 0; i < 3; ++i)
+		if (dist < 100.0f)
 		{
-			cellPosition.z += 100.0f * i;
-			auto entityID = mOwner->CreateCell(cellPosition);
-			createPacket.EntityID = entityID;
-			createPacket.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
-			createPacket.Position = cellPosition;
-			mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+			auto cart = GetEntityByName(mRegistry, "Cart");
+
+			mRegistry.emplace<Tag_Stop>(tank);
+			mRegistry.emplace<Tag_Stop>(cart);
+
+			mOwner->SendEventOccurPacket(0, EventType::DOOR_DOWN);
+
+			mRegistry.remove<Tag_MidPoint>(midPoint);
+
+			auto door = getClosestDoor(midPos);
+
+			Timer::AddEvent(5.0f, [this, tank, cart, door]()
+				{
+					if (mRegistry.valid(tank) &&
+						mRegistry.valid(cart))
+					{
+						mRegistry.remove<Tag_Stop>(tank);
+						mRegistry.remove<Tag_Stop>(cart);
+						DestroyEntity(mRegistry, door);
+					}
+				});
+
+			// 적혈구 3체 추가
+			NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
+			createPacket.PacketSize = sizeof(createPacket);
+			createPacket.PacketID = NOTIFY_CREATE_ENTITY;
+			const auto& cartPosition = mRegistry.get<TransformComponent>(cart).Position;
+			auto cellPosition = Vector3{ cartPosition.x - 400.0f, cartPosition.y, cartPosition.z };
+			for (int i = 0; i < 3; ++i)
+			{
+				cellPosition.z += 100.0f * i;
+				auto entityID = mOwner->CreateCell(cellPosition);
+				createPacket.EntityID = entityID;
+				createPacket.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+				createPacket.Position = cellPosition;
+				mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+			}
+
+			break;
 		}
 	}
 }

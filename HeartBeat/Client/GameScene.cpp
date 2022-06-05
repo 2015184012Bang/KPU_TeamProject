@@ -370,7 +370,7 @@ void GameScene::createDoorTile(const Tile& tile)
 		const Texture* doorTex = GetTileTexture(tile.TType);
 		Entity door = mOwner->CreateSkeletalMeshEntity(MESH("Door.mesh"),
 			doorTex, SKELETON("Door.skel"), "../Assets/Boxes/Door.box");
-		door.AddComponent<NameComponent>("Door");
+		door.AddTag<Tag_Door>();
 		auto& transform = door.GetComponent<TransformComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
@@ -848,6 +848,24 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 	updateHpUI(nscPacket->P2Health, 2);
 }
 
+Entity GetCloestDoor()
+{
+	auto doors = gRegistry.view<Tag_Door, TransformComponent>();
+	
+	float minX = FLT_MAX;
+	entt::entity target = {};
+	for (auto [door, transform] : doors.each())
+	{
+		if (transform.Position.x < minX)
+		{
+			target = door;
+			minX = transform.Position.x;
+		}
+	}
+
+	return Entity{ target };
+}
+
 void GameScene::processNotifyEventOccur(const PACKET& packet)
 {
 	NOTIFY_EVENT_OCCUR_PACKET* neoPacket = reinterpret_cast<NOTIFY_EVENT_OCCUR_PACKET*>(packet.DataPtr);
@@ -856,23 +874,21 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 	{
 	case EventType::DOOR_DOWN:
 	{
-		auto door = GetEntityByName("Door");
+		auto door = GetCloestDoor();
 		auto& animator = door.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Door_Open.anim"));
 
-		Timer::AddEvent(3.0f, []() {
-			auto door = GetEntityByName("Door");
-			if (door)
+		Timer::AddEvent(3.0f, [door]() {
+			if (gRegistry.valid(door))
 			{
-				auto& movement = door.AddComponent<MovementComponent>();
+				auto& movement = const_cast<Entity&>(door).AddComponent<MovementComponent>();
 				movement.MaxSpeed = 1600.0f;
 				movement.Direction = Vector3{ 0.0f, -1.0f, 0.0f };
 			}
 			});
 
-		Timer::AddEvent(5.0f, []() {
-			auto door = GetEntityByName("Door");
-			if (door)
+		Timer::AddEvent(5.0f, [door]() {
+			if (gRegistry.valid(door))
 			{
 				DestroyEntity(door);
 			}
