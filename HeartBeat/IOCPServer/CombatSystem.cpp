@@ -113,7 +113,7 @@ void CombatSystem::DoBuff(const INT8 clientID)
 	auto player = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(player), "Invalid entity!");
 	auto& combat = mRegistry.get<CombatComponent>(player);
-	combat.BuffDuration = 10.0f;
+	combat.BuffDuration = 5.0f;
 }
 
 void CombatSystem::Start()
