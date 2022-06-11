@@ -56,6 +56,7 @@ private:
     void processNotifyEventOccur(const PACKET& packet);
 
     void doGameOver();
+    void doBattleOccur();
 
     void updateHpUI(const INT8 hp, int clientID);
 
