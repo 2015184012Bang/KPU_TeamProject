@@ -110,6 +110,7 @@ void MovementSystem::SendNotifyMovePackets()
 void MovementSystem::Start()
 {
 	mbBattleProgressed = false;
+	mNumRedCells = -1;
 
 	// START_POINT 타일 가져오기
 	auto startTile = GetEntityByName(mRegistry, "StartPoint");
@@ -258,27 +259,12 @@ void MovementSystem::checkBattleTrigger()
 
 		mOwner->SendEventOccurPacket(0, EventType::BATTLE);
 
-		NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
-		createPacket.PacketSize = sizeof(createPacket);
-		createPacket.PacketID = NOTIFY_CREATE_ENTITY;
+		auto redCells = mRegistry.view<Tag_RedCell>();
+		mNumRedCells = static_cast<INT32>(redCells.size());
 
-		const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
-
-		Vector3 centerPos = (tankPos + cartPos) / 2.0f;
-
-		// Test creation
-		for (int i = 0; i < 3; ++i)
+		for (auto entity : redCells)
 		{
-			Vector3 cellPos = Vector3::Zero;
-
-			cellPos.x = centerPos.x + (i - 1) * 300.0f;
-			cellPos.z = centerPos.z - 800.0f;
-			
-			auto entityID = mOwner->CreateCell(cellPos, true);
-			createPacket.EntityID = entityID;
-			createPacket.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
-			createPacket.Position = cellPos;
-			mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+			DestroyEntity(mRegistry, entity);
 		}
 	}
 }

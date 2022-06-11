@@ -26,5 +26,7 @@ private:
 	shared_ptr<Room> mOwner = nullptr;
 
 	bool mbBattleProgressed = false;
+
+	INT32 mNumRedCells = -1;
 };
 

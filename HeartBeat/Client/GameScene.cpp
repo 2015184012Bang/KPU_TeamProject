@@ -1003,6 +1003,12 @@ void GameScene::doBattleOccur()
 			mOwner->ResetCamera();
 		}
 	});
+
+	auto cells = gRegistry.view<Tag_RedCell>();
+	for (auto entity : cells)
+	{
+		DestroyEntity(entity);
+	}
 }
 
 void GameScene::updateHpUI(const INT8 hp, int clientID)
