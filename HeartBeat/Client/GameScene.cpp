@@ -931,6 +931,24 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 	case EventType::BATTLE:
 	{
 		SoundManager::PlaySound("Battle.mp3");
+
+		auto wall = GetEntityByName("Wall");
+		if (!gRegistry.valid(wall))
+		{
+			HB_ASSERT(false, "Invalid entity: Wall");
+		}
+		mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
+
+		Timer::AddEvent(3.0f, [this]() {
+			if(gRegistry.valid(mPlayerCharacter))
+			{
+				mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
+			}
+			else
+			{
+				mOwner->ResetCamera();
+			}
+			});
 	}
 	break;
 
