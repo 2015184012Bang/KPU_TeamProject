@@ -185,7 +185,9 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* idleAnim = ANIM("Dog_Idle.anim");
 		Animation* runningAnim = ANIM("Dog_Run.anim");
 		Animation* attackingAnim = ANIM("Dog_Attack.anim");
+		Animation* deadAnim = ANIM("Dog_Dead.anim");
 		attackingAnim->SetLoop(false);
+		deadAnim->SetLoop(false);
 
 		idleAnim->AddTransition("Run", runningAnim);
 		idleAnim->AddTransition("Attack", attackingAnim);

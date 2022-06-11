@@ -2,7 +2,7 @@
 
 #include "ClientPCH.h"
 
-constexpr uint32 MAX_SKELETON_BONES = 128;
+constexpr uint32 MAX_SKELETON_BONES = 256;
 
 struct BoneTransform
 {
