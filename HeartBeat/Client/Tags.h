@@ -16,3 +16,4 @@ struct Tag_Dog {};
 struct Tag_UI {};
 struct Tag_Item {};
 struct Tag_Door {};
+struct Tag_WhiteCell {};

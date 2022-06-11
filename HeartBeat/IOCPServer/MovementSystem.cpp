@@ -96,9 +96,9 @@ void MovementSystem::SendNotifyMovePackets()
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 
-	// 세포 이동 패킷 보내기
-	auto cells = mRegistry.view<Tag_RedCell>();
-	for (auto entity : cells)
+	// 적혈구 이동 패킷 보내기
+	auto redCells = mRegistry.view<Tag_RedCell>();
+	for (auto entity : redCells)
 	{
 		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
 		packet.Direction = mRegistry.get<MovementComponent>(entity).Direction;
@@ -258,20 +258,27 @@ void MovementSystem::checkBattleTrigger()
 
 		mOwner->SendEventOccurPacket(0, EventType::BATTLE);
 
-		// TODO : 백혈구 추가
-		//NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
-		//createPacket.PacketSize = sizeof(createPacket);
-		//createPacket.PacketID = NOTIFY_CREATE_ENTITY;
-		//const auto& cartPosition = mRegistry.get<TransformComponent>(cart).Position;
-		//auto cellPosition = Vector3{ cartPosition.x - 400.0f, cartPosition.y, cartPosition.z };
-		//for (int i = 0; i < 3; ++i)
-		//{
-		//	cellPosition.z += 100.0f * i;
-		//	auto entityID = mOwner->CreateCell(cellPosition);
-		//	createPacket.EntityID = entityID;
-		//	createPacket.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
-		//	createPacket.Position = cellPosition;
-		//	mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
-		//}
+		NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
+		createPacket.PacketSize = sizeof(createPacket);
+		createPacket.PacketID = NOTIFY_CREATE_ENTITY;
+
+		const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
+
+		Vector3 centerPos = (tankPos + cartPos) / 2.0f;
+
+		// Test creation
+		for (int i = 0; i < 3; ++i)
+		{
+			Vector3 cellPos = Vector3::Zero;
+
+			cellPos.x = centerPos.x + (i - 1) * 300.0f;
+			cellPos.z = centerPos.z - 800.0f;
+			
+			auto entityID = mOwner->CreateCell(cellPos, true);
+			createPacket.EntityID = entityID;
+			createPacket.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+			createPacket.Position = cellPos;
+			mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+		}
 	}
 }

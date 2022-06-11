@@ -107,6 +107,7 @@ enum class EntityType : UINT8
 	DOG,
 	PLAYER,
 	RED_CELL,
+	WHITE_CELL,
 	VITAMIN,
 	CAFFEINE,
 	END

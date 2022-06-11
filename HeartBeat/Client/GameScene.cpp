@@ -737,6 +737,22 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::WHITE_CELL:
+	{
+		Entity cell = mOwner->CreateSkeletalMeshEntity(MESH("Cell.mesh"),
+			TEXTURE("Cell_White.png"), SKELETON("Cell.skel"), ncePacket->EntityID, "../Assets/Boxes/Cell.box");
+		auto& transform = cell.GetComponent<TransformComponent>();
+		transform.Position = ncePacket->Position;;
+		transform.Rotation.y = 180.0f;
+		cell.AddTag<Tag_WhiteCell>();
+		auto& animator = cell.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cell_Idle.anim"));
+
+		Entity bat = mOwner->CreateStaticMeshEntity(MESH("Bat.mesh"), TEXTURE("Bat.png"));
+		Helpers::AttachBone(cell, bat, "Weapon");
+	}
+	break;
+
 	case EntityType::CAFFEINE:
 	{
 		Entity caffeine = mOwner->CreateStaticMeshEntity(MESH("Caffeine.mesh"),

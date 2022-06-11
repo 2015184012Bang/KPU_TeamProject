@@ -196,6 +196,12 @@ void ResourceManager::MakeAnimTransitions()
 		attackingAnim->AddTransition("WhenEnd", idleAnim);
 	}
 
+	// 벽
+	{
+		Animation* breakAnim = ANIM("Wall_Break.anim");
+		breakAnim->SetLoop(false);
+	}
+
 	// 캐릭터_그린
 	{
 		Animation* idleAnim = ANIM("CG_Idle.anim");

@@ -57,7 +57,7 @@ public:
 	// 해당 인덱스의 타일 타입을 ROAD로 바꾼다.
 	void ChangeTileToRoad(INT32 row, INT32 col);
 
-	UINT32 CreateCell(const Vector3& position);
+	UINT32 CreateCell(const Vector3& position, bool bWhiteCell = false);
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
