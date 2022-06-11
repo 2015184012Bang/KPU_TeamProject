@@ -109,4 +109,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/Skill1.mp3");
 	CreateSound("../Assets/Sounds/Skill2.mp3");
 	CreateSound("../Assets/Sounds/Skill3.mp3");
+	CreateSound("../Assets/Sounds/Battle.mp3");
 }

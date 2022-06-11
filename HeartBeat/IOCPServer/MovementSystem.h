@@ -16,11 +16,15 @@ public:
 	void Start();
 
 private:
-	void checkArriveAtMidPoint();
+	void checkMidPoint();
+	void checkBattleTrigger();
+
 	entt::entity getClosestDoor(const Vector3& midPointPos);
 
 private:
 	entt::registry& mRegistry;
 	shared_ptr<Room> mOwner = nullptr;
+
+	bool mbBattleProgressed = false;
 };
 

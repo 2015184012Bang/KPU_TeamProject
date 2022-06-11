@@ -23,7 +23,8 @@ void MovementSystem::Update()
 		transform.Position += movement.Direction * movement.Speed * Timer::GetDeltaTime();
 	}
 
-	checkArriveAtMidPoint();
+	checkMidPoint();
+	checkBattleTrigger();
 
 	SendNotifyMovePackets();
 }
@@ -108,6 +109,8 @@ void MovementSystem::SendNotifyMovePackets()
 
 void MovementSystem::Start()
 {
+	mbBattleProgressed = false;
+
 	// START_POINT 타일 가져오기
 	auto startTile = GetEntityByName(mRegistry, "StartPoint");
 	ASSERT(mRegistry.valid(startTile), "There is no start point.");
@@ -156,7 +159,7 @@ entt::entity MovementSystem::getClosestDoor(const Vector3& midPointPos)
 	return cloestDoor;
 }
 
-void MovementSystem::checkArriveAtMidPoint()
+void MovementSystem::checkMidPoint()
 {
 	auto tank = GetEntityByName(mRegistry, "Tank");
 	if (!mRegistry.valid(tank))
@@ -216,5 +219,59 @@ void MovementSystem::checkArriveAtMidPoint()
 
 			break;
 		}
+	}
+}
+
+void MovementSystem::checkBattleTrigger()
+{
+	if (mbBattleProgressed)
+	{
+		return;
+	}
+
+	auto tank = GetEntityByName(mRegistry, "Tank");
+	if (!mRegistry.valid(tank))
+	{
+		return;
+	}
+
+	auto trigger = GetEntityByName(mRegistry, "BattleTrigger");
+	if (!mRegistry.valid(trigger))
+	{
+		return;
+	}
+
+	const auto& tankPos = mRegistry.get<TransformComponent>(tank).Position;
+	auto triggerPos = mRegistry.get<TransformComponent>(trigger).Position;
+	triggerPos.y = 0.0f;
+
+	float distSq = Vector3::DistanceSquared(tankPos, triggerPos);
+
+	if (distSq < 100.0f)
+	{
+		mbBattleProgressed = true;
+
+		auto cart = GetEntityByName(mRegistry, "Cart");
+
+		mRegistry.emplace<Tag_Stop>(tank);
+		mRegistry.emplace<Tag_Stop>(cart);
+
+		mOwner->SendEventOccurPacket(0, EventType::BATTLE);
+
+		// TODO : 백혈구 추가
+		//NOTIFY_CREATE_ENTITY_PACKET createPacket = {};
+		//createPacket.PacketSize = sizeof(createPacket);
+		//createPacket.PacketID = NOTIFY_CREATE_ENTITY;
+		//const auto& cartPosition = mRegistry.get<TransformComponent>(cart).Position;
+		//auto cellPosition = Vector3{ cartPosition.x - 400.0f, cartPosition.y, cartPosition.z };
+		//for (int i = 0; i < 3; ++i)
+		//{
+		//	cellPosition.z += 100.0f * i;
+		//	auto entityID = mOwner->CreateCell(cellPosition);
+		//	createPacket.EntityID = entityID;
+		//	createPacket.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+		//	createPacket.Position = cellPosition;
+		//	mOwner->Broadcast(createPacket.PacketSize, reinterpret_cast<char*>(&createPacket));
+		//}
 	}
 }

@@ -928,6 +928,12 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 	}
 	break;
 
+	case EventType::BATTLE:
+	{
+		SoundManager::PlaySound("Battle.mp3");
+	}
+	break;
+
 	default:
 		HB_ASSERT(false, "Invalid event type!");
 		break;
