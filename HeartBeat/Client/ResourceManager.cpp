@@ -202,6 +202,12 @@ void ResourceManager::MakeAnimTransitions()
 		breakAnim->SetLoop(false);
 	}
 
+	// ÆøÅº ÀÌÆåÆ®
+	{
+		Animation* explodeAnim = ANIM("Bomb_Explode.anim");
+		explodeAnim->SetLoop(false);
+	}
+
 	// Ä³¸¯ÅÍ_±×¸°
 	{
 		Animation* idleAnim = ANIM("CG_Idle.anim");
