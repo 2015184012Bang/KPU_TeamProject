@@ -976,7 +976,7 @@ void GameScene::doGameOver()
 void GameScene::doBattleOccur()
 {
 	SoundManager::StopSound("SteampipeSonata.mp3");
-	SoundManager::PlaySound("Battle.mp3");
+	SoundManager::PlaySound("Warning.mp3");
 
 	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
@@ -1063,8 +1063,11 @@ void GameScene::createBattleDialogue()
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
 
 		Timer::AddEvent(2.0f, [this, dia1]() {
-			DestroyEntity(dia1);
-			createBattleDialogue();
+			if (gRegistry.valid(dia1))
+			{
+				DestroyEntity(dia1);
+				createBattleDialogue();
+			}
 			});
 
 		order++;
@@ -1076,8 +1079,11 @@ void GameScene::createBattleDialogue()
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
 
 		Timer::AddEvent(2.0f, [this, dia2]() {
-			DestroyEntity(dia2);
-			createBattleDialogue();
+			if (gRegistry.valid(dia2))
+			{
+				DestroyEntity(dia2);
+				createBattleDialogue();
+			}
 			});
 
 		order++;
@@ -1089,7 +1095,11 @@ void GameScene::createBattleDialogue()
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
 
 		Timer::AddEvent(2.0f, [this, dia3]() {
-			DestroyEntity(dia3);
+			if (gRegistry.valid(dia3))
+			{
+				DestroyEntity(dia3);
+				SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
+			}
 			});
 	}
 }
