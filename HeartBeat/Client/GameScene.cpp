@@ -625,6 +625,14 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::WHITE_CELL:
+	{
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Cell_Dead.anim"));
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
+	}
+	break;
+
 	case EntityType::PLAYER:
 	{
 		auto player = GetEntityByID(ndePacket->EntityID);

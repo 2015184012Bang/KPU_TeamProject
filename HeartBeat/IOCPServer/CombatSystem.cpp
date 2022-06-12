@@ -180,6 +180,10 @@ void CombatSystem::checkEnemyAttack()
 		{
 			eType = EntityType::RED_CELL;
 		}
+		else if (mRegistry.any_of<Tag_WhiteCell>(victim))
+		{
+			eType = EntityType::WHITE_CELL;
+		}
 
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
@@ -204,6 +208,13 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 	case EntityType::RED_CELL:
 	{
 		mOwner->SendDeleteEntityPacket(id, EntityType::RED_CELL);
+		DestroyEntityByID(mRegistry, id);
+	}
+		break;
+
+	case EntityType::WHITE_CELL:
+	{
+		mOwner->SendDeleteEntityPacket(id, EntityType::WHITE_CELL);
 		DestroyEntityByID(mRegistry, id);
 	}
 		break;

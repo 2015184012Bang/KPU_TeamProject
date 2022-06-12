@@ -9,6 +9,9 @@
 #include "Random.h"
 #include "RedCell.h"
 
+constexpr INT32 WHITE_CELL_HEALTH = 12;
+constexpr INT32 RED_CELL_HEALTH = 12;
+
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
 	mRoomIndex = index;
@@ -330,7 +333,7 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 	if (bWhiteCell)
 	{
 		mRegistry.emplace<Tag_WhiteCell>(cell);
-		mRegistry.emplace<HealthComponent>(cell, 12);
+		mRegistry.emplace<HealthComponent>(cell, WHITE_CELL_HEALTH);
 	}
 	else
 	{
@@ -338,7 +341,7 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 		mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
 		mRegistry.emplace<PathFindComponent>(cell);
 		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
-		mRegistry.emplace<HealthComponent>(cell, Values::CellHealth);
+		mRegistry.emplace<HealthComponent>(cell, RED_CELL_HEALTH);
 	}
 
 	return id.ID;
