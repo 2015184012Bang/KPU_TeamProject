@@ -54,7 +54,7 @@ void GameScene::Exit()
 
 void GameScene::ProcessInput()
 {
-	if (bIsGameOver)
+	if (mbIsGameOver)
 	{
 		return;
 	}
@@ -118,7 +118,7 @@ void GameScene::Update(float deltaTime)
 		REQUEST_MOVE_PACKET packet = {};
 		packet.PacketID = REQUEST_MOVE;
 		packet.PacketSize = sizeof(packet);
-		packet.Direction = mDirection;
+		packet.Direction = mbDenyUserInput ? Vector3::Zero : mDirection;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
@@ -420,29 +420,36 @@ bool GameScene::pollKeyboardPressed()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonPressed(KeyCode::LEFT))
+	if (Input::IsButtonPressed(KeyCode::LEFT) || 
+		Input::IsButtonRepeat(KeyCode::LEFT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::RIGHT))
+	if (Input::IsButtonPressed(KeyCode::RIGHT) ||
+		Input::IsButtonRepeat(KeyCode::RIGHT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::UP))
+	if (Input::IsButtonPressed(KeyCode::UP) ||
+		Input::IsButtonRepeat(KeyCode::UP))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::DOWN))
+	if (Input::IsButtonPressed(KeyCode::DOWN) ||
+		Input::IsButtonRepeat(KeyCode::DOWN))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
 	}
+
+	mDirection.x = std::clamp(mDirection.x, -1.0f, 1.0f);
+	mDirection.z = std::clamp(mDirection.z, -1.0f, 1.0f);
 
 	return bChanged;
 }
@@ -474,6 +481,9 @@ bool GameScene::pollKeyboardReleased()
 		mDirection.z += 1.0f;
 		bChanged = true;
 	}
+
+	mDirection.x = std::clamp(mDirection.x, -1.0f, 1.0f);
+	mDirection.z = std::clamp(mDirection.z, -1.0f, 1.0f);
 
 	return bChanged;
 }
@@ -793,7 +803,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	text.Y = 100.0f;
 
 	// 더이상 패킷 처리하지 않도록 flag 값 변경
-	bIsGameOver = true;
+	mbIsGameOver = true;
 
 	auto tank = GetEntityByName("Tank");
 	mOwner->SetFollowCameraTarget(tank, Vector3{ 0.0f, 1000.0f, -1000.f });
@@ -832,6 +842,13 @@ void GameScene::processNotifySkill(const PACKET& packet)
 
 	if (nsPacket->EntityID == mOwner->GetClientID())
 	{
+		mbDenyUserInput = true;
+		float waitTime = GetSkillWaitTime(static_cast<uint8>(mOwner->GetPreset()));
+		Timer::AddEvent(waitTime, [this]()
+			{
+				mbDenyUserInput = false;
+			});
+
 		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
 
 		mCooldown = SKILL_COOLDOWN;
@@ -1252,6 +1269,18 @@ string GetSkillSound(const uint8 preset)
 		return "Skill1.mp3";
 	}
 }
+
+float GetSkillWaitTime(const uint8 preset)
+{
+	switch (preset)
+	{
+	case 0: return 0.7f;
+	case 1: return 1.0f;
+	case 2: return 2.0f;
+	default: HB_LOG("Invalid preset number: {0}", preset);  return 0.0f;
+	}
+}
+
 Texture* GetTileTexture(TileType ttype)
 {
 	switch (ttype)

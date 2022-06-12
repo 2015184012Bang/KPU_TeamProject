@@ -81,12 +81,14 @@ private:
     float mCooldown = 0.0f;
     vector<vector<Entity>> mHps;
 
-    bool bIsGameOver = false;
+    bool mbIsGameOver = false;
+    bool mbDenyUserInput = false;
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);
 string GetSkillAnimTrigger(const uint8 preset);
 string GetSkillSound(const uint8 preset);
+float GetSkillWaitTime(const uint8 preset);
 Texture* GetTileTexture(TileType ttype);
 Texture* GetHpbarTexture(const int clientID);
 Texture* GetSkillTexture(UpgradePreset preset);
