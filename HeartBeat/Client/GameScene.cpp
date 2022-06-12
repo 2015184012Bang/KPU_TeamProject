@@ -48,6 +48,7 @@ void GameScene::Enter()
 void GameScene::Exit()
 {
 	SoundManager::StopSound("SteampipeSonata.mp3");
+	SoundManager::StopSound("BattleTheme.mp3");
 
 	DestroyExclude<Tag_DontDestroyOnLoad>();
 }

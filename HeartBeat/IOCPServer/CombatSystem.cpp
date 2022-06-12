@@ -168,7 +168,7 @@ void CombatSystem::checkEnemyAttack()
 		EntityType eType = EntityType::END;
 		if (mRegistry.any_of<Tag_Tank>(victim))
 		{
-			--playState.TankHealth;
+			playState.TankHealth = health.Health;
 			eType = EntityType::TANK;
 		}
 		else if(mRegistry.any_of<Tag_Player>(victim))
@@ -183,7 +183,6 @@ void CombatSystem::checkEnemyAttack()
 
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
-			mOwner->SendDeleteEntityPacket(hit.HitterID, EntityType::DOG);
 			DestroyEntity(mRegistry, entity);
 		}
 
