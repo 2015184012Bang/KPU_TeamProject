@@ -739,6 +739,9 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Potion.png");
 	TEXTURE("Sword.png");
 	TEXTURE("Warning.png");
+	TEXTURE("Dialogue1.png");
+	TEXTURE("Dialogue2.png");
+	TEXTURE("Dialogue3.png");
 }
 
 void Renderer::loadAssets()

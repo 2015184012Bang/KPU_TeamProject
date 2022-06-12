@@ -60,6 +60,8 @@ private:
 
     void updateHpUI(const INT8 hp, int clientID);
 
+    void createBattleDialogue();
+
 private:
     enum class StageCode
     {
