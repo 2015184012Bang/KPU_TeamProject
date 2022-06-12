@@ -996,6 +996,12 @@ void GameScene::doBattleOccur()
 	SoundManager::StopSound("SteampipeSonata.mp3");
 	SoundManager::PlaySound("Warning.mp3");
 
+	auto cells = gRegistry.view<Tag_RedCell>();
+	for (auto entity : cells)
+	{
+		DestroyEntity(entity);
+	}
+
 	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
 	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
@@ -1022,15 +1028,31 @@ void GameScene::doBattleOccur()
 		}
 	});
 
+	const INT32 dialogueWidth = 1000;
 	Timer::AddEvent(4.6f, [this]() {
-		createBattleDialogue();
+		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue1.png"), 110);
+		dia1.AddTag<Tag_Dialogue>();
+		auto& rect = dia1.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 		});
 
-	auto cells = gRegistry.view<Tag_RedCell>();
-	for (auto entity : cells)
-	{
-		DestroyEntity(entity);
-	}
+	Timer::AddEvent(6.6f, [this]() {
+		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue2.png"), 120);
+		dia2.AddTag<Tag_Dialogue>();
+		auto& rect = dia2.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		});
+
+	Timer::AddEvent(8.6f, [this]() {
+		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue3.png"), 130);
+		dia3.AddTag<Tag_Dialogue>();
+		auto& rect = dia3.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		});
+
+	Timer::AddEvent(10.6f, []() {
+		DestroyByComponent<Tag_Dialogue>();
+		});
 }
 
 void GameScene::updateHpUI(const INT8 hp, int clientID)
@@ -1067,62 +1089,6 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 			hprect.Position.y = Application::GetScreenHeight() - 96.0f; // HUD에서 24 아래로
 			mHps[clientID].push_back(hp);
 		}
-	}
-}
-
-void GameScene::createBattleDialogue()
-{
-	static INT32 order = 0;
-
-	const INT32 dialogueWidth = 1000;
-
-	if (0 == order)
-	{
-		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue1.png"));
-		auto& rect = dia1.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
-
-		Timer::AddEvent(2.0f, [this, dia1]() {
-			if (gRegistry.valid(dia1))
-			{
-				DestroyEntity(dia1);
-				createBattleDialogue();
-			}
-			});
-
-		order++;
-	}
-	else if (1 == order)
-	{
-		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue2.png"));
-		auto& rect = dia2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
-
-		Timer::AddEvent(2.0f, [this, dia2]() {
-			if (gRegistry.valid(dia2))
-			{
-				DestroyEntity(dia2);
-				createBattleDialogue();
-			}
-			});
-
-		order++;
-	}
-	else if (2 == order)
-	{
-		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue3.png"));
-		auto& rect = dia3.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
-
-		Timer::AddEvent(2.0f, [this, dia3]() {
-			if (gRegistry.valid(dia3))
-			{
-				DestroyEntity(dia3);
-				SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
-			}
-			});
-
-		order = 0;
 	}
 }
 
