@@ -582,10 +582,11 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::DOG:
 	{
-		// TODO : dog die 애니메이션
+		auto& animator = target.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Dog_Dead.anim"));
 		auto& movement = target.GetComponent<MovementComponent>();
 		movement.Direction = Vector3::Zero;
-		mOwner->DestroyEntityAfter(ndePacket->EntityID, 1.0f);
+		mOwner->DestroyEntityAfter(ndePacket->EntityID, 3.0f);
 	}
 	break;
 
