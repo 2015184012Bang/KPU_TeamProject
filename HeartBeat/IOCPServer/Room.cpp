@@ -330,6 +330,7 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 	if (bWhiteCell)
 	{
 		mRegistry.emplace<Tag_WhiteCell>(cell);
+		mRegistry.emplace<HealthComponent>(cell, 12);
 	}
 	else
 	{

@@ -37,15 +37,24 @@ public:
 
 	void SetTargetNPC()
 	{
-		auto npcs = FindObjectsWithTag<Tag_RedCell>();
+		auto redCells = FindObjectsWithTag<Tag_RedCell>();
 
-		if (npcs.empty())
+		if (redCells.empty())
 		{
-			SetTargetTank();
+			auto whiteCells = FindObjectsWithTag<Tag_WhiteCell>();
+
+			if (whiteCells.empty())
+			{
+				SetTargetTank();
+			}
+			else
+			{
+				mTarget = whiteCells[Random::RandInt(0, static_cast<INT32>(whiteCells.size() - 1))];
+			}
 			return;
 		}
 
-		mTarget = npcs[Random::RandInt(0, static_cast<INT32>(npcs.size() - 1))];
+		mTarget = redCells[Random::RandInt(0, static_cast<INT32>(redCells.size() - 1))];
 	}
 
 	bool HasNearPlayer(OUT entt::entity& target)
