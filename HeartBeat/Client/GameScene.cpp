@@ -1074,11 +1074,13 @@ void GameScene::createBattleDialogue()
 {
 	static INT32 order = 0;
 
+	const INT32 dialogueWidth = 1000;
+
 	if (0 == order)
 	{
-		Entity dia1 = mOwner->CreateSpriteEntity(1000, 250, TEXTURE("Dialogue1.png"));
+		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue1.png"));
 		auto& rect = dia1.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 
 		Timer::AddEvent(2.0f, [this, dia1]() {
 			if (gRegistry.valid(dia1))
@@ -1092,9 +1094,9 @@ void GameScene::createBattleDialogue()
 	}
 	else if (1 == order)
 	{
-		Entity dia2 = mOwner->CreateSpriteEntity(1000, 250, TEXTURE("Dialogue2.png"));
+		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue2.png"));
 		auto& rect = dia2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 
 		Timer::AddEvent(2.0f, [this, dia2]() {
 			if (gRegistry.valid(dia2))
@@ -1108,9 +1110,9 @@ void GameScene::createBattleDialogue()
 	}
 	else if (2 == order)
 	{
-		Entity dia3 = mOwner->CreateSpriteEntity(1000, 250, TEXTURE("Dialogue3.png"));
+		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue3.png"));
 		auto& rect = dia3.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 500.0f, Application::GetScreenHeight() / 2.0f - 125.0f };
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 
 		Timer::AddEvent(2.0f, [this, dia3]() {
 			if (gRegistry.valid(dia3))
@@ -1119,6 +1121,8 @@ void GameScene::createBattleDialogue()
 				SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
 			}
 			});
+
+		order = 0;
 	}
 }
 
@@ -1131,7 +1135,7 @@ void GameScene::createUI()
 		auto score = mOwner->CreateSpriteEntity(tropyWidth, tropyHeight, TEXTURE("Trophy.png"));
 		score.AddTag<Tag_UI>();
 		auto& rect = score.GetComponent<RectTransformComponent>();
-		rect.Position.x = (Application::GetScreenWidth() / 2.0f) - (tropyWidth / 2.0f);
+		rect.Position.x = 10.0f;
 		rect.Position.y = 10.0f;
 	}
 
@@ -1140,7 +1144,7 @@ void GameScene::createUI()
 		mScoreText.AddTag<Tag_UI>();
 		auto& text = mScoreText.AddComponent<TextComponent>();
 		text.Sentence = L"0";
-		text.X = (Application::GetScreenWidth() / 2.0f) - (tropyWidth / 2.0f) + 58.0f;
+		text.X = 68.0f;
 		text.Y = 10.0f;
 	}
 
@@ -1149,7 +1153,7 @@ void GameScene::createUI()
 		mPlaytimeText.AddTag<Tag_UI>();
 		auto& text = mPlaytimeText.AddComponent<TextComponent>();
 		text.Sentence = L"0.0";
-		text.X = (Application::GetScreenWidth() / 2.0f) - 20.0f;
+		text.X = 10.0f;
 		text.Y = 55.0f;
 	}
 
