@@ -253,6 +253,7 @@ void MovementSystem::checkBattleTrigger()
 		mbBattleProgressed = true;
 
 		auto cart = GetEntityByName(mRegistry, "Cart");
+		const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
 
 		mRegistry.emplace<Tag_Stop>(tank);
 		mRegistry.emplace<Tag_Stop>(cart);
@@ -266,5 +267,71 @@ void MovementSystem::checkBattleTrigger()
 		{
 			DestroyEntity(mRegistry, entity);
 		}
+
+		auto centerPos = (tankPos + cartPos) / 2.0f;
+		Timer::AddEvent(10.5f, [this, centerPos]() {
+			if (mOwner->GetState() == Room::RoomState::Playing)
+			{
+				NOTIFY_CREATE_ENTITY_PACKET packet = {};
+				packet.PacketID = NOTIFY_CREATE_ENTITY;
+				packet.PacketSize = sizeof(packet);
+
+				// ÅÊÅ© ¾Õ ¹éÇ÷±¸
+				for (int i = 0; i < 3; ++i)
+				{
+					auto cellPos = centerPos;
+					cellPos.x += 1200.0f;
+					cellPos.z += (i - 1) * 300.0f;
+					auto eid = mOwner->CreateCell(cellPos, true);
+
+					packet.EntityID = eid;
+					packet.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+					packet.Position = cellPos;
+					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+				}
+
+				// ÅÊÅ© µÚ ¹éÇ÷±¸
+				for (int i = 0; i < 3; ++i)
+				{
+					auto cellPos = centerPos;
+					cellPos.x -= 1200.0f;
+					cellPos.z += (i - 1) * 300.0f;
+					auto eid = mOwner->CreateCell(cellPos, true);
+
+					packet.EntityID = eid;
+					packet.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+					packet.Position = cellPos;
+					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+				}
+
+				// ÅÊÅ© ¿ÞÂÊ ¹éÇ÷±¸
+				for (int i = 0; i < 6; ++i)
+				{
+					auto cellPos = centerPos;
+					cellPos.x += (i * 300.0f) - 800.0f;
+					cellPos.z += 800.0f;
+					auto eid = mOwner->CreateCell(cellPos, true);
+
+					packet.EntityID = eid;
+					packet.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+					packet.Position = cellPos;
+					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+				}
+
+				// ÅÊÅ© ¿ÞÂÊ ¹éÇ÷±¸
+				for (int i = 0; i < 6; ++i)
+				{
+					auto cellPos = centerPos;
+					cellPos.x += (i * 300.0f) - 800.0f;
+					cellPos.z -= 800.0f;
+					auto eid = mOwner->CreateCell(cellPos, true);
+
+					packet.EntityID = eid;
+					packet.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+					packet.Position = cellPos;
+					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+				}
+			}
+			});
 	}
 }
