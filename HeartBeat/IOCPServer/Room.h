@@ -69,6 +69,8 @@ public:
 
 	void UpdateScore(INT32 delta);
 
+	void GenerateEnemyRandomly(const Vector3& controlPoint);
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }

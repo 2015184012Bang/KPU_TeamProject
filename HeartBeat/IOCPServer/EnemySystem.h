@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rapidcsv.h"
+#include "Protocol.h"
 
 class Room;
 
@@ -15,8 +16,15 @@ public:
 
 	void Reset();
 
+	void GenerateEnemyRandomly(const Vector3& controlPoint);
+
+public:
+	bool IsGenerate() const { return mbGenerate; }
+
 private:
 	void loadStageFile(string_view fileName);
+
+	entt::entity createEnemy(const Vector3& position, EntityType eType, entt::entity entity = entt::null);
 
 private:
 	entt::registry& mRegistry;
@@ -25,5 +33,7 @@ private:
 	unordered_map<string, rapidcsv::Document> mStages;
 
 	bool mbGenerate = false;
+
+	float mDuration = 0.0f;
 };
 

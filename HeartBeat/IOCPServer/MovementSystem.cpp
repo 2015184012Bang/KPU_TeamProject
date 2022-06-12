@@ -318,7 +318,7 @@ void MovementSystem::checkBattleTrigger()
 					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 				}
 
-				// 攀农 哭率 归趋备
+				// 攀农 坷弗率 归趋备
 				for (int i = 0; i < 6; ++i)
 				{
 					auto cellPos = centerPos;
@@ -332,6 +332,18 @@ void MovementSystem::checkBattleTrigger()
 					mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 				}
 			}
+			});
+
+		Timer::AddEvent(11.0f, [this, centerPos]() {
+			mOwner->GenerateEnemyRandomly(centerPos);
+			});
+
+		Timer::AddEvent(26.0f, [this, centerPos]() {
+			mOwner->GenerateEnemyRandomly(centerPos);
+			});
+
+		Timer::AddEvent(41.0f, [this, centerPos]() {
+			mOwner->GenerateEnemyRandomly(centerPos);
 			});
 	}
 }

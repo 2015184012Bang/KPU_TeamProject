@@ -1051,6 +1051,7 @@ void GameScene::doBattleOccur()
 		});
 
 	Timer::AddEvent(10.6f, []() {
+		SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
 		DestroyByComponent<Tag_Dialogue>();
 		});
 }

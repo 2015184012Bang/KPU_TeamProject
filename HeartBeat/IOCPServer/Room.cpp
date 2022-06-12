@@ -389,6 +389,16 @@ void Room::UpdateScore(const INT32 delta)
 	playState.bChanged = true;
 }
 
+void Room::GenerateEnemyRandomly(const Vector3& controlPoint)
+{
+	if (!mEnemySystem->IsGenerate())
+	{
+		return;
+	}
+
+	mEnemySystem->GenerateEnemyRandomly(controlPoint);
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))
