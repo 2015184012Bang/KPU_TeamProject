@@ -96,6 +96,8 @@ enum RESULT_CODE : UINT8
 	// 게임 오버 에러 코드
 	STAGE_CLEAR,
 	STAGE_FAIL,
+
+	CELL_ATTACK,
 };
 
 enum class EntityType : UINT8

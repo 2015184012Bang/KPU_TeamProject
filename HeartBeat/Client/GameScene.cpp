@@ -518,13 +518,22 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 		return;
 	}
 
-	auto& animator = e.GetComponent<AnimatorComponent>();
-	animator.SetTrigger(GetAttackAnimTrigger(false));
-
-	if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS &&
-		naPacket->EntityID == mOwner->GetClientID())
+	if (naPacket->Result == CELL_ATTACK)
 	{
-		SoundManager::PlaySound("Punch.mp3", 0.15f);
+		// 백혈구 공격 패킷
+		auto& animator = e.GetComponent<AnimatorComponent>();
+		animator.SetTrigger("Attack");
+	}
+	else
+	{
+		// 플레이어 공격 패킷
+		auto& animator = e.GetComponent<AnimatorComponent>();
+		animator.SetTrigger(GetAttackAnimTrigger(false));
+		if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS &&
+			naPacket->EntityID == mOwner->GetClientID())
+		{
+			SoundManager::PlaySound("Punch.mp3", 0.15f);
+		}
 	}
 }
 

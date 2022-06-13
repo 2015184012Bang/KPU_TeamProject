@@ -201,5 +201,8 @@
     <ClInclude Include="RedCell.h">
       <Filter>Source Files\Scripts</Filter>
     </ClInclude>
+    <ClInclude Include="WhiteCell.h">
+      <Filter>Source Files\Scripts</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

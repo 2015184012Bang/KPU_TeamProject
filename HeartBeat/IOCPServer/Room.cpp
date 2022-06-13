@@ -8,6 +8,7 @@
 #include "Tank.h"
 #include "Random.h"
 #include "RedCell.h"
+#include "WhiteCell.h"
 
 constexpr INT32 WHITE_CELL_HEALTH = 12;
 constexpr INT32 RED_CELL_HEALTH = 12;
@@ -334,6 +335,7 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 	{
 		mRegistry.emplace<Tag_WhiteCell>(cell);
 		mRegistry.emplace<HealthComponent>(cell, WHITE_CELL_HEALTH);
+		mRegistry.emplace<ScriptComponent>(cell, make_shared<WhiteCell>(mRegistry, cell));
 	}
 	else
 	{

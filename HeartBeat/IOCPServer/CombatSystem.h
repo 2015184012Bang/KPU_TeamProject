@@ -27,6 +27,7 @@ public:
 private:
 	void updateCooldown();
 	void checkEnemyAttack();
+	void checkWhiteCellAttack();
 	void doEntityDie(const UINT32 id, EntityType eType);
 
 private:

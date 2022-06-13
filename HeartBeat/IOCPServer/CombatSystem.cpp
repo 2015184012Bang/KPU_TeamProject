@@ -7,6 +7,7 @@
 #include "Room.h"
 
 constexpr INT32 MAX_PLAYER_LIFE = 3;
+constexpr INT32 WHITE_CELL_ATTACK = 1;
 
 CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
@@ -19,6 +20,7 @@ void CombatSystem::Update()
 {
 	updateCooldown();
 	checkEnemyAttack();
+	checkWhiteCellAttack();
 }
 
 void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
@@ -136,13 +138,13 @@ void CombatSystem::updateCooldown()
 
 void CombatSystem::checkEnemyAttack()
 {
-	auto view = mRegistry.view<IHitYouComponent>();
+	auto view = mRegistry.view<Tag_Enemy, IHitYouComponent>();
 	for (auto [entity, hit] : view.each())
 	{
 		auto victim = GetEntityByID(mRegistry, hit.VictimID);
-		if (entt::null == victim ||
-			!mRegistry.valid(entity))
+		if (entt::null == victim || !mRegistry.valid(entity))
 		{
+			mRegistry.remove<IHitYouComponent>(entity);
 			continue;
 		}
 
@@ -152,8 +154,7 @@ void CombatSystem::checkEnemyAttack()
 		packet.PacketSize = sizeof(packet);
 		packet.PacketID = NOTIFY_ENEMY_ATTACK;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-		mRegistry.remove<IHitYouComponent>(entity);
-
+		
 		INT8 enemyAttack = 1;
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
@@ -185,6 +186,8 @@ void CombatSystem::checkEnemyAttack()
 			eType = EntityType::WHITE_CELL;
 		}
 
+		mRegistry.remove<IHitYouComponent>(entity);
+
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
 			DestroyEntity(mRegistry, entity);
@@ -196,6 +199,43 @@ void CombatSystem::checkEnemyAttack()
 		}
 	}
 }
+
+
+void CombatSystem::checkWhiteCellAttack()
+{
+	auto view = mRegistry.view<Tag_WhiteCell, IHitYouComponent>();
+
+	for (auto [entity, hit] : view.each())
+	{
+		auto victim = GetEntityByID(mRegistry, hit.VictimID);
+		if (entt::null == victim || !mRegistry.valid(victim))
+		{
+			mRegistry.remove<IHitYouComponent>(entity);
+			continue;
+		}
+
+		NOTIFY_ATTACK_PACKET packet = {};
+		packet.PacketID = NOTIFY_ATTACK;
+		packet.PacketSize = sizeof(packet);
+		packet.EntityID = hit.HitterID;
+		packet.Result = CELL_ATTACK;
+		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+
+		auto& health = mRegistry.get<HealthComponent>(victim);
+		health.Health -= WHITE_CELL_ATTACK;
+
+		if (health.Health <= 0)
+		{
+			EntityType eType = mRegistry.any_of<Tag_Virus>(victim) ?
+				EntityType::VIRUS : EntityType::DOG;
+			mOwner->SendDeleteEntityPacket(hit.VictimID, eType);
+			DestroyEntity(mRegistry, victim);
+		}
+
+		mRegistry.remove<IHitYouComponent>(entity);
+	}
+}
+
 
 void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 {
