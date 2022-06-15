@@ -1061,21 +1061,21 @@ void GameScene::doBattleOccur()
 	});
 
 	const INT32 dialogueWidth = 1000;
-	Timer::AddEvent(4.6f, [this]() {
+	Timer::AddEvent(4.6f, [this, dialogueWidth]() {
 		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue1.png"), 110);
 		dia1.AddTag<Tag_Dialogue>();
 		auto& rect = dia1.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 		});
 
-	Timer::AddEvent(6.6f, [this]() {
+	Timer::AddEvent(6.6f, [this, dialogueWidth]() {
 		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue2.png"), 120);
 		dia2.AddTag<Tag_Dialogue>();
 		auto& rect = dia2.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 		});
 
-	Timer::AddEvent(8.6f, [this]() {
+	Timer::AddEvent(8.6f, [this, dialogueWidth]() {
 		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue3.png"), 130);
 		dia3.AddTag<Tag_Dialogue>();
 		auto& rect = dia3.GetComponent<RectTransformComponent>();
