@@ -258,11 +258,10 @@ void MovementSystem::checkBattleTrigger()
 		mRegistry.emplace<Tag_Stop>(tank);
 		mRegistry.emplace<Tag_Stop>(cart);
 
-		auto redCells = mRegistry.view<Tag_RedCell, IDComponent>();
-		mNumRedCells = static_cast<INT32>(redCells.size_hint());
-		for (auto [entity, id] : redCells.each())
+		auto redCells = mRegistry.view<Tag_RedCell>();
+		mNumRedCells = static_cast<INT32>(redCells.size());
+		for (auto entity : redCells)
 		{
-			mOwner->SendDeleteEntityPacket(id.ID, EntityType::RED_CELL);
 			DestroyEntity(mRegistry, entity);
 		}
 
@@ -361,6 +360,12 @@ void MovementSystem::checkBattleTrigger()
 			}
 
 			mOwner->SendEventOccurPacket(0, EventType::BATTLE_END);
+
+			auto whiteCells = mRegistry.view<Tag_WhiteCell>();
+			for (auto entity : whiteCells)
+			{
+				DestroyEntity(mRegistry, entity);
+			}
 			});
 
 		Timer::AddEvent(84.0f, [this, tank, cart, centerPos]() {
@@ -369,13 +374,6 @@ void MovementSystem::checkBattleTrigger()
 
 			mRegistry.remove<Tag_Stop>(tank);
 			mRegistry.remove<Tag_Stop>(cart);
-
-			auto whiteCells = mRegistry.view<Tag_WhiteCell, IDComponent>();
-			for (auto [entity, id] : whiteCells.each())
-			{
-				mOwner->SendDeleteEntityPacket(id.ID, EntityType::WHITE_CELL);
-				DestroyEntity(mRegistry, entity);
-			}
 
 			for (int i = 0; i < mNumRedCells; ++i)
 			{

@@ -1025,6 +1025,12 @@ void GameScene::doBattleOccur()
 	SoundManager::StopSound("SteampipeSonata.mp3");
 	SoundManager::PlaySound("Warning.mp3");
 
+	auto redCells = gRegistry.view<Tag_RedCell>();
+	for (auto entity : redCells) 
+	{
+		DestroyEntity(entity);
+	}
+
 	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
 	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
@@ -1082,6 +1088,12 @@ void GameScene::doBattleOccur()
 void GameScene::doBattleEnd()
 {
 	const INT32 dialogueWidth = 1000;
+
+	auto whiteCells = gRegistry.view<Tag_WhiteCell>();
+	for (auto entity : whiteCells)
+	{
+		DestroyEntity(entity);
+	}
 
 	{
 		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue4.png"), 110);
