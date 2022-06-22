@@ -10,7 +10,7 @@
     <BACooldown>0.7</BACooldown>
     <SkillCooldown>5</SkillCooldown>
     <BARange>400</BARange>
-    <TankSpeed>300</TankSpeed>
+    <TankSpeed>400</TankSpeed>
     <EnemySpeed>500</EnemySpeed>
     <CellSpeed>500</CellSpeed>
     <TankHealth>30</TankHealth>
