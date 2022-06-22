@@ -19,9 +19,6 @@
 #include "Timer.h"
 #include "Utils.h"
 
-constexpr int MAX_TANK_HP = 3;
-constexpr float SKILL_COOLDOWN = 5.0f;
-
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
 {
@@ -875,7 +872,7 @@ void GameScene::processNotifySkill(const PACKET& packet)
 	{
 		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
 
-		mCooldown = SKILL_COOLDOWN;
+		mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
 
 		mCooldownText = Entity{ gRegistry.create() };
 		auto& text = mCooldownText.AddComponent<TextComponent>();
@@ -883,7 +880,7 @@ void GameScene::processNotifySkill(const PACKET& packet)
 		text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 35.0f;
 		text.Y = Application::GetScreenHeight() - 120.0f - 55.0f;
 
-		Timer::AddEvent(SKILL_COOLDOWN, [this]()
+		Timer::AddEvent(mCooldown, [this]()
 			{
 				if (gRegistry.valid(mCooldownText))
 				{
@@ -1404,5 +1401,16 @@ Texture* GetSkillTexture(UpgradePreset preset)
 	case UpgradePreset::HEAL: return TEXTURE("Potion.png");
 	case UpgradePreset::SUPPORT: return TEXTURE("Arm.png");
 	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return nullptr;
+	}
+}
+
+float GetSkillCooldown(UpgradePreset preset)
+{
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK: return 4.0f;
+	case UpgradePreset::HEAL: return 18.0f;
+	case UpgradePreset::SUPPORT: return 20.0f;
+	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return 0.0f;
 	}
 }
