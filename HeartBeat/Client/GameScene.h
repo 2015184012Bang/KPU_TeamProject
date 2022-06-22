@@ -81,7 +81,6 @@ private:
     vector<vector<Entity>> mHps;
 
     bool mbIsGameOver = false;
-    bool mbDenyUserInput = false;
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);

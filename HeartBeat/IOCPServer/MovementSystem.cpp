@@ -364,6 +364,9 @@ void MovementSystem::checkBattleTrigger()
 			});
 
 		Timer::AddEvent(84.0f, [this, tank, cart, centerPos]() {
+			auto wall = GetEntityByName(mRegistry, "Wall");
+			DestroyEntity(mRegistry, wall);
+
 			mRegistry.remove<Tag_Stop>(tank);
 			mRegistry.remove<Tag_Stop>(cart);
 

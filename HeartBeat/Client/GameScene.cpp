@@ -121,7 +121,7 @@ void GameScene::Update(float deltaTime)
 		REQUEST_MOVE_PACKET packet = {};
 		packet.PacketID = REQUEST_MOVE;
 		packet.PacketSize = sizeof(packet);
-		packet.Direction = mbDenyUserInput ? Vector3::Zero : mDirection;
+		packet.Direction = mDirection;
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
@@ -423,29 +423,25 @@ bool GameScene::pollKeyboardPressed()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonPressed(KeyCode::LEFT) ||
-		Input::IsButtonRepeat(KeyCode::LEFT))
+	if (Input::IsButtonPressed(KeyCode::LEFT))
 	{
 		mDirection.x -= 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::RIGHT) ||
-		Input::IsButtonRepeat(KeyCode::RIGHT))
+	if (Input::IsButtonPressed(KeyCode::RIGHT))
 	{
 		mDirection.x += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::UP) ||
-		Input::IsButtonRepeat(KeyCode::UP))
+	if (Input::IsButtonPressed(KeyCode::UP))
 	{
 		mDirection.z += 1.0f;
 		bChanged = true;
 	}
 
-	if (Input::IsButtonPressed(KeyCode::DOWN) ||
-		Input::IsButtonRepeat(KeyCode::DOWN))
+	if (Input::IsButtonPressed(KeyCode::DOWN))
 	{
 		mDirection.z -= 1.0f;
 		bChanged = true;
@@ -877,13 +873,6 @@ void GameScene::processNotifySkill(const PACKET& packet)
 
 	if (nsPacket->EntityID == mOwner->GetClientID())
 	{
-		mbDenyUserInput = true;
-		float waitTime = GetSkillWaitTime(static_cast<uint8>(mOwner->GetPreset()));
-		Timer::AddEvent(waitTime, [this]()
-			{
-				mbDenyUserInput = false;
-			});
-
 		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
 
 		mCooldown = SKILL_COOLDOWN;

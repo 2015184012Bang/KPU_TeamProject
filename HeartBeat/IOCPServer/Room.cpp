@@ -627,7 +627,7 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		mRegistry.emplace<Tag_Tile>(tile);
 		mRegistry.emplace<Tag_BlockingTile>(tile);
 		mRegistry.emplace<Tag_BreakableTile>(tile);
-		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, 5));
+		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, 3));
 		mRegistry.emplace<IDComponent>(tile, GetEntityID());
 		break;
 
