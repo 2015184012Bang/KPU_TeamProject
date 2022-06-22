@@ -19,8 +19,8 @@ CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
 void CombatSystem::Update()
 {
 	updateCooldown();
-	checkEnemyAttack();
 	checkWhiteCellAttack();
+	checkEnemyAttack();
 }
 
 void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)

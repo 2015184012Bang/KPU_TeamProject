@@ -72,11 +72,11 @@ void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
 	Vector3 pos = controlPoint;
 	pos.x = controlPoint.x - 2400.0f;
 
-	const INT32 enemyCount = 4;
+	const INT32 enemyCount = 7;
 
 	for (int i = 0; i < enemyCount; ++i)
 	{
-		pos.z = (i * 400.0f) + 1200.0f;
+		pos.z = (i * 400.0f) + 800.0f;
 		auto randInt = Random::RandInt(0, 1);
 		EntityType eType = randInt == 0 ? EntityType::VIRUS : EntityType::DOG;
 		entt::entity entity = createEnemy(pos, eType);
@@ -86,14 +86,14 @@ void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
 		packet.EntityType = static_cast<UINT8>(eType);
 		packet.PacketID = NOTIFY_CREATE_ENTITY;
 		packet.PacketSize = sizeof(packet);
-		packet.Position = mRegistry.get<TransformComponent>(entity).Position;
+		packet.Position = pos;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 
 	pos.x = controlPoint.x + 2400.0f;
 	for (int i = 0; i < enemyCount; ++i)
 	{
-		pos.z = (i * 400.0f) + 1200.0f;
+		pos.z = (i * 400.0f) + 800.0f;
 		auto randInt = Random::RandInt(0, 1);
 		EntityType eType = randInt == 0 ? EntityType::VIRUS : EntityType::DOG;
 		entt::entity entity = createEnemy(pos, eType);
@@ -103,7 +103,7 @@ void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
 		packet.EntityType = static_cast<UINT8>(eType);
 		packet.PacketID = NOTIFY_CREATE_ENTITY;
 		packet.PacketSize = sizeof(packet);
-		packet.Position = mRegistry.get<TransformComponent>(entity).Position;
+		packet.Position = pos;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 	}
 }

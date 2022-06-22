@@ -326,15 +326,16 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 	auto cell = mRegistry.create();
 
 	auto& id = mRegistry.emplace<IDComponent>(cell, GetEntityID());
+
 	auto& transform = mRegistry.emplace<TransformComponent>(cell);
 	transform.Position = position;
 	mRegistry.emplace<BoxComponent>(cell, &Box::GetBox("../Assets/Boxes/Cell.box"),
 		transform.Position, transform.Yaw);
+	mRegistry.emplace<HealthComponent>(cell, Values::CellHealth);
 
 	if (bWhiteCell)
 	{
 		mRegistry.emplace<Tag_WhiteCell>(cell);
-		mRegistry.emplace<HealthComponent>(cell, WHITE_CELL_HEALTH);
 		mRegistry.emplace<ScriptComponent>(cell, make_shared<WhiteCell>(mRegistry, cell));
 	}
 	else
@@ -343,7 +344,6 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 		mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
 		mRegistry.emplace<PathFindComponent>(cell);
 		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
-		mRegistry.emplace<HealthComponent>(cell, RED_CELL_HEALTH);
 	}
 
 	return id.ID;

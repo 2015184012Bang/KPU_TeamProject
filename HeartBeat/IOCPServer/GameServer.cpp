@@ -17,7 +17,6 @@ void GameServer::OnClose(const INT32 sessionIndex)
 
 void GameServer::OnRecv(const INT32 sessionIndex, const UINT32 dataSize, char* msg)
 {
-	LOG("[OnRecv] Session Index: {0}, Data Size: {1}", sessionIndex, dataSize);
 	mGameManager->PushUserData(sessionIndex, dataSize, msg);
 }
 

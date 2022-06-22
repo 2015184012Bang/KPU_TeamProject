@@ -6,7 +6,7 @@
 
 using std::queue;
 
-constexpr UINT32 PACKET_BUFFER_SIZE = 8192;
+constexpr UINT32 PACKET_BUFFER_SIZE = 65536;
 constexpr UINT32 RECV_BUFFER_SIZE = 2048;
 
 class PacketManager

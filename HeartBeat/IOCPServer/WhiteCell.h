@@ -63,7 +63,7 @@ private:
 	}
 
 private:
-	static constexpr float ATTACK_COOLDOWN = 1.5f;
+	static constexpr float ATTACK_COOLDOWN = 2.0f;
 	static constexpr float ATTACK_RANGE_SQ = 800.0f * 800.0f;
 	float mCooldownTracker = 0.0f;
 };
