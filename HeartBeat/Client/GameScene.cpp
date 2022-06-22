@@ -1116,6 +1116,7 @@ void GameScene::doBattleEnd()
 		animator.SetTrigger("Attack");
 
 		auto missile = mOwner->CreateStaticMeshEntity(MESH("Missile.mesh"), TEXTURE("Missile.png"));
+		missile.AddComponent<NameComponent>("Missile");
 		auto& transform = missile.GetComponent<TransformComponent>();
 		const auto& tankPos = tank.GetComponent<TransformComponent>().Position;
 		transform.Position = tankPos + Vector3{ 0.0f, 512.0f, 0.0f };
@@ -1124,6 +1125,9 @@ void GameScene::doBattleEnd()
 		});
 
 	Timer::AddEvent(6.0f, [this]() {
+		auto missile = GetEntityByName("Missile");
+		DestroyEntity(missile);
+
 		auto wall = GetEntityByName("Wall");
 		mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
 
