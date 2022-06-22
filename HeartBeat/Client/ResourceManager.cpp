@@ -430,8 +430,12 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* idleAnim = ANIM("Tank_Idle.anim");
 		Animation* runningAnim = ANIM("Tank_Run.anim");
+		Animation* attackAnim = ANIM("Tank_Attack.anim");
+		attackAnim->SetLoop(false);
 		idleAnim->AddTransition("Run", runningAnim);
 		runningAnim->AddTransition("Idle", idleAnim);
+		runningAnim->AddTransition("Attack", attackAnim);
+		attackAnim->AddTransition("WhenEnd", runningAnim);
 	}
 
 	// Áö¹æ

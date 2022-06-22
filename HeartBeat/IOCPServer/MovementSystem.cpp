@@ -362,5 +362,32 @@ void MovementSystem::checkBattleTrigger()
 
 			mOwner->SendEventOccurPacket(0, EventType::BATTLE_END);
 			});
+
+		Timer::AddEvent(84.0f, [this, tank, cart, centerPos]() {
+			mRegistry.remove<Tag_Stop>(tank);
+			mRegistry.remove<Tag_Stop>(cart);
+
+			auto whiteCells = mRegistry.view<Tag_WhiteCell, IDComponent>();
+			for (auto [entity, id] : whiteCells.each())
+			{
+				mOwner->SendDeleteEntityPacket(id.ID, EntityType::WHITE_CELL);
+				DestroyEntity(mRegistry, entity);
+			}
+
+			for (int i = 0; i < mNumRedCells; ++i)
+			{
+				auto pos = centerPos;
+				pos.x = Random::RandFloat(centerPos.x - 600.0f, centerPos.x + 600.0f);
+				auto id = mOwner->CreateCell(pos);
+				
+				NOTIFY_CREATE_ENTITY_PACKET packet = {};
+				packet.EntityID = id;
+				packet.EntityType = static_cast<UINT8>(EntityType::RED_CELL);
+				packet.PacketID = NOTIFY_CREATE_ENTITY;
+				packet.PacketSize = sizeof(packet);
+				packet.Position = pos;
+				mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+			}
+			});
 	}
 }

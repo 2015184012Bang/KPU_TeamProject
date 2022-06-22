@@ -1108,8 +1108,44 @@ void GameScene::doBattleEnd()
 		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
 		});
 
-	Timer::AddEvent(5.0f, []() {
+	Timer::AddEvent(5.0f, [this]() {
 		DestroyByComponent<Tag_Dialogue>();
+		auto tank = GetEntityByName("Tank");
+		mOwner->SetFollowCameraTarget(tank, Vector3{ 0.0f, 1500.0f, -1300.0f });
+		auto& animator = tank.GetComponent<AnimatorComponent>();
+		animator.SetTrigger("Attack");
+
+		auto missile = mOwner->CreateStaticMeshEntity(MESH("Missile.mesh"), TEXTURE("Missile.png"));
+		auto& transform = missile.GetComponent<TransformComponent>();
+		const auto& tankPos = tank.GetComponent<TransformComponent>().Position;
+		transform.Position = tankPos + Vector3{ 0.0f, 512.0f, 0.0f };
+		auto& movement = missile.AddComponent<MovementComponent>(3200.0f);
+		movement.Direction = Vector3{ 1.0f, 0.0f, 0.0f };
+		});
+
+	Timer::AddEvent(6.0f, [this]() {
+		auto wall = GetEntityByName("Wall");
+		mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
+
+		auto& animator = wall.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
+		});
+
+	Timer::AddEvent(11.0f, [this, dialogueWidth]() {
+		auto wall = GetEntityByName("Wall");
+		DestroyEntity(wall);
+		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
+
+		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue6.png"), 110);
+		dia3.AddTag<Tag_Dialogue>();
+		auto& rect = dia3.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		});
+
+	Timer::AddEvent(13.0f, []() {
+		DestroyByComponent<Tag_Dialogue>();
+		SoundManager::StopSound("BattleTheme.mp3");
+		SoundManager::PlaySound("SteampipeSonata.mp3");
 		});
 }
 
