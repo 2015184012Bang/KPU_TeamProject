@@ -120,6 +120,7 @@ enum class EventType : UINT8
 	DOOR_DOWN,
 	PLAYER_DEAD,
 	BATTLE,
+	BATTLE_END,
 };
 
 /************************************************************************/

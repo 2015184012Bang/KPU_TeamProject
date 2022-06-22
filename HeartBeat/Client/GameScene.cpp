@@ -47,6 +47,8 @@ void GameScene::Enter()
 
 void GameScene::Exit()
 {
+	Timer::Clear();
+
 	SoundManager::StopSound("SteampipeSonata.mp3");
 	SoundManager::StopSound("BattleTheme.mp3");
 
@@ -421,7 +423,7 @@ bool GameScene::pollKeyboardPressed()
 {
 	bool bChanged = false;
 
-	if (Input::IsButtonPressed(KeyCode::LEFT) || 
+	if (Input::IsButtonPressed(KeyCode::LEFT) ||
 		Input::IsButtonRepeat(KeyCode::LEFT))
 	{
 		mDirection.x -= 1.0f;
@@ -917,7 +919,7 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 Entity GetCloestDoor()
 {
 	auto doors = gRegistry.view<Tag_Door, TransformComponent>();
-	
+
 	float minX = FLT_MAX;
 	entt::entity target = {};
 	for (auto [door, transform] : doors.each())
@@ -996,7 +998,13 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 
 	case EventType::BATTLE:
 	{
-		doBattleOccur();	
+		doBattleOccur();
+	}
+	break;
+
+	case EventType::BATTLE_END:
+	{
+		doBattleEnd();
 	}
 	break;
 
@@ -1028,12 +1036,6 @@ void GameScene::doBattleOccur()
 	SoundManager::StopSound("SteampipeSonata.mp3");
 	SoundManager::PlaySound("Warning.mp3");
 
-	auto cells = gRegistry.view<Tag_RedCell>();
-	for (auto entity : cells)
-	{
-		DestroyEntity(entity);
-	}
-
 	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
 	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
@@ -1047,7 +1049,7 @@ void GameScene::doBattleOccur()
 			HB_ASSERT(false, "Invalid entity: Wall");
 		}
 		mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
-	});
+		});
 
 	Timer::AddEvent(4.5f, [this]() {
 		if (gRegistry.valid(mPlayerCharacter))
@@ -1058,7 +1060,7 @@ void GameScene::doBattleOccur()
 		{
 			mOwner->ResetCamera();
 		}
-	});
+		});
 
 	const INT32 dialogueWidth = 1000;
 	Timer::AddEvent(4.6f, [this, dialogueWidth]() {
@@ -1084,6 +1086,29 @@ void GameScene::doBattleOccur()
 
 	Timer::AddEvent(10.6f, []() {
 		SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
+		DestroyByComponent<Tag_Dialogue>();
+		});
+}
+
+void GameScene::doBattleEnd()
+{
+	const INT32 dialogueWidth = 1000;
+
+	{
+		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue4.png"), 110);
+		dia1.AddTag<Tag_Dialogue>();
+		auto& rect = dia1.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+	}
+
+	Timer::AddEvent(2.0f, [this, dialogueWidth]() {
+		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue5.png"), 120);
+		dia2.AddTag<Tag_Dialogue>();
+		auto& rect = dia2.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		});
+
+	Timer::AddEvent(5.0f, []() {
 		DestroyByComponent<Tag_Dialogue>();
 		});
 }

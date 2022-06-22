@@ -746,6 +746,8 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Dialogue1.png");
 	TEXTURE("Dialogue2.png");
 	TEXTURE("Dialogue3.png");
+	TEXTURE("Dialogue4.png");
+	TEXTURE("Dialogue5.png");
 }
 
 void Renderer::loadAssets()

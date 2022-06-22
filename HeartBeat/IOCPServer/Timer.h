@@ -15,6 +15,7 @@ class Timer
 public:
 	static void Init();
 	static void Update();
+	static void Clear();
 
 	static float GetDeltaTime() { return sDeltaTime; }
 	static void AddEvent(float dueTime, std::function<void()> func);

@@ -44,6 +44,11 @@ void Timer::Update()
 	sPrevCount = currentCount;
 }
 
+void Timer::Clear()
+{
+	sTimerEvents.clear();
+}
+
 void Timer::AddEvent(float dueTime, std::function<void()> func)
 {
 	sTimerEvents.emplace_back(dueTime, func);

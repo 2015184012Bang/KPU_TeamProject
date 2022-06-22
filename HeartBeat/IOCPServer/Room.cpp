@@ -714,11 +714,12 @@ void Room::clearAllUser()
 
 void Room::clearGame()
 {
+	Timer::Clear();
+
 	mEntityID = 3;	// Entity ID ÃÊ±âÈ­
 	mEnemySystem->Reset();
 	mCollisionSystem->Reset();
 	mPathSystem->Reset();
-	//mMovementSystem->Reset();
 	mRoomState = RoomState::Waiting;
 	mPlayTimeSec = 0.0f;
 	bGameStart = false;

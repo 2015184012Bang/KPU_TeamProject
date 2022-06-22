@@ -258,15 +258,15 @@ void MovementSystem::checkBattleTrigger()
 		mRegistry.emplace<Tag_Stop>(tank);
 		mRegistry.emplace<Tag_Stop>(cart);
 
-		mOwner->SendEventOccurPacket(0, EventType::BATTLE);
-
-		auto redCells = mRegistry.view<Tag_RedCell>();
-		mNumRedCells = static_cast<INT32>(redCells.size());
-
-		for (auto entity : redCells)
+		auto redCells = mRegistry.view<Tag_RedCell, IDComponent>();
+		mNumRedCells = static_cast<INT32>(redCells.size_hint());
+		for (auto [entity, id] : redCells.each())
 		{
+			mOwner->SendDeleteEntityPacket(id.ID, EntityType::RED_CELL);
 			DestroyEntity(mRegistry, entity);
 		}
+
+		mOwner->SendEventOccurPacket(0, EventType::BATTLE);
 
 		auto centerPos = (tankPos + cartPos) / 2.0f;
 		Timer::AddEvent(10.5f, [this, centerPos]() {
@@ -344,6 +344,23 @@ void MovementSystem::checkBattleTrigger()
 
 		Timer::AddEvent(41.0f, [this, centerPos]() {
 			mOwner->GenerateEnemyRandomly(centerPos);
+			});
+
+		Timer::AddEvent(56.0f, [this, centerPos]() {
+			mOwner->GenerateEnemyRandomly(centerPos);
+			});
+
+		Timer::AddEvent(71.0f, [this]() {
+			auto enemies = mRegistry.view<Tag_Enemy, IDComponent>();
+			for (auto [entity, id] : enemies.each())
+			{
+				EntityType eType = mRegistry.any_of<Tag_Virus>(entity) ?
+					EntityType::VIRUS : EntityType::DOG;
+				mOwner->SendDeleteEntityPacket(id.ID, eType);
+				DestroyEntity(mRegistry, entity);
+			}
+
+			mOwner->SendEventOccurPacket(0, EventType::BATTLE_END);
 			});
 	}
 }

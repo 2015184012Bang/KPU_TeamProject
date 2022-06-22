@@ -26,6 +26,7 @@ class Timer
 public:
 	static void Init();
 	static void Update();
+	static void Clear();
 
 	static float GetDeltaTime() { return sDeltaTime; }
 	static int GetFPS() { return sFPS; }
