@@ -136,6 +136,7 @@ void CombatSystem::updateCooldown()
 void CombatSystem::checkEnemyAttack()
 {
 	auto view = mRegistry.view<Tag_Enemy, IHitYouComponent>();
+	set<pair<UINT32, EntityType>> deads;
 	for (auto [entity, hit] : view.each())
 	{
 		auto victim = GetEntityByID(mRegistry, hit.VictimID);
@@ -151,10 +152,12 @@ void CombatSystem::checkEnemyAttack()
 		packet.PacketSize = sizeof(packet);
 		packet.PacketID = NOTIFY_ENEMY_ATTACK;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
-		
+
+		bool bDog = false;
 		INT8 enemyAttack = Values::VirusPower;
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
+			bDog = true;
 			enemyAttack = Values::DogPower;
 		}
 
@@ -169,7 +172,7 @@ void CombatSystem::checkEnemyAttack()
 			playState.TankHealth = health.Health;
 			eType = EntityType::TANK;
 		}
-		else if(mRegistry.any_of<Tag_Player>(victim))
+		else if (mRegistry.any_of<Tag_Player>(victim))
 		{
 			mOwner->UpdatePlayerHpInState(health.Health, hit.VictimID);
 			eType = EntityType::PLAYER;
@@ -185,15 +188,20 @@ void CombatSystem::checkEnemyAttack()
 
 		mRegistry.remove<IHitYouComponent>(entity);
 
-		if (mRegistry.any_of<Tag_Dog>(entity))
+		if (bDog)
 		{
 			DestroyEntity(mRegistry, entity);
 		}
 
 		if (health.Health <= 0)
 		{
-			doEntityDie(hit.VictimID, eType);
+			deads.emplace(hit.VictimID, eType);
 		}
+	}
+
+	for (auto& [deadID, eType] : deads)
+	{
+		doEntityDie(deadID, eType);
 	}
 }
 
@@ -201,7 +209,7 @@ void CombatSystem::checkEnemyAttack()
 void CombatSystem::checkWhiteCellAttack()
 {
 	auto view = mRegistry.view<Tag_WhiteCell, IHitYouComponent>();
-
+	set<pair<UINT32, EntityType>> deads;
 	for (auto [entity, hit] : view.each())
 	{
 		auto victim = GetEntityByID(mRegistry, hit.VictimID);
@@ -225,18 +233,22 @@ void CombatSystem::checkWhiteCellAttack()
 		{
 			EntityType eType = mRegistry.any_of<Tag_Virus>(victim) ?
 				EntityType::VIRUS : EntityType::DOG;
-			mOwner->SendDeleteEntityPacket(hit.VictimID, eType);
-			DestroyEntity(mRegistry, victim);
-		}
 
+			deads.emplace(hit.VictimID, eType);
+		}
 		mRegistry.remove<IHitYouComponent>(entity);
+	}
+
+	for (auto& [deadID, eType] : deads)
+	{
+		doEntityDie(deadID, eType);
 	}
 }
 
 
 void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 {
-	switch(eType)
+	switch (eType)
 	{
 	case EntityType::TANK:
 		mOwner->DoGameOver();
@@ -247,15 +259,27 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 		mOwner->SendDeleteEntityPacket(id, EntityType::RED_CELL);
 		DestroyEntityByID(mRegistry, id);
 	}
-		break;
+	break;
 
 	case EntityType::WHITE_CELL:
 	{
 		mOwner->SendDeleteEntityPacket(id, EntityType::WHITE_CELL);
 		DestroyEntityByID(mRegistry, id);
 	}
-		break;
+	break;
 
+	case EntityType::VIRUS:
+	{
+		mOwner->SendDeleteEntityPacket(id, EntityType::VIRUS);
+		DestroyEntityByID(mRegistry, id);
+	}
+	break;
+	case EntityType::DOG:
+	{
+		mOwner->SendDeleteEntityPacket(id, EntityType::DOG);
+		DestroyEntityByID(mRegistry, id);
+	}
+	break;
 	case EntityType::PLAYER:
 	{
 		auto player = GetEntityByID(mRegistry, id);
@@ -301,6 +325,6 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 			}
 		}
 	}
-		break;
+	break;
 	}
 }
