@@ -822,6 +822,12 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
+	for (auto& hp : mTankHps)
+	{
+		DestroyEntity(hp);
+	}
+	mTankHps.clear();
+
 	// 게임 오버 UI 팝업
 	Entity gameOverUI = Entity{ gRegistry.create() };
 	auto& text = gameOverUI.AddComponent<TextComponent>();
@@ -894,8 +900,20 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 {
 	NOTIFY_STATE_CHANGE_PACKET* nscPacket = reinterpret_cast<NOTIFY_STATE_CHANGE_PACKET*>(packet.DataPtr);
 
-	auto& text = mScoreText.GetComponent<TextComponent>();
-	text.Sentence = std::to_wstring(nscPacket->Score);
+	{
+		auto& text = mScoreText.GetComponent<TextComponent>();
+		text.Sentence = std::to_wstring(nscPacket->Score);
+	}
+
+	{
+		auto diff = static_cast<int>(mTankHps.size()) - nscPacket->TankHealth;
+
+		for (int i = 0; i < diff; ++i)
+		{
+			DestroyEntity(mTankHps.back());
+			mTankHps.pop_back();
+		}
+	}
 
 	updateHpUI(nscPacket->P0Health, 0);
 	updateHpUI(nscPacket->P1Health, 1);
@@ -1217,6 +1235,22 @@ void GameScene::createUI()
 		text.Sentence = L"0.0";
 		text.X = 10.0f;
 		text.Y = 55.0f;
+	}
+
+	{
+		auto tankPortrait = mOwner->CreateSpriteEntity(30, 30, TEXTURE("Tank_Portrait.png"));
+		auto& rect = tankPortrait.GetComponent<RectTransformComponent>();
+		rect.Position = { 160.0f, 10.0f };
+	}
+
+	{
+		for (int i = 0; i < 30; ++i)
+		{
+			auto tankHp = mOwner->CreateSpriteEntity(30, 30, TEXTURE("Heart.png"));
+			auto& rect = tankHp.GetComponent<RectTransformComponent>();
+			rect.Position = { 190.0f + 30 * i, 10.0f };
+			mTankHps.push_back(tankHp);
+		}
 	}
 
 	createHpbar();

@@ -79,6 +79,7 @@ private:
     Entity mCooldownText = {};
     float mCooldown = 0.0f;
     vector<vector<Entity>> mHps;
+    vector<Entity> mTankHps;
 
     bool mbIsGameOver = false;
 };
