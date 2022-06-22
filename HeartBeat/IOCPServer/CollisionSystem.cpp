@@ -99,8 +99,8 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		}
 	}
 
-	// 버프가 켜져 있으면 타일 공격력 5(지방 타일의 최대 체력)
-	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? 5 : 1;
+	// 버프가 켜져 있으면 (공격력 == 타일 최대 체력)
+	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? Values::TileMaxHealth : 1;
 
 	// 히트박스와 부술 수 있는 타일과의 충돌 체크
 	auto tiles = mRegistry.view<Tag_BreakableTile, BoxComponent>();
@@ -117,7 +117,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 				changeTileTypeInGraph(entity);
 
 				// 타일을 부수면 일정 확률로 아이템 생성(비타민, 카페인)
-				if (Random::RandInt(10, 10) > 5)
+				if (Random::RandInt(1, 10) <= Values::ItemDrop)
 				{
 					auto& transform = mRegistry.get<TransformComponent>(entity);
 					createItem(transform.Position);
@@ -138,7 +138,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 void CollisionSystem::DoWhirlwind(const INT8 clientID)
 {
 	// 휠윈드 유효범위
-	static float WHIRLWIND_RANGE_SQ = 600.0f * 600.0f;
+	static float WHIRLWIND_RANGE_SQ = 800.0f * 800.0f;
 
 	auto character = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(character), "Invalid entity!");

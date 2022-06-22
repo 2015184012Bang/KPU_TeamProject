@@ -155,18 +155,19 @@ entt::entity EnemySystem::createEnemy(const Vector3& position, EntityType eType,
 	{
 		mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Virus.box"), transform.Position, transform.Yaw);
 		mRegistry.emplace<Tag_Virus>(entity);
+		mRegistry.emplace<HealthComponent>(entity, Values::VirusHealth);
 	}
 	else if (eType == EntityType::DOG)
 	{
 		mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Dog.box"), transform.Position, transform.Yaw);
 		mRegistry.emplace<Tag_Dog>(entity);
+		mRegistry.emplace<HealthComponent>(entity, Values::DogHealth);
 	}
 	else
 	{
 		ASSERT(false, "Unknown enemy type!");
 	}
-
-	mRegistry.emplace<HealthComponent>(entity, Values::EnemyHealth);
+	
 	mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
 	mRegistry.emplace<Tag_Enemy>(entity);
 	mRegistry.emplace<PathFindComponent>(entity);

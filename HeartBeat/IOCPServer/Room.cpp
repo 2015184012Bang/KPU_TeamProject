@@ -10,9 +10,6 @@
 #include "RedCell.h"
 #include "WhiteCell.h"
 
-constexpr INT32 WHITE_CELL_HEALTH = 12;
-constexpr INT32 RED_CELL_HEALTH = 12;
-
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
 	mRoomIndex = index;
@@ -627,7 +624,7 @@ void Room::addTagToTile(entt::entity tile, TileType ttype)
 		mRegistry.emplace<Tag_Tile>(tile);
 		mRegistry.emplace<Tag_BlockingTile>(tile);
 		mRegistry.emplace<Tag_BreakableTile>(tile);
-		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, 3));
+		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, Values::TileMaxHealth));
 		mRegistry.emplace<IDComponent>(tile, GetEntityID());
 		break;
 

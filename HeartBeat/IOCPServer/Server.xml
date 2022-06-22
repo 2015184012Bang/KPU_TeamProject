@@ -6,16 +6,29 @@
   </Server>
   <Values>
     <TileSide>400</TileSide>
+    <TileMaxHealth>3</TileMaxHealth>
     <PlayerSpeed>600</PlayerSpeed>
-    <BACooldown>0.7</BACooldown>
-    <SkillCooldown>5</SkillCooldown>
-    <BARange>400</BARange>
-    <TankSpeed>400</TankSpeed>
-    <EnemySpeed>500</EnemySpeed>
-    <CellSpeed>500</CellSpeed>
-    <TankHealth>30</TankHealth>
-    <EnemyHealth>5</EnemyHealth>
     <PlayerHealth>10</PlayerHealth>
+    <PlayerLife>3</PlayerLife>
+    <BACooldown>0.7</BACooldown>
+    <BAPower>2</BAPower>
+    <BARange>400</BARange>
+    <Skill_Slash_CD>4</Skill_Slash_CD>
+    <Skill_Heal_CD>18</Skill_Heal_CD>
+    <Skill_Buff_CD>20</Skill_Buff_CD>
+    <Skill_Buff_DR>11</Skill_Buff_DR>
+    <TankSpeed>400</TankSpeed>
+    <TankHealth>30</TankHealth>
+    <CellSpeed>500</CellSpeed>
+    <CellPower>1</CellPower>
     <CellHealth>3</CellHealth>
+    <EnemySpeed>500</EnemySpeed>
+    <VirusHealth>6</VirusHealth>
+    <VirusPower>1</VirusPower>
+    <DogHealth>4</DogHealth>
+    <DogPower>3</DogPower>
+    <BossHealth>100</BossHealth>
+    <BossPower>4</BossPower>
+    <ItemDrop>3</ItemDrop>
   </Values>
 </Root>

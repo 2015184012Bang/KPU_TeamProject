@@ -6,9 +6,6 @@
 #include "Values.h"
 #include "Room.h"
 
-constexpr INT32 MAX_PLAYER_LIFE = 3;
-constexpr INT32 WHITE_CELL_ATTACK = 1;
-
 CombatSystem::CombatSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
@@ -34,31 +31,31 @@ void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
 	{
 	case UpgradePreset::ATTACK:
 		combat.Preset = UpgradePreset::ATTACK;
-		combat.BaseAttackDmg = 3;
-		combat.Armor = 1;
-		combat.Regeneration = 2;
+		combat.BaseAttackDmg = Values::BaseAttackPower + 1;
+		combat.SkillCooldown = Values::SkillSlashCooldown;
+		combat.SkillTracker = combat.SkillCooldown;
 		break;
 
 	case UpgradePreset::HEAL:
 		combat.Preset = UpgradePreset::HEAL;
-		combat.BaseAttackDmg = 1;
-		combat.Armor = 2;
-		combat.Regeneration = 3;
+		combat.BaseAttackDmg = Values::BaseAttackPower;
+		combat.SkillCooldown = Values::SkillHealCooldown;
+		combat.SkillTracker = combat.SkillCooldown;
 		break;
 
 	case UpgradePreset::SUPPORT:
 		combat.Preset = UpgradePreset::SUPPORT;
-		combat.BaseAttackDmg = 2;
-		combat.Armor = 3;
-		combat.Regeneration = 2;
+		combat.BaseAttackDmg = Values::BaseAttackPower;
+		combat.SkillCooldown = Values::SkillBuffCooldown;
+		combat.SkillTracker = combat.SkillCooldown;
 		break;
 	}
 
-	combat.Life = MAX_PLAYER_LIFE;
+	combat.Life = Values::PlayerLife;
 	combat.BaseAttackCooldown = Values::BaseAttackCooldown;
 	combat.BaseAttackTracker = combat.BaseAttackCooldown;
-	combat.SkillCooldown = Values::SkillCooldown;
-	combat.SkillTracker = combat.SkillCooldown;
+	combat.bEatCaffeine = false;
+	combat.BuffDuration = 0.0f;
 }
 
 bool CombatSystem::CanBaseAttack(const INT8 clientID)
@@ -115,7 +112,7 @@ void CombatSystem::DoBuff(const INT8 clientID)
 	auto player = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(player), "Invalid entity!");
 	auto& combat = mRegistry.get<CombatComponent>(player);
-	combat.BuffDuration = 5.0f;
+	combat.BuffDuration = Values::SkillBuffDuration;
 }
 
 void CombatSystem::Start()
@@ -155,10 +152,10 @@ void CombatSystem::checkEnemyAttack()
 		packet.PacketID = NOTIFY_ENEMY_ATTACK;
 		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 		
-		INT8 enemyAttack = 1;
+		INT8 enemyAttack = Values::VirusPower;
 		if (mRegistry.any_of<Tag_Dog>(entity))
 		{
-			enemyAttack = 3;
+			enemyAttack = Values::DogPower;
 		}
 
 		auto& health = mRegistry.get<HealthComponent>(victim);
@@ -222,7 +219,7 @@ void CombatSystem::checkWhiteCellAttack()
 		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 
 		auto& health = mRegistry.get<HealthComponent>(victim);
-		health.Health -= WHITE_CELL_ATTACK;
+		health.Health -= Values::CellPower;
 
 		if (health.Health <= 0)
 		{
