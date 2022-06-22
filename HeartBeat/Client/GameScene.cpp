@@ -27,7 +27,7 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
-	SoundManager::PlaySound("SteampipeSonata.mp3", 0.3f);
+	SoundManager::PlaySound("SteampipeSonata.mp3", 0.15f);
 
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
@@ -876,7 +876,7 @@ void GameScene::processNotifySkill(const PACKET& packet)
 
 	if (nsPacket->EntityID == mOwner->GetClientID())
 	{
-		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.8f);
+		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.3f);
 
 		mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
 
@@ -1038,7 +1038,7 @@ void GameScene::doGameOver()
 void GameScene::doBattleOccur()
 {
 	SoundManager::StopSound("SteampipeSonata.mp3");
-	SoundManager::PlaySound("Warning.mp3");
+	SoundManager::PlaySound("Warning.mp3", 0.3f);
 
 	auto redCells = gRegistry.view<Tag_RedCell>();
 	for (auto entity : redCells) 
@@ -1095,7 +1095,7 @@ void GameScene::doBattleOccur()
 		});
 
 	Timer::AddEvent(10.6f, []() {
-		SoundManager::PlaySound("BattleTheme.mp3", 0.5f);
+		SoundManager::PlaySound("BattleTheme.mp3", 0.1f);
 		DestroyByComponent<Tag_Dialogue>();
 		});
 }
@@ -1165,7 +1165,7 @@ void GameScene::doBattleEnd()
 	Timer::AddEvent(13.0f, []() {
 		DestroyByComponent<Tag_Dialogue>();
 		SoundManager::StopSound("BattleTheme.mp3");
-		SoundManager::PlaySound("SteampipeSonata.mp3");
+		SoundManager::PlaySound("SteampipeSonata.mp3", 0.15f);
 		});
 }
 
