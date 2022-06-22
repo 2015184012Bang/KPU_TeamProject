@@ -722,6 +722,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			TEXTURE("Cart.png"), SKELETON("Cart.skel"), ncePacket->EntityID, "../Assets/Boxes/Cart.box");
 		cart.GetComponent<TransformComponent>().Position = ncePacket->Position;
 		cart.AddComponent<MovementComponent>(Values::TankSpeed);
+		cart.AddComponent<NameComponent>("Cart");
 		auto& animator = cart.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Cart_Run.anim"));
 	}
@@ -1040,6 +1041,11 @@ void GameScene::doBattleOccur()
 	SoundManager::StopSound("SteampipeSonata.mp3");
 	SoundManager::PlaySound("Warning.mp3", 0.3f);
 
+	auto tank = GetEntityByName("Tank");
+	tank.GetComponent<MovementComponent>().MaxSpeed = 0.0f;
+	auto cart = GetEntityByName("Cart");
+	cart.GetComponent<MovementComponent>().MaxSpeed = 0.0f;
+
 	auto redCells = gRegistry.view<Tag_RedCell>();
 	for (auto entity : redCells) 
 	{
@@ -1163,6 +1169,10 @@ void GameScene::doBattleEnd()
 		});
 
 	Timer::AddEvent(13.0f, []() {
+		auto tank = GetEntityByName("Tank");
+		tank.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
+		auto cart = GetEntityByName("Cart");
+		cart.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
 		DestroyByComponent<Tag_Dialogue>();
 		SoundManager::StopSound("BattleTheme.mp3");
 		SoundManager::PlaySound("SteampipeSonata.mp3", 0.15f);
