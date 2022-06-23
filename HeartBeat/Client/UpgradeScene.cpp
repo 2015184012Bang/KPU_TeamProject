@@ -1,6 +1,7 @@
 #include "ClientPCH.h"
 #include "UpgradeScene.h"
 
+#include "Application.h"
 #include "Client.h"
 #include "Components.h"
 #include "Character.h"
@@ -27,6 +28,7 @@ void UpgradeScene::Enter()
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
 	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 750.0f, -750.0f });
+	mOwner->SetBackgroundColor(Colors::Black);
 
 	createUI();
 }
@@ -172,12 +174,16 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 
 void UpgradeScene::createUI()
 {
+	Vector2 startPos = Vector2{ Application::GetScreenWidth() / 2.0f - 150.0f, Application::GetScreenHeight() - 150.0f };
+
 	{
-		auto atkButton = mOwner->CreateSpriteEntity(200, 400, TEXTURE("Attack.png"));
+		auto atkButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Sword.png"));
 		auto& rect = atkButton.GetComponent<RectTransformComponent>();
-		rect.Position = { 100.0f, 60.0f };
+		rect.Position = startPos;
 
 		atkButton.AddComponent<ButtonComponent>([this]() {
+			SoundManager::StopSound("ButtonClick.mp3");
+			SoundManager::PlaySound("ButtonClick.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;
@@ -187,11 +193,13 @@ void UpgradeScene::createUI()
 	}
 
 	{
-		auto healButton = mOwner->CreateSpriteEntity(200, 400, TEXTURE("Heal.png"));
+		auto healButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Potion.png"));
 		auto& rect = healButton.GetComponent<RectTransformComponent>();
-		rect.Position = { 100.0f + 360.0f, 60.0f };
+		rect.Position = Vector2{ startPos.x + 100.0f, startPos.y };
 
 		healButton.AddComponent<ButtonComponent>([this]() {
+			SoundManager::StopSound("ButtonClick.mp3");
+			SoundManager::PlaySound("ButtonClick.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;
@@ -201,11 +209,13 @@ void UpgradeScene::createUI()
 	}
 
 	{
-		auto supButton = mOwner->CreateSpriteEntity(200, 400, TEXTURE("Support.png"));
+		auto supButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Arm.png"));
 		auto& rect = supButton.GetComponent<RectTransformComponent>();
-		rect.Position = { 100.0f + 360.0f * 2, 60.0f };
+		rect.Position = Vector2{ startPos.x + 200.0f, startPos.y };
 
 		supButton.AddComponent<ButtonComponent>([this]() {
+			SoundManager::StopSound("ButtonClick.mp3");
+			SoundManager::PlaySound("ButtonClick.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;

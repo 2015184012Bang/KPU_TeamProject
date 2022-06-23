@@ -111,4 +111,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/Skill3.mp3");
 	CreateSound("../Assets/Sounds/Warning.mp3");
 	CreateSound("../Assets/Sounds/BattleTheme.mp3");
+	CreateSound("../Assets/Sounds/ButtonClick.mp3");
 }

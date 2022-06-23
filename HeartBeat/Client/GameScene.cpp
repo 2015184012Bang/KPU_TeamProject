@@ -36,6 +36,8 @@ void GameScene::Enter()
 	// 시야 설정
 	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
 
+	mOwner->SetBackgroundColor(Colors::CornflowerBlue);
+
 	// 맵 생성
 	createMap("../Assets/Maps/Map.csv");
 
@@ -857,6 +859,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 		Application::GetScreenHeight() - 250.0f };
 
 	button.AddComponent<ButtonComponent>([this]() {
+		SoundManager::PlaySound("ButtonClick.mp3");
 		doGameOver();
 		});
 }

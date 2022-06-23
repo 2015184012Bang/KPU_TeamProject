@@ -14,6 +14,7 @@
 #include "Tags.h"
 #include "Define.h"
 #include "LobbyScene.h"
+#include "SoundManager.h"
 
 constexpr float WIDTH_BETWEEN_CHARACTERS = 700.0f;
 
@@ -131,6 +132,7 @@ void RoomScene::createButtons()
 
 	leave.AddComponent<ButtonComponent>([this]()
 		{
+			SoundManager::PlaySound("ButtonClick.mp3");
 			REQUEST_LEAVE_ROOM_PACKET packet = {};
 			packet.PacketID = REQUEST_LEAVE_ROOM;
 			packet.PacketSize = sizeof(packet);
@@ -148,6 +150,7 @@ void RoomScene::createButtons()
 		transform.Position.y = Application::GetScreenHeight() - 150.f;
 
 		gameStartButton.AddComponent<ButtonComponent>([this]() {
+			SoundManager::PlaySound("ButtonClick.mp3");
 			REQUEST_ENTER_UPGRADE_PACKET packet = {};
 			packet.PacketID = REQUEST_ENTER_UPGRADE;
 			packet.PacketSize = sizeof(packet);

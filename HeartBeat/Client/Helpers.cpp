@@ -130,7 +130,6 @@ void Helpers::PlayAnimation(AnimatorComponent* outAnimator, Animation* toAnim, f
 {
 	if (outAnimator->CurAnim == toAnim)
 	{
-		HB_LOG("Self transition is not allowed!");
 		return;
 	}
 

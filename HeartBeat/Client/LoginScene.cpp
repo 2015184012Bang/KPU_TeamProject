@@ -13,6 +13,7 @@
 #include "LobbyScene.h"
 #include "Tags.h"
 #include "Components.h"
+#include "SoundManager.h"
 
 LoginScene::LoginScene(Client* owner)
 	: Scene(owner)
@@ -44,6 +45,8 @@ void LoginScene::Enter()
 				{
 					return;
 				}
+
+				SoundManager::PlaySound("ButtonClick.mp3");
 
 				mOwner->SetClientName(gKeyInput);
 

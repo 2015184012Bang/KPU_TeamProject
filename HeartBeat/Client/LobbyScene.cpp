@@ -8,6 +8,7 @@
 #include "Components.h"
 #include "RoomScene.h"
 #include "Tags.h"
+#include "SoundManager.h"
 
 LobbyScene::LobbyScene(Client* owner)
 	: Scene(owner)
@@ -112,6 +113,7 @@ void LobbyScene::createRoomSprite(int index, bool canEnter /*= false*/)
 	{
 		sprite.AddComponent<ButtonComponent>([this, index]()
 			{
+				SoundManager::PlaySound("ButtonClick.mp3");
 				REQUEST_ENTER_ROOM_PACKET packet = {};
 				packet.PacketID = REQUEST_ENTER_ROOM;
 				packet.PacketSize = sizeof(packet);
