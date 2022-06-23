@@ -169,6 +169,15 @@ void Room::DoEnterUpgrade()
 	{
 		DoSetPreset(user, UpgradePreset::ATTACK);
 	}
+
+	Timer::AddEvent(5.0f, [this]() {
+		DoEnterGame();
+		NOTIFY_ENTER_GAME_PACKET packet = {};
+		packet.PacketSize = sizeof(packet);
+		packet.PacketID = NOTIFY_ENTER_GAME;
+		packet.Result = RESULT_CODE::SUCCESS;
+		Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+		});
 }
 
 void Room::DoEnterGame()
@@ -294,7 +303,7 @@ void Room::DoSkill(User* user)
 	case UpgradePreset::SUPPORT:
 		mCombatSystem->DoBuff(clientID);
 		break;
-		
+
 	default:
 		ASSERT(false, "Unknown upgrade preset!");
 	}
@@ -521,7 +530,7 @@ void Room::createTiles(string_view fileName)
 
 		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
 		// 탱크가 경로 인식이 가능하다.
-		if ((tile.TType == TileType::TANK_FAT) || 
+		if ((tile.TType == TileType::TANK_FAT) ||
 			(tile.TType == TileType::DOOR) ||
 			(tile.TType == TileType::SCAR_WALL))
 		{
@@ -746,7 +755,7 @@ Vector3 Room::getCellStartPosition(INT32 index)
 		cellStartPosition.x += 800.0f;
 		cellStartPosition.z += 400.0f;
 		return cellStartPosition;
-		
+
 	case 3:
 		cellStartPosition.z -= 400.0f;
 		return cellStartPosition;
