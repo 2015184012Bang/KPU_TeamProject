@@ -9,7 +9,6 @@ https://freesound.org/people/Daybreaker64/sounds/544887/
 - 세균
 https://www.youtube.com/watch?v=_Y5sHWZzu2s&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=25
 - 개
-(소형견이 짖는 소리로)
 https://www.youtube.com/watch?v=AbYv0gOmRcE&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=136
 3. 피격 소리 (지방)
 https://youtu.be/cU2UCzRqyOM?t=1442
@@ -29,7 +28,6 @@ https://www.mewpot.com/sound-effects/3347
 - 개
 https://www.youtube.com/watch?v=q2TLARNe9eo&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=191
 10. 경고음
-이런 사이렌 계열로(비슷한 계열: 어몽어스 산소부족 시 나오는 사운드)
 https://www.youtube.com/watch?v=Bdl99liD-L0 / 사용
 11. 팝업(등장) 소리 2종류 (적혈구가 나올때, 세균이 나올때)
 - 적혈구
@@ -73,3 +71,8 @@ https://freesound.org/people/ThefitzyG/sounds/414296/
 6. 대기화면 BGM
 
 7. 장비변경 화면 BGM
+
+8. 카운트 다운 (5초 또는 3초) -> 장비 변경에서 게임 시작으로 넘어갈때 알림용
+
+9. 탱크 피격 소리
+
