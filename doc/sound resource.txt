@@ -4,98 +4,72 @@
 
 
 1. 적혈구 죽는 소리
--> 메이플스토리 주황버섯 죽는 소리같은 귀여운 느낌 원함
-
-2. 피격 소리 (캐릭터, 세균, 개 등 살아있는 놈들)
-- 캐릭터
-- 세균
--> 너무 현실감 넘침, 귀여운 느낌나게, 꼭 사람 목소리 아니어도 죽는다는 거 표현만 되면 됨
-https://www.youtube.com/watch?v=_Y5sHWZzu2s&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=25
-
-
 https://freesound.org/people/Daybreaker64/sounds/544887/
-https://freesound.org/people/gprosser/sounds/412863/
-
+2. 피격 소리 (캐릭터, 세균, 개 등 살아있는 놈들)
+- 세균
+https://www.youtube.com/watch?v=_Y5sHWZzu2s&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=25
 - 개
 (소형견이 짖는 소리로)
 https://www.youtube.com/watch?v=AbYv0gOmRcE&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=136
-
 3. 피격 소리 (지방)
--> 마인크래프트 블럭 효과음으로 변경 요청
 https://youtu.be/cU2UCzRqyOM?t=1442
-
 4. 몬스터 죽는 소리(Enemy 죽을때 용)
-https://freesound.org/people/tonsil5/sounds/555412/
-
+https://www.youtube.com/watch?v=w6QmNIxDMLw&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=26
+/ 마인크래프트 좀비 죽는 소리로 변경함
 5. 타이머 소리
 https://freesound.org/people/MATRIXXX_/sounds/487726/
-
 6. 폭탄 or 발사 소리 (탱크 미사일 발사용)
--> 폭발하는 소리말고 폭탄을 발사하는 소리를 원함
 https://freesound.org/people/MATRIXXX_/sounds/515801/
-https://www.mewpot.com/sound-effects/1320
-https://www.mewpot.com/search/sound-effects?page=2&tags%5B%5D=%ED%8F%AD%ED%83%84
-
 7. 잠금 해제 소리
-https://www.mewpot.com/sound-effects/762 (잠금해제부터 문이 내려가는것까지 어떰?)
-https://www.mewpot.com/sound-effects/1334 (소리가 부족하면 초반부에 이런것 섞는것도)
-
 8. 커다란 물건이 내려가는 소리(Door 내려갈 때 용)
-https://freesound.org/people/newlocknew/sounds/564807/ -> 보류 (다른 거 좋은거 있으면 그거로 활용)
-
-
+https://www.youtube.com/watch?v=LwiOCsfa_ZA / 기어 사운드 구함
 9. 폭발 소리 2종류 (탱크 터질 때, Dog 터질 때)
 - 탱크
-
+https://www.mewpot.com/sound-effects/3347
 - 개
--> 너무 현실감 넘침 (변경 예시: https://www.mewpot.com/sound-effects/3347)
--> 마인크래프트 폭발음 몇개 찾아서 링크 올려주면 따봄(유튜브: 브금저장소)
 https://www.youtube.com/watch?v=q2TLARNe9eo&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=191
+10. 경고음
+이런 사이렌 계열로(비슷한 계열: 어몽어스 산소부족 시 나오는 사운드)
+https://www.youtube.com/watch?v=Bdl99liD-L0 / 사용
+11. 팝업(등장) 소리 2종류 (적혈구가 나올때, 세균이 나올때)
+- 적혈구
+https://freesound.org/people/SophronsineSoundDesign/sounds/260844/
+- 세균
+https://freesound.org/people/bolkmar/sounds/539178/
+12. 게임 클리어 소리
+https://freesound.org/people/Mrthenoronha/sounds/518305/
+13. 클리어 실패 소리
+https://youtu.be/br3OzOrARh4
+14. 아이템 획득 소리 통일
+https://www.mewpot.com/sound-effects/3565
+15. 장비 변경 소리
+https://freesound.org/people/jcallison/sounds/258269/
+16. 특수전투 BGN
+https://freesound.org/people/zagi2/sounds/347737/
 
-10. 괴수 소리 (보스 몬스터)
+
+
+------------------------------------------
+
+다시 구해야 할 것
+
+1. 괴수 소리 (보스 몬스터) - 저그 목소리 중에 어울릴 만한거로 다시 찾아보기
 - 괴수 등장
 https://freesound.org/people/XavTech/sounds/238548/
 - 괴수 죽음
 https://freesound.org/people/ThefitzyG/sounds/414296/
 
-11. 경고음
-이런 사이렌 계열로(비슷한 계열: 어몽어스 산소부족 시 나오는 사운드)
-https://www.youtube.com/watch?v=aeRDVOUy7dY
-https://www.youtube.com/watch?v=258-mx42B1M
+2. 플레이어 캐릭터 피격 소리
 
+3. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
 
-12. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
-https://freesound.org/people/bolkmar/sounds/539178/ -> 보류 (다른 거 좋은거 있으면 그거로 활용)
+4. 스킬 소리
+4-1 공격
+4-2 강화
+4-3 회복
 
-13. 팝업(등장) 소리 2종류 (적혈구가 나올때, 세균이 나올때)
-- 적혈구
-https://freesound.org/people/SophronsineSoundDesign/sounds/260844/
-- 세균
--> 위와 비슷한 느낌으로
-https://freesound.org/people/beskhu/sounds/273870/
-https://freesound.org/people/kijjaz/sounds/16747/
+5. 보스전투 BGM
 
-14. 게임 클리어 소리
--> 아케이드 계열 게임 소리가 좋을 것으로 예상
-https://freesound.org/people/Mrthenoronha/sounds/518305/
-https://youtu.be/yuCQ-5o7VOQ?t=87
+6. 대기화면 BGM
 
-15. 클리어 실패 소리
--> 위와 동일(예시: https://www.mewpot.com/sound-effects/3568)
-https://freesound.org/people/cabled_mess/sounds/371451/
-
-16. 아이템 획득 소리 2종류 (비타민, 카페인)
--> 하이톤으로 변경(너무 안들림) (예시: https://www.mewpot.com/sound-effects/3565)
-https://www.youtube.com/watch?v=iOXDhy5lmKU&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=180
-
-https://freesound.org/people/MATRIXXX_/sounds/458258/
-https://freesound.org/people/MATRIXXX_/sounds/458641/
-
-17. 장비 변경 소리 (게임 시작 장비 변경될 때 용)
-https://freesound.org/people/jcallison/sounds/258269/
-
-18. 긴박한 브금 2종류 (중간전투, 보스전 용)
-https://freesound.org/people/Loyalty_Freak_Music/sounds/407476/ -> 보류 (다른 거 좋은거 있으면 그거로 활용)
-
-https://freesound.org/people/BloodPixelHero/sounds/586918/
-https://freesound.org/people/zagi2/sounds/347737/
+7. 장비변경 화면 BGM
