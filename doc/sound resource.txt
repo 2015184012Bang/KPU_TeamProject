@@ -6,6 +6,7 @@
 1. 적혈구 죽는 소리
 https://freesound.org/people/Daybreaker64/sounds/544887/
 2. 피격 소리 (캐릭터, 세균, 개 등 살아있는 놈들)
+- 플레이어 캐릭터
 - 세균
 https://www.youtube.com/watch?v=_Y5sHWZzu2s&list=PLDu6Rx1MyPyZ4nzGjmWE6wOLVp5Ehapsz&index=25
 - 개
@@ -57,7 +58,7 @@ https://freesound.org/people/XavTech/sounds/238548/
 - 괴수 죽음
 https://freesound.org/people/ThefitzyG/sounds/414296/
 
-2. 플레이어 캐릭터 피격 소리
+2. 탱크 피격 소리
 
 3. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
 
@@ -73,6 +74,4 @@ https://freesound.org/people/ThefitzyG/sounds/414296/
 7. 장비변경 화면 BGM
 
 8. 카운트 다운 (5초 또는 3초) -> 장비 변경에서 게임 시작으로 넘어갈때 알림용
-
-9. 탱크 피격 소리
 
