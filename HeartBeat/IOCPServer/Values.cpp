@@ -92,7 +92,7 @@ void Values::Init()
 
 	// 버프 스킬 지속시간
 	elem = root->FirstChildElement("Values")->FirstChildElement("Skill_Buff_DR");
-	Values::SkillBuffCooldown = stof(elem->GetText());
+	Values::SkillBuffDuration = stof(elem->GetText());
 
 	// 탱크 이동속도
 	elem = root->FirstChildElement("Values")->FirstChildElement("TankSpeed");
