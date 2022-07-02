@@ -114,4 +114,9 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/ButtonClick.mp3");
 	CreateSound("../Assets/Sounds/GameOver.mp3", true);
 	CreateSound("../Assets/Sounds/MissileShot.mp3");
+	CreateSound("../Assets/Sounds/VirusDead.mp3");
+	CreateSound("../Assets/Sounds/DogDead.mp3");
+	CreateSound("../Assets/Sounds/DogBomb.mp3");
+	CreateSound("../Assets/Sounds/CellDead.mp3");
+	CreateSound("../Assets/Sounds/ChangePreset.mp3");
 }

@@ -562,6 +562,8 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	// 서버에서도 이 엔티티는 삭제됐음.
 	if (hitter.HasComponent<Tag_Dog>())
 	{
+		SoundManager::PlaySound("DogBomb.mp3");
+
 		mOwner->DestroyEntityAfter(neaPacket->HitterID, 1.1f);
 
 		Entity bomb = mOwner->CreateSkeletalMeshEntity(MESH("Bomb.mesh"),
@@ -603,6 +605,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::DOG:
 	{
+		SoundManager::PlaySound("DogDead.mp3");
 		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Dog_Dead.anim"));
 		auto& movement = target.GetComponent<MovementComponent>();
@@ -613,6 +616,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::VIRUS:
 	{
+		SoundManager::PlaySound("VirusDead.mp3");
 		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Virus_Dead.anim"));
 		auto& movement = target.GetComponent<MovementComponent>();
@@ -623,6 +627,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::RED_CELL:
 	{
+		SoundManager::PlaySound("CellDead.mp3");
 		auto& animator = target.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Cell_Dead.anim"));
 		auto& movement = target.GetComponent<MovementComponent>();

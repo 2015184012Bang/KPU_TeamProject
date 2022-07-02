@@ -182,8 +182,8 @@ void UpgradeScene::createUI()
 		rect.Position = startPos;
 
 		atkButton.AddComponent<ButtonComponent>([this]() {
-			SoundManager::StopSound("ButtonClick.mp3");
-			SoundManager::PlaySound("ButtonClick.mp3");
+			SoundManager::StopSound("ChangePreset.mp3");
+			SoundManager::PlaySound("ChangePreset.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;
@@ -198,8 +198,8 @@ void UpgradeScene::createUI()
 		rect.Position = Vector2{ startPos.x + 100.0f, startPos.y };
 
 		healButton.AddComponent<ButtonComponent>([this]() {
-			SoundManager::StopSound("ButtonClick.mp3");
-			SoundManager::PlaySound("ButtonClick.mp3");
+			SoundManager::StopSound("ChangePreset.mp3");
+			SoundManager::PlaySound("ChangePreset.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;
@@ -214,8 +214,8 @@ void UpgradeScene::createUI()
 		rect.Position = Vector2{ startPos.x + 200.0f, startPos.y };
 
 		supButton.AddComponent<ButtonComponent>([this]() {
-			SoundManager::StopSound("ButtonClick.mp3");
-			SoundManager::PlaySound("ButtonClick.mp3");
+			SoundManager::StopSound("ChangePreset.mp3");
+			SoundManager::PlaySound("ChangePreset.mp3");
 			REQUEST_UPGRADE_PACKET packet = {};
 			packet.PacketSize = sizeof(packet);
 			packet.PacketID = REQUEST_UPGRADE;
