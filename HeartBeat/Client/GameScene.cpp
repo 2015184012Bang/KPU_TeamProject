@@ -690,6 +690,7 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 
 	case EntityType::VITAMIN:
 	{
+		SoundManager::PlaySound("GetVitamin.mp3");
 		DestroyEntityByID(ndePacket->EntityID);
 	}
 	break;

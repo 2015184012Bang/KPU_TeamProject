@@ -120,4 +120,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/CellDead.mp3");
 	CreateSound("../Assets/Sounds/ChangePreset.mp3");
 	CreateSound("../Assets/Sounds/DoorOpen.mp3");
+	CreateSound("../Assets/Sounds/GetVitamin.mp3");
 }
