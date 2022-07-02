@@ -172,11 +172,6 @@ void Room::DoEnterUpgrade()
 
 	Timer::AddEvent(5.0f, [this]() {
 		DoEnterGame();
-		NOTIFY_ENTER_GAME_PACKET packet = {};
-		packet.PacketSize = sizeof(packet);
-		packet.PacketID = NOTIFY_ENTER_GAME;
-		packet.Result = RESULT_CODE::SUCCESS;
-		Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 		});
 }
 
