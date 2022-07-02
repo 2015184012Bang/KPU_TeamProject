@@ -1016,6 +1016,18 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 	}
 	break;
 
+	case EventType::BOSS_BATTLE:
+	{
+		doBossBattleOccur();
+	}
+	break;
+
+	case EventType::BOSS_BATTLE_END:
+	{
+		doBossBattleEnd();
+	}
+	break;
+
 	default:
 		HB_ASSERT(false, "Invalid event type!");
 		break;
@@ -1050,7 +1062,7 @@ void GameScene::doBattleOccur()
 	cart.GetComponent<MovementComponent>().MaxSpeed = 0.0f;
 
 	auto redCells = gRegistry.view<Tag_RedCell>();
-	for (auto entity : redCells) 
+	for (auto entity : redCells)
 	{
 		DestroyEntity(entity);
 	}
@@ -1217,6 +1229,36 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 			mHps[clientID].push_back(hp);
 		}
 	}
+}
+
+void GameScene::doBossBattleEnd()
+{
+
+}
+
+void GameScene::doBossBattleOccur()
+{
+	SoundManager::StopSound("SteampipeSonata.mp3");
+	SoundManager::PlaySound("Warning.mp3", 0.3f);
+
+	auto tank = GetEntityByName("Tank");
+	tank.GetComponent<MovementComponent>().MaxSpeed = 0.0f;
+	auto cart = GetEntityByName("Cart");
+	cart.GetComponent<MovementComponent>().MaxSpeed = 0.0f;
+
+	auto redCells = gRegistry.view<Tag_RedCell>();
+	for (auto entity : redCells)
+	{
+		DestroyEntity(entity);
+	}
+
+	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
+	auto& rect = ui.GetComponent<RectTransformComponent>();
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
+
+	Timer::AddEvent(3.0f, [this, ui]() {
+		DestroyEntity(ui);
+		});
 }
 
 void GameScene::createUI()

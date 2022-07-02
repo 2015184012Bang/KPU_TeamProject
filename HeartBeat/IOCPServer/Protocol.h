@@ -121,6 +121,8 @@ enum class EventType : UINT8
 	PLAYER_DEAD,
 	BATTLE,
 	BATTLE_END,
+	BOSS_BATTLE,
+	BOSS_BATTLE_END,
 };
 
 /************************************************************************/

@@ -25,6 +25,7 @@ void MovementSystem::Update()
 
 	checkMidPoint();
 	checkBattleTrigger();
+	checkBossTrigger();
 
 	SendNotifyMovePackets();
 }
@@ -110,6 +111,7 @@ void MovementSystem::SendNotifyMovePackets()
 void MovementSystem::Start()
 {
 	mbBattleProgressed = false;
+	mbBossProgressed = false;
 	mNumRedCells = -1;
 
 	// START_POINT 타일 가져오기
@@ -390,5 +392,49 @@ void MovementSystem::checkBattleTrigger()
 				mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 			}
 			});
+	}
+}
+
+void MovementSystem::checkBossTrigger()
+{
+	if (mbBossProgressed)
+	{
+		return;
+	}
+
+	auto tank = GetEntityByName(mRegistry, "Tank");
+	if (!mRegistry.valid(tank))
+	{
+		return;
+	}
+
+	auto trigger = GetEntityByName(mRegistry, "BossTrigger");
+	if (!mRegistry.valid(trigger))
+	{
+		return;
+	}
+
+	const auto& tankPos = mRegistry.get<TransformComponent>(tank).Position;
+	auto triggerPos = mRegistry.get<TransformComponent>(trigger).Position;
+	triggerPos.y = 0.0f;
+
+	float distSq = Vector3::DistanceSquared(tankPos, triggerPos);
+
+	if (distSq < 100.0f)
+	{
+		mbBossProgressed = true;
+
+		mRegistry.emplace<Tag_Stop>(tank);
+		auto cart = GetEntityByName(mRegistry, "Cart");
+		mRegistry.emplace<Tag_Stop>(cart);
+
+		auto redCells = mRegistry.view<Tag_RedCell>();
+		mNumRedCells = static_cast<INT32>(redCells.size());
+		for (auto entity : redCells)
+		{
+			DestroyEntity(mRegistry, entity);
+		}
+
+		mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE);
 	}
 }

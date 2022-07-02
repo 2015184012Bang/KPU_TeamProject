@@ -58,6 +58,8 @@ private:
     void doGameOver();
     void doBattleOccur();
     void doBattleEnd();
+    void doBossBattleOccur();
+    void doBossBattleEnd();
 
     void updateHpUI(const INT8 hp, int clientID);
 

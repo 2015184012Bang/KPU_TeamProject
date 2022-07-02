@@ -18,6 +18,7 @@ public:
 private:
 	void checkMidPoint();
 	void checkBattleTrigger();
+	void checkBossTrigger();
 
 	entt::entity getClosestDoor(const Vector3& midPointPos);
 
@@ -26,6 +27,7 @@ private:
 	shared_ptr<Room> mOwner = nullptr;
 
 	bool mbBattleProgressed = false;
+	bool mbBossProgressed = false;
 
 	INT32 mNumRedCells = -1;
 };
