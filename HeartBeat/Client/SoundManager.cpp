@@ -119,4 +119,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/DogBomb.mp3");
 	CreateSound("../Assets/Sounds/CellDead.mp3");
 	CreateSound("../Assets/Sounds/ChangePreset.mp3");
+	CreateSound("../Assets/Sounds/DoorOpen.mp3");
 }

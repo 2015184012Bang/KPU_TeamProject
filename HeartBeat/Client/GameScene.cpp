@@ -963,6 +963,7 @@ void GameScene::processNotifyEventOccur(const PACKET& packet)
 		auto door = GetCloestDoor();
 		auto& animator = door.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Door_Open.anim"));
+		SoundManager::PlaySound("DoorOpen.mp3");
 
 		Timer::AddEvent(3.0f, [door]() {
 			if (gRegistry.valid(door))
