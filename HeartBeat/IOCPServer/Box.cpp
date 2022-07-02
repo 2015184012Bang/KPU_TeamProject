@@ -20,6 +20,7 @@ void Box::Update(const Vector3& position, float yaw)
 
 void Box::Init()
 {
+	GetBox("../Assets/Boxes/Boss.box");
 	GetBox("../Assets/Boxes/Cart.box");
 	GetBox("../Assets/Boxes/Cell.box");
 	GetBox("../Assets/Boxes/Cube.box");

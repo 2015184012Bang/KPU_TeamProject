@@ -89,12 +89,11 @@ private:
 	void createSystems();
 
 	void createTiles(string_view fileName);
+	void createTile(const Tile& tile);
 	void createTankAndCart();
 	void createCells();
 	
 	void createGameState();
-
-	void addTagToTile(entt::entity tile, TileType ttype);
 
 	void clearAllUser();
 	void clearGame();

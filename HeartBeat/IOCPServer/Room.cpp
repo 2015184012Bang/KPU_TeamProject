@@ -492,49 +492,121 @@ void Room::createTiles(string_view fileName)
 
 	for (const auto& tile : gameMap.Tiles)
 	{
-		auto obj = mRegistry.create();
-		addTagToTile(obj, tile.TType);
+		createTile(tile);
+	}
+}
 
-		auto& transform = mRegistry.emplace<TransformComponent>(obj);
-		transform.Position = Vector3{ tile.X, GetTileYPos(tile.TType), tile.Z };
+void Room::createTile(const Tile& tile)
+{
+	auto ent = mRegistry.create();
 
-		// 충돌 처리가 필요한 타일의 경우에만 BoxComponent를 부착
-		if (tile.TType == TileType::BLOCKED ||
-			tile.TType == TileType::FAT ||
-			tile.TType == TileType::TANK_FAT)
-		{
-			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Cube.box"), transform.Position, transform.Yaw);
-		}
-		else if (tile.TType == TileType::HOUSE)
-		{
-			// 산소 공급소의 경우, 디폴트 방향이 +z축을 향하고 있다.
-			// 클라에서 180도 돌리므로 서버에서도 돌려준다.
-			transform.Yaw = 180.0f;
-			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/House.box"), transform.Position, transform.Yaw);
-		}
-		else if (tile.TType == TileType::DOOR)
-		{
-			transform.Yaw = 270.0f;
-			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Door.box"), transform.Position, transform.Yaw);
-		}
-		else if (tile.TType == TileType::SCAR_WALL)
-		{
-			transform.Yaw = 270.0f;
-			mRegistry.emplace<BoxComponent>(obj, &Box::GetBox("../Assets/Boxes/Wall.box"), transform.Position, transform.Yaw);
-		}
+	auto& transform = mRegistry.emplace<TransformComponent>(ent);
+	transform.Position = Vector3{ tile.X, GetTileYPos(tile.TType), tile.Z };
 
-		// TANK_FAT 타일의 경우에는 아래 쪽에 RAIL_TILE을 깔아야 
-		// 탱크가 경로 인식이 가능하다.
-		if ((tile.TType == TileType::TANK_FAT) ||
-			(tile.TType == TileType::DOOR) ||
-			(tile.TType == TileType::SCAR_WALL))
-		{
-			auto rail = mRegistry.create();
-			addTagToTile(rail, TileType::RAIL);
+	switch (tile.TType)
+	{
+	case TileType::BLOCKED:
+		mRegistry.emplace<Tag_BlockingTile>(ent);
+		mRegistry.emplace<BoxComponent>(ent, &Box::GetBox("../Assets/Boxes/Cube.box"), 
+			transform.Position, transform.Yaw);
+		break;
 
-			auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
-			railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
-		}
+	case TileType::TANK_FAT:
+	{
+		auto rail = mRegistry.create();
+		mRegistry.emplace<Tag_RailTile>(rail);
+		auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
+		railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		[[fallthrough]];
+	}
+	case TileType::FAT:
+		mRegistry.emplace<Tag_BlockingTile>(ent);
+		mRegistry.emplace<Tag_BreakableTile>(ent);
+		mRegistry.emplace<HealthComponent>(ent, Random::RandInt(1, Values::TileMaxHealth));
+		mRegistry.emplace<IDComponent>(ent, GetEntityID());
+		mRegistry.emplace<BoxComponent>(ent, &Box::GetBox("../Assets/Boxes/Cube.box"),
+			transform.Position, transform.Yaw);
+		break;
+
+	case TileType::RAIL:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		break;
+
+	case TileType::START_POINT:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		mRegistry.emplace<NameComponent>(ent, "StartPoint");
+		break;
+
+	case TileType::END_POINT:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		mRegistry.emplace<NameComponent>(ent, "EndPoint");
+		break;
+
+	case TileType::HOUSE:
+		mRegistry.emplace<Tag_HouseTile>(ent);
+		transform.Yaw = 180.0f;
+		mRegistry.emplace<BoxComponent>(ent, &Box::GetBox("../Assets/Boxes/House.box"), 
+			transform.Position, transform.Yaw);
+		break;
+
+	case TileType::MID_POINT:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		mRegistry.emplace<Tag_MidPoint>(ent);
+		break;
+
+	case TileType::DOOR:
+	{
+		mRegistry.emplace<Tag_BlockingTile>(ent);
+		mRegistry.emplace<Tag_Door>(ent);
+		transform.Yaw = 270.0f;
+		mRegistry.emplace<BoxComponent>(ent, &Box::GetBox("../Assets/Boxes/Door.box"),
+			transform.Position, transform.Yaw);
+
+		auto rail = mRegistry.create();
+		mRegistry.emplace<Tag_RailTile>(rail);
+		auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
+		railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		break;
+	}
+
+	case TileType::SCAR_WALL:
+	{
+		mRegistry.emplace<Tag_BlockingTile>(ent);
+		mRegistry.emplace<NameComponent>(ent, "Wall");
+		transform.Yaw = 270.0f;
+		mRegistry.emplace<BoxComponent>(ent, &Box::GetBox("../Assets/Boxes/Wall.box"),
+			transform.Position, transform.Yaw);
+
+		auto rail = mRegistry.create();
+		mRegistry.emplace<Tag_RailTile>(rail);
+		auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
+		railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		break;
+	}
+
+	case TileType::BATTLE_TRIGGER:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		mRegistry.emplace<NameComponent>(ent, "BattleTrigger");
+		break;
+
+	case TileType::BOSS_TRIGGER:
+		mRegistry.emplace<Tag_RailTile>(ent);
+		mRegistry.emplace<NameComponent>(ent, "BossTrigger");
+		break;
+
+	case TileType::SCAR_BOSS:
+	{
+		// Create Boss
+
+		auto rail = mRegistry.create();
+		mRegistry.emplace<Tag_RailTile>(rail);
+		auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
+		railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
+		break;
+	}
+
+	default:
+		break;
 	}
 }
 
@@ -612,91 +684,6 @@ void Room::createGameState()
 	state.P1HP = Values::PlayerHealth;
 	state.P2HP = Values::PlayerHealth;
 	state.TankHealth = Values::TankHealth;
-}
-
-void Room::addTagToTile(entt::entity tile, TileType ttype)
-{
-	switch (ttype)
-	{
-	case TileType::BLOCKED:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_BlockingTile>(tile);
-		break;
-
-	case TileType::FAT:
-	case TileType::TANK_FAT:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_BlockingTile>(tile);
-		mRegistry.emplace<Tag_BreakableTile>(tile);
-		mRegistry.emplace<HealthComponent>(tile, Random::RandInt(1, Values::TileMaxHealth));
-		mRegistry.emplace<IDComponent>(tile, GetEntityID());
-		break;
-
-	case TileType::MOVABLE:
-	case TileType::SCAR:
-	case TileType::SCAR_DOG:
-		mRegistry.emplace<Tag_Tile>(tile);
-		break;
-
-	case TileType::BATTLE_TRIGGER:
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "BattleTrigger");
-		break;
-
-	case TileType::RAIL:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_RailTile>(tile);
-		break;
-
-	case TileType::START_POINT:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "StartPoint");
-		break;
-
-	case TileType::END_POINT:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "EndPoint");
-		break;
-
-	case TileType::HOUSE:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_HouseTile>(tile);
-		break;
-
-	case TileType::MID_POINT:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<Tag_MidPoint>(tile);
-		break;
-
-	case TileType::DOOR:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_BlockingTile>(tile);
-		mRegistry.emplace<Tag_Door>(tile);
-		break;
-
-	case TileType::SCAR_WALL:
-		mRegistry.emplace<Tag_Tile>(tile);
-		mRegistry.emplace<Tag_BlockingTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "Wall");
-		break;
-
-	case TileType::BOSS_TRIGGER:
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "BossTrigger");
-		break;
-
-	case TileType::SCAR_BOSS:
-		mRegistry.emplace<Tag_RailTile>(tile);
-		mRegistry.emplace<NameComponent>(tile, "ScarBoss");
-		break;
-
-	default:
-		ASSERT(false, "Unknown tile type!");
-		break;
-	}
 }
 
 void Room::clearAllUser()
