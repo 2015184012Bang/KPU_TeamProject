@@ -101,11 +101,11 @@ void SoundManager::StopSound(string_view sound)
 
 void SoundManager::loadAllSounds()
 {
-	CreateSound("../Assets/Sounds/ClockTick.mp3", true);
+	CreateSound("../Assets/Sounds/ClockTick.mp3");
 	CreateSound("../Assets/Sounds/Countdown.mp3");
 	CreateSound("../Assets/Sounds/Punch.mp3");
 	CreateSound("../Assets/Sounds/NormalTheme.mp3", true);
-	CreateSound("../Assets/Sounds/Ouch.mp3");
+	CreateSound("../Assets/Sounds/PlayerAttacked.mp3");
 	CreateSound("../Assets/Sounds/Skill1.mp3");
 	CreateSound("../Assets/Sounds/Skill2.mp3");
 	CreateSound("../Assets/Sounds/Skill3.mp3");
@@ -113,4 +113,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/BattleTheme.mp3");
 	CreateSound("../Assets/Sounds/ButtonClick.mp3");
 	CreateSound("../Assets/Sounds/GameOver.mp3", true);
+	CreateSound("../Assets/Sounds/MissileShot.mp3");
 }

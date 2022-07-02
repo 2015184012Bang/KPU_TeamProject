@@ -22,7 +22,7 @@ UpgradeScene::UpgradeScene(Client* owner)
 
 void UpgradeScene::Enter()
 {
-	SoundManager::PlaySound("ClockTick.mp3", 0.2f);
+	SoundManager::PlaySound("ClockTick.mp3");
 
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");

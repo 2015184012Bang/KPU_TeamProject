@@ -554,7 +554,7 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 		const auto& playerID = mPlayerCharacter.GetComponent<IDComponent>().ID;
 		if (neaPacket->VictimID == playerID)
 		{
-			SoundManager::PlaySound("Ouch.mp3", 0.3f);
+			SoundManager::PlaySound("PlayerAttacked.mp3");
 		}
 	}
 
@@ -1164,6 +1164,8 @@ void GameScene::doBattleEnd()
 		transform.Position = tankPos + Vector3{ 0.0f, 512.0f, 0.0f };
 		auto& movement = missile.AddComponent<MovementComponent>(3200.0f);
 		movement.Direction = Vector3{ 1.0f, 0.0f, 0.0f };
+
+		SoundManager::PlaySound("MissileShot.mp3");
 		});
 
 	Timer::AddEvent(6.0f, [this]() {
