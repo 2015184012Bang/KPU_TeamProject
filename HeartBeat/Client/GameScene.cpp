@@ -27,7 +27,7 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
-	SoundManager::PlaySound("SteampipeSonata.mp3", 0.15f);
+	SoundManager::PlaySound("NormalTheme.mp3", 0.15f);
 
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
@@ -48,7 +48,7 @@ void GameScene::Exit()
 {
 	Timer::Clear();
 
-	SoundManager::StopSound("SteampipeSonata.mp3");
+	SoundManager::StopSound("NormalTheme.mp3");
 	SoundManager::StopSound("BattleTheme.mp3");
 
 	DestroyExclude<Tag_DontDestroyOnLoad>();
@@ -823,6 +823,10 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 void GameScene::processNotifyGameOver(const PACKET& packet)
 {
+	SoundManager::StopSound("NormalTheme.mp3");
+	SoundManager::StopSound("BattleTheme.mp3");
+	SoundManager::PlaySound("GameOver.mp3");
+
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
 	for (auto& hp : mTankHps)
@@ -860,6 +864,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 
 	button.AddComponent<ButtonComponent>([this]() {
 		SoundManager::PlaySound("ButtonClick.mp3");
+		SoundManager::StopSound("GameOver.mp3");
 		doGameOver();
 		});
 }
@@ -1053,7 +1058,7 @@ void GameScene::doGameOver()
 
 void GameScene::doBattleOccur()
 {
-	SoundManager::StopSound("SteampipeSonata.mp3");
+	SoundManager::StopSound("NormalTheme.mp3");
 	SoundManager::PlaySound("Warning.mp3", 0.3f);
 
 	auto tank = GetEntityByName("Tank");
@@ -1190,7 +1195,7 @@ void GameScene::doBattleEnd()
 		cart.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
 		DestroyByComponent<Tag_Dialogue>();
 		SoundManager::StopSound("BattleTheme.mp3");
-		SoundManager::PlaySound("SteampipeSonata.mp3", 0.15f);
+		SoundManager::PlaySound("NormalTheme.mp3", 0.15f);
 		});
 }
 
@@ -1238,7 +1243,7 @@ void GameScene::doBossBattleEnd()
 
 void GameScene::doBossBattleOccur()
 {
-	SoundManager::StopSound("SteampipeSonata.mp3");
+	SoundManager::StopSound("NormalTheme.mp3");
 	SoundManager::PlaySound("Warning.mp3", 0.3f);
 
 	auto tank = GetEntityByName("Tank");
