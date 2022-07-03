@@ -1320,7 +1320,22 @@ void GameScene::doBossBattleOccur()
 		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 3500.0f, -1300.0f });
 		auto bossWall = GetEntityByName("BossWall");
 		DestroyEntity(bossWall);
+		createDialogue(TEXTURE("Dialogue7.png"), 110);
 		});
+
+	Timer::AddEvent(10.0f, [this]() {
+		createDialogue(TEXTURE("Dialogue8.png"), 120);
+		});
+
+	Timer::AddEvent(12.0f, [this]() {
+		createDialogue(TEXTURE("Dialogue9.png"), 130);
+		});
+
+	Timer::AddEvent(14.0f, [this]() {
+		clearDialogue();
+		});
+
+	// TODO : 보스 배틀 배경음악 재생
 }
 
 void GameScene::createUI()
