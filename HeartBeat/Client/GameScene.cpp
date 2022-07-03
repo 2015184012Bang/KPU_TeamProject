@@ -851,6 +851,20 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::BOSS:
+	{
+		Entity boss = mOwner->CreateSkeletalMeshEntity(MESH("Boss.mesh"),
+			TEXTURE("Temp.png"), SKELETON("Boss.skel"), ncePacket->EntityID);
+		boss.AddComponent<NameComponent>("Boss");
+		auto& transform = boss.GetComponent<TransformComponent>();
+		transform.Position = ncePacket->Position;
+		transform.Rotation.y = 270.0f;
+
+		auto& animator = boss.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Boss_Idle.anim"));
+	}
+	break;
+
 	default:
 		break;
 	}
@@ -1313,6 +1327,10 @@ void GameScene::doBossBattleOccur()
 
 		auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
+
+		auto boss = GetEntityByName("Boss");
+		auto& bossAnimator = boss.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&bossAnimator, ANIM("Boss_Start.anim"));
 		});
 
 	Timer::AddEvent(8.0f, [this]() {

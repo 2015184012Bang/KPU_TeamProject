@@ -596,10 +596,9 @@ void Room::createTile(const Tile& tile)
 
 	case TileType::SCAR_BOSS:
 	{
-		// Create Boss
-
 		auto rail = mRegistry.create();
 		mRegistry.emplace<Tag_RailTile>(rail);
+		mRegistry.emplace<NameComponent>(rail, "BossSpawnPoint");
 		auto& railTransform = mRegistry.emplace<TransformComponent>(rail);
 		railTransform.Position = { tile.X, GetTileYPos(TileType::RAIL), tile.Z };
 		break;

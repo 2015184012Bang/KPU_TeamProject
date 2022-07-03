@@ -112,6 +112,7 @@ enum class EntityType : UINT8
 	WHITE_CELL,
 	VITAMIN,
 	CAFFEINE,
+	BOSS,
 	END
 };
 

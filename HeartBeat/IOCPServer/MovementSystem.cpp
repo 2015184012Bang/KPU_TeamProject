@@ -436,5 +436,15 @@ void MovementSystem::checkBossTrigger()
 		}
 
 		mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE);
+
+		NOTIFY_CREATE_ENTITY_PACKET packet = {};
+		packet.PacketSize = sizeof(packet);
+		packet.PacketID = NOTIFY_CREATE_ENTITY;
+		packet.EntityType = static_cast<UINT8>(EntityType::BOSS);
+		packet.EntityID = mOwner->GetEntityID();
+		auto bossScar = GetEntityByName(mRegistry, "BossSpawnPoint");
+		const auto& bsPosition = mRegistry.get<TransformComponent>(bossScar).Position;
+		packet.Position = Vector3{ bsPosition.x, 0.0f, bsPosition.z };
+		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 	}
 }
