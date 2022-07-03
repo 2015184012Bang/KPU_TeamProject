@@ -42,6 +42,8 @@ private:
 
     void createUI();
     void createHpbar();
+    void createDialogue(Texture* dia, int drawOrder);
+    void clearDialogue();
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();

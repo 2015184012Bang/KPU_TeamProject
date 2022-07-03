@@ -1150,29 +1150,20 @@ void GameScene::doBattleOccur()
 
 	const INT32 dialogueWidth = 1000;
 	Timer::AddEvent(4.6f, [this, dialogueWidth]() {
-		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue1.png"), 110);
-		dia1.AddTag<Tag_Dialogue>();
-		auto& rect = dia1.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		createDialogue(TEXTURE("Dialogue1.png"), 110);
 		});
 
 	Timer::AddEvent(6.6f, [this, dialogueWidth]() {
-		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue2.png"), 120);
-		dia2.AddTag<Tag_Dialogue>();
-		auto& rect = dia2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		createDialogue(TEXTURE("Dialogue2.png"), 120);
 		});
 
 	Timer::AddEvent(8.6f, [this, dialogueWidth]() {
-		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue3.png"), 130);
-		dia3.AddTag<Tag_Dialogue>();
-		auto& rect = dia3.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		createDialogue(TEXTURE("Dialogue3.png"), 130);
 		});
 
-	Timer::AddEvent(10.6f, []() {
+	Timer::AddEvent(10.6f, [this]() {
 		SoundManager::PlaySound("BattleTheme.mp3", 0.1f);
-		DestroyByComponent<Tag_Dialogue>();
+		clearDialogue();
 		});
 }
 
@@ -1186,22 +1177,14 @@ void GameScene::doBattleEnd()
 		DestroyEntity(entity);
 	}
 
-	{
-		Entity dia1 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue4.png"), 110);
-		dia1.AddTag<Tag_Dialogue>();
-		auto& rect = dia1.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
-	}
+	createDialogue(TEXTURE("Dialogue4.png"), 110);
 
 	Timer::AddEvent(2.0f, [this, dialogueWidth]() {
-		Entity dia2 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue5.png"), 120);
-		dia2.AddTag<Tag_Dialogue>();
-		auto& rect = dia2.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		createDialogue(TEXTURE("Dialogue5.png"), 120);
 		});
 
 	Timer::AddEvent(5.0f, [this]() {
-		DestroyByComponent<Tag_Dialogue>();
+		clearDialogue();
 		auto tank = GetEntityByName("Tank");
 		mOwner->SetFollowCameraTarget(tank, Vector3{ 0.0f, 1500.0f, -1300.0f });
 		auto& animator = tank.GetComponent<AnimatorComponent>();
@@ -1234,18 +1217,15 @@ void GameScene::doBattleEnd()
 		DestroyEntity(wall);
 		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
 
-		Entity dia3 = mOwner->CreateSpriteEntity(dialogueWidth, 250, TEXTURE("Dialogue6.png"), 110);
-		dia3.AddTag<Tag_Dialogue>();
-		auto& rect = dia3.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+		createDialogue(TEXTURE("Dialogue6.png"), 110);
 		});
 
-	Timer::AddEvent(13.0f, []() {
+	Timer::AddEvent(13.0f, [this]() {
 		auto tank = GetEntityByName("Tank");
 		tank.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
 		auto cart = GetEntityByName("Cart");
 		cart.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
-		DestroyByComponent<Tag_Dialogue>();
+		clearDialogue();
 		SoundManager::StopSound("BattleTheme.mp3");
 		SoundManager::PlaySound("NormalTheme.mp3", 0.15f);
 		});
@@ -1440,6 +1420,20 @@ void GameScene::createHpbar()
 			cooldownRect.Position.y = Application::GetScreenHeight() - 120.0f - 55.0f;
 		}
 	}
+}
+
+void GameScene::createDialogue(Texture* dia, int drawOrder)
+{
+	static constexpr INT32 dialogueWidth = 1000;
+	Entity diag = mOwner->CreateSpriteEntity(dialogueWidth, 250, dia, drawOrder);
+	diag.AddTag<Tag_Dialogue>();
+	auto& rect = diag.GetComponent<RectTransformComponent>();
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+}
+
+void GameScene::clearDialogue()
+{
+	DestroyByComponent<Tag_Dialogue>();
 }
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
