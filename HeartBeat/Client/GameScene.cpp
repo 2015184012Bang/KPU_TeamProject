@@ -854,7 +854,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	case EntityType::BOSS:
 	{
 		Entity boss = mOwner->CreateSkeletalMeshEntity(MESH("Boss.mesh"),
-			TEXTURE("Temp.png"), SKELETON("Boss.skel"), ncePacket->EntityID);
+			TEXTURE("Temp.png"), SKELETON("Boss.skel"), ncePacket->EntityID, "../Assets/Boxes/Boss.box");
 		boss.AddComponent<NameComponent>("Boss");
 		auto& transform = boss.GetComponent<TransformComponent>();
 		transform.Position = ncePacket->Position;
@@ -1323,7 +1323,8 @@ void GameScene::doBossBattleOccur()
 		mOwner->DisableFollowTarget();
 		auto camera = mOwner->GetMainCamera();
 		auto& cc = camera.GetComponent<CameraComponent>();
-		cc.Target = bossWallPosition;
+		cc.Position = Vector3{ bossWallPosition.x - 5200.0f, 2000.0f, bossWallPosition.z };
+		cc.Target = Vector3{ bossWallPosition.x, 500.0f, bossWallPosition.z };
 
 		auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
@@ -1331,10 +1332,12 @@ void GameScene::doBossBattleOccur()
 		auto boss = GetEntityByName("Boss");
 		auto& bossAnimator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&bossAnimator, ANIM("Boss_Start.anim"));
+
+		SoundManager::PlaySound("BossSpawn.mp3");
 		});
 
 	Timer::AddEvent(8.0f, [this]() {
-		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 2000.0f, -1500.0f });
+		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 3500.0f, -1300.0f });
 		auto bossWall = GetEntityByName("BossWall");
 		DestroyEntity(bossWall);
 		});
