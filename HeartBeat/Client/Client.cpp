@@ -203,6 +203,11 @@ void Client::SetFollowCameraTarget(const Entity& target, const Vector3& offset)
 	mTargetOffset = offset;
 }
 
+void Client::DisableFollowTarget()
+{
+	mFollowCameraTarget = {};
+}
+
 void Client::ResetCamera()
 {
 	mFollowCameraTarget = {};

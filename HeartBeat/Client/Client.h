@@ -37,6 +37,8 @@ public:
     // MainCamera가 target을 따라다니도록 한다.
     void SetFollowCameraTarget(const Entity& target, const Vector3& offset);
 
+    void DisableFollowTarget();
+
     void ResetCamera();
 
     // Parent에 붙은 Children들 삭제

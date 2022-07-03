@@ -17,7 +17,7 @@ unordered_map<string, Mesh*> ResourceManager::sDebugMeshes;
 
 void ResourceManager::Shutdown()
 {
-	for (auto& [_, mesh]: sMeshes)
+	for (auto& [_, mesh] : sMeshes)
 	{
 		delete mesh;
 	}
@@ -93,7 +93,7 @@ Texture* ResourceManager::GetTexture(string_view path)
 Skeleton* ResourceManager::GetSkeleton(string_view path)
 {
 	auto iter = sSkeletons.find(path.data());
-	
+
 	if (iter != sSkeletons.end())
 	{
 		return iter->second;
@@ -224,7 +224,7 @@ void ResourceManager::MakeAnimTransitions()
 
 		// Loop가 false이면 애니메이션이 종료됐을 때 WhenEnd 트리거가 작동한다.
 		deadAnim->SetLoop(false);
-		attack1->SetLoop(false); 
+		attack1->SetLoop(false);
 		attack2->SetLoop(false);
 		attack3->SetLoop(false);
 		skill1->SetLoop(false);
@@ -438,11 +438,7 @@ void ResourceManager::MakeAnimTransitions()
 		attackAnim->AddTransition("WhenEnd", runningAnim);
 	}
 
-	// 지방
-	{
-		Animation* breakAnim = ANIM("Fat_Break.anim");
-		breakAnim->SetLoop(false);
-	}
+
 
 	// 카트
 	{
@@ -453,6 +449,23 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* openAnim = ANIM("Door_Open.anim");
 		openAnim->SetLoop(false);
+	}
+
+	// 보스
+	{
+		Animation* idleAnim = ANIM("Boss_Idle.anim");
+		Animation* startAnim = ANIM("Boss_Start.anim");
+		startAnim->SetLoop(false);
+		startAnim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// 이펙트
+	{
+		Animation* fatAnim = ANIM("Fat_Break.anim");
+		fatAnim->SetLoop(false);
+
+		Animation* bwallAnim = ANIM("BWall_Break.anim");
+		bwallAnim->SetLoop(false);
 	}
 }
 
@@ -487,10 +500,10 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 
 		case CharacterAnimationType::IDLE_NONE:
 			return ANIM("CG_Idle_None.anim");
-			
+
 		case CharacterAnimationType::RUN:
 			return ANIM("CG_Run.anim");
-			
+
 		case CharacterAnimationType::RUN_NONE:
 			return ANIM("CG_Run_None.anim");
 
@@ -507,7 +520,7 @@ Animation* GetCharacterAnimationFile(int clientID, CharacterAnimationType type)
 
 		case CharacterAnimationType::RUN:
 			return ANIM("CP_Run.anim");
-		
+
 		case CharacterAnimationType::IDLE_NONE:
 			return ANIM("CP_Idle_None.anim");
 

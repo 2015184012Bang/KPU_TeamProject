@@ -202,7 +202,6 @@ void GameScene::createTile(const Tile& tile)
 
 	case TileType::SCAR:
 	case TileType::SCAR_DOG:
-	case TileType::SCAR_BOSS:
 		createScarTile(tile);
 		break;
 
@@ -216,6 +215,10 @@ void GameScene::createTile(const Tile& tile)
 
 	case TileType::SCAR_WALL:
 		createWallTile(tile);
+		break;
+
+	case TileType::SCAR_BOSS:
+		createBossTile(tile);
 		break;
 
 	default:
@@ -400,6 +403,32 @@ void GameScene::createWallTile(const Tile& tile)
 			wallTex, SKELETON("Wall.skel"), "../Assets/Boxes/Wall.box");
 		wall.AddComponent<NameComponent>("Wall");
 		auto& transform = wall.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = 0.0f;
+		transform.Position.z = tile.Z;
+		transform.Rotation.y = 270.0f;
+	}
+
+	{
+		const Texture* railTex = GetTileTexture(TileType::RAIL);
+		Entity rail = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+			railTex);
+		rail.AddTag<Tag_Tile>();
+		auto& transform = rail.GetComponent<TransformComponent>();
+		transform.Position.x = tile.X;
+		transform.Position.y = -Values::TileSide;
+		transform.Position.z = tile.Z;
+	}
+}
+
+void GameScene::createBossTile(const Tile& tile)
+{
+	{
+		Entity bossWall = mOwner->CreateSkeletalMeshEntity(MESH("BWall.mesh"),
+			TEXTURE("Temp.png"), SKELETON("BWall.skel"));
+		bossWall.AddComponent<NameComponent>("BossWall");
+		auto& transform = bossWall.GetComponent<TransformComponent>();
+		auto& animator = bossWall.GetComponent<AnimatorComponent>();
 		transform.Position.x = tile.X;
 		transform.Position.y = 0.0f;
 		transform.Position.z = tile.Z;
@@ -1272,6 +1301,24 @@ void GameScene::doBossBattleOccur()
 
 	Timer::AddEvent(3.0f, [this, ui]() {
 		DestroyEntity(ui);
+
+		auto bossWall = GetEntityByName("BossWall");
+		const auto& bossWallTransform = bossWall.GetComponent<TransformComponent>();
+		const auto& bossWallPosition = bossWallTransform.Position;
+
+		mOwner->DisableFollowTarget();
+		auto camera = mOwner->GetMainCamera();
+		auto& cc = camera.GetComponent<CameraComponent>();
+		cc.Target = bossWallPosition;
+
+		auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
+		});
+
+	Timer::AddEvent(8.0f, [this]() {
+		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 2000.0f, -1500.0f });
+		auto bossWall = GetEntityByName("BossWall");
+		DestroyEntity(bossWall);
 		});
 }
 

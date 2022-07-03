@@ -38,6 +38,7 @@ private:
     void createHouseTile(const Tile& tile);
     void createDoorTile(const Tile& tile);
     void createWallTile(const Tile& tile);
+    void createBossTile(const Tile& tile);
 
     void createUI();
     void createHpbar();
@@ -62,7 +63,7 @@ private:
     void doBossBattleEnd();
 
     void updateHpUI(const INT8 hp, int clientID);
-
+    
 private:
     enum class StageCode
     {
