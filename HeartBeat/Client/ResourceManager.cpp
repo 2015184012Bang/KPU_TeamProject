@@ -455,7 +455,9 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* idleAnim = ANIM("Boss_Idle.anim");
 		Animation* startAnim = ANIM("Boss_Start.anim");
+		Animation* deadAnim = ANIM("Boss_Dead.anim");
 		startAnim->SetLoop(false);
+		deadAnim->SetLoop(false);
 		startAnim->AddTransition("WhenEnd", idleAnim);
 	}
 

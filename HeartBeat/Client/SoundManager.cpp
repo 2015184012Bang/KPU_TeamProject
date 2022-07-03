@@ -123,4 +123,6 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/GetVitamin.mp3");
 	CreateSound("../Assets/Sounds/BossSpawn.mp3");
 	CreateSound("../Assets/Sounds/BossTheme.mp3");
+	CreateSound("../Assets/Sounds/GameWin.mp3");
+	CreateSound("../Assets/Sounds/BossDead.mp3");
 }

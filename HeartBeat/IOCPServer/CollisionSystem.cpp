@@ -99,6 +99,24 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		}
 	}
 
+	auto boss = mRegistry.view<Tag_Boss, BoxComponent>();
+	for (auto [entity, enemyBox] : boss.each())
+	{
+		if (Intersects(hitbox, enemyBox.WorldBox))
+		{
+			auto& health = mRegistry.get<HealthComponent>(entity);
+			health.Health -= baseAttackDmg;
+
+			if (health.Health <= 0)
+			{
+				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
+				DestroyEntity(mRegistry, entity);
+			}
+
+			return true;
+		}
+	}
+
 	// 버프가 켜져 있으면 (공격력 == 타일 최대 체력)
 	INT32 tileAttackDmg = combat.BuffDuration > 0.0f ? Values::TileMaxHealth : 1;
 
@@ -167,6 +185,24 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 			const auto id = mRegistry.get<IDComponent>(entity).ID;
 			mOwner->SendDeleteEntityPacket(id, EntityType::DOG);
 			DestroyEntity(mRegistry, entity);
+		}
+	}
+
+	auto boss = mRegistry.view<Tag_Boss, TransformComponent>();
+	for (auto [entity, transform] : boss.each())
+	{
+		float distSq = Vector3::DistanceSquared(characterPosition, transform.Position);
+
+		if (transform.Position.x - characterPosition.x <= 1300.0f)
+		{
+			auto& health = mRegistry.get<HealthComponent>(entity);
+			health.Health -= 3;
+
+			if (health.Health <= 0)
+			{
+				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
+				DestroyEntity(mRegistry, entity);
+			}
 		}
 	}
 }

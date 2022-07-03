@@ -730,6 +730,12 @@ void GameScene::processNotifyDeleteEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::BOSS:
+	{
+		DestroyEntityByID(ndePacket->EntityID);
+	}
+	break;
+
 	default:
 		break;
 	}
@@ -1271,7 +1277,34 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 
 void GameScene::doBossBattleEnd()
 {
+	SoundManager::StopSound("BossTheme.mp3");
 
+	auto boss = GetEntityByName("Boss");
+	const auto& bossPosition = boss.GetComponent<TransformComponent>().Position;
+
+	mOwner->DisableFollowTarget();
+	auto camera = mOwner->GetMainCamera();
+	auto& cc = camera.GetComponent<CameraComponent>();
+	cc.Position = Vector3{ bossPosition.x - 5200.0f, 2000.0f, bossPosition.z };
+	cc.Target = Vector3{ bossPosition.x, 500.0f, bossPosition.z };
+
+	SoundManager::PlaySound("BossDead.mp3", 0.5f);
+
+	auto& animator = boss.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&animator, ANIM("Boss_Dead.anim"));
+
+	const auto id = boss.GetComponent<IDComponent>().ID;
+	mOwner->DestroyEntityAfter(id, 4.0f);
+
+	Timer::AddEvent(4.0f, [this]() {
+		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
+		createDialogue(TEXTURE("Dialogue10.png"), 110);
+		SoundManager::PlaySound("GameWin.mp3");
+		});
+
+	Timer::AddEvent(9.0f, [this]() {
+		clearDialogue();
+		});
 }
 
 void GameScene::doBossBattleOccur()
