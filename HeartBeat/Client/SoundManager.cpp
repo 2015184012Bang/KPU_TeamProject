@@ -122,4 +122,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/DoorOpen.mp3");
 	CreateSound("../Assets/Sounds/GetVitamin.mp3");
 	CreateSound("../Assets/Sounds/BossSpawn.mp3");
+	CreateSound("../Assets/Sounds/BossTheme.mp3");
 }

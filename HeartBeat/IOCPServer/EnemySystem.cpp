@@ -108,6 +108,17 @@ void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
 	}
 }
 
+entt::entity EnemySystem::GenerateBoss()
+{
+	auto bossScar = GetEntityByName(mRegistry, "BossSpawnPoint");
+	const auto& bsPosition = mRegistry.get<TransformComponent>(bossScar).Position;
+	auto position = Vector3{ bsPosition.x, 0.0f, bsPosition.z };
+
+	auto entity = createEnemy(position, EntityType::BOSS);
+
+	return entity;
+}
+
 void EnemySystem::loadStageFile(string_view fileName)
 {
 	if (auto iter = mStages.find(fileName.data()); iter != mStages.end())
@@ -148,29 +159,39 @@ entt::entity EnemySystem::createEnemy(const Vector3& position, EntityType eType,
 		position,
 		0.0f);
 	auto& id = mRegistry.emplace<IDComponent>(entity, mOwner->GetEntityID());
-
-	mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, Values::EnemySpeed);
+	mRegistry.emplace<Tag_Enemy>(entity);
 
 	if (eType == EntityType::VIRUS)
 	{
 		mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Virus.box"), transform.Position, transform.Yaw);
 		mRegistry.emplace<Tag_Virus>(entity);
 		mRegistry.emplace<HealthComponent>(entity, Values::VirusHealth);
+		mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, Values::EnemySpeed);
+		mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
+		mRegistry.emplace<PathFindComponent>(entity);
 	}
 	else if (eType == EntityType::DOG)
 	{
 		mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Dog.box"), transform.Position, transform.Yaw);
 		mRegistry.emplace<Tag_Dog>(entity);
 		mRegistry.emplace<HealthComponent>(entity, Values::DogHealth);
+		mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, Values::EnemySpeed);
+		mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
+		mRegistry.emplace<PathFindComponent>(entity);
+	}
+	else if(eType == EntityType::BOSS)
+	{     
+		transform.Yaw = 270.0f;
+		mRegistry.emplace<BoxComponent>(entity, &Box::GetBox("../Assets/Boxes/Boss.box"), 
+			transform.Position, transform.Yaw);
+		mRegistry.emplace<Tag_Boss>(entity);
+		mRegistry.emplace<HealthComponent>(entity, Values::BossHealth);
+		mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, 0.0f);
 	}
 	else
 	{
 		ASSERT(false, "Unknown enemy type!");
 	}
-	
-	mRegistry.emplace<ScriptComponent>(entity, make_shared<Enemy>(mRegistry, entity));
-	mRegistry.emplace<Tag_Enemy>(entity);
-	mRegistry.emplace<PathFindComponent>(entity);
 
 	return entity;
 }

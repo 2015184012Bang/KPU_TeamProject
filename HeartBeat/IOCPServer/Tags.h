@@ -12,6 +12,7 @@ struct Tag_Cart {};
 struct Tag_Enemy {};
 struct Tag_Virus {};
 struct Tag_Dog {};
+struct Tag_Boss {};
 struct Tag_RedCell {};
 struct Tag_Vitamin {};
 struct Tag_Caffeine {};

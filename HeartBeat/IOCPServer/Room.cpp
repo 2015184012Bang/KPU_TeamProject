@@ -406,6 +406,19 @@ void Room::GenerateEnemyRandomly(const Vector3& controlPoint)
 	mEnemySystem->GenerateEnemyRandomly(controlPoint);
 }
 
+void Room::GenerateBoss()
+{
+	auto entity = mEnemySystem->GenerateBoss();
+
+	NOTIFY_CREATE_ENTITY_PACKET packet = {};
+	packet.PacketSize = sizeof(packet);
+	packet.PacketID = NOTIFY_CREATE_ENTITY;
+	packet.EntityType = static_cast<UINT8>(EntityType::BOSS);
+	packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+	packet.Position = mRegistry.get<TransformComponent>(entity).Position;
+	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))

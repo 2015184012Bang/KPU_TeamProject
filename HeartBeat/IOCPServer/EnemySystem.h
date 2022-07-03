@@ -18,6 +18,8 @@ public:
 
 	void GenerateEnemyRandomly(const Vector3& controlPoint);
 
+	entt::entity GenerateBoss();
+
 public:
 	bool IsGenerate() const { return mbGenerate; }
 

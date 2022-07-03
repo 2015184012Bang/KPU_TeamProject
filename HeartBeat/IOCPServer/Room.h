@@ -71,6 +71,8 @@ public:
 
 	void GenerateEnemyRandomly(const Vector3& controlPoint);
 
+	void GenerateBoss();
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }

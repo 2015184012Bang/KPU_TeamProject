@@ -856,6 +856,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Entity boss = mOwner->CreateSkeletalMeshEntity(MESH("Boss.mesh"),
 			TEXTURE("Temp.png"), SKELETON("Boss.skel"), ncePacket->EntityID, "../Assets/Boxes/Boss.box");
 		boss.AddComponent<NameComponent>("Boss");
+		boss.AddComponent<MovementComponent>(0.0f);
 		auto& transform = boss.GetComponent<TransformComponent>();
 		transform.Position = ncePacket->Position;
 		transform.Rotation.y = 270.0f;
@@ -1333,9 +1334,8 @@ void GameScene::doBossBattleOccur()
 
 	Timer::AddEvent(14.0f, [this]() {
 		clearDialogue();
+		SoundManager::PlaySound("BossTheme.mp3", 0.1f);
 		});
-
-	// TODO : 보스 배틀 배경음악 재생
 }
 
 void GameScene::createUI()
