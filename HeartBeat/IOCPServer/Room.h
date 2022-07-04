@@ -69,7 +69,9 @@ public:
 
 	void UpdateScore(INT32 delta);
 
-	void GenerateEnemyRandomly(const Vector3& controlPoint);
+	void GenerateEnemyMidBattle(const Vector3& controlPoint);
+
+	void GenerateEnemyBossBattle(const Vector3& controlPoint);
 
 	void GenerateBoss();
 

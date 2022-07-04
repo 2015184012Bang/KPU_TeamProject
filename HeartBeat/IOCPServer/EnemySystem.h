@@ -16,7 +16,9 @@ public:
 
 	void Reset();
 
-	void GenerateEnemyRandomly(const Vector3& controlPoint);
+	void GenerateEnemyMidBattle(const Vector3& controlPoint);
+
+	void GenerateEnemyBossBattle(const Vector3& controlPoint);
 
 	entt::entity GenerateBoss();
 
