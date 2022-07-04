@@ -421,3 +421,143 @@ void CellRestState::Exit()
 {
 
 }
+
+/************************************************************************/
+/* BossIdleState                                                        */
+/************************************************************************/
+
+BossIdleState::BossIdleState(shared_ptr<Enemy> owner)
+	: AIState{ "BossIdleState" }
+	, mOwner{ owner }
+{
+
+}
+
+void BossIdleState::Enter()
+{
+	mElapsed = 0.0f;
+}
+
+void BossIdleState::Update()
+{
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
+
+	auto& health = owner->GetComponent<HealthComponent>();
+	if (health.Health <= 70 && !bFirstSpecialAttackDone)
+	{
+		bFirstSpecialAttackDone = true;
+		//owner->ChangeState("BossSpecialAttackState");
+		return;
+	}
+
+	if (health.Health <= 30 && !bSecondSpecialAttackDone)
+	{
+		bSecondSpecialAttackDone = true;
+		//owner->ChangeState("BossSpecialAttackState");
+		return;
+	}
+
+	mElapsed += Timer::GetDeltaTime();
+	if (mElapsed > 10.0f)
+	{
+		auto randInt = Random::RandInt(0, 1);
+
+		if (0 == randInt)
+		{
+			//owner->ChangeState("BossAttackOneState");
+			return;
+		}
+		else
+		{
+			//owner->ChangeState("BossAttackTwoState");
+			return;
+		}
+	}
+}
+
+void BossIdleState::Exit()
+{
+
+}
+
+/************************************************************************/
+/* BossSpecialAttackState                                               */
+/************************************************************************/
+
+BossSpecialAttackState::BossSpecialAttackState(shared_ptr<Enemy> owner)
+	: AIState{ "BossSpecialAttackState" }
+	, mOwner{ owner }
+{
+
+}
+
+void BossSpecialAttackState::Enter()
+{
+
+}
+
+void BossSpecialAttackState::Update()
+{
+
+}
+
+void BossSpecialAttackState::Exit()
+{
+
+}
+
+/************************************************************************/
+/* BossAttackOneState                                                   */
+/************************************************************************/
+
+BossAttackOneState::BossAttackOneState(shared_ptr<Enemy> owner)
+	: AIState{ "BossAttackOneState" }
+	, mOwner{ owner }
+{
+
+}
+
+void BossAttackOneState::Enter()
+{
+
+}
+
+void BossAttackOneState::Update()
+{
+
+}
+
+void BossAttackOneState::Exit()
+{
+
+}
+
+/************************************************************************/
+/* BossAttackTwoState                                                   */
+/************************************************************************/
+
+BossAttackTwoState::BossAttackTwoState(shared_ptr<Enemy> owner)
+	: AIState{ "BossAttackTwoState" }
+	, mOwner{ owner }
+{
+
+}
+
+void BossAttackTwoState::Enter()
+{
+
+}
+
+void BossAttackTwoState::Update()
+{
+
+}
+
+void BossAttackTwoState::Exit()
+{
+
+}

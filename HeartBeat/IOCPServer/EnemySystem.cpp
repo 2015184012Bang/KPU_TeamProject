@@ -187,6 +187,7 @@ entt::entity EnemySystem::createEnemy(const Vector3& position, EntityType eType,
 		mRegistry.emplace<Tag_Boss>(entity);
 		mRegistry.emplace<HealthComponent>(entity, Values::BossHealth);
 		mRegistry.emplace<MovementComponent>(entity, Vector3::Zero, 0.0f);
+		mRegistry.emplace<NameComponent>(entity, "Boss");
 	}
 	else
 	{

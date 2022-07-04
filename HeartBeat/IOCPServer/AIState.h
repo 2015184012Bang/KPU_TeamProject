@@ -99,6 +99,84 @@ private:
 };
 
 /************************************************************************/
+/* BossIdleState                                                        */
+/************************************************************************/
+
+class BossIdleState
+	: public AIState
+{
+public:
+	BossIdleState(shared_ptr<Enemy> owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	weak_ptr<Enemy> mOwner;
+
+	float mElapsed = 0.0f;
+	bool bFirstSpecialAttackDone = false;
+	bool bSecondSpecialAttackDone = false;
+};
+
+/************************************************************************/
+/* BossSpecialAttackState                                               */
+/************************************************************************/
+
+class BossSpecialAttackState
+	: public AIState
+{
+public:
+	BossSpecialAttackState(shared_ptr<Enemy> owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	weak_ptr<Enemy> mOwner;
+};
+
+/************************************************************************/
+/* BossAttackOneState                                                   */
+/************************************************************************/
+
+class BossAttackOneState
+	: public AIState
+{
+public:
+	BossAttackOneState(shared_ptr<Enemy> owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	weak_ptr<Enemy> mOwner;
+};
+
+/************************************************************************/
+/* BossAttackTwoState                                                   */
+/************************************************************************/
+
+class BossAttackTwoState
+	: public AIState
+{
+public:
+	BossAttackTwoState(shared_ptr<Enemy> owner);
+
+	virtual void Enter() override;
+	virtual void Update() override;
+	virtual void Exit() override;
+
+private:
+	weak_ptr<Enemy> mOwner;
+};
+
+
+
+/************************************************************************/
 /* CellDeliverState                                                     */
 /************************************************************************/
 

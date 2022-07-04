@@ -124,6 +124,23 @@ private:
 			StartState("EnemyNPCChaseState");
 		}
 
+		else if (HasComponent<Tag_Boss>())
+		{
+			auto bossIdleState = make_shared<BossIdleState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(bossIdleState);
+
+			auto bossSpecialState = make_shared<BossSpecialAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(bossSpecialState);
+
+			auto bossOneState = make_shared<BossAttackOneState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(bossOneState);
+
+			auto bossTwoState = make_shared<BossAttackTwoState>(static_pointer_cast<Enemy>(shared_from_this()));
+			AddState(bossTwoState);
+
+			StartState("BossIdleState");
+		}
+
 		else
 		{
 			ASSERT(false, "Unknown enemy type!");

@@ -7,6 +7,7 @@
 #include "Random.h"
 #include "Room.h"
 #include "Values.h"
+#include "Enemy.h"
 
 MovementSystem::MovementSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
@@ -441,6 +442,7 @@ void MovementSystem::checkBossTrigger()
 		mOwner->GenerateBoss();
 
 		Timer::AddEvent(14.0f, [this]() {
+			// 백혈구 생성
 			auto cart = GetEntityByName(mRegistry, "Cart");
 			const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
 			auto cellPos = Vector3{ (cartPos.x / Values::TileSide) * Values::TileSide - Values::TileSide,
@@ -459,6 +461,10 @@ void MovementSystem::checkBossTrigger()
 
 				cellPos.z += 400.0f;
 			}
+
+			// 보스 엔티티에 스크립트 부착
+			auto boss = GetEntityByName(mRegistry, "Boss");
+			mRegistry.emplace<ScriptComponent>(boss, make_shared<Enemy>(mRegistry, boss));
 			});
 	}
 }
