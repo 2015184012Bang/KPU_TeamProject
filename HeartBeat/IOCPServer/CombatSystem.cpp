@@ -284,8 +284,7 @@ void CombatSystem::checkBossSpecialSkill()
 
 				if (health.Health <= 0)
 				{
-					// TODO :: 타이머 오류 해결
-					//doEntityDie(id, EntityType::PLAYER);
+					doEntityDie(id, EntityType::PLAYER);
 				}
 			}
 			});

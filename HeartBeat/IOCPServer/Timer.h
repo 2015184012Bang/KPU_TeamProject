@@ -2,12 +2,18 @@
 
 struct TimerEvent
 {
-	TimerEvent(const float dueTime, std::function<void()> func)
-		: DueTime(dueTime)
-		, Func(func) {}
+	TimerEvent(function<void()> func, const system_clock::time_point& actTime)
+		: Func{ func }
+		, ActTime{ actTime }
+	{}
 
-	float DueTime = 0.0f;
-	std::function<void()> Func;
+	function<void()> Func;
+	system_clock::time_point ActTime = {};
+
+	bool operator < (const TimerEvent& other) const
+	{
+		return ActTime > other.ActTime;
+	}
 };
 
 class Timer
@@ -24,6 +30,6 @@ private:
 	static UINT64 sFrequency;
 	static UINT64 sPrevCount;
 	static float sDeltaTime;
-	static vector<TimerEvent> sTimerEvents;
+	static priority_queue<TimerEvent> sTimerEvents;
 };
 
