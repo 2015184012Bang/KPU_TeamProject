@@ -28,6 +28,7 @@ private:
 	void updateCooldown();
 	void checkEnemyAttack();
 	void checkWhiteCellAttack();
+	void checkBossSpecialSkill();
 	void doEntityDie(const UINT32 id, EntityType eType);
 
 private:

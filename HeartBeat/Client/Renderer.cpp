@@ -757,6 +757,8 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Dialogue10.png");
 	TEXTURE("Heart.png");
 	TEXTURE("Tank_Portrait.png");
+	TEXTURE("Red.png");
+	TEXTURE("Orange.png");
 }
 
 void Renderer::loadAssets()

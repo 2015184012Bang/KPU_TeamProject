@@ -18,3 +18,4 @@ struct Tag_Item {};
 struct Tag_Door {};
 struct Tag_WhiteCell {};
 struct Tag_Dialogue {};
+struct Tag_Boss {};

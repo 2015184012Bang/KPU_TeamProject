@@ -18,6 +18,7 @@ void CombatSystem::Update()
 	updateCooldown();
 	checkWhiteCellAttack();
 	checkEnemyAttack();
+	checkBossSpecialSkill();
 }
 
 void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
@@ -174,6 +175,11 @@ void CombatSystem::checkEnemyAttack()
 		}
 		else if (mRegistry.any_of<Tag_Player>(victim))
 		{
+			if (health.Health < 0)
+			{
+				health.Health = 0;
+			}
+
 			mOwner->UpdatePlayerHpInState(health.Health, hit.VictimID);
 			eType = EntityType::PLAYER;
 		}
@@ -245,6 +251,46 @@ void CombatSystem::checkWhiteCellAttack()
 	}
 }
 
+
+void CombatSystem::checkBossSpecialSkill()
+{
+	auto view = mRegistry.view<Tag_BossSpecialSkill>();
+	
+	for (auto entity : view)
+	{
+		DestroyEntity(mRegistry, entity);
+
+		auto boss = GetEntityByName(mRegistry, "Boss");
+
+		NOTIFY_SKILL_PACKET packet = {};
+		packet.PacketSize = sizeof(packet);
+		packet.PacketID = NOTIFY_SKILL;
+		packet.EntityID = mRegistry.get<IDComponent>(boss).ID;
+		packet.Preset = 2 /* Special Skill */;
+		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+
+		Timer::AddEvent(2.0f, [this]() {
+			auto players = mRegistry.view<Tag_Player, HealthComponent>();
+			for (auto [entity, health] : players.each())
+			{
+				health.Health -= 8;
+				if (health.Health < 0)
+				{
+					health.Health = 0;
+				}
+
+				auto id = mRegistry.get<IDComponent>(entity).ID;
+				mOwner->UpdatePlayerHpInState(health.Health, id);
+
+				if (health.Health <= 0)
+				{
+					// TODO :: 타이머 오류 해결
+					//doEntityDie(id, EntityType::PLAYER);
+				}
+			}
+			});
+	}
+}
 
 void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 {

@@ -450,14 +450,14 @@ void BossIdleState::Update()
 	if (health.Health <= 70 && !bFirstSpecialAttackDone)
 	{
 		bFirstSpecialAttackDone = true;
-		//owner->ChangeState("BossSpecialAttackState");
+		owner->ChangeState("BossSpecialAttackState");
 		return;
 	}
 
 	if (health.Health <= 30 && !bSecondSpecialAttackDone)
 	{
 		bSecondSpecialAttackDone = true;
-		//owner->ChangeState("BossSpecialAttackState");
+		owner->ChangeState("BossSpecialAttackState");
 		return;
 	}
 
@@ -497,12 +497,34 @@ BossSpecialAttackState::BossSpecialAttackState(shared_ptr<Enemy> owner)
 
 void BossSpecialAttackState::Enter()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
+	mElapsed = 0.0f;
+
+	auto& registry = owner->GetRegistry();
+	auto entity = registry.create();
+	registry.emplace<Tag_BossSpecialSkill>(entity);
 }
 
 void BossSpecialAttackState::Update()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
+	mElapsed += Timer::GetDeltaTime();
+
+	if (mElapsed > 4.0f)
+	{
+		owner->ChangeState("BossIdleState");
+		return;
+	}
 }
 
 void BossSpecialAttackState::Exit()

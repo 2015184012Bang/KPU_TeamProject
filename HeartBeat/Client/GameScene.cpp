@@ -863,6 +863,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			TEXTURE("Temp.png"), SKELETON("Boss.skel"), ncePacket->EntityID, "../Assets/Boxes/Boss.box");
 		boss.AddComponent<NameComponent>("Boss");
 		boss.AddComponent<MovementComponent>(0.0f);
+		boss.AddTag<Tag_Boss>();
 		auto& transform = boss.GetComponent<TransformComponent>();
 		transform.Position = ncePacket->Position;
 		transform.Rotation.y = 270.0f;
@@ -933,35 +934,42 @@ void GameScene::processNotifySkill(const PACKET& packet)
 {
 	NOTIFY_SKILL_PACKET* nsPacket = reinterpret_cast<NOTIFY_SKILL_PACKET*>(packet.DataPtr);
 
-	auto player = GetEntityByID(nsPacket->EntityID);
-	if (!player)
+	auto entity = GetEntityByID(nsPacket->EntityID);
+	if (!entity)
 	{
 		HB_LOG("Invalid entity!");
 		return;
 	}
 
-	auto& animator = player.GetComponent<AnimatorComponent>();
-	animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
-
-	if (nsPacket->EntityID == mOwner->GetClientID())
+	if (entity.HasComponent<Tag_Boss>())
 	{
-		SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.3f);
+		doBossSkill(nsPacket->Preset);
+	}
+	else
+	{
+		auto& animator = entity.GetComponent<AnimatorComponent>();
+		animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
 
-		mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
+		if (nsPacket->EntityID == mOwner->GetClientID())
+		{
+			SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.3f);
 
-		mCooldownText = Entity{ gRegistry.create() };
-		auto& text = mCooldownText.AddComponent<TextComponent>();
-		text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
-		text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 35.0f;
-		text.Y = Application::GetScreenHeight() - 120.0f - 55.0f;
+			mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
 
-		Timer::AddEvent(mCooldown, [this]()
-			{
-				if (gRegistry.valid(mCooldownText))
+			mCooldownText = Entity{ gRegistry.create() };
+			auto& text = mCooldownText.AddComponent<TextComponent>();
+			text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
+			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 35.0f;
+			text.Y = Application::GetScreenHeight() - 120.0f - 55.0f;
+
+			Timer::AddEvent(mCooldown, [this]()
 				{
-					DestroyEntity(mCooldownText);
-				}
-			});
+					if (gRegistry.valid(mCooldownText))
+					{
+						DestroyEntity(mCooldownText);
+					}
+				});
+		}
 	}
 }
 
@@ -1309,6 +1317,36 @@ void GameScene::doBossBattleEnd()
 	Timer::AddEvent(9.0f, [this]() {
 		clearDialogue();
 		});
+}
+
+void GameScene::doBossSkill(const UINT8 skillType)
+{
+	switch (skillType)
+	{
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2: // 보스 필살기
+	{
+		static int skillCnt = 0;
+
+		auto boss = GetEntityByName("Boss");
+		auto& animator = boss.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Boss_Skill.anim"));
+
+		Timer::AddEvent(4.0f, [this]() {
+			auto boss = GetEntityByName("Boss");
+			auto& meshRenderer = boss.GetComponent<MeshRendererComponent>();
+			meshRenderer.Tex = skillCnt == 0 ? TEXTURE("Orange.png") : TEXTURE("Red.png");
+			skillCnt++;
+			});
+		break;
+	}
+	default:
+		HB_LOG("Unknown boss skill type: {0}", skillType);
+		break;
+	}
 }
 
 void GameScene::doBossBattleOccur()

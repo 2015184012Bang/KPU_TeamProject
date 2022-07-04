@@ -63,6 +63,7 @@ private:
     void doBattleEnd();
     void doBossBattleOccur();
     void doBossBattleEnd();
+    void doBossSkill(const UINT8 skillType);
 
     void updateHpUI(const INT8 hp, int clientID);
     
