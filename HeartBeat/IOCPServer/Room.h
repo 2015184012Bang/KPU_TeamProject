@@ -52,7 +52,7 @@ public:
 
 	void DoSkill(User* user);
 
-	void DoGameOver();
+	void DoGameOver(bool bWin = false);
 
 	// 해당 인덱스의 타일 타입을 ROAD로 바꾼다.
 	void ChangeTileToRoad(INT32 row, INT32 col);

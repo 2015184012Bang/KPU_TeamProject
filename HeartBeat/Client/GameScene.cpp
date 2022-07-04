@@ -881,9 +881,14 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 {
 	SoundManager::StopSound("NormalTheme.mp3");
 	SoundManager::StopSound("BattleTheme.mp3");
-	SoundManager::PlaySound("GameOver.mp3");
+	SoundManager::StopSound("BossTheme.mp3");
 
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
+
+	if (!ngoPacket->IsWin)
+	{
+		SoundManager::PlaySound("GameOver.mp3");
+	}
 
 	for (auto& hp : mTankHps)
 	{
@@ -891,7 +896,6 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	}
 	mTankHps.clear();
 
-	// 게임 오버 UI 팝업
 	Entity gameOverUI = Entity{ gRegistry.create() };
 	auto& text = gameOverUI.AddComponent<TextComponent>();
 	text.Sentence = L"Score: " + std::to_wstring(ngoPacket->Score) +

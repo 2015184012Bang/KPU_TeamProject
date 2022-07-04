@@ -33,6 +33,14 @@ void Timer::Update()
 		if (iter->DueTime < 0.0f)
 		{
 			iter->Func();
+
+			// Func 내부에서 Timer::Clear() 를 호출한 오류가 발생한다.
+			// Func 실행 후 큐가 비었는 지를 확인해서 루프를 벗어난다.
+			if (sTimerEvents.empty())
+			{
+				break;
+			}
+
 			iter = sTimerEvents.erase(iter);
 		}
 		else

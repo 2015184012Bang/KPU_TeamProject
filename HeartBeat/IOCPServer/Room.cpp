@@ -304,11 +304,12 @@ void Room::DoSkill(User* user)
 	}
 }
 
-void Room::DoGameOver()
+void Room::DoGameOver(bool bWin /*= false*/)
 {
 	NOTIFY_GAME_OVER_PACKET packet = {};
 	packet.Score = mRegistry.get<PlayStateComponent>(mPlayState).Score;
 	packet.PlayTimeSec = static_cast<UINT64>(mPlayTimeSec);
+	packet.IsWin = bWin;
 	packet.PacketID = NOTIFY_GAME_OVER;
 	packet.PacketSize = sizeof(packet);
 	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));

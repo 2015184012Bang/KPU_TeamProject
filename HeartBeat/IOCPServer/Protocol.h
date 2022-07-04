@@ -286,6 +286,7 @@ struct NOTIFY_STATE_CHANGE_PACKET : public PACKET_HEADER
 
 struct NOTIFY_GAME_OVER_PACKET : public PACKET_HEADER
 {
+	bool IsWin;
 	INT32 Score;
 	UINT64 PlayTimeSec;
 };

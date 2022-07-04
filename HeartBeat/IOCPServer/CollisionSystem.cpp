@@ -15,7 +15,7 @@ CollisionSystem::CollisionSystem(entt::registry& registry, shared_ptr<Room>&& ro
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
 {
-	
+
 }
 
 void CollisionSystem::Update()
@@ -50,7 +50,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 	ASSERT(mRegistry.valid(character), "Invalid entity!");
 
 	auto& transform = mRegistry.get<TransformComponent>(character);
-	
+
 	// 공격을 시도한 플레이어의 Transform으로
 	// 히트박스를 업데이트한다.
 	Box hitbox = Box::GetBox("Hitbox");
@@ -111,6 +111,10 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 			{
 				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
 				DestroyEntity(mRegistry, entity);
+
+				Timer::AddEvent(10.0f, [this]() {
+					mOwner->DoGameOver(true);
+					});
 			}
 
 			return true;
@@ -202,6 +206,10 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 			{
 				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
 				DestroyEntity(mRegistry, entity);
+				
+				Timer::AddEvent(10.0f, [this]() {
+					mOwner->DoGameOver(true);
+					});
 			}
 		}
 	}
@@ -345,7 +353,7 @@ void CollisionSystem::reposition(BoxComponent& playerBox, entt::entity player, B
 void CollisionSystem::changeTileTypeInGraph(entt::entity tile)
 {
 	auto& tilePosition = mRegistry.get<TransformComponent>(tile).Position;
-	
+
 	// 오차 방지용으로 1.0 을 더해준다.
 	INT32 row = static_cast<INT32>((tilePosition.z + 1.0f) / Values::TileSide);
 	INT32 col = static_cast<INT32>((tilePosition.x + 1.0f) / Values::TileSide);
@@ -496,7 +504,7 @@ INT32 GetBaseAttackDmg(UpgradePreset preset)
 	{
 	case UpgradePreset::ATTACK:
 		return 3;
-		
+
 	case UpgradePreset::HEAL:
 		return 1;
 
