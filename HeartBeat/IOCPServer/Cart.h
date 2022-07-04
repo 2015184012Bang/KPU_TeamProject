@@ -22,17 +22,17 @@ public:
 		// 시작 타일의 위치를 구한다.
 		auto startTile = GetEntityByName(mRegistry, "StartPoint");
 		ASSERT(mRegistry.valid(startTile), "Invalid entity!");
-		const auto& tilePosition = mRegistry.get<TransformComponent>(startTile).Position;
+		const auto& startTilePosition = mRegistry.get<TransformComponent>(startTile).Position;
 
 		// 시작 타일의 위치에서 -x축으로 좀 떨어진 곳을 카트의 시작 위치로 한다.
 		auto& transform = GetComponent<TransformComponent>();
-		transform.Position.x = tilePosition.x - 800.0f;
-		transform.Position.z = tilePosition.z;
+		transform.Position.x = startTilePosition.x - 800.0f;
+		transform.Position.z = startTilePosition.z;
 
 		// 현재 타겟을 시작 타일의 위치로 한다.
 		// RAIL_TILE은 y 위치가 -TILE_SIDE 만큼이므로
 		// y값은 0으로 해준다.
-		mCurrentTarget = tilePosition;
+		mCurrentTarget = startTilePosition;
 		mCurrentTarget.y = 0.0f;
 
 		// 초기 방향 설정
@@ -45,6 +45,12 @@ public:
 		auto view = mRegistry.view<Tag_RailTile, TransformComponent>();
 		for (auto [entity, tileTransform] : view.each())
 		{
+			if (entity == startTile ||
+				startTilePosition.x > tileTransform.Position.x)
+			{
+				continue;
+			}
+
 			mTiles.push_back(tileTransform.Position);
 		}
 	}
