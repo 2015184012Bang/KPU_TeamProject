@@ -67,7 +67,7 @@ void EnemySystem::Reset()
 	DestroyByComponent<Tag_Enemy>(mRegistry);
 }
 
-void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
+void EnemySystem::GenerateEnemyMidBattle(const Vector3& controlPoint)
 {
 	Vector3 pos = controlPoint;
 	pos.x = controlPoint.x - 2400.0f;
@@ -101,6 +101,29 @@ void EnemySystem::GenerateEnemyRandomly(const Vector3& controlPoint)
 		NOTIFY_CREATE_ENTITY_PACKET packet = {};
 		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
 		packet.EntityType = static_cast<UINT8>(eType);
+		packet.PacketID = NOTIFY_CREATE_ENTITY;
+		packet.PacketSize = sizeof(packet);
+		packet.Position = pos;
+		mOwner->Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
+	}
+}
+
+void EnemySystem::GenerateEnemyBossBattle(const Vector3& controlPoint)
+{
+	Vector3 pos = controlPoint;
+	pos.x -= 2400.0f;
+	pos.z -= 800.0f;
+
+	const INT32 virusCount = 5;
+
+	for (auto i = 0; i < virusCount; ++i)
+	{
+		pos.z += 400.0f;
+		entt::entity entity = createEnemy(pos, EntityType::VIRUS);
+
+		NOTIFY_CREATE_ENTITY_PACKET packet = {};
+		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+		packet.EntityType = static_cast<UINT8>(EntityType::VIRUS);
 		packet.PacketID = NOTIFY_CREATE_ENTITY;
 		packet.PacketSize = sizeof(packet);
 		packet.Position = pos;

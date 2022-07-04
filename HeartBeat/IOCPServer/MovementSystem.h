@@ -19,6 +19,7 @@ private:
 	void checkMidPoint();
 	void checkBattleTrigger();
 	void checkBossTrigger();
+	void generateEnemyBossBattle();
 
 	entt::entity getClosestDoor(const Vector3& midPointPos);
 
@@ -28,6 +29,7 @@ private:
 
 	bool mbBattleProgressed = false;
 	bool mbBossProgressed = false;
+	bool mbBossBattleEnemyGen = false;
 
 	INT32 mNumRedCells = -1;
 };

@@ -28,6 +28,7 @@ void MovementSystem::Update()
 	checkMidPoint();
 	checkBattleTrigger();
 	checkBossTrigger();
+	generateEnemyBossBattle();
 
 	SendNotifyMovePackets();
 }
@@ -114,6 +115,7 @@ void MovementSystem::Start()
 {
 	mbBattleProgressed = false;
 	mbBossProgressed = false;
+	mbBossBattleEnemyGen = false;
 	mNumRedCells = -1;
 
 	// START_POINT 타일 가져오기
@@ -338,19 +340,19 @@ void MovementSystem::checkBattleTrigger()
 			});
 
 		Timer::AddEvent(11.0f, [this, centerPos]() {
-			mOwner->GenerateEnemyRandomly(centerPos);
+			mOwner->GenerateEnemyMidBattle(centerPos);
 			});
 
 		Timer::AddEvent(26.0f, [this, centerPos]() {
-			mOwner->GenerateEnemyRandomly(centerPos);
+			mOwner->GenerateEnemyMidBattle(centerPos);
 			});
 
 		Timer::AddEvent(41.0f, [this, centerPos]() {
-			mOwner->GenerateEnemyRandomly(centerPos);
+			mOwner->GenerateEnemyMidBattle(centerPos);
 			});
 
 		Timer::AddEvent(56.0f, [this, centerPos]() {
-			mOwner->GenerateEnemyRandomly(centerPos);
+			mOwner->GenerateEnemyMidBattle(centerPos);
 			});
 
 		Timer::AddEvent(71.0f, [this]() {
@@ -446,9 +448,9 @@ void MovementSystem::checkBossTrigger()
 			auto cart = GetEntityByName(mRegistry, "Cart");
 			const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
 			auto cellPos = Vector3{ (cartPos.x / Values::TileSide) * Values::TileSide - Values::TileSide,
-				0.0f, 800.0f };
+				0.0f, 1600.0f };
 
-			for (int i = 0; i < 7; ++i)
+			for (int i = 0; i < 3; ++i)
 			{
 				auto entityID = mOwner->CreateCell(cellPos, true);
 				NOTIFY_CREATE_ENTITY_PACKET packet = {};
@@ -465,6 +467,32 @@ void MovementSystem::checkBossTrigger()
 			// 보스 엔티티에 스크립트 부착
 			auto boss = GetEntityByName(mRegistry, "Boss");
 			mRegistry.emplace<ScriptComponent>(boss, make_shared<Enemy>(mRegistry, boss));
+
+			// 바이러스 생성
+			mOwner->GenerateEnemyBossBattle(cartPos);
+
+			mbBossBattleEnemyGen = true;
 			});
+	}
+}
+
+void MovementSystem::generateEnemyBossBattle()
+{
+	if (!mbBossBattleEnemyGen)
+	{
+		return;
+	}
+
+	static float enemyGenTracker = 0.0f;
+
+	enemyGenTracker += Timer::GetDeltaTime();
+
+	if (enemyGenTracker > 20.0f)
+	{
+		auto cart = GetEntityByName(mRegistry, "Cart");
+		const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
+		mOwner->GenerateEnemyBossBattle(cartPos);
+
+		enemyGenTracker -= 20.0f;
 	}
 }

@@ -397,14 +397,24 @@ void Room::UpdateScore(const INT32 delta)
 	playState.bChanged = true;
 }
 
-void Room::GenerateEnemyRandomly(const Vector3& controlPoint)
+void Room::GenerateEnemyMidBattle(const Vector3& controlPoint)
 {
 	if (!mEnemySystem->IsGenerate())
 	{
 		return;
 	}
 
-	mEnemySystem->GenerateEnemyRandomly(controlPoint);
+	mEnemySystem->GenerateEnemyMidBattle(controlPoint);
+}
+
+void Room::GenerateEnemyBossBattle(const Vector3& controlPoint)
+{
+	if (!mEnemySystem->IsGenerate())
+	{
+		return;
+	}
+
+	mEnemySystem->GenerateEnemyBossBattle(controlPoint);
 }
 
 void Room::GenerateBoss()
