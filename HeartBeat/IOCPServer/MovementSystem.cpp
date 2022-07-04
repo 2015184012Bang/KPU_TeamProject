@@ -6,6 +6,7 @@
 #include "Tags.h"
 #include "Random.h"
 #include "Room.h"
+#include "Values.h"
 
 MovementSystem::MovementSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
@@ -438,5 +439,26 @@ void MovementSystem::checkBossTrigger()
 		mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE);
 
 		mOwner->GenerateBoss();
+
+		Timer::AddEvent(14.0f, [this]() {
+			auto cart = GetEntityByName(mRegistry, "Cart");
+			const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
+			auto cellPos = Vector3{ (cartPos.x / Values::TileSide) * Values::TileSide - Values::TileSide,
+				0.0f, 800.0f };
+
+			for (int i = 0; i < 7; ++i)
+			{
+				auto entityID = mOwner->CreateCell(cellPos, true);
+				NOTIFY_CREATE_ENTITY_PACKET packet = {};
+				packet.PacketSize = sizeof(packet);
+				packet.PacketID = NOTIFY_CREATE_ENTITY;
+				packet.EntityID = entityID;
+				packet.EntityType = static_cast<UINT8>(EntityType::WHITE_CELL);
+				packet.Position = cellPos;
+				mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
+
+				cellPos.z += 400.0f;
+			}
+			});
 	}
 }
