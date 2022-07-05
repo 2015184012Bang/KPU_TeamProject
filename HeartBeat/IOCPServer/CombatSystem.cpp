@@ -209,7 +209,12 @@ void CombatSystem::checkEnemyAttack()
 
 	for (auto& [deadID, eType] : deads)
 	{
-		doEntityDie(deadID, eType);
+		bool bGameOver = doEntityDie(deadID, eType);
+
+		if (bGameOver)
+		{
+			break;
+		}
 	}
 }
 
@@ -321,7 +326,12 @@ void CombatSystem::checkBossSkill()
 
 							if (playerHealth.Health <= 0)
 							{
-								doEntityDie(id, EntityType::PLAYER);
+								bool bGameOver = doEntityDie(id, EntityType::PLAYER);
+
+								if (bGameOver)
+								{
+									return;
+								}
 							}
 						}
 					}
@@ -357,7 +367,12 @@ void CombatSystem::checkBossSkill()
 
 						if (playerHealth.Health <= 0)
 						{
-							doEntityDie(id, EntityType::PLAYER);
+							bool bGameOver = doEntityDie(id, EntityType::PLAYER);
+
+							if (bGameOver)
+							{
+								return;
+							}
 						}
 					}
 				}
@@ -385,7 +400,12 @@ void CombatSystem::checkBossSkill()
 
 					if (playerHealth.Health <= 0)
 					{
-						doEntityDie(id, EntityType::PLAYER);
+						bool bGameOver = doEntityDie(id, EntityType::PLAYER);
+
+						if (bGameOver)
+						{
+							return;
+						}
 					}
 				}
 				});
@@ -400,7 +420,7 @@ void CombatSystem::checkBossSkill()
 	}
 }
 
-void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
+bool CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 {
 	switch (eType)
 	{
@@ -439,7 +459,7 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 		auto player = GetEntityByID(mRegistry, id);
 		if (mRegistry.any_of<Tag_Dead>(player))
 		{
-			return;
+			return false;
 		}
 
 		auto& combat = mRegistry.get<CombatComponent>(player);
@@ -477,9 +497,12 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 			if (mNumDeadPlayers == mOwner->GetCurrentUsers())
 			{
 				mOwner->DoGameOver();
+				return true;
 			}
 		}
 	}
 	break;
 	}
+
+	return false;
 }

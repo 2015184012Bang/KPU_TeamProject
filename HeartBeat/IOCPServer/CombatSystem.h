@@ -29,7 +29,9 @@ private:
 	void checkEnemyAttack();
 	void checkWhiteCellAttack();
 	void checkBossSkill();
-	void doEntityDie(const UINT32 id, EntityType eType);
+
+	// 게임오버 여부를 리턴
+	bool doEntityDie(const UINT32 id, EntityType eType);
 
 private:
 	entt::registry& mRegistry;
