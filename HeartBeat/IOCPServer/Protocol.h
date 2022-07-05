@@ -113,6 +113,7 @@ enum class EntityType : UINT8
 	VITAMIN,
 	CAFFEINE,
 	BOSS,
+	ATTACK_POINT,
 	END
 };
 

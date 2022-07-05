@@ -273,7 +273,20 @@ void CombatSystem::checkBossSkill()
 			auto players = mRegistry.view<Tag_Player, TransformComponent>();
 			for (auto [player, transform] : players.each())
 			{
+				if (mRegistry.any_of<Tag_Dead>(player))
+				{
+					continue;
+				}
+
 				const auto& playerPos = transform.Position;
+
+				NOTIFY_CREATE_ENTITY_PACKET packet = {};
+				packet.PacketSize = sizeof(packet);
+				packet.PacketID = NOTIFY_CREATE_ENTITY;
+				packet.EntityID = 0;
+				packet.EntityType = static_cast<UINT8>(EntityType::ATTACK_POINT);
+				packet.Position = Vector3{ playerPos.x, 10.0f, playerPos.z };
+				mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 
 				auto tail = mRegistry.create();
 				mRegistry.emplace<Tag_Tail>(tail);
@@ -285,11 +298,18 @@ void CombatSystem::checkBossSkill()
 
 			Timer::AddEvent(2.0f, [this]() {
 				auto tails = mRegistry.view<Tag_Tail, BoxComponent>();
-				auto players = mRegistry.view<Tag_Player, BoxComponent>();
+				auto players = mRegistry.view<Tag_Player>();
 				for (auto [tail, tailBox] : tails.each())
 				{
-					for (auto [player, playerBox] : players.each())
+					for (auto player : players)
 					{
+						if (mRegistry.any_of<Tag_Dead>(player))
+						{
+							continue;
+						}
+
+						const auto& playerBox = mRegistry.get<BoxComponent>(player);
+
 						if (Intersects(tailBox.WorldBox, playerBox.WorldBox))
 						{
 							auto& playerHealth = mRegistry.get<HealthComponent>(player);
@@ -321,6 +341,11 @@ void CombatSystem::checkBossSkill()
 				auto players = mRegistry.view<Tag_Player, TransformComponent>();
 				for (auto [player, transform] : players.each())
 				{
+					if (mRegistry.any_of<Tag_Dead>(player))
+					{
+						continue;
+					}
+
 					if (bossPos.x - transform.Position.x <= 1800.0f)
 					{
 						auto& playerHealth = mRegistry.get<HealthComponent>(player);
@@ -346,6 +371,11 @@ void CombatSystem::checkBossSkill()
 				auto players = mRegistry.view<Tag_Player, HealthComponent>();
 				for (auto [player, health] : players.each())
 				{
+					if (mRegistry.any_of<Tag_Dead>(player))
+					{
+						continue;
+					}
+
 					auto& playerHealth = mRegistry.get<HealthComponent>(player);
 					playerHealth.Health -= Values::BossPower * 2;
 					playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));

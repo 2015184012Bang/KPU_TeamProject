@@ -52,6 +52,9 @@ void GameScene::Exit()
 	SoundManager::StopSound("BattleTheme.mp3");
 
 	DestroyExclude<Tag_DontDestroyOnLoad>();
+	DestroyByComponent<Tag_StaticMesh>();
+	DestroyByComponent<Tag_SkeletalMesh>();
+	DestroyByComponent<Tag_Player>();
 }
 
 void GameScene::ProcessInput()
@@ -880,6 +883,33 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 	}
 	break;
 
+	case EntityType::ATTACK_POINT:
+	{
+		auto attackPoint = mOwner->CreateStaticMeshEntity(MESH("Attack_Point.mesh"),
+			TEXTURE("Red.png"));
+		auto& pointTransform = attackPoint.GetComponent<TransformComponent>();
+		pointTransform.Position = ncePacket->Position;
+
+		Timer::AddEvent(2.0f, [this, attackPoint]() {
+			Entity apoint = Entity{ attackPoint };
+
+			auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), TEXTURE("Temp.png"),
+				SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
+			auto& tailTransform = tail.GetComponent<TransformComponent>();
+			tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
+
+			auto& tailAnimator = tail.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&tailAnimator, ANIM("Tail_Attack.anim"));
+
+			Timer::AddEvent(2.0f, [tail]() {
+				DestroyEntity(tail);
+				});
+
+			DestroyEntity(attackPoint);
+			});
+	}
+	break;
+
 	default:
 		break;
 	}
@@ -896,7 +926,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	if (!ngoPacket->IsWin)
 	{
 		SoundManager::PlaySound("GameOver.mp3");
-		
+
 		auto players = gRegistry.view<Tag_Player, IDComponent>();
 		for (auto [player, id] : players.each())
 		{
@@ -1125,10 +1155,6 @@ void GameScene::doGameOver()
 {
 	mOwner->ResetCamera();
 
-	// Renderable things 삭제
-	DestroyByComponent<Tag_StaticMesh>();
-	DestroyByComponent<Tag_SkeletalMesh>();
-
 	// 재시작을 위해 엔티티 아이디 초기화
 	Values::EntityID = 3;
 
@@ -1338,34 +1364,6 @@ void GameScene::doBossSkill(const UINT8 skillType)
 	{
 	case 0:
 	{
-		auto players = gRegistry.view<Tag_Player, TransformComponent>();
-		for (auto [player, transform] : players.each())
-		{
-			auto attackPoint = mOwner->CreateStaticMeshEntity(MESH("Attack_Point.mesh"),
-				TEXTURE("Red.png"));
-			auto& pointTransform = attackPoint.GetComponent<TransformComponent>();
-			pointTransform.Position = transform.Position;
-			pointTransform.Position.y = 10.0f;
-
-			Timer::AddEvent(2.0f, [this, attackPoint]() {
-				Entity apoint = Entity{ attackPoint };
-
-				auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), TEXTURE("Temp.png"),
-					SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
-				auto& tailTransform = tail.GetComponent<TransformComponent>();
-				tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
-
-				auto& tailAnimator = tail.GetComponent<AnimatorComponent>();
-				Helpers::PlayAnimation(&tailAnimator, ANIM("Tail_Attack.anim"));
-
-				Timer::AddEvent(2.0f, [tail]() {
-					DestroyEntity(tail);
-					});
-
-				DestroyEntity(attackPoint);
-				});
-		}
-
 		auto boss = GetEntityByName("Boss");
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Attack1.anim"));
@@ -1570,7 +1568,7 @@ void GameScene::createAttackEffect(const UINT32 entityID)
 
 	auto player = GetEntityByID(entityID);
 	const auto& playerTransform = player.GetComponent<TransformComponent>();
-	
+
 	Quaternion q = Quaternion::CreateFromYawPitchRoll(XMConvertToRadians(playerTransform.Rotation.y),
 		0.0f, 0.0f);
 	Vector3 forward = Vector3::Transform(Vector3::UnitZ, q);
