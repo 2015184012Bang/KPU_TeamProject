@@ -695,6 +695,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Attack_Point.mesh");
 	MESH("Change_Effect.mesh");
 	MESH("Attack_Effect.mesh");
+	MESH("Sweep_Area.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");

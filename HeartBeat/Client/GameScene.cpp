@@ -1375,6 +1375,16 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		auto boss = GetEntityByName("Boss");
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Attack2.anim"));
+	
+		auto sweep = mOwner->CreateStaticMeshEntity(MESH("Sweep_Area.mesh"), TEXTURE("Red.png"));
+		auto& sweepTransform = sweep.GetComponent<TransformComponent>();
+		const auto& bossPos = boss.GetComponent<TransformComponent>().Position;
+		sweepTransform.Position = Vector3{ bossPos.x - 1400.0f, 10.0f, bossPos.z };
+		sweepTransform.Rotation.y = 90.0f;
+
+		Timer::AddEvent(1.0f, [sweep]() {
+			DestroyEntity(sweep);
+			});
 		break;
 	}
 	case 2: // 보스 필살기
