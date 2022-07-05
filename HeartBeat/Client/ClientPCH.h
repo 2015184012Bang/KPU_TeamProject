@@ -52,6 +52,7 @@ using uint64 = unsigned __int64;
 
 namespace fs = std::filesystem;
 
+using namespace std::chrono;
 using namespace std::string_literals;
 using namespace std::string_view_literals;
 

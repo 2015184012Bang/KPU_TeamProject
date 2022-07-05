@@ -268,6 +268,46 @@ void CombatSystem::checkBossSkill()
 		{
 		case BossSkill::SKILL_1:
 		{
+			auto players = mRegistry.view<Tag_Player, TransformComponent>();
+			for (auto [player, transform] : players.each())
+			{
+				const auto& playerPos = transform.Position;
+
+				auto tail = mRegistry.create();
+				mRegistry.emplace<Tag_Tail>(tail);
+				auto& tailTransform = mRegistry.emplace<TransformComponent>(tail);
+				tailTransform.Position = playerPos;
+				mRegistry.emplace<BoxComponent>(tail, &Box::GetBox("../Assets/Boxes/Tail.box"), 
+					tailTransform.Position, tailTransform.Yaw);
+			}
+
+			Timer::AddEvent(2.0f, [this]() {
+				auto tails = mRegistry.view<Tag_Tail, BoxComponent>();
+				auto players = mRegistry.view<Tag_Player, BoxComponent>();
+				for (auto [tail, tailBox] : tails.each())
+				{
+					for (auto [player, playerBox] : players.each())
+					{
+						if (Intersects(tailBox.WorldBox, playerBox.WorldBox))
+						{
+							auto& playerHealth = mRegistry.get<HealthComponent>(player);
+							playerHealth.Health -= 4;
+							playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
+
+							auto id = mRegistry.get<IDComponent>(player).ID;
+							mOwner->UpdatePlayerHpInState(playerHealth.Health, id);
+
+							if (playerHealth.Health <= 0)
+							{
+								doEntityDie(id, EntityType::PLAYER);
+							}
+						}
+					}
+
+					DestroyEntity(mRegistry, tail);
+				}
+				});
+
 			break;
 		}
 

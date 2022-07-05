@@ -5,22 +5,24 @@
 #endif
 
 #include <Windows.h>
+#include <functional>
+#include <queue>
 
 struct TimerEvent
 {
-	TimerEvent(const float dueTime, std::function<void()> func)
-		: DueTime(dueTime)
-		, Func(func) {}
+	TimerEvent(std::function<void()> func, const system_clock::time_point& actTime)
+		: Func{ func }
+		, ActTime{ actTime }
+	{}
 
-	float DueTime = 0.0f;
 	std::function<void()> Func;
+	system_clock::time_point ActTime = {};
 
-	bool operator<(const TimerEvent& other) const
+	bool operator < (const TimerEvent& other) const
 	{
-		return DueTime > other.DueTime;
+		return ActTime > other.ActTime;
 	}
 };
-
 class Timer
 {
 public:
@@ -38,5 +40,5 @@ private:
 	static uint64 sPrevCount;
 	static float sDeltaTime;
 	static int sFPS;
-	static std::vector<TimerEvent> sTimerEvents;
+	static std::priority_queue<TimerEvent> sTimerEvents;
 };

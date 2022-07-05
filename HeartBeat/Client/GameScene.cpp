@@ -1334,7 +1334,21 @@ void GameScene::doBossSkill(const UINT8 skillType)
 			pointTransform.Position = transform.Position;
 			pointTransform.Position.y = 10.0f;
 
-			Timer::AddEvent(2.0f, [attackPoint]() {
+			Timer::AddEvent(2.0f, [this, attackPoint]() {
+				Entity apoint = Entity{ attackPoint };
+
+				auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), TEXTURE("Temp.png"),
+					SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
+				auto& tailTransform = tail.GetComponent<TransformComponent>();
+				tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
+
+				auto& tailAnimator = tail.GetComponent<AnimatorComponent>();
+				Helpers::PlayAnimation(&tailAnimator, ANIM("Tail_Attack.anim"));
+
+				Timer::AddEvent(2.0f, [tail]() {
+					DestroyEntity(tail);
+					});
+
 				DestroyEntity(attackPoint);
 				});
 		}

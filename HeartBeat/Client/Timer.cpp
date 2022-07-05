@@ -5,7 +5,7 @@ uint64 Timer::sFrequency;
 uint64 Timer::sPrevCount;
 float Timer::sDeltaTime;
 int Timer::sFPS;
-std::vector<TimerEvent> Timer::sTimerEvents;
+std::priority_queue<TimerEvent> Timer::sTimerEvents;
 
 void Timer::Init()
 {
@@ -26,31 +26,35 @@ void Timer::Update()
 		sDeltaTime = 0.05f;
 	}
 
-	auto iter = sTimerEvents.begin();
-	while (iter != sTimerEvents.end())
-	{
-		iter->DueTime -= sDeltaTime;
-
-		if (iter->DueTime < 0.0f)
-		{
-			iter->Func();
-			iter = sTimerEvents.erase(iter);
-		}
-		else
-		{
-			++iter;
-		}
-	}
-
 	sPrevCount = currentCount;
+
+	while (!sTimerEvents.empty())
+	{
+		auto timerEvent = sTimerEvents.top();
+
+		if (system_clock::now() < timerEvent.ActTime)
+		{
+			break;
+		}
+
+		sTimerEvents.pop();
+		timerEvent.Func();
+	}
 }
 
 void Timer::Clear()
 {
-	sTimerEvents.clear();
+	while (!sTimerEvents.empty())
+	{
+		sTimerEvents.pop();
+	}
 }
 
 void Timer::AddEvent(float dueTime, std::function<void()> func)
 {
-	sTimerEvents.emplace_back(dueTime, func);
+	int sec = static_cast<int>(dueTime);
+	int milliSec = static_cast<int>((dueTime - sec) * 1000);
+
+	sTimerEvents.emplace(func, system_clock::now() + static_cast<seconds>(sec)
+		+ static_cast<milliseconds>(milliSec));
 }
