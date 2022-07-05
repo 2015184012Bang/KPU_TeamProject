@@ -596,18 +596,24 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 
 		mOwner->DestroyEntityAfter(neaPacket->HitterID, 1.1f);
 
-		Entity bomb = mOwner->CreateSkeletalMeshEntity(MESH("Bomb.mesh"),
-			TEXTURE("Bomb.png"), SKELETON("Bomb.skel"));
-		auto& transform = bomb.GetComponent<TransformComponent>();
-		transform.Position = hitter.GetComponent<TransformComponent>().Position;
-		auto& animator = bomb.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Bomb_Explode.anim"));
+		auto victimID = neaPacket->VictimID;
+		Timer::AddEvent(1.0f, [this, victimID]() {
+			Entity bomb = mOwner->CreateSkeletalMeshEntity(MESH("Bomb.mesh"),
+				TEXTURE("Bomb.png"), SKELETON("Bomb.skel"));
 
-		Timer::AddEvent(1.0f, [this, bomb]() {
-			if (gRegistry.valid(bomb))
-			{
-				DestroyEntity(bomb);
-			}
+			auto victim = GetEntityByID(victimID);
+
+			auto& transform = bomb.GetComponent<TransformComponent>();
+			transform.Position = victim.GetComponent<TransformComponent>().Position;
+			auto& animator = bomb.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Bomb_Explode.anim"));
+
+			Timer::AddEvent(1.0f, [this, bomb]() {
+				if (gRegistry.valid(bomb))
+				{
+					DestroyEntity(bomb);
+				}
+				});
 			});
 	}
 }
