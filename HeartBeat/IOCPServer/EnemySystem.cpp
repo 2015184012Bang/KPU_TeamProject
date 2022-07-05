@@ -139,6 +139,9 @@ entt::entity EnemySystem::GenerateBoss()
 
 	auto entity = createEnemy(position, EntityType::BOSS);
 
+	// 본격적인 전투 시작 전엔 보스 무적 상태로 만듦.
+	mRegistry.emplace<Tag_Invincible>(entity);
+
 	return entity;
 }
 

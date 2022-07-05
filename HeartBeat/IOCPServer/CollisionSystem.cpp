@@ -99,9 +99,15 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		}
 	}
 
+	// 히트박스 - 보스
 	auto boss = mRegistry.view<Tag_Boss, BoxComponent>();
 	for (auto [entity, enemyBox] : boss.each())
 	{
+		if (mRegistry.any_of<Tag_Invincible>(entity))
+		{
+			break;
+		}
+
 		if (Intersects(hitbox, enemyBox.WorldBox))
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
@@ -195,6 +201,11 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 	auto boss = mRegistry.view<Tag_Boss, TransformComponent>();
 	for (auto [entity, transform] : boss.each())
 	{
+		if (mRegistry.any_of<Tag_Invincible>(entity))
+		{
+			return;
+		}
+
 		float distSq = Vector3::DistanceSquared(characterPosition, transform.Position);
 
 		if (transform.Position.x - characterPosition.x <= 1300.0f)

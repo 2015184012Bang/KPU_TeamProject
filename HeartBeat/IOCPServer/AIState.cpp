@@ -464,7 +464,7 @@ void BossIdleState::Update()
 	mElapsed += Timer::GetDeltaTime();
 	if (mElapsed > 5.0f)
 	{
-		auto randInt = Random::RandInt(0, 0);
+		auto randInt = Random::RandInt(0, 1);
 
 		if (0 == randInt)
 		{
@@ -501,6 +501,7 @@ void BossSkillSpecialState::Enter()
 	mElapsed = 0.0f;
 
 	owner->AddComponent<BossSkillComponent>(BossSkill::SKILL_SPECIAL);
+	owner->AddTag<Tag_Invincible>();
 }
 
 void BossSkillSpecialState::Update()
@@ -518,6 +519,17 @@ void BossSkillSpecialState::Update()
 		owner->ChangeState("BossIdleState");
 		return;
 	}
+}
+
+void BossSkillSpecialState::Exit()
+{
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
+	
+	owner->RemoveComponent<Tag_Invincible>();
 }
 
 /************************************************************************/

@@ -132,7 +132,7 @@ public:
 
 	virtual void Enter() override;
 	virtual void Update() override;
-	virtual void Exit() override {};
+	virtual void Exit() override;
 
 private:
 	weak_ptr<Enemy> mOwner;

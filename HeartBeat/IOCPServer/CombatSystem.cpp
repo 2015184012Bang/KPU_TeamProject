@@ -291,7 +291,7 @@ void CombatSystem::checkBossSkill()
 						if (Intersects(tailBox.WorldBox, playerBox.WorldBox))
 						{
 							auto& playerHealth = mRegistry.get<HealthComponent>(player);
-							playerHealth.Health -= 4;
+							playerHealth.Health -= Values::BossPower;
 							playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
 
 							auto id = mRegistry.get<IDComponent>(player).ID;
@@ -322,7 +322,7 @@ void CombatSystem::checkBossSkill()
 					if (bossPos.x - transform.Position.x <= 1800.0f)
 					{
 						auto& playerHealth = mRegistry.get<HealthComponent>(player);
-						playerHealth.Health -= 4;
+						playerHealth.Health -= Values::BossPower;
 						playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
 
 						auto id = mRegistry.get<IDComponent>(player).ID;
@@ -345,7 +345,7 @@ void CombatSystem::checkBossSkill()
 				for (auto [player, health] : players.each())
 				{
 					auto& playerHealth = mRegistry.get<HealthComponent>(player);
-					playerHealth.Health -= 8;
+					playerHealth.Health -= Values::BossPower * 2;
 					playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
 
 					auto id = mRegistry.get<IDComponent>(player).ID;

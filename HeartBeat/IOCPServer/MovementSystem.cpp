@@ -468,6 +468,9 @@ void MovementSystem::checkBossTrigger()
 			auto boss = GetEntityByName(mRegistry, "Boss");
 			mRegistry.emplace<ScriptComponent>(boss, make_shared<Enemy>(mRegistry, boss));
 
+			// 보스 무적 해제
+			mRegistry.remove<Tag_Invincible>(boss);
+
 			// 바이러스 생성
 			mOwner->GenerateEnemyBossBattle(cartPos);
 

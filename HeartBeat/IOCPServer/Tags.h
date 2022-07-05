@@ -21,3 +21,4 @@ struct Tag_Stop {};
 struct Tag_Dead {};
 struct Tag_WhiteCell {};
 struct Tag_Tail {};
+struct Tag_Invincible {};
