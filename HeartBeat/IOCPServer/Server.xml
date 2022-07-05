@@ -19,7 +19,7 @@
     <Skill_Buff_DR>11</Skill_Buff_DR>
     <TankSpeed>400</TankSpeed>
     <TankHealth>50</TankHealth>
-    <CellSpeed>500</CellSpeed>
+    <CellSpeed>700</CellSpeed>
     <CellPower>1</CellPower>
     <CellHealth>3</CellHealth>
     <EnemySpeed>500</EnemySpeed>
