@@ -890,6 +890,12 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	if (!ngoPacket->IsWin)
 	{
 		SoundManager::PlaySound("GameOver.mp3");
+		
+		auto players = gRegistry.view<Tag_Player, IDComponent>();
+		for (auto [player, id] : players.each())
+		{
+			updateHpUI(0, id.ID);
+		}
 	}
 
 	for (auto& hp : mTankHps)
