@@ -1393,6 +1393,10 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Skill.anim"));
 
+		Timer::AddEvent(1.0f, []() {
+			SoundManager::PlaySound("BossSpecial.mp3");
+			});
+
 		Timer::AddEvent(4.0f, [this]() {
 			auto boss = GetEntityByName("Boss");
 			auto& meshRenderer = boss.GetComponent<MeshRendererComponent>();

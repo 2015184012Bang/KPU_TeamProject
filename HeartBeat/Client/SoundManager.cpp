@@ -110,7 +110,7 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/Skill2.mp3");
 	CreateSound("../Assets/Sounds/Skill3.mp3");
 	CreateSound("../Assets/Sounds/Warning.mp3");
-	CreateSound("../Assets/Sounds/BattleTheme.mp3");
+	CreateSound("../Assets/Sounds/BattleTheme.mp3", true);
 	CreateSound("../Assets/Sounds/ButtonClick.mp3");
 	CreateSound("../Assets/Sounds/GameOver.mp3", true);
 	CreateSound("../Assets/Sounds/MissileShot.mp3");
@@ -122,7 +122,8 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/DoorOpen.mp3");
 	CreateSound("../Assets/Sounds/GetVitamin.mp3");
 	CreateSound("../Assets/Sounds/BossSpawn.mp3");
-	CreateSound("../Assets/Sounds/BossTheme.mp3");
+	CreateSound("../Assets/Sounds/BossTheme.mp3", true);
 	CreateSound("../Assets/Sounds/GameWin.mp3");
 	CreateSound("../Assets/Sounds/BossDead.mp3");
+	CreateSound("../Assets/Sounds/BossSpecial.mp3");
 }
