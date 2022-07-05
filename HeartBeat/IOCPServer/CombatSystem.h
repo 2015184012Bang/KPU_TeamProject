@@ -36,5 +36,7 @@ private:
 	shared_ptr<Room> mOwner = nullptr;
 
 	entt::entity mPlayState = entt::null;
+
+	INT8 mNumDeadPlayers = 0;
 };
 

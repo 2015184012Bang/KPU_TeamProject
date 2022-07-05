@@ -121,6 +121,8 @@ void CombatSystem::Start()
 	// PlayState id 캐싱
 	mPlayState = GetEntityByName(mRegistry, "PlayState");
 	ASSERT(mRegistry.valid(mPlayState), "Invalid entity!");
+	
+	mNumDeadPlayers = 0;
 }
 
 void CombatSystem::updateCooldown()
@@ -439,9 +441,10 @@ void CombatSystem::doEntityDie(const UINT32 id, EntityType eType)
 		{
 			mOwner->SendDeleteEntityPacket(id, EntityType::PLAYER);
 
+			mNumDeadPlayers++;
+
 			// 모든 플레이어가 Life를 소진했다면 게임오버 처리
-			auto deads = mRegistry.view<Tag_Dead>();
-			if (deads.size() == mOwner->GetCurrentUsers())
+			if (mNumDeadPlayers == mOwner->GetCurrentUsers())
 			{
 				mOwner->DoGameOver();
 			}
