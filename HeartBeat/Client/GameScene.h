@@ -89,6 +89,8 @@ private:
     vector<Entity> mTankHps;
 
     bool mbIsGameOver = false;
+
+    int mBossSpecialSkillUsageCount = 0;
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);

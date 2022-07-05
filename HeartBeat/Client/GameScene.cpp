@@ -1369,8 +1369,6 @@ void GameScene::doBossSkill(const UINT8 skillType)
 	}
 	case 2: // 보스 필살기
 	{
-		static int skillCnt = 0;
-
 		auto boss = GetEntityByName("Boss");
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Skill.anim"));
@@ -1378,8 +1376,8 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		Timer::AddEvent(4.0f, [this]() {
 			auto boss = GetEntityByName("Boss");
 			auto& meshRenderer = boss.GetComponent<MeshRendererComponent>();
-			meshRenderer.Tex = skillCnt == 0 ? TEXTURE("Orange.png") : TEXTURE("Red.png");
-			skillCnt++;
+			meshRenderer.Tex = mBossSpecialSkillUsageCount == 0 ? TEXTURE("Orange.png") : TEXTURE("Red.png");
+			mBossSpecialSkillUsageCount++;
 			});
 		break;
 	}
