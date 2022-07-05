@@ -694,6 +694,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("BWall.mesh");
 	MESH("Attack_Point.mesh");
 	MESH("Change_Effect.mesh");
+	MESH("Attack_Effect.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -716,6 +717,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Skill_Effect_Heal.skel");
 	SKELETON("BWall.skel");
 	SKELETON("Change_Effect.skel");
+	SKELETON("Attack_Effect.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");

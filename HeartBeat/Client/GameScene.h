@@ -42,6 +42,7 @@ private:
 
     void createUI();
     void createHpbar();
+    void createAttackEffect(const UINT32 entityID);
     void createDialogue(Texture* dia, int drawOrder);
     void clearDialogue();
 

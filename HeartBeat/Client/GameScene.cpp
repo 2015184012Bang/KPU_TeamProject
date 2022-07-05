@@ -559,6 +559,7 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 			naPacket->EntityID == mOwner->GetClientID())
 		{
 			SoundManager::PlaySound("Punch.mp3", 0.15f);
+			createAttackEffect(naPacket->EntityID);
 		}
 	}
 }
@@ -1549,6 +1550,30 @@ void GameScene::createHpbar()
 			cooldownRect.Position.y = Application::GetScreenHeight() - 120.0f - 55.0f;
 		}
 	}
+}
+
+void GameScene::createAttackEffect(const UINT32 entityID)
+{
+	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Attack_Effect.mesh"), TEXTURE("Temp.png"),
+		SKELETON("Attack_Effect.skel"));
+	auto& effectTransform = effect.GetComponent<TransformComponent>();
+
+	auto player = GetEntityByID(entityID);
+	const auto& playerTransform = player.GetComponent<TransformComponent>();
+	
+	Quaternion q = Quaternion::CreateFromYawPitchRoll(XMConvertToRadians(playerTransform.Rotation.y),
+		0.0f, 0.0f);
+	Vector3 forward = Vector3::Transform(Vector3::UnitZ, q);
+
+	effectTransform.Position = playerTransform.Position + forward * 400.0f;
+	effectTransform.Position.y = 200.0f;
+
+	auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&effectAnimator, ANIM("Attack_Effect.anim"));
+
+	Timer::AddEvent(0.7f, [effect]() {
+		DestroyEntity(effect);
+		});
 }
 
 void GameScene::createDialogue(Texture* dia, int drawOrder)

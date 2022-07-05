@@ -488,6 +488,9 @@ void ResourceManager::MakeAnimTransitions()
 
 		Animation* changeAnim = ANIM("Change_Effect.anim");
 		changeAnim->SetLoop(false);
+
+		Animation* attackAnim = ANIM("Attack_Effect.anim");
+		attackAnim->SetLoop(false);
 	}
 }
 
