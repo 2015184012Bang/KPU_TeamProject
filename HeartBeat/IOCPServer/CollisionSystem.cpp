@@ -111,7 +111,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 		if (Intersects(hitbox, enemyBox.WorldBox))
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
-			health.Health -= baseAttackDmg;
+			health.Health -= 1; // 모든 공격은 보스에게 1의 피해를 준다.
 
 			if (health.Health <= 0)
 			{
@@ -211,7 +211,7 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 		if (transform.Position.x - characterPosition.x <= 1300.0f)
 		{
 			auto& health = mRegistry.get<HealthComponent>(entity);
-			health.Health -= 3;
+			health.Health -= 1; // 모든 공격은 보스에게 1의 피해를 준다.
 
 			if (health.Health <= 0)
 			{
