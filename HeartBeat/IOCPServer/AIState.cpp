@@ -462,7 +462,7 @@ void BossIdleState::Update()
 	}
 
 	mElapsed += Timer::GetDeltaTime();
-	if (mElapsed > 5.0f)
+	if (mElapsed > 8.0f)
 	{
 		auto randInt = Random::RandInt(0, 1);
 

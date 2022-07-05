@@ -18,7 +18,7 @@
     <Skill_Buff_CD>20</Skill_Buff_CD>
     <Skill_Buff_DR>11</Skill_Buff_DR>
     <TankSpeed>400</TankSpeed>
-    <TankHealth>30</TankHealth>
+    <TankHealth>50</TankHealth>
     <CellSpeed>500</CellSpeed>
     <CellPower>1</CellPower>
     <CellHealth>3</CellHealth>
