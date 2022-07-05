@@ -693,6 +693,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Skill_Effect_Heal.mesh");
 	MESH("BWall.mesh");
 	MESH("Attack_Point.mesh");
+	MESH("Change_Effect.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -714,6 +715,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Skill_Effect_Sup.skel");
 	SKELETON("Skill_Effect_Heal.skel");
 	SKELETON("BWall.skel");
+	SKELETON("Change_Effect.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");
@@ -727,6 +729,7 @@ void Renderer::loadAllAssetsFromFile()
 	BOX("Tank.box");
 	BOX("Virus.box");
 	BOX("Wall.box");
+	BOX("Tail.box");
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");

@@ -11,6 +11,7 @@
 #include "Helpers.h"
 #include "Tags.h"
 #include "SoundManager.h"
+#include "Timer.h"
 
 using namespace std::string_view_literals;
 
@@ -189,6 +190,9 @@ void UpgradeScene::createUI()
 			packet.PacketID = REQUEST_UPGRADE;
 			packet.UpgradePreset = static_cast<UINT8>(UpgradePreset::ATTACK);
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), packet.PacketSize);
+
+			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+			createChangeEffect(myPos);
 			});
 	}
 
@@ -205,6 +209,9 @@ void UpgradeScene::createUI()
 			packet.PacketID = REQUEST_UPGRADE;
 			packet.UpgradePreset = static_cast<UINT8>(UpgradePreset::HEAL);
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), packet.PacketSize);
+
+			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+			createChangeEffect(myPos);
 			});
 	}
 
@@ -221,6 +228,24 @@ void UpgradeScene::createUI()
 			packet.PacketID = REQUEST_UPGRADE;
 			packet.UpgradePreset = static_cast<UINT8>(UpgradePreset::SUPPORT);
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), packet.PacketSize);
+
+			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+			createChangeEffect(myPos);
 			});
 	}
+}
+
+void UpgradeScene::createChangeEffect(const Vector3& pos)
+{
+	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Change_Effect.mesh"), TEXTURE("Temp.png"),
+		SKELETON("Change_Effect.skel"));
+	auto& effectTransform = effect.GetComponent<TransformComponent>();
+	effectTransform.Position = pos;
+
+	auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+	Helpers::PlayAnimation(&effectAnimator, ANIM("Change_Effect.anim"));
+
+	Timer::AddEvent(0.5f, [this, effect]() {
+		DestroyEntity(effect);
+		});
 }

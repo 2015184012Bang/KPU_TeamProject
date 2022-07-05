@@ -23,7 +23,10 @@ void DestroyEntityByID(const uint32 id)
 
 void DestroyEntity(const entt::entity entity)
 {
-	gRegistry.destroy(entity);
+	if (gRegistry.valid(entity))
+	{
+		gRegistry.destroy(entity);
+	}
 }
 
 Entity GetEntityByID(const uint32 id)

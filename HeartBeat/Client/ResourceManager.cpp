@@ -485,6 +485,9 @@ void ResourceManager::MakeAnimTransitions()
 
 		Animation* bwallAnim = ANIM("BWall_Break.anim");
 		bwallAnim->SetLoop(false);
+
+		Animation* changeAnim = ANIM("Change_Effect.anim");
+		changeAnim->SetLoop(false);
 	}
 }
 

@@ -18,6 +18,7 @@ public:
 
 private:
     void createUI();
+    void createChangeEffect(const Vector3& pos);
 
     void equipPresetToCharacter(Entity& target, UpgradePreset preset);
     void processNotifyUpgrade(const PACKET& packet);
