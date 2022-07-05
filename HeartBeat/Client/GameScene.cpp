@@ -1324,7 +1324,27 @@ void GameScene::doBossSkill(const UINT8 skillType)
 	switch (skillType)
 	{
 	case 0:
+	{
+		auto players = gRegistry.view<Tag_Player, TransformComponent>();
+		for (auto [player, transform] : players.each())
+		{
+			auto attackPoint = mOwner->CreateStaticMeshEntity(MESH("Attack_Point.mesh"),
+				TEXTURE("Red.png"));
+			auto& pointTransform = attackPoint.GetComponent<TransformComponent>();
+			pointTransform.Position = transform.Position;
+			pointTransform.Position.y = 10.0f;
+
+			Timer::AddEvent(2.0f, [attackPoint]() {
+				DestroyEntity(attackPoint);
+				});
+		}
+
+		auto boss = GetEntityByName("Boss");
+		auto& animator = boss.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Boss_Attack1.anim"));
+
 		break;
+	}
 	case 1:
 	{
 		auto boss = GetEntityByName("Boss");

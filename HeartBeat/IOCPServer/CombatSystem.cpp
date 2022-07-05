@@ -267,7 +267,9 @@ void CombatSystem::checkBossSkill()
 		switch (skill.SkillNumber)
 		{
 		case BossSkill::SKILL_1:
+		{
 			break;
+		}
 
 		case BossSkill::SKILL_2:
 		{
@@ -293,8 +295,8 @@ void CombatSystem::checkBossSkill()
 					}
 				}
 				});
+			break;
 		}
-		break;
 
 		case BossSkill::SKILL_SPECIAL:
 		{
@@ -315,8 +317,8 @@ void CombatSystem::checkBossSkill()
 					}
 				}
 				});
+			break;
 		}
-		break;
 
 		default:
 			break;

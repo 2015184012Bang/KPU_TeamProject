@@ -692,6 +692,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Skill_Effect_Sup.mesh");
 	MESH("Skill_Effect_Heal.mesh");
 	MESH("BWall.mesh");
+	MESH("Attack_Point.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");

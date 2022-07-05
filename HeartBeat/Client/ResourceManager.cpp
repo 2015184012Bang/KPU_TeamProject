@@ -457,16 +457,25 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* startAnim = ANIM("Boss_Start.anim");
 		Animation* deadAnim = ANIM("Boss_Dead.anim");
 		Animation* skillAnim = ANIM("Boss_Skill.anim");
+		Animation* attack1Anim = ANIM("Boss_Attack1.anim");
 		Animation* attack2Anim = ANIM("Boss_Attack2.anim");
 
 		startAnim->SetLoop(false);
 		deadAnim->SetLoop(false);
 		skillAnim->SetLoop(false);
+		attack1Anim->SetLoop(false);
 		attack2Anim->SetLoop(false);
 
 		startAnim->AddTransition("WhenEnd", idleAnim);
 		skillAnim->AddTransition("WhenEnd", idleAnim);
+		attack1Anim->AddTransition("WhenEnd", idleAnim);
 		attack2Anim->AddTransition("WhenEnd", idleAnim);
+	}
+
+	// ≤ø∏Æ
+	{
+		Animation* attackAnim = ANIM("Tail_Attack.anim");
+		attackAnim->SetLoop(false);
 	}
 
 	// ¿Ã∆Â∆Æ

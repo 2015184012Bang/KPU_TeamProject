@@ -462,9 +462,9 @@ void BossIdleState::Update()
 	}
 
 	mElapsed += Timer::GetDeltaTime();
-	if (mElapsed > 10.0f)
+	if (mElapsed > 5.0f)
 	{
-		auto randInt = Random::RandInt(1, 1);
+		auto randInt = Random::RandInt(0, 0);
 
 		if (0 == randInt)
 		{
@@ -533,12 +533,32 @@ BossSkillOneState::BossSkillOneState(shared_ptr<Enemy> owner)
 
 void BossSkillOneState::Enter()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
+	mElapsed = 0.0f;
+
+	owner->AddComponent<BossSkillComponent>(BossSkill::SKILL_1);
 }
 
 void BossSkillOneState::Update()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
+	mElapsed += Timer::GetDeltaTime();
+
+	if (mElapsed > 3.5f)
+	{
+		owner->ChangeState("BossIdleState");
+		return;
+	}
 }
 
 /************************************************************************/
