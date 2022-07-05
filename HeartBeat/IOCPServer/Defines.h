@@ -24,3 +24,11 @@ enum class UpgradePreset : UINT8
 	HEAL,
 	SUPPORT,
 };
+
+enum class BossSkill : INT8
+{
+	SKILL_1,
+	SKILL_2,
+	SKILL_SPECIAL,
+	NONE,
+};

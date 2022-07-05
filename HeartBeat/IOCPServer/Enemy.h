@@ -129,13 +129,13 @@ private:
 			auto bossIdleState = make_shared<BossIdleState>(static_pointer_cast<Enemy>(shared_from_this()));
 			AddState(bossIdleState);
 
-			auto bossSpecialState = make_shared<BossSpecialAttackState>(static_pointer_cast<Enemy>(shared_from_this()));
+			auto bossSpecialState = make_shared<BossSkillSpecialState>(static_pointer_cast<Enemy>(shared_from_this()));
 			AddState(bossSpecialState);
 
-			auto bossOneState = make_shared<BossAttackOneState>(static_pointer_cast<Enemy>(shared_from_this()));
+			auto bossOneState = make_shared<BossSkillOneState>(static_pointer_cast<Enemy>(shared_from_this()));
 			AddState(bossOneState);
 
-			auto bossTwoState = make_shared<BossAttackTwoState>(static_pointer_cast<Enemy>(shared_from_this()));
+			auto bossTwoState = make_shared<BossSkillTwoState>(static_pointer_cast<Enemy>(shared_from_this()));
 			AddState(bossTwoState);
 
 			StartState("BossIdleState");

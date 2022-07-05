@@ -66,3 +66,9 @@ IHitYouComponent::IHitYouComponent(UINT32 hitter, UINT32 victim)
 {
 
 }
+
+BossSkillComponent::BossSkillComponent(const BossSkill skillNum)
+	: SkillNumber{ skillNum }
+{
+
+}

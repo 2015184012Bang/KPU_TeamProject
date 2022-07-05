@@ -124,3 +124,11 @@ struct PlayStateComponent
 
 	bool bChanged = false;
 };
+
+struct BossSkillComponent
+{
+	BossSkillComponent() = default;
+	BossSkillComponent(const BossSkill skillNum);
+
+	BossSkill SkillNumber = BossSkill::NONE;
+};

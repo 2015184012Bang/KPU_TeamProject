@@ -18,7 +18,7 @@ void CombatSystem::Update()
 	updateCooldown();
 	checkWhiteCellAttack();
 	checkEnemyAttack();
-	checkBossSpecialSkill();
+	checkBossSkill();
 }
 
 void CombatSystem::SetPreset(const INT8 clientID, UpgradePreset preset)
@@ -252,42 +252,77 @@ void CombatSystem::checkWhiteCellAttack()
 }
 
 
-void CombatSystem::checkBossSpecialSkill()
+void CombatSystem::checkBossSkill()
 {
-	auto view = mRegistry.view<Tag_BossSpecialSkill>();
-	
-	for (auto entity : view)
+	auto view = mRegistry.view<BossSkillComponent>();
+	for (auto [entity, skill] : view.each())
 	{
-		DestroyEntity(mRegistry, entity);
-
-		auto boss = GetEntityByName(mRegistry, "Boss");
-
 		NOTIFY_SKILL_PACKET packet = {};
 		packet.PacketSize = sizeof(packet);
 		packet.PacketID = NOTIFY_SKILL;
-		packet.EntityID = mRegistry.get<IDComponent>(boss).ID;
-		packet.Preset = 2 /* Special Skill */;
+		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
+		packet.Preset = static_cast<UINT8>(skill.SkillNumber);
 		mOwner->Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 
-		Timer::AddEvent(2.0f, [this]() {
-			auto players = mRegistry.view<Tag_Player, HealthComponent>();
-			for (auto [entity, health] : players.each())
-			{
-				health.Health -= 8;
-				if (health.Health < 0)
-				{
-					health.Health = 0;
-				}
+		switch (skill.SkillNumber)
+		{
+		case BossSkill::SKILL_1:
+			break;
 
-				auto id = mRegistry.get<IDComponent>(entity).ID;
-				mOwner->UpdatePlayerHpInState(health.Health, id);
-
-				if (health.Health <= 0)
+		case BossSkill::SKILL_2:
+		{
+			auto boss = entity;
+			Timer::AddEvent(1.0f, [this, boss]() {
+				const auto& bossPos = mRegistry.get<TransformComponent>(boss).Position;
+				auto players = mRegistry.view<Tag_Player, TransformComponent>();
+				for (auto [player, transform] : players.each())
 				{
-					doEntityDie(id, EntityType::PLAYER);
+					if (bossPos.x - transform.Position.x <= 1800.0f)
+					{
+						auto& playerHealth = mRegistry.get<HealthComponent>(player);
+						playerHealth.Health -= 4;
+						playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
+
+						auto id = mRegistry.get<IDComponent>(player).ID;
+						mOwner->UpdatePlayerHpInState(playerHealth.Health, id);
+
+						if (playerHealth.Health <= 0)
+						{
+							doEntityDie(id, EntityType::PLAYER);
+						}
+					}
 				}
-			}
-			});
+				});
+		}
+		break;
+
+		case BossSkill::SKILL_SPECIAL:
+		{
+			Timer::AddEvent(2.0f, [this]() {
+				auto players = mRegistry.view<Tag_Player, HealthComponent>();
+				for (auto [player, health] : players.each())
+				{
+					auto& playerHealth = mRegistry.get<HealthComponent>(player);
+					playerHealth.Health -= 8;
+					playerHealth.Health = clamp(playerHealth.Health, static_cast<INT8>(0), static_cast<INT8>(Values::PlayerHealth));
+
+					auto id = mRegistry.get<IDComponent>(player).ID;
+					mOwner->UpdatePlayerHpInState(playerHealth.Health, id);
+
+					if (playerHealth.Health <= 0)
+					{
+						doEntityDie(id, EntityType::PLAYER);
+					}
+				}
+				});
+		}
+		break;
+
+		default:
+			break;
+		}
+
+		mRegistry.remove<BossSkillComponent>(entity);
 	}
 }
 

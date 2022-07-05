@@ -1326,7 +1326,12 @@ void GameScene::doBossSkill(const UINT8 skillType)
 	case 0:
 		break;
 	case 1:
+	{
+		auto boss = GetEntityByName("Boss");
+		auto& animator = boss.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Boss_Attack2.anim"));
 		break;
+	}
 	case 2: // 보스 필살기
 	{
 		static int skillCnt = 0;

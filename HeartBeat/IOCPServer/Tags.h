@@ -20,4 +20,3 @@ struct Tag_Item {};
 struct Tag_Stop {};
 struct Tag_Dead {};
 struct Tag_WhiteCell {};
-struct Tag_BossSpecialSkill {};

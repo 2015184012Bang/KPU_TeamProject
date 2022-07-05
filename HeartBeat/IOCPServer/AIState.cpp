@@ -450,52 +450,47 @@ void BossIdleState::Update()
 	if (health.Health <= 70 && !bFirstSpecialAttackDone)
 	{
 		bFirstSpecialAttackDone = true;
-		owner->ChangeState("BossSpecialAttackState");
+		owner->ChangeState("BossSkillSpecialState");
 		return;
 	}
 
 	if (health.Health <= 30 && !bSecondSpecialAttackDone)
 	{
 		bSecondSpecialAttackDone = true;
-		owner->ChangeState("BossSpecialAttackState");
+		owner->ChangeState("BossSkillSpecialState");
 		return;
 	}
 
 	mElapsed += Timer::GetDeltaTime();
 	if (mElapsed > 10.0f)
 	{
-		auto randInt = Random::RandInt(0, 1);
+		auto randInt = Random::RandInt(1, 1);
 
 		if (0 == randInt)
 		{
-			//owner->ChangeState("BossAttackOneState");
+			owner->ChangeState("BossSkillOneState");
 			return;
 		}
 		else
 		{
-			//owner->ChangeState("BossAttackTwoState");
+			owner->ChangeState("BossSkillTwoState");
 			return;
 		}
 	}
-}
-
-void BossIdleState::Exit()
-{
-
 }
 
 /************************************************************************/
 /* BossSpecialAttackState                                               */
 /************************************************************************/
 
-BossSpecialAttackState::BossSpecialAttackState(shared_ptr<Enemy> owner)
-	: AIState{ "BossSpecialAttackState" }
+BossSkillSpecialState::BossSkillSpecialState(shared_ptr<Enemy> owner)
+	: AIState{ "BossSkillSpecialState" }
 	, mOwner{ owner }
 {
 
 }
 
-void BossSpecialAttackState::Enter()
+void BossSkillSpecialState::Enter()
 {
 	auto owner = mOwner.lock();
 	if (!owner)
@@ -505,12 +500,10 @@ void BossSpecialAttackState::Enter()
 
 	mElapsed = 0.0f;
 
-	auto& registry = owner->GetRegistry();
-	auto entity = registry.create();
-	registry.emplace<Tag_BossSpecialSkill>(entity);
+	owner->AddComponent<BossSkillComponent>(BossSkill::SKILL_SPECIAL);
 }
 
-void BossSpecialAttackState::Update()
+void BossSkillSpecialState::Update()
 {
 	auto owner = mOwner.lock();
 	if (!owner)
@@ -527,59 +520,64 @@ void BossSpecialAttackState::Update()
 	}
 }
 
-void BossSpecialAttackState::Exit()
-{
-
-}
-
 /************************************************************************/
-/* BossAttackOneState                                                   */
+/* BossSkillOneState                                                    */
 /************************************************************************/
 
-BossAttackOneState::BossAttackOneState(shared_ptr<Enemy> owner)
-	: AIState{ "BossAttackOneState" }
+BossSkillOneState::BossSkillOneState(shared_ptr<Enemy> owner)
+	: AIState{ "BossSkillOneState" }
 	, mOwner{ owner }
 {
 
 }
 
-void BossAttackOneState::Enter()
+void BossSkillOneState::Enter()
 {
 
 }
 
-void BossAttackOneState::Update()
-{
-
-}
-
-void BossAttackOneState::Exit()
+void BossSkillOneState::Update()
 {
 
 }
 
 /************************************************************************/
-/* BossAttackTwoState                                                   */
+/* BossSkillTwoState                                                    */
 /************************************************************************/
 
-BossAttackTwoState::BossAttackTwoState(shared_ptr<Enemy> owner)
-	: AIState{ "BossAttackTwoState" }
+BossSkillTwoState::BossSkillTwoState(shared_ptr<Enemy> owner)
+	: AIState{ "BossSkillTwoState" }
 	, mOwner{ owner }
 {
 
 }
 
-void BossAttackTwoState::Enter()
+void BossSkillTwoState::Enter()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
+	mElapsed = 0.0f;
+
+	owner->AddComponent<BossSkillComponent>(BossSkill::SKILL_2);
 }
 
-void BossAttackTwoState::Update()
+void BossSkillTwoState::Update()
 {
+	auto owner = mOwner.lock();
+	if (!owner)
+	{
+		return;
+	}
 
-}
+	mElapsed += Timer::GetDeltaTime();
 
-void BossAttackTwoState::Exit()
-{
-
+	if (mElapsed > 2.0f)
+	{
+		owner->ChangeState("BossIdleState");
+		return;
+	}
 }

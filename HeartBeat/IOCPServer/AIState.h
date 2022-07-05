@@ -110,7 +110,7 @@ public:
 
 	virtual void Enter() override;
 	virtual void Update() override;
-	virtual void Exit() override;
+	virtual void Exit() override {};
 
 private:
 	weak_ptr<Enemy> mOwner;
@@ -121,18 +121,18 @@ private:
 };
 
 /************************************************************************/
-/* BossSpecialAttackState                                               */
+/* BossSkillSpecialState                                                */
 /************************************************************************/
 
-class BossSpecialAttackState
+class BossSkillSpecialState
 	: public AIState
 {
 public:
-	BossSpecialAttackState(shared_ptr<Enemy> owner);
+	BossSkillSpecialState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
-	virtual void Exit() override;
+	virtual void Exit() override {};
 
 private:
 	weak_ptr<Enemy> mOwner;
@@ -141,42 +141,42 @@ private:
 };
 
 /************************************************************************/
-/* BossAttackOneState                                                   */
+/* BossSkillOneState                                                    */
 /************************************************************************/
 
-class BossAttackOneState
+class BossSkillOneState
 	: public AIState
 {
 public:
-	BossAttackOneState(shared_ptr<Enemy> owner);
+	BossSkillOneState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
-	virtual void Exit() override;
+	virtual void Exit() override {};
 
 private:
 	weak_ptr<Enemy> mOwner;
 };
 
 /************************************************************************/
-/* BossAttackTwoState                                                   */
+/* BossSkillTwoState                                                    */
 /************************************************************************/
 
-class BossAttackTwoState
+class BossSkillTwoState
 	: public AIState
 {
 public:
-	BossAttackTwoState(shared_ptr<Enemy> owner);
+	BossSkillTwoState(shared_ptr<Enemy> owner);
 
 	virtual void Enter() override;
 	virtual void Update() override;
-	virtual void Exit() override;
+	virtual void Exit() override {};
 
 private:
 	weak_ptr<Enemy> mOwner;
+
+	float mElapsed = 0.0f;
 };
-
-
 
 /************************************************************************/
 /* CellDeliverState                                                     */
