@@ -38,7 +38,7 @@ extern void DestroyEntityByID(entt::registry& registry, const UINT32 id)
 
 	for (auto [entity, idc] : view.each())
 	{
-		if (idc.ID == id)
+		if (idc.ID == id && registry.valid(entity))
 		{
 			registry.destroy(entity);
 			break;
@@ -48,5 +48,8 @@ extern void DestroyEntityByID(entt::registry& registry, const UINT32 id)
 
 extern void DestroyEntity(entt::registry& registry, entt::entity entity)
 {
-	registry.destroy(entity);
+	if (registry.valid(entity))
+	{
+		registry.destroy(entity);
+	}
 }

@@ -16,7 +16,10 @@ void DestroyByComponent(entt::registry& registry)
 
 	for (auto entity : view)
 	{
-		registry.destroy(entity);
+		if (registry.valid(entity))
+		{
+			registry.destroy(entity);
+		}
 	}
 }
 
