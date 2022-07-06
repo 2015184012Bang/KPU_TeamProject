@@ -1004,14 +1004,19 @@ void GameScene::processNotifySkill(const PACKET& packet)
 		return;
 	}
 
+	// 보스가 스킬을 사용한 경우
 	if (entity.HasComponent<Tag_Boss>())
 	{
 		doBossSkill(nsPacket->Preset);
 	}
+
+	// 플레이어가 스킬을 사용한 경우
 	else
 	{
 		auto& animator = entity.GetComponent<AnimatorComponent>();
 		animator.SetTrigger(GetSkillAnimTrigger(nsPacket->Preset));
+
+		createSkillEffect(nsPacket->EntityID, nsPacket->Preset);
 
 		if (nsPacket->EntityID == mOwner->GetClientID())
 		{
@@ -1597,6 +1602,49 @@ void GameScene::createAttackEffect(const UINT32 entityID)
 	Timer::AddEvent(0.7f, [effect]() {
 		DestroyEntity(effect);
 		});
+}
+
+void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
+{
+	auto player = GetEntityByID(entityID);
+	const auto& playerPos = player.GetComponent<TransformComponent>().Position;
+
+	switch (static_cast<UpgradePreset>(preset))
+	{
+	case UpgradePreset::ATTACK:
+	{
+		float yaw = 0.0f;
+
+		for (auto i = 0; i < 4; ++i)
+		{
+			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Atk.mesh"), TEXTURE("Temp.png"),
+				SKELETON("Skill_Effect_Atk.skel"));
+			auto& effectTransform = effect.GetComponent<TransformComponent>();
+			effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
+			effectTransform.Rotation.y = yaw;
+
+			auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Atk.anim"));
+
+			yaw += 90.0f;
+
+			Timer::AddEvent(0.4f, [effect]() {
+				DestroyEntity(effect);
+				});
+		}
+		break;
+	}
+
+	case UpgradePreset::HEAL:
+		break;
+
+	case UpgradePreset::SUPPORT:
+		break;
+
+	default:
+		HB_LOG("Unknown preset: {0}", preset);
+		break;
+	}
 }
 
 void GameScene::createDialogue(Texture* dia, int drawOrder)
