@@ -91,7 +91,7 @@ void MovementSystem::SendNotifyMovePackets()
 	}
 
 	// 적 이동 패킷 보내기
-	auto enemies = mRegistry.view<Tag_Enemy>();
+	auto enemies = mRegistry.view<Tag_Enemy>(entt::exclude<Tag_Boss>);
 	for (auto entity : enemies)
 	{
 		packet.EntityID = mRegistry.get<IDComponent>(entity).ID;
@@ -439,9 +439,9 @@ void MovementSystem::checkBossTrigger()
 			DestroyEntity(mRegistry, entity);
 		}
 
-		mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE);
-
+		// 이벤트 발생 패킷 송신보다 보스 생성 패킷 송신이 선행되어야 한다.
 		mOwner->GenerateBoss();
+		mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE);
 
 		Timer::AddEvent(14.0f, [this]() {
 			// 백혈구 생성
@@ -473,7 +473,6 @@ void MovementSystem::checkBossTrigger()
 
 			// 바이러스 생성
 			mOwner->GenerateEnemyBossBattle(cartPos);
-
 			mbBossBattleEnemyGen = true;
 			});
 	}
