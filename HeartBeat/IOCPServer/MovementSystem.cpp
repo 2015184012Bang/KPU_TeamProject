@@ -116,6 +116,7 @@ void MovementSystem::Start()
 	mbBattleProgressed = false;
 	mbBossProgressed = false;
 	mbBossBattleEnemyGen = false;
+	mEnemyGenTracker = 0.0f;
 	mNumRedCells = -1;
 
 	// START_POINT 타일 가져오기
@@ -485,16 +486,14 @@ void MovementSystem::generateEnemyBossBattle()
 		return;
 	}
 
-	static float enemyGenTracker = 0.0f;
+	mEnemyGenTracker += Timer::GetDeltaTime();
 
-	enemyGenTracker += Timer::GetDeltaTime();
-
-	if (enemyGenTracker > 20.0f)
+	if (mEnemyGenTracker > 20.0f)
 	{
 		auto cart = GetEntityByName(mRegistry, "Cart");
 		const auto& cartPos = mRegistry.get<TransformComponent>(cart).Position;
 		mOwner->GenerateEnemyBossBattle(cartPos);
 
-		enemyGenTracker -= 20.0f;
+		mEnemyGenTracker -= 20.0f;
 	}
 }

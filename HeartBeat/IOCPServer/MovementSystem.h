@@ -30,6 +30,7 @@ private:
 	bool mbBattleProgressed = false;
 	bool mbBossProgressed = false;
 	bool mbBossBattleEnemyGen = false;
+	float mEnemyGenTracker = 0.0f;
 
 	INT32 mNumRedCells = -1;
 };
