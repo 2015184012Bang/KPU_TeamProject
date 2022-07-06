@@ -691,6 +691,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Bomb.mesh");
 	MESH("Skill_Effect_Sup.mesh");
 	MESH("Skill_Effect_Heal.mesh");
+	MESH("Skill_Effect_Atk.mesh");
 	MESH("BWall.mesh");
 	MESH("Attack_Point.mesh");
 	MESH("Change_Effect.mesh");
@@ -716,6 +717,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Bomb.skel");
 	SKELETON("Skill_Effect_Sup.skel");
 	SKELETON("Skill_Effect_Heal.skel");
+	SKELETON("Skill_Effect_Atk.skel");
 	SKELETON("BWall.skel");
 	SKELETON("Change_Effect.skel");
 	SKELETON("Attack_Effect.skel");

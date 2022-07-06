@@ -491,6 +491,15 @@ void ResourceManager::MakeAnimTransitions()
 
 		Animation* attackAnim = ANIM("Attack_Effect.anim");
 		attackAnim->SetLoop(false);
+
+		Animation* skill1Anim = ANIM("Skill_Effect_Atk.anim");
+		skill1Anim->SetLoop(false);
+
+		Animation* skill2Anim = ANIM("Skill_Effect_Heal.anim");
+		skill2Anim->SetLoop(false);
+
+		Animation* skill3Anim = ANIM("Skill_Effect_Sup.anim");
+		skill3Anim->SetLoop(false);
 	}
 }
 
