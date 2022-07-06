@@ -595,12 +595,12 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	// 서버에서도 이 엔티티는 삭제됐음.
 	if (hitter.HasComponent<Tag_Dog>())
 	{
-		SoundManager::PlaySound("DogBomb.mp3");
-
 		mOwner->DestroyEntityAfter(neaPacket->HitterID, 1.1f);
 
 		auto victimID = neaPacket->VictimID;
 		Timer::AddEvent(1.0f, [this, victimID]() {
+			SoundManager::PlaySound("DogBomb.mp3");
+
 			Entity bomb = mOwner->CreateSkeletalMeshEntity(MESH("Bomb.mesh"),
 				TEXTURE("Bomb.png"), SKELETON("Bomb.skel"));
 
@@ -1593,7 +1593,7 @@ void GameScene::createAttackEffect(const UINT32 entityID)
 		0.0f, 0.0f);
 	Vector3 forward = Vector3::Transform(Vector3::UnitZ, q);
 
-	effectTransform.Position = playerTransform.Position + forward * 400.0f;
+	effectTransform.Position = playerTransform.Position + forward * 200.0f;
 	effectTransform.Position.y = 200.0f;
 
 	auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
@@ -1637,18 +1637,23 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 
 	case UpgradePreset::HEAL:
 	{
-		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Heal.mesh"), TEXTURE("Temp.png"),
-			SKELETON("Skill_Effect_Heal.skel"));
-		effect.AddComponent<FollowComponent>(entityID);
-		auto& effectTransform = effect.GetComponent<TransformComponent>();
-		effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
+		// 힐 이펙트는 모든 유저에게 생성
+		auto players = gRegistry.view<Tag_Player, TransformComponent, IDComponent>();
+		for (auto [player, transform, id] : players.each())
+		{
+			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Heal.mesh"), TEXTURE("Temp.png"),
+				SKELETON("Skill_Effect_Heal.skel"));
+			effect.AddComponent<FollowComponent>(id.ID);
+			auto& effectTransform = effect.GetComponent<TransformComponent>();
+			effectTransform.Position = transform.Position;
 
-		auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Heal.anim"));
+			auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Heal.anim"));
 
-		Timer::AddEvent(2.0f, [effect]() {
-			DestroyEntity(effect);
-			});
+			Timer::AddEvent(2.0f, [effect]() {
+				DestroyEntity(effect);
+				});
+		}
 		break;
 	}
 
@@ -1658,7 +1663,7 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 			SKELETON("Skill_Effect_Sup.skel"));
 		effect.AddComponent<FollowComponent>(entityID);
 		auto& effectTransform = effect.GetComponent<TransformComponent>();
-		effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
+		effectTransform.Position = playerPos;
 
 		auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Sup.anim"));
@@ -1779,6 +1784,8 @@ Texture* GetTileTexture(TileType ttype)
 	case TileType::RAIL:
 	case TileType::START_POINT:
 	case TileType::END_POINT:
+	case TileType::SCAR_BOSS:
+	case TileType::SCAR_WALL:
 		return TEXTURE("Rail.png");
 
 	case TileType::FAT:
@@ -1789,8 +1796,7 @@ Texture* GetTileTexture(TileType ttype)
 
 	case TileType::SCAR:
 	case TileType::SCAR_DOG:
-	case TileType::SCAR_BOSS:
-		return TEXTURE("Red.png");
+		return TEXTURE("Road.png");
 
 	case TileType::HOUSE:
 		return TEXTURE("House.png");
