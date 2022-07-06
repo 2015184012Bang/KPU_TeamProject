@@ -1636,10 +1636,38 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 	}
 
 	case UpgradePreset::HEAL:
+	{
+		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Heal.mesh"), TEXTURE("Temp.png"),
+			SKELETON("Skill_Effect_Heal.skel"));
+		effect.AddComponent<FollowComponent>(entityID);
+		auto& effectTransform = effect.GetComponent<TransformComponent>();
+		effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
+
+		auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Heal.anim"));
+
+		Timer::AddEvent(2.0f, [effect]() {
+			DestroyEntity(effect);
+			});
 		break;
+	}
 
 	case UpgradePreset::SUPPORT:
+	{
+		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Sup.mesh"), TEXTURE("Temp.png"),
+			SKELETON("Skill_Effect_Sup.skel"));
+		effect.AddComponent<FollowComponent>(entityID);
+		auto& effectTransform = effect.GetComponent<TransformComponent>();
+		effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
+
+		auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Sup.anim"));
+
+		Timer::AddEvent(1.0f, [effect]() {
+			DestroyEntity(effect);
+			});
 		break;
+	}
 
 	default:
 		HB_LOG("Unknown preset: {0}", preset);

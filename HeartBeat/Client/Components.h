@@ -198,3 +198,11 @@ struct LightComponent
 	LightInfo Light = {};
 	UploadBuffer<LightInfo> Buffer;
 };
+
+struct FollowComponent
+{
+	FollowComponent() = default;
+	FollowComponent(const UINT32 targetID);
+
+	UINT32 TargetID = 0;
+};

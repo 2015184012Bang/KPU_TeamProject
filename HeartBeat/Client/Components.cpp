@@ -305,3 +305,9 @@ LightComponent::LightComponent()
 {
 
 }
+
+FollowComponent::FollowComponent(const UINT32 targetID)
+	: TargetID{ targetID }
+{
+
+}
