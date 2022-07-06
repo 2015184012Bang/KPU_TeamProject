@@ -738,8 +738,7 @@ void Renderer::loadAllAssetsFromFile()
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");
-	TEXTURE("RoomEnter.png");
-	TEXTURE("RoomNoEnter.png");
+	TEXTURE("Bar.png");
 	TEXTURE("White.png");
 	TEXTURE("Next_Button.png");
 	TEXTURE("Login_Button.png");

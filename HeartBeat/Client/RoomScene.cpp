@@ -37,6 +37,7 @@ void RoomScene::Enter()
 	// 메인 카메라 위치 조정
 	auto& camera = mOwner->GetMainCamera();
 	auto& cc = camera.GetComponent<CameraComponent>();
+	cc.Position.y = 500.0f;
 	cc.Position.z = -1000.0f;
 }
 
