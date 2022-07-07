@@ -346,7 +346,7 @@ void CombatSystem::checkBossSkill()
 		case BossSkill::SKILL_2:
 		{
 			auto boss = entity;
-			Timer::AddEvent(1.0f, [this, boss]() {
+			Timer::AddEvent(2.0f, [this, boss]() {
 				const auto& bossPos = mRegistry.get<TransformComponent>(boss).Position;
 				auto players = mRegistry.view<Tag_Player, TransformComponent>();
 				for (auto [player, transform] : players.each())

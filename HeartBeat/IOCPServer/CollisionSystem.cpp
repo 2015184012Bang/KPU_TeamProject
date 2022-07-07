@@ -115,12 +115,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 
 			if (health.Health <= 0)
 			{
-				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
-				DestroyEntity(mRegistry, entity);
-
-				Timer::AddEvent(10.0f, [this]() {
-					mOwner->DoGameOver(true);
-					});
+				mOwner->DoBossDie();
 			}
 
 			return true;
@@ -215,12 +210,7 @@ void CollisionSystem::DoWhirlwind(const INT8 clientID)
 
 			if (health.Health <= 0)
 			{
-				mOwner->SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
-				DestroyEntity(mRegistry, entity);
-				
-				Timer::AddEvent(10.0f, [this]() {
-					mOwner->DoGameOver(true);
-					});
+				mOwner->DoBossDie();
 			}
 		}
 	}

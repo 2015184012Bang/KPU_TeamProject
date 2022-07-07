@@ -75,6 +75,8 @@ public:
 
 	void GenerateBoss();
 
+	void DoBossDie();
+
 public:
 	RoomState GetState() { return mRoomState; }
 	list<User*>& GetUsers() { return mUsers; }

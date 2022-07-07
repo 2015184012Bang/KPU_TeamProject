@@ -943,10 +943,12 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
+	// 게임오버
 	if (!ngoPacket->IsWin)
 	{
 		SoundManager::PlaySound("GameOver.mp3");
 
+		// 모든 플레이어의 체력을 0으로 표시한다.
 		auto players = gRegistry.view<Tag_Player, IDComponent>();
 		for (auto [player, id] : players.each())
 		{
@@ -1372,6 +1374,8 @@ void GameScene::doBossBattleEnd()
 	const auto id = boss.GetComponent<IDComponent>().ID;
 	mOwner->DestroyEntityAfter(id, 4.0f);
 
+	DestroyByComponent<Tag_Enemy>();
+
 	Timer::AddEvent(4.0f, [this]() {
 		mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 1500.0f, -1300.0f });
 		createDialogue(TEXTURE("Dialogue10.png"), 110);
@@ -1407,7 +1411,7 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		sweepTransform.Position = Vector3{ bossPos.x - 1400.0f, 10.0f, bossPos.z };
 		sweepTransform.Rotation.y = 90.0f;
 
-		Timer::AddEvent(1.0f, [sweep]() {
+		Timer::AddEvent(2.0f, [sweep]() {
 			DestroyEntity(sweep);
 			});
 		break;

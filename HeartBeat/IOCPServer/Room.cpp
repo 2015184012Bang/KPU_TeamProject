@@ -430,6 +430,19 @@ void Room::GenerateBoss()
 	Broadcast(packet.PacketSize, reinterpret_cast<char*>(&packet));
 }
 
+void Room::DoBossDie()
+{
+	SendEventOccurPacket(0, EventType::BOSS_BATTLE_END);
+	DestroyByComponent<Tag_Enemy>(mRegistry);
+
+	// 남아있을 보스 스킬 관련 타이머 이벤트를 제거한다.
+	Timer::Clear();
+
+	Timer::AddEvent(10.0f, [this]() {
+		DoGameOver(true);
+		});
+}
+
 void Room::checkGameState()
 {
 	if (!mRegistry.valid(mPlayState))

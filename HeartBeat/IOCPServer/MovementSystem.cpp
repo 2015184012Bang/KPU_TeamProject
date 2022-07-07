@@ -486,6 +486,13 @@ void MovementSystem::generateEnemyBossBattle()
 		return;
 	}
 
+	// 보스가 죽었거나 없다면 수행하지 않음
+	auto boss = mRegistry.view<Tag_Boss>();
+	if (boss.empty())
+	{
+		return;
+	}
+
 	mEnemyGenTracker += Timer::GetDeltaTime();
 
 	if (mEnemyGenTracker > 20.0f)
