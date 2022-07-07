@@ -150,11 +150,6 @@ void GameScene::Update(float deltaTime)
 
 void GameScene::updateUI(float deltaTime)
 {
-	// 플레이타임 텍스트 갱신
-	mPlayTime += deltaTime;
-	auto& text = mPlaytimeText.GetComponent<TextComponent>();
-	text.Sentence = std::to_wstring(static_cast<int>(mPlayTime));
-
 	// 스킬 쿨타임이 돌고 있다면 시간 갱신
 	if (gRegistry.valid(mCooldownText))
 	{
@@ -954,20 +949,20 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 		{
 			updateHpUI(0, id.ID);
 		}
+
+		// 탱크 체력 0으로 표시한다.
+		auto& text = mTankHpText.GetComponent<TextComponent>();
+		text.Sentence = std::to_wstring(0);
 	}
 
-	for (auto& hp : mTankHps)
 	{
-		DestroyEntity(hp);
+		Entity gameOverUI = Entity{ gRegistry.create() };
+		auto& text = gameOverUI.AddComponent<TextComponent>();
+		text.Sentence = L"Score: " + std::to_wstring(ngoPacket->Score) +
+			L" PlayTime: " + std::to_wstring(ngoPacket->PlayTimeSec) + L"sec";
+		text.X = 100.0f;
+		text.Y = 100.0f;
 	}
-	mTankHps.clear();
-
-	Entity gameOverUI = Entity{ gRegistry.create() };
-	auto& text = gameOverUI.AddComponent<TextComponent>();
-	text.Sentence = L"Score: " + std::to_wstring(ngoPacket->Score) +
-		L" PlayTime: " + std::to_wstring(ngoPacket->PlayTimeSec) + L"sec";
-	text.X = 100.0f;
-	text.Y = 100.0f;
 
 	// 더이상 패킷 처리하지 않도록 flag 값 변경
 	mbIsGameOver = true;
@@ -1053,13 +1048,8 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 	}
 
 	{
-		auto diff = static_cast<int>(mTankHps.size()) - nscPacket->TankHealth;
-
-		for (int i = 0; i < diff; ++i)
-		{
-			DestroyEntity(mTankHps.back());
-			mTankHps.pop_back();
-		}
+		auto& text = mTankHpText.GetComponent<TextComponent>();
+		text.Sentence = std::to_wstring(nscPacket->TankHealth);
 	}
 
 	updateHpUI(nscPacket->P0Health, 0);
@@ -1508,28 +1498,17 @@ void GameScene::createUI()
 	}
 
 	{
-		mPlaytimeText = Entity{ gRegistry.create() };
-		mPlaytimeText.AddTag<Tag_UI>();
-		auto& text = mPlaytimeText.AddComponent<TextComponent>();
-		text.Sentence = L"0.0";
-		text.X = 10.0f;
-		text.Y = 55.0f;
-	}
-
-	{
-		auto tankPortrait = mOwner->CreateSpriteEntity(30, 30, TEXTURE("Tank_Portrait.png"));
+		auto tankPortrait = mOwner->CreateSpriteEntity(56, 48, TEXTURE("Tank_Portrait.png"));
 		auto& rect = tankPortrait.GetComponent<RectTransformComponent>();
-		rect.Position = { 160.0f, 10.0f };
+		rect.Position = { 10.0f, 60.0f };
 	}
 
 	{
-		for (int i = 0; i < 30; ++i)
-		{
-			auto tankHp = mOwner->CreateSpriteEntity(30, 30, TEXTURE("Heart.png"));
-			auto& rect = tankHp.GetComponent<RectTransformComponent>();
-			rect.Position = { 190.0f + 30 * i, 10.0f };
-			mTankHps.push_back(tankHp);
-		}
+		mTankHpText = Entity{ gRegistry.create() };
+		auto& text = mTankHpText.AddComponent<TextComponent>();
+		text.Sentence = L"50";
+		text.X = 68.0f;
+		text.Y = 60.0f;
 	}
 
 	createHpbar();

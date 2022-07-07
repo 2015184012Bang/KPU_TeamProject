@@ -82,12 +82,10 @@ private:
 
     // UI things
     Entity mScoreText = {};
-    Entity mPlaytimeText = {};
-    float mPlayTime = 0.0f;
+    Entity mTankHpText = {};
     Entity mCooldownText = {};
     float mCooldown = 0.0f;
     vector<vector<Entity>> mHps;
-    vector<Entity> mTankHps;
 
     bool mbIsGameOver = false;
 
