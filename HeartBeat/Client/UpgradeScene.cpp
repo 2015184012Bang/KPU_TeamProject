@@ -237,7 +237,8 @@ void UpgradeScene::createUI()
 
 void UpgradeScene::createChangeEffect(const Vector3& pos)
 {
-	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Change_Effect.mesh"), TEXTURE("Temp.png"),
+	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Change_Effect.mesh"), 
+		TEXTURE("Change_Effect.png"),
 		SKELETON("Change_Effect.skel"));
 	auto& effectTransform = effect.GetComponent<TransformComponent>();
 	effectTransform.Position = pos;

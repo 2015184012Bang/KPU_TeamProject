@@ -423,7 +423,7 @@ void GameScene::createBossTile(const Tile& tile)
 {
 	{
 		Entity bossWall = mOwner->CreateSkeletalMeshEntity(MESH("BWall.mesh"),
-			TEXTURE("Temp.png"), SKELETON("BWall.skel"));
+			TEXTURE("BWall.png"), SKELETON("BWall.skel"));
 		bossWall.AddComponent<NameComponent>("BossWall");
 		auto& transform = bossWall.GetComponent<TransformComponent>();
 		auto& animator = bossWall.GetComponent<AnimatorComponent>();
@@ -869,7 +869,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 		Timer::AddEvent(3.0f, [this, id, position]() {
 			Entity boss = mOwner->CreateSkeletalMeshEntity(MESH("Boss.mesh"),
-				TEXTURE("Temp.png"), SKELETON("Boss.skel"), id, "../Assets/Boxes/Boss.box");
+				TEXTURE("Boss_1.png"), SKELETON("Boss.skel"), id, "../Assets/Boxes/Boss.box");
 			boss.AddComponent<NameComponent>("Boss");
 			boss.AddComponent<MovementComponent>(0.0f);
 			boss.AddTag<Tag_Boss>();
@@ -908,7 +908,17 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Timer::AddEvent(2.0f, [this, attackPoint]() {
 			Entity apoint = Entity{ attackPoint };
 
-			auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), TEXTURE("Temp.png"),
+			Texture* tailTex = nullptr;
+			switch (mBossSpecialSkillUsageCount)
+			{
+			case 0: tailTex = TEXTURE("Tail_1.png"); break;
+			case 1: tailTex = TEXTURE("Tail_2.png"); break;
+			case 2: tailTex = TEXTURE("Tail_3.png"); break;
+			default: tailTex = TEXTURE("Tail_3.png"); break;
+			}
+
+			auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), 
+				tailTex,
 				SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
 			auto& tailTransform = tail.GetComponent<TransformComponent>();
 			tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
@@ -1419,7 +1429,8 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		Timer::AddEvent(4.0f, [this]() {
 			auto boss = GetEntityByName("Boss");
 			auto& meshRenderer = boss.GetComponent<MeshRendererComponent>();
-			meshRenderer.Tex = mBossSpecialSkillUsageCount == 0 ? TEXTURE("Orange.png") : TEXTURE("Red.png");
+			meshRenderer.Tex = mBossSpecialSkillUsageCount == 0 ? TEXTURE("Boss_2.png") 
+				: TEXTURE("Boss_3.png");
 			mBossSpecialSkillUsageCount++;
 			});
 		break;
@@ -1568,7 +1579,7 @@ void GameScene::createHpbar()
 
 void GameScene::createAttackEffect(const UINT32 entityID)
 {
-	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Attack_Effect.mesh"), TEXTURE("Temp.png"),
+	auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Attack_Effect.mesh"), TEXTURE("Attack_Effect.png"),
 		SKELETON("Attack_Effect.skel"));
 	auto& effectTransform = effect.GetComponent<TransformComponent>();
 
@@ -1603,7 +1614,8 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 
 		for (auto i = 0; i < 4; ++i)
 		{
-			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Atk.mesh"), TEXTURE("Temp.png"),
+			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Atk.mesh"), 
+				TEXTURE("Slash_Effect.png"),
 				SKELETON("Skill_Effect_Atk.skel"));
 			auto& effectTransform = effect.GetComponent<TransformComponent>();
 			effectTransform.Position = Vector3{ playerPos.x, 200.f, playerPos.z };
@@ -1627,7 +1639,8 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 		auto players = gRegistry.view<Tag_Player, TransformComponent, IDComponent>();
 		for (auto [player, transform, id] : players.each())
 		{
-			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Heal.mesh"), TEXTURE("Temp.png"),
+			auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Heal.mesh"), 
+				TEXTURE("Heal_Effect.png"),
 				SKELETON("Skill_Effect_Heal.skel"));
 			effect.AddComponent<FollowComponent>(id.ID);
 			auto& effectTransform = effect.GetComponent<TransformComponent>();
@@ -1645,7 +1658,8 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 
 	case UpgradePreset::SUPPORT:
 	{
-		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Sup.mesh"), TEXTURE("Temp.png"),
+		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Skill_Effect_Sup.mesh"), 
+			TEXTURE("Power_Effect.png"),
 			SKELETON("Skill_Effect_Sup.skel"));
 		effect.AddComponent<FollowComponent>(entityID);
 		auto& effectTransform = effect.GetComponent<TransformComponent>();

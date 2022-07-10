@@ -2,7 +2,7 @@
 	"vertexformat":"PosNormSkinTex",
 	"shader":"Skinned",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Heal_Effect.png"
 	],
 	"vertices":[
 		[-0.500000,-0.500000,0.500000,0.000000,-1.000000,0.000000,0,0,0,0,255,0,0,0,0.000000,1.000000],
