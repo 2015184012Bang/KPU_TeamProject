@@ -556,7 +556,7 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 		if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS &&
 			naPacket->EntityID == mOwner->GetClientID())
 		{
-			SoundManager::PlaySound("Punch.mp3", 0.15f);
+			PlayHitSound(naPacket->EntityType);
 			createAttackEffect(naPacket->EntityID);
 		}
 	}
@@ -1843,5 +1843,42 @@ float GetSkillCooldown(UpgradePreset preset)
 	case UpgradePreset::HEAL: return 18.0f;
 	case UpgradePreset::SUPPORT: return 20.0f;
 	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return 0.0f;
+	}
+}
+
+void PlayHitSound(const uint8 entityType)
+{
+	switch (static_cast<EntityType>(entityType))
+	{
+	case EntityType::VIRUS: 
+	{
+		SoundManager::StopSound("VirusHit.mp3");
+		SoundManager::PlaySound("VirusHit.mp3", 1.0f); 
+		break;
+	}
+	case EntityType::DOG: 
+	{
+		SoundManager::StopSound("DogHit.mp3");
+		SoundManager::PlaySound("DogHit.mp3", 1.0f); 
+		break;
+	}
+	case EntityType::BOSS:
+	{
+		SoundManager::StopSound("BossHit.mp3");
+		SoundManager::PlaySound("BossHit.mp3", 0.15f); 
+		break;
+	}
+	case EntityType::FAT:
+	{
+		SoundManager::StopSound("FatHit.mp3");
+		SoundManager::PlaySound("FatHit.mp3", 1.0f); 
+		break;
+	}
+	default: 
+	{
+		SoundManager::StopSound("BossHit.mp3");
+		SoundManager::PlaySound("BossHit.mp3", 0.15f);
+		break;
+	}
 	}
 }

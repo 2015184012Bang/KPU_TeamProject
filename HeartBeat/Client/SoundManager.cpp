@@ -103,7 +103,10 @@ void SoundManager::loadAllSounds()
 {
 	CreateSound("../Assets/Sounds/ClockTick.mp3");
 	CreateSound("../Assets/Sounds/Countdown.mp3");
-	CreateSound("../Assets/Sounds/Punch.mp3");
+	CreateSound("../Assets/Sounds/BossHit.mp3");
+	CreateSound("../Assets/Sounds/DogHit.mp3");
+	CreateSound("../Assets/Sounds/VirusHit.mp3");
+	CreateSound("../Assets/Sounds/FatHit.mp3");
 	CreateSound("../Assets/Sounds/NormalTheme.mp3", true);
 	CreateSound("../Assets/Sounds/PlayerAttacked.mp3");
 	CreateSound("../Assets/Sounds/Skill1.mp3");

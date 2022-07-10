@@ -100,3 +100,4 @@ Texture* GetTileTexture(TileType ttype);
 Texture* GetHpbarTexture(const int clientID);
 Texture* GetSkillTexture(UpgradePreset preset);
 float GetSkillCooldown(UpgradePreset preset);
+void PlayHitSound(const uint8 entityType);

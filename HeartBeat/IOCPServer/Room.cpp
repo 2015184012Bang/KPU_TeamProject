@@ -251,13 +251,14 @@ void Room::DoAttack(User* user)
 		return;
 	}
 
-	bool bHit = mCollisionSystem->CheckAttackHit(clientID);
+	auto [bHit, victimType] = mCollisionSystem->CheckAttackHit(clientID);
 
 	NOTIFY_ATTACK_PACKET packet = {};
 	packet.EntityID = clientID;
 	packet.PacketID = NOTIFY_ATTACK;
 	packet.PacketSize = sizeof(packet);
 	packet.Result = bHit ? RESULT_CODE::ATTACK_SUCCESS : RESULT_CODE::ATTACK_MISS;
+	packet.EntityType = static_cast<UINT8>(victimType);
 	Broadcast(sizeof(packet), reinterpret_cast<char*>(&packet));
 }
 

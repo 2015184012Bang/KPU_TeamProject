@@ -44,7 +44,7 @@ void CollisionSystem::Update()
 	checkPlayerOutOfBound();
 }
 
-bool CollisionSystem::CheckAttackHit(const INT8 clientID)
+pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 {
 	auto character = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(character), "Invalid entity!");
@@ -75,7 +75,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return true;
+			return { true, EntityType::VIRUS };
 		}
 	}
 
@@ -95,7 +95,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return true;
+			return { true, EntityType::DOG };
 		}
 	}
 
@@ -118,7 +118,7 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 				mOwner->DoBossDie();
 			}
 
-			return true;
+			return { true, EntityType::BOSS };
 		}
 	}
 
@@ -151,11 +151,11 @@ bool CollisionSystem::CheckAttackHit(const INT8 clientID)
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return true;
+			return { true, EntityType::FAT };
 		}
 	}
 
-	return false;
+	return { false, EntityType::END };
 }
 
 void CollisionSystem::DoWhirlwind(const INT8 clientID)
