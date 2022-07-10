@@ -1768,8 +1768,10 @@ Texture* GetTileTexture(TileType ttype)
 	case TileType::START_POINT:
 	case TileType::END_POINT:
 	case TileType::SCAR_BOSS:
-	case TileType::SCAR_WALL:
 		return TEXTURE("Rail.png");
+
+	case TileType::SCAR_WALL:
+		return TEXTURE("Wall.png");
 
 	case TileType::FAT:
 		return TEXTURE("Fat.png");
@@ -1804,9 +1806,9 @@ Texture* GetSkillTexture(UpgradePreset preset)
 {
 	switch (preset)
 	{
-	case UpgradePreset::ATTACK: return TEXTURE("Sword.png");
-	case UpgradePreset::HEAL: return TEXTURE("Potion.png");
-	case UpgradePreset::SUPPORT: return TEXTURE("Arm.png");
+	case UpgradePreset::ATTACK: return TEXTURE("Skill_1_Slash.png");
+	case UpgradePreset::HEAL: return TEXTURE("Skill_2_Heal.png");
+	case UpgradePreset::SUPPORT: return TEXTURE("Skill_3_Power.png");
 	default: HB_ASSERT(false, "Unknown preset: {0}", static_cast<int>(preset)); return nullptr;
 	}
 }

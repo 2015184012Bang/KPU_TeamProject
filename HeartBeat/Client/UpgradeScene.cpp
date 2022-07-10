@@ -178,7 +178,7 @@ void UpgradeScene::createUI()
 	Vector2 startPos = Vector2{ Application::GetScreenWidth() / 2.0f - 150.0f, Application::GetScreenHeight() - 150.0f };
 
 	{
-		auto atkButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Sword.png"));
+		auto atkButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_1_Slash.png"));
 		auto& rect = atkButton.GetComponent<RectTransformComponent>();
 		rect.Position = startPos;
 
@@ -197,7 +197,7 @@ void UpgradeScene::createUI()
 	}
 
 	{
-		auto healButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Potion.png"));
+		auto healButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_2_Heal.png"));
 		auto& rect = healButton.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ startPos.x + 100.0f, startPos.y };
 
@@ -216,7 +216,7 @@ void UpgradeScene::createUI()
 	}
 
 	{
-		auto supButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Arm.png"));
+		auto supButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_3_Power.png"));
 		auto& rect = supButton.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ startPos.x + 200.0f, startPos.y };
 

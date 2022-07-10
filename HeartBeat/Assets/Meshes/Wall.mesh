@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Wall.png"
 	],
 	"vertices":[
 		[-583.359863,349.513977,139.794586,-0.921260,-0.141732,0.362205,1,0,0,0,255,0,0,0,0.128615,0.272807],

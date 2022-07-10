@@ -749,9 +749,9 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Hpbar_Pink.png");
 	TEXTURE("Hpbar_Red.png");
 	TEXTURE("Trophy.png");
-	TEXTURE("Arm.png");
-	TEXTURE("Potion.png");
-	TEXTURE("Sword.png");
+	TEXTURE("Skill_1_Slash.png");
+	TEXTURE("Skill_2_Heal.png");
+	TEXTURE("Skill_3_Power.png");
 	TEXTURE("Warning.png");
 	TEXTURE("Dialogue1.png");
 	TEXTURE("Dialogue2.png");
