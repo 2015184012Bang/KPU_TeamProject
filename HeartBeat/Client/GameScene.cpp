@@ -1197,9 +1197,9 @@ void GameScene::doBattleOccur()
 		DestroyEntity(entity);
 	}
 
-	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
+	Entity ui = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
+	rect.Position = Vector2{ 0.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
 
 	Timer::AddEvent(3.0f, [this, ui]() {
 		DestroyEntity(ui);
@@ -1446,9 +1446,9 @@ void GameScene::doBossBattleOccur()
 		DestroyEntity(entity);
 	}
 
-	Entity ui = mOwner->CreateSpriteEntity(400, 400, TEXTURE("Warning.png"));
+	Entity ui = mOwner->CreateSpriteEntity(Application::GetScreenWidth(), 400, TEXTURE("Warning.png"));
 	auto& rect = ui.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 200.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
+	rect.Position = Vector2{ 0.0f, Application::GetScreenHeight() / 2.0f - 200.0f };
 
 	Timer::AddEvent(3.0f, [this, ui]() {
 		DestroyEntity(ui);
@@ -1477,11 +1477,8 @@ void GameScene::doBossBattleOccur()
 
 void GameScene::createUI()
 {
-	const int tropyWidth = 56;
-	const int tropyHeight = 48;
-
 	{
-		auto score = mOwner->CreateSpriteEntity(tropyWidth, tropyHeight, TEXTURE("Trophy.png"));
+		auto score = mOwner->CreateSpriteEntity(120, 48, TEXTURE("Trophy.png"));
 		score.AddTag<Tag_UI>();
 		auto& rect = score.GetComponent<RectTransformComponent>();
 		rect.Position.x = 10.0f;
@@ -1493,7 +1490,7 @@ void GameScene::createUI()
 		mScoreText.AddTag<Tag_UI>();
 		auto& text = mScoreText.AddComponent<TextComponent>();
 		text.Sentence = L"0";
-		text.X = 68.0f;
+		text.X = 50.0f;
 		text.Y = 10.0f;
 	}
 
@@ -1509,6 +1506,12 @@ void GameScene::createUI()
 		text.Sentence = L"50";
 		text.X = 68.0f;
 		text.Y = 60.0f;
+	}
+
+	{
+		auto heart = mOwner->CreateSpriteEntity(56, 48, TEXTURE("Heart.png"));
+		auto& rect = heart.GetComponent<RectTransformComponent>();
+		rect.Position = { 68.0f, 60.0f };
 	}
 
 	createHpbar();
