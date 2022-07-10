@@ -1031,6 +1031,11 @@ void GameScene::processNotifySkill(const PACKET& packet)
 
 			mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
 
+			if (gRegistry.valid(mCooldownText))
+			{
+				DestroyEntity(mCooldownText);
+			}
+
 			mCooldownText = Entity{ gRegistry.create() };
 			auto& text = mCooldownText.AddComponent<TextComponent>();
 			text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
