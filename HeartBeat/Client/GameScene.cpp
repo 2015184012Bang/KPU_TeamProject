@@ -1649,7 +1649,7 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 			auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&effectAnimator, ANIM("Skill_Effect_Heal.anim"));
 
-			Timer::AddEvent(2.0f, [effect]() {
+			Timer::AddEvent(1.0f, [effect]() {
 				DestroyEntity(effect);
 				});
 		}
