@@ -73,7 +73,7 @@ private:
 
 	void waitForPreviousFrame();
 
-	void loadFont(float fontSize, const D2D1::ColorF fontColor);
+	void loadFont(float fontSize, const D2D1::ColorF fontColor, ComPtr<IDWriteTextFormat>& font);
 
 private:
 	static const int BUFFER_COUNT = 2;
@@ -110,7 +110,8 @@ private:
 	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[BUFFER_COUNT];
 
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
-	ComPtr<IDWriteTextFormat> mTextFormat;
+	ComPtr<IDWriteTextFormat> mTextFormat_40;
+	ComPtr<IDWriteTextFormat> mTextFormat_20;
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;

@@ -29,10 +29,12 @@ void RoomManager::SendAvailableRoom(const INT32 sessionIndex)
 		if (mRooms[i]->GetState() == Room::RoomState::Waiting)
 		{
 			packet.Room[i] = AVAILABLE;
+			packet.NumUsers[i] = static_cast<char>(mRooms[i]->GetCurrentUsers());
 		}
 		else
 		{
 			packet.Room[i] = CANNOT;
+			packet.NumUsers[i] = static_cast<char>(mRooms[i]->GetCurrentUsers());
 		}
 	}
 

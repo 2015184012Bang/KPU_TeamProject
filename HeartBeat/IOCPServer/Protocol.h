@@ -155,12 +155,13 @@ struct REQUEST_ROOM_PACKET : public PACKET_HEADER
 
 };
 
-constexpr UINT8 MAX_ROOM_NUM = 32;
+constexpr UINT8 MAX_ROOM_NUM = 3;
 
 struct NOTIFY_ROOM_PACKET : public PACKET_HEADER
 {
-	char Room[MAX_ROOM_NUM]; // 0이면 입장 가능한 방,
+	char Room[MAX_ROOM_NUM + 1]; // 0이면 입장 가능한 방,
 							 // 1이면 입장 불가능 방
+	char NumUsers[MAX_ROOM_NUM + 1];
 };
 
 struct REQUEST_ENTER_ROOM_PACKET : public PACKET_HEADER 

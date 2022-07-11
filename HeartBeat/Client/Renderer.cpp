@@ -767,12 +767,18 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Tank_Portrait.png");
 	TEXTURE("Red.png");
 	TEXTURE("Orange.png");
+	TEXTURE("Lobby_Background.png");
+	TEXTURE("Lobby_Button.png");
+	TEXTURE("Waiting.png");
+	TEXTURE("Playing.png");
+	TEXTURE("Empty.png");
 }
 
 void Renderer::loadAssets()
 {
 	loadAllAssetsFromFile();
-	loadFont(40.0f, D2D1::ColorF::Black);
+	loadFont(40.0f, D2D1::ColorF::Black, mTextFormat_40);
+	loadFont(20.0f, D2D1::ColorF::Black, mTextFormat_20);
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
@@ -836,7 +842,7 @@ void Renderer::RenderFont(const vector<Sentence>& sentences)
 		mD2DDeviceContext->DrawText(
 			sent.Text->data(),
 			sent.TextLen,
-			mTextFormat.Get(),
+			mTextFormat_40.Get(),
 			&textRect,
 			mTextBrush.Get()
 		);
@@ -855,7 +861,7 @@ void Renderer::Present()
 	waitForPreviousFrame();
 }
 
-void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor)
+void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor, ComPtr<IDWriteTextFormat>& font)
 {
 	ThrowIfFailed(mD2DDeviceContext->CreateSolidColorBrush(fontColor, &mTextBrush));
 	ThrowIfFailed(mWriteFactory->CreateTextFormat(
@@ -866,8 +872,8 @@ void Renderer::loadFont(float fontSize, const D2D1::ColorF fontColor)
 		DWRITE_FONT_STRETCH_NORMAL,
 		fontSize,
 		L"en-us",
-		&mTextFormat
+		&font
 	));
-	ThrowIfFailed(mTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
-	ThrowIfFailed(mTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
+	ThrowIfFailed(font->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING));
+	ThrowIfFailed(font->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR));
 }

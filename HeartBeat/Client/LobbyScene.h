@@ -19,7 +19,7 @@ private:
     void processNotifyRoom(const PACKET& packet);
     void processAnswerEnterRoom(const PACKET& packet);
 
-    void createRoomSprite(int index, bool canEnter = false);
+    void createRoomSprite(int index, int numUsers, bool canEnter = false);
 
 private:
     enum
