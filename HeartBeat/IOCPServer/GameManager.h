@@ -26,6 +26,8 @@ public:
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
+	void SendRoomState();
+
 private:
 	void swapQueues();
 
@@ -44,8 +46,6 @@ private:
 	void processRequestEnterGame(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestSkill(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
-
-	void sendRoomState();
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GameServer.h"
 
+shared_ptr<GameManager> gGameManager = nullptr;
+
 void GameServer::OnConnect(const INT32 sessionIndex)
 {
 	LOG("[OnConnect] Session Index: {0}", sessionIndex);
@@ -26,7 +28,8 @@ void GameServer::Run(const UINT32 maxSessionCount)
 		SendMsg(sessionIndex, packetSize, packet);
 	};
 
-	mGameManager = make_shared<GameManager>();
+	mGameManager = make_unique<GameManager>();
+	gGameManager = mGameManager;
 	mGameManager->SendPacketFunction = sendPacketFunction;
 	mGameManager->Init(maxSessionCount);
 	mGameManager->Run();
@@ -39,4 +42,9 @@ void GameServer::End()
 	mGameManager->End();
 
 	IOCPServer::End();
+}
+
+shared_ptr<GameManager>& GameServer::GetGameManager()
+{
+	return gGameManager;
 }

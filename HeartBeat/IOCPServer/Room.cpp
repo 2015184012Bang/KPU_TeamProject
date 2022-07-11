@@ -9,6 +9,7 @@
 #include "Random.h"
 #include "RedCell.h"
 #include "WhiteCell.h"
+#include "GameServer.h"
 
 void Room::Init(const INT32 index, function<void(INT32, UINT32, char*)> sendFunc)
 {
@@ -317,6 +318,8 @@ void Room::DoGameOver(bool bWin /*= false*/)
 
 	clearAllUser();
 	clearGame();
+
+	GameServer::GetGameManager()->SendRoomState();
 }
 
 void Room::ChangeTileToRoad(INT32 row, INT32 col)

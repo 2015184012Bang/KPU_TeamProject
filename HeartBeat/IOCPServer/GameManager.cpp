@@ -193,7 +193,7 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	auto& room = mRoomManager->GetRoom(rerPacket->RoomNumber);
 	room->DoEnterRoom(user);
 
-	sendRoomState();
+	SendRoomState();
 }
 
 void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -213,7 +213,7 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 		room->DoLeaveRoom(user);
 	}
 
-	sendRoomState();
+	SendRoomState();
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -232,7 +232,7 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 		room->DoEnterUpgrade();
 	}
 
-	sendRoomState();
+	SendRoomState();
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -323,7 +323,7 @@ void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 pack
 	}
 }
 
-void GameManager::sendRoomState()
+void GameManager::SendRoomState()
 {
 	for (auto connectedIndex : mUserManager->GetAllConnectedUsersIndex())
 	{

@@ -16,6 +16,8 @@ public:
 
     virtual void End() override;
 
+    static shared_ptr<GameManager>& GetGameManager();
+
 private:
     shared_ptr<GameManager> mGameManager = nullptr;
 };
