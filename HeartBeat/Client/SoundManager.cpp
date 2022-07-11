@@ -129,4 +129,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/GameWin.mp3");
 	CreateSound("../Assets/Sounds/BossDead.mp3");
 	CreateSound("../Assets/Sounds/BossSpecial.mp3");
+	CreateSound("../Assets/Sounds/WallDead.mp3");
 }

@@ -1310,6 +1310,8 @@ void GameScene::doBattleEnd()
 
 		auto& animator = wall.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
+		
+		SoundManager::PlaySound("WallDead.mp3");
 		});
 
 	Timer::AddEvent(11.0f, [this, dialogueWidth]() {
