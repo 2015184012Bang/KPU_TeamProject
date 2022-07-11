@@ -165,6 +165,11 @@ void GameScene::updateUI(float deltaTime)
 		mCooldown -= deltaTime;
 		auto& text = mCooldownText.GetComponent<TextComponent>();
 		text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
+		
+		if (mCooldown < 10.0f)
+		{
+			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
+		}
 	}
 }
 
@@ -1049,7 +1054,15 @@ void GameScene::processNotifySkill(const PACKET& packet)
 			mCooldownText = Entity{ gRegistry.create() };
 			auto& text = mCooldownText.AddComponent<TextComponent>();
 			text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
-			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
+
+			if (mCooldown < 10.0f)
+			{
+				text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
+			}
+			else
+			{
+				text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 25.0f;
+			}
 			text.Y = Application::GetScreenHeight() - 120.0f - 57.5f;
 
 			Timer::AddEvent(mCooldown, [this]()
