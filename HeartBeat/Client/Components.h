@@ -111,6 +111,7 @@ struct TextComponent
 	std::wstring Sentence = L"";
 	float X = 0.0f;
 	float Y = 0.0f;
+	int FontSize = 40;
 };
 
 struct ParentComponent

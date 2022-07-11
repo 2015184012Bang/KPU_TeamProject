@@ -591,7 +591,8 @@ void Client::drawFont()
 	sentences.reserve(view.size());
 	for (auto [entity, text] : view.each())
 	{
-		sentences.emplace_back(&text.Sentence, (UINT32)text.Sentence.size(), text.X, text.Y);
+		sentences.emplace_back(&text.Sentence, (UINT32)text.Sentence.size(), text.X, 
+			text.Y, text.FontSize);
 	}
 
 	mRenderer->RenderFont(sentences);

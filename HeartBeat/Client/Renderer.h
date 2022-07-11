@@ -18,16 +18,19 @@ struct Sentence
 	Sentence(std::wstring* _text,
 		UINT32 _textLen,
 		float _x,
-		float _y)
+		float _y,
+		int _fontSize)
 		: Text(_text)
 		, TextLen(_textLen)
 		, X(_x)
-		, Y(_y) {}
+		, Y(_y)
+		, FontSize(_fontSize) {}
 
 	std::wstring* Text = nullptr;
 	UINT32 TextLen = 0;
 	float X = 0.0f;
 	float Y = 0.0f;
+	int FontSize = 0;
 };
 
 class Renderer
@@ -111,7 +114,7 @@ private:
 
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat_40;
-	ComPtr<IDWriteTextFormat> mTextFormat_20;
+	ComPtr<IDWriteTextFormat> mTextFormat_30;
 
 	uint32 mBackBufferIndex;
 	uint32 mRtvDescriptorSize;

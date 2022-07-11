@@ -778,7 +778,7 @@ void Renderer::loadAssets()
 {
 	loadAllAssetsFromFile();
 	loadFont(40.0f, D2D1::ColorF::Black, mTextFormat_40);
-	loadFont(20.0f, D2D1::ColorF::Black, mTextFormat_20);
+	loadFont(30.0f, D2D1::ColorF::Black, mTextFormat_30);
 
 	ThrowIfFailed(mCmdList->Close());
 	ID3D12CommandList* cmdLists[] = { mCmdList.Get() };
@@ -839,10 +839,12 @@ void Renderer::RenderFont(const vector<Sentence>& sentences)
 	{
 		D2D1_RECT_F textRect = D2D1::RectF(sent.X, sent.Y, rtSize.width, rtSize.height);
 
+		const auto& textFormat = sent.FontSize == 40 ? mTextFormat_40 : mTextFormat_30;
+
 		mD2DDeviceContext->DrawText(
 			sent.Text->data(),
 			sent.TextLen,
-			mTextFormat_40.Get(),
+			textFormat.Get(),
 			&textRect,
 			mTextBrush.Get()
 		);

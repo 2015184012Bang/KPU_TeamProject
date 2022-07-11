@@ -150,8 +150,9 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 		auto& text = roomNumberText.AddComponent<TextComponent>();
 		auto roomNumber = std::to_wstring(index + 1);
 		text.Sentence = roomNumber;
-		text.X = buttonXPos + 200.0f;
-		text.Y = buttonYPos + 25.0f;
+		text.X = buttonXPos + 205.0f;
+		text.Y = buttonYPos + 27.0f;
+		text.FontSize = 30;
 	}
 
 	{
@@ -159,7 +160,8 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 		auto userNumberText = Entity{ gRegistry.create() };
 		auto& text = userNumberText.AddComponent<TextComponent>();
 		text.Sentence = std::to_wstring(numUsers) + L"/3";
-		text.X = buttonXPos + 600;
-		text.Y = buttonYPos + 100.0f;
+		text.X = buttonXPos + 620;
+		text.Y = buttonYPos + 87.0f;
+		text.FontSize = 30;
 	}
 }
