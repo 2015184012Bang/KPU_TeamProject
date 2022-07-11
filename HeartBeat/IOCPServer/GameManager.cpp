@@ -10,9 +10,6 @@
 #include "Tank.h"
 #include "Room.h"
 
-//float GetTileYPos(TileType ttype);
-//void AddTagToTile(entt::entity tile, TileType ttype);
-
 void GameManager::Init(const UINT32 maxSessionCount)
 {
 	// 패킷 처리 함수들 등록
@@ -195,6 +192,8 @@ void GameManager::processRequestEnterRoom(const INT32 sessionIndex, const UINT8 
 	auto user = mUserManager->GetUserByIndex(sessionIndex);
 	auto& room = mRoomManager->GetRoom(rerPacket->RoomNumber);
 	room->DoEnterRoom(user);
+
+	sendRoomState();
 }
 
 void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -212,10 +211,9 @@ void GameManager::processRequestLeaveRoom(const INT32 sessionIndex, const UINT8 
 		auto& room = mRoomManager->GetRoom(roomIndex);
 
 		room->DoLeaveRoom(user);
-
-		// 로비로 돌아간 유저에게 이용 가능한 방 목록 전송
-		mRoomManager->SendAvailableRoom(sessionIndex);
 	}
+
+	sendRoomState();
 }
 
 void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -233,6 +231,8 @@ void GameManager::processRequestEnterUpgrade(const INT32 sessionIndex, const UIN
 		auto& room = mRoomManager->GetRoom(roomIndex);
 		room->DoEnterUpgrade();
 	}
+
+	sendRoomState();
 }
 
 void GameManager::processRequestMove(const INT32 sessionIndex, const UINT8 packetSize, char* packet)
@@ -320,5 +320,17 @@ void GameManager::processRequestSkill(const INT32 sessionIndex, const UINT8 pack
 	{
 		auto& room = mRoomManager->GetRoom(roomIndex);
 		room->DoSkill(user);
+	}
+}
+
+void GameManager::sendRoomState()
+{
+	for (auto connectedIndex : mUserManager->GetAllConnectedUsersIndex())
+	{
+		auto connectedUser = mUserManager->GetUserByIndex(connectedIndex);
+		if (connectedUser->GetUserState() == User::UserState::IN_LOBBY)
+		{
+			mRoomManager->SendAvailableRoom(connectedIndex);
+		}
 	}
 }

@@ -26,9 +26,6 @@ public:
 
 	function<void(INT32, UINT32, char*)> SendPacketFunction;
 
-	// 게임오버 처리
-	//void DoGameOver();
-
 private:
 	void swapQueues();
 
@@ -48,8 +45,7 @@ private:
 	void processRequestAttack(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 	void processRequestSkill(const INT32 sessionIndex, const UINT8 packetSize, char* packet);
 
-	// 스테이지 초기화
-	//void clearStage();
+	void sendRoomState();
 
 private:
 	using PACKET_PROCESS_FUNCTION = function<void(INT32, UINT8, char*)>;

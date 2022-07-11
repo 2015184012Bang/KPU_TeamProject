@@ -72,6 +72,8 @@ void LobbyScene::processNotifyRoom(const PACKET& packet)
 {
 	NOTIFY_ROOM_PACKET* nrPacket = reinterpret_cast<NOTIFY_ROOM_PACKET*>(packet.DataPtr);
 
+	DestroyByComponent<Tag_UI>();
+
 	for (auto i = 0; i < MAX_ROOM_NUM; ++i)
 	{
 		if (AVAILABLE == nrPacket->Room[i])
@@ -109,8 +111,9 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 	float buttonYPos = 160.0f + index * 180.0f;
 
 	Texture* buttonTex = TEXTURE("Lobby_Button.png");
-	Entity sprite = mOwner->CreateSpriteEntity(buttonWidth, buttonHeight, buttonTex, 110);
-	auto& transform = sprite.GetComponent<RectTransformComponent>();
+	Entity buttonSprite = mOwner->CreateSpriteEntity(buttonWidth, buttonHeight, buttonTex, 110);
+	buttonSprite.AddTag<Tag_UI>();
+	auto& transform = buttonSprite.GetComponent<RectTransformComponent>();
 	transform.Position.x = buttonXPos;
 	transform.Position.y = buttonYPos;
 
@@ -120,7 +123,7 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 	{
 		roomState = numUsers == 0 ? TEXTURE("Empty.png") : TEXTURE("Waiting.png");
 
-		sprite.AddComponent<ButtonComponent>([this, index, buttonXPos, buttonYPos]()
+		buttonSprite.AddComponent<ButtonComponent>([this, index, buttonXPos, buttonYPos]()
 			{
 				SoundManager::PlaySound("ButtonClick.mp3");
 				REQUEST_ENTER_ROOM_PACKET packet = {};
@@ -139,6 +142,7 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 	{
 		// 방 상태(Empty, Waiting, Playing)
 		Entity stateSprite = mOwner->CreateSpriteEntity(250, 50, roomState, 120);
+		stateSprite.AddTag<Tag_UI>();
 		auto& stateRect = stateSprite.GetComponent<RectTransformComponent>();
 		stateRect.Position.x = buttonXPos + 200;
 		stateRect.Position.y = buttonYPos + 80;
@@ -147,6 +151,7 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 	{
 		// 방 번호
 		auto roomNumberText = Entity{ gRegistry.create() };
+		roomNumberText.AddTag<Tag_UI>();
 		auto& text = roomNumberText.AddComponent<TextComponent>();
 		auto roomNumber = std::to_wstring(index + 1);
 		text.Sentence = roomNumber;
@@ -158,6 +163,7 @@ void LobbyScene::createRoomSprite(int index, int numUsers, bool canEnter /*= fal
 	{
 		// 접속 유저 수 
 		auto userNumberText = Entity{ gRegistry.create() };
+		userNumberText.AddTag<Tag_UI>();
 		auto& text = userNumberText.AddComponent<TextComponent>();
 		text.Sentence = std::to_wstring(numUsers) + L"/3";
 		text.X = buttonXPos + 620;
