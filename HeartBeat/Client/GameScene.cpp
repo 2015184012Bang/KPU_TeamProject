@@ -922,6 +922,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 				SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
 			auto& tailTransform = tail.GetComponent<TransformComponent>();
 			tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
+			tailTransform.Rotation.y = 90.0f;
 
 			auto& tailAnimator = tail.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&tailAnimator, ANIM("Tail_Attack.anim"));
