@@ -25,6 +25,7 @@ public:
     void SetDirection(const Vector3& direction) { mDirection = direction; }
 
 private:
+    void updateLightPosition();
     void updateUI(float deltaTime);
 
     void createMap(string_view mapFile);

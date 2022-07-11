@@ -57,6 +57,7 @@ public:
 	unique_ptr<PacketManager>& GetPacketManager() { return mPacketManager; }
 
     Entity& GetMainCamera() { return mMainCamera; }
+    Entity& GetLight() { return mLight; }
 
 private:
     void processInput();

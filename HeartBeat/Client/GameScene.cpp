@@ -145,7 +145,16 @@ void GameScene::Update(float deltaTime)
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
+	updateLightPosition();
 	updateUI(deltaTime);
+}
+
+void GameScene::updateLightPosition()
+{
+	auto& light = mOwner->GetLight();
+	auto& lc = light.GetComponent<LightComponent>();
+	const auto& playerPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+	lc.Light.LightPosition = Vector3{ playerPos.x , 1000.0f, playerPos.z };
 }
 
 void GameScene::updateUI(float deltaTime)
