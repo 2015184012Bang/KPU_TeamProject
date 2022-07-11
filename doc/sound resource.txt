@@ -57,10 +57,17 @@ https://freesound.org/people/zagi2/sounds/347737/
 https://freesound.org/people/XavTech/sounds/238548/
 - 괴수 죽음
 https://freesound.org/people/ThefitzyG/sounds/414296/
+- 괴수 촉수
+
+- 괴수 스킬
 
 2. 탱크 피격 소리
+https://freesound.org/people/Mrthenoronha/sounds/371922/
+https://freesound.org/people/ChristiaanAckermann21100333/sounds/593729/
+
 
 3. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
+https://freesound.org/people/Bertsz/sounds/524312/
 
 4. 스킬 소리
 4-1 공격
@@ -68,10 +75,17 @@ https://freesound.org/people/ThefitzyG/sounds/414296/
 4-3 회복
 
 5. 보스전투 BGM
+https://freesound.org/people/BloodPixelHero/sounds/607942/
+https://freesound.org/people/BloodPixelHero/sounds/608620/
+
 
 6. 대기화면 BGM
+https://freesound.org/people/Mrthenoronha/sounds/520937/
+https://freesound.org/people/BloodPixelHero/sounds/561391/
+https://freesound.org/people/Mrthenoronha/sounds/515615/
 
 7. 장비변경 화면 BGM
 
 8. 카운트 다운 (5초 또는 3초) -> 장비 변경에서 게임 시작으로 넘어갈때 알림용
-
+https://freesound.org/people/NXRT/sounds/546602/
+https://freesound.org/people/Troube/sounds/631547/
