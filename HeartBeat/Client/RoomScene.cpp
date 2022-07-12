@@ -214,6 +214,18 @@ void RoomScene::createButtons()
 			mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 			});
 	}
+	else
+	{
+		Entity readyButton = mOwner->CreateSpriteEntity(416, 119,
+			TEXTURE("Ready_Button.png"), 110);
+		auto& transform = readyButton.GetComponent<RectTransformComponent>();
+		transform.Position.x = 435.0f;
+		transform.Position.y = Application::GetScreenHeight() - 162.0f;
+
+		readyButton.AddComponent<ButtonComponent>([this]() {
+			SoundManager::PlaySound("ButtonClick.mp3");
+			});
+	}
 }
 
 float RoomScene::getXPosition(int clientID)

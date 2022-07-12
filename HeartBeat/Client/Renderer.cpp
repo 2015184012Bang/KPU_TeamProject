@@ -830,6 +830,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Player_Name.png");
 	TEXTURE("Room_Message.png");
 	TEXTURE("Game_Background.png");
+	TEXTURE("Ready_Button.png");
 }
 
 void Renderer::loadAssets()
