@@ -58,8 +58,11 @@ https://freesound.org/people/XavTech/sounds/238548/
 - 괴수 죽음
 https://freesound.org/people/ThefitzyG/sounds/414296/
 - 괴수 촉수
-
-- 괴수 스킬
+https://youtu.be/9HjQ-qHTn28?t=1026
+- 괴수 attack2
+https://youtu.be/9HjQ-qHTn28?t=1051
+https://freesound.org/people/Rizzard/sounds/564485/
+https://freesound.org/people/J.R.Mythical/sounds/563688/
 
 2. 탱크 피격 소리
 https://freesound.org/people/Mrthenoronha/sounds/371922/
@@ -67,12 +70,22 @@ https://freesound.org/people/ChristiaanAckermann21100333/sounds/593729/
 
 
 3. 돌이 부서지는 소리 (촉수가 튀어나올 때 용)
+https://www.youtube.com/watch?v=NdNO5QyuG30
 https://freesound.org/people/Bertsz/sounds/524312/
 
 4. 스킬 소리
 4-1 공격
+https://www.youtube.com/watch?v=6Kzyrd6-8co
+https://www.youtube.com/watch?v=TVU4iZFVKTc
+
 4-2 강화
+https://freesound.org/people/iut_Paris8/sounds/390561/
+https://freesound.org/people/colorsCrimsonTears/sounds/585803/
+https://freesound.org/people/MATRIXXX_/sounds/523654/
+
 4-3 회복
+https://freesound.org/people/lulyc/sounds/346116/
+https://freesound.org/people/MATRIXXX_/sounds/523204/
 
 5. 보스전투 BGM
 https://freesound.org/people/BloodPixelHero/sounds/607942/
@@ -89,3 +102,7 @@ https://freesound.org/people/Mrthenoronha/sounds/515615/
 8. 카운트 다운 (5초 또는 3초) -> 장비 변경에서 게임 시작으로 넘어갈때 알림용
 https://freesound.org/people/NXRT/sounds/546602/
 https://freesound.org/people/Troube/sounds/631547/
+
+9. 메인 BGM
+https://freesound.org/people/BloodPixelHero/sounds/507767/
+https://www.youtube.com/watch?v=W-3kQA61iHA&list=PLobY7vO0pgVIOZNKTVRhkPzrfCjDJ0CNl&index=17
