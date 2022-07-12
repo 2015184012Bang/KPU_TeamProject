@@ -772,6 +772,12 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Waiting.png");
 	TEXTURE("Playing.png");
 	TEXTURE("Empty.png");
+	TEXTURE("Room_Background.png");
+	TEXTURE("P1.png");
+	TEXTURE("P2.png");
+	TEXTURE("P3.png");
+	TEXTURE("Player_Name.png");
+	TEXTURE("Room_Message.png");
 }
 
 void Renderer::loadAssets()

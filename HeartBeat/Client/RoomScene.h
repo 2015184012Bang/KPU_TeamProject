@@ -16,7 +16,9 @@ public:
 	virtual void ProcessInput() override;
 
 private:
+	void createUI();
 	void createCharacter(int clientID, string_view clientName);
+	void createPlayerUI(const int clientID, string_view name);
 	void createButtons();
 	float getXPosition(int clientID);
 

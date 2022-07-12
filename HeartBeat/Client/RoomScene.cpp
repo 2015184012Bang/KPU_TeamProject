@@ -26,10 +26,9 @@ RoomScene::RoomScene(Client* owner)
 
 void RoomScene::Enter()
 {
-	mOwner->SetBackgroundColor(Colors::CornflowerBlue);
+	mOwner->SetBackgroundColor(Colors::Black);
 
-	// 방 나가기 버튼, 게임 시작 버튼 생성
-	createButtons();
+	createUI();
 
 	// 클라이언트 아이디에 따른 캐릭터 엔티티 생성
 	createCharacter(mOwner->GetClientID(), mOwner->GetClientName());
@@ -37,8 +36,7 @@ void RoomScene::Enter()
 	// 메인 카메라 위치 조정
 	auto& camera = mOwner->GetMainCamera();
 	auto& cc = camera.GetComponent<CameraComponent>();
-	cc.Position.y = 500.0f;
-	cc.Position.z = -1000.0f;
+	cc.Position = Vector3{ 0.0f, 500.0f, -1000.0f };
 }
 
 void RoomScene::Exit()
@@ -85,6 +83,27 @@ void RoomScene::ProcessInput()
 	}
 }
 
+void RoomScene::createUI()
+{
+	{
+		// 백 그라운드 이미지
+		Entity background = mOwner->CreateSpriteEntity(Application::GetScreenWidth(),
+			227, TEXTURE("Room_Background.png"));
+		auto& rect = background.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ 0.0f, Application::GetScreenHeight() - 227.0f };
+	}
+
+	{
+		// 메시지
+		Entity message = mOwner->CreateSpriteEntity(680, 46, TEXTURE("Room_Message.png"));
+		auto& rect = message.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ 300.0f, 23.0f };
+	}
+
+	createPlayerUI(mOwner->GetClientID(), mOwner->GetClientName());
+	createButtons();
+}
+
 void RoomScene::createCharacter(int clientID, string_view userName)
 {
 	auto [mesh, tex, skel] = GetCharacterFiles(clientID);
@@ -124,12 +143,48 @@ void RoomScene::createCharacter(int clientID, string_view userName)
 	Helpers::AttachBone(character, belt, "Bip001 Spine");
 }
 
+void RoomScene::createPlayerUI(const int clientID, string_view name)
+{
+	float xPos = 0.0f;
+	float xOffset = 0.0f;
+	Texture* tagTex = nullptr;
+
+	switch (clientID)
+	{
+	case 0: xPos = 590.0f; xOffset = 68.0f; tagTex = TEXTURE("P1.png"); break;
+	case 1: xPos = 290.0f; xOffset = 38.0f; tagTex = TEXTURE("P2.png"); break;
+	case 2: xPos = 890.0f; xOffset = 98.0f; tagTex = TEXTURE("P3.png"); break;
+	default: HB_LOG("Unknown client id: {0}", clientID); break;
+	}
+
+	Entity playerTag = mOwner->CreateSpriteEntity(101, 73, tagTex);
+	playerTag.AddTag<Tag_UI>();
+	playerTag.AddComponent<NameComponent>(name);
+	auto& tagRect = playerTag.GetComponent<RectTransformComponent>();
+	tagRect.Position = Vector2{ xPos, 89.0f };
+
+	Entity playerName = mOwner->CreateSpriteEntity(237, 84, TEXTURE("Player_Name.png"));
+	playerName.AddTag<Tag_UI>();
+	playerName.AddComponent<NameComponent>(name);
+	auto& nameRect = playerName.GetComponent<RectTransformComponent>();
+	nameRect.Position = Vector2{ xPos - xOffset, Application::GetScreenHeight() - 357.0f };
+
+	Entity nameText = Entity{ gRegistry.create() };
+	nameText.AddTag<Tag_UI>();
+	nameText.AddComponent<NameComponent>(name);
+	auto& text = nameText.AddComponent<TextComponent>();
+	text.Sentence = s2ws(name.data());
+	text.X = nameRect.Position.x + 30.0f;
+	text.Y = Application::GetScreenHeight() - 334.0f;
+	text.FontSize = 30;
+}
+
 void RoomScene::createButtons()
 {
 	// 방 나가기 버튼 생성
-	Entity leave = mOwner->CreateSpriteEntity(239, 78, TEXTURE("Back_Button.png"));
+	Entity leave = mOwner->CreateSpriteEntity(173, 65, TEXTURE("Back_Button.png"), 110);
 	auto& transform = leave.GetComponent<RectTransformComponent>();
-	transform.Position = Vector2{ 20.0f, Application::GetScreenHeight() - 120.0f };
+	transform.Position = Vector2{ 76.0f, Application::GetScreenHeight() - 99.5f };
 
 	leave.AddComponent<ButtonComponent>([this]()
 		{
@@ -145,10 +200,11 @@ void RoomScene::createButtons()
 	// 시작 버튼을 누를 수 있도록 버튼을 생성한다.
 	if (Values::HostID == mOwner->GetClientID())
 	{
-		Entity gameStartButton = mOwner->CreateSpriteEntity(302, 85, TEXTURE("Start_Button.png"));
+		Entity gameStartButton = mOwner->CreateSpriteEntity(416, 119, 
+			TEXTURE("Start_Button.png"), 110);
 		auto& transform = gameStartButton.GetComponent<RectTransformComponent>();
-		transform.Position.x = (Application::GetScreenWidth() / 2.0f) - (transform.Width / 2.0f);
-		transform.Position.y = Application::GetScreenHeight() - 150.f;
+		transform.Position.x = 435.0f;
+		transform.Position.y = Application::GetScreenHeight() - 162.0f;
 
 		gameStartButton.AddComponent<ButtonComponent>([this]() {
 			SoundManager::PlaySound("ButtonClick.mp3");
@@ -240,8 +296,19 @@ void RoomScene::processNotifyLeaveRoom(const PACKET& packet)
 	}
 	else
 	{
-		// 플레이어 캐릭터는 클라이언트 아이디가 곧 엔티티 아이디이다.
-		DestroyEntityByID(clientID);
+		auto player = GetEntityByID(clientID);
+		auto playerName = player.GetComponent<NameComponent>().Name;
+		DestroyEntity(player);
+
+		auto uis = gRegistry.view<Tag_UI, NameComponent>();
+
+		for (auto [ui, name] : uis.each())
+		{
+			if (name.Name == playerName)
+			{
+				DestroyEntity(ui);
+			}
+		}
 	}
 }
 
@@ -249,4 +316,5 @@ void RoomScene::processNotifyEnterRoom(const PACKET& packet)
 {
 	NOTIFY_ENTER_ROOM_PACKET* nerPacket = reinterpret_cast<NOTIFY_ENTER_ROOM_PACKET*>(packet.DataPtr);
 	createCharacter(nerPacket->ClientID, nerPacket->UserName);
+	createPlayerUI(nerPacket->ClientID, nerPacket->UserName);
 }
