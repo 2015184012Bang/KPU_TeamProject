@@ -713,7 +713,6 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Character_Green.mesh");
 	MESH("Character_Pink.mesh");
 	MESH("Character_Red.mesh");
-	MESH("Clock.mesh");
 	MESH("Cotton_Swab.mesh");
 	MESH("CO2.mesh");
 	MESH("Cube.mesh");
@@ -734,8 +733,6 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Thermometer.mesh");
 	MESH("Virus.mesh");
 	MESH("Vitamin.mesh");
-	MESH("Sphere.mesh");
-	MESH("Plane_Big.mesh");
 	MESH("Missile.mesh");
 	MESH("Tail.mesh");
 	MESH("Wall.mesh");
@@ -757,7 +754,6 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Character_Green.skel");
 	SKELETON("Character_Pink.skel");
 	SKELETON("Character_Red.skel");
-	SKELETON("Clock.skel");
 	SKELETON("Door.skel");
 	SKELETON("Dog.skel");
 	SKELETON("Fat.skel");
@@ -791,8 +787,6 @@ void Renderer::loadAllAssetsFromFile()
 
 	TEXTURE("Login_Background.png");
 	TEXTURE("Start_Button.png");
-	TEXTURE("Bar.png");
-	TEXTURE("White.png");
 	TEXTURE("Next_Button.png");
 	TEXTURE("Login_Button.png");
 	TEXTURE("Login_Form.png");
@@ -819,7 +813,6 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Heart.png");
 	TEXTURE("Tank_Portrait.png");
 	TEXTURE("Red.png");
-	TEXTURE("Orange.png");
 	TEXTURE("Lobby_Background.png");
 	TEXTURE("Lobby_Button.png");
 	TEXTURE("Waiting.png");

@@ -1,7 +1,7 @@
 {
 	"vertexformat":"PosNormSkinTex",
 	"textures":[
-		"../Assets/Textures/Temp.png"
+		"../Assets/Textures/Door.png"
 	],
 	"vertices":[
 		[2000.000000,3200.000000,-0.000000,0.000000,1.000000,0.000000,0,0,0,0,255,0,0,0,0.735020,0.977470],

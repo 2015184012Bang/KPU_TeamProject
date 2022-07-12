@@ -1,9 +1,7 @@
 {
 	"vertexformat":"PosNormTex",
 	"textures":[
-		"../Assets/Textures/Attack.png",
-		"../Assets/Textures/Heal.png",
-		"../Assets/Textures/Support.png"
+		"../Assets/Textures/Temp.png"
 	],
 	"vertices":[
 		[-1.000000,-1.000000,0.000,0.000000,-1.000000,0.000000,0.0,1.0],

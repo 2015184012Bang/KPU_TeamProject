@@ -1888,6 +1888,9 @@ Texture* GetTileTexture(TileType ttype)
 	case TileType::HOUSE:
 		return TEXTURE("House.png");
 
+	case TileType::DOOR:
+		return TEXTURE("Door.png");
+
 	default:
 		return TEXTURE("Temp.png");
 	}
