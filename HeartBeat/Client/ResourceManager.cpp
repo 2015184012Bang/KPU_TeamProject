@@ -500,6 +500,9 @@ void ResourceManager::MakeAnimTransitions()
 
 		Animation* skill3Anim = ANIM("Skill_Effect_Sup.anim");
 		skill3Anim->SetLoop(false);
+
+		Animation* bossEffectAnim = ANIM("Boss_Attack_Effect.anim");
+		bossEffectAnim->SetLoop(false);
 	}
 }
 
