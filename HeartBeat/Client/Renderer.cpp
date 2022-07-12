@@ -434,6 +434,57 @@ void Renderer::createPipelineState()
 		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mNoLightPSO)));
 	}
 
+	// PSO for background
+	{
+		std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
+		inputDesc.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		inputDesc.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		inputDesc.push_back({ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+
+		ComPtr<ID3DBlob> vertexShader;
+		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> errorBlob;
+
+		HRESULT hr = D3DCompileFromFile(L"background.hlsli", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		hr = D3DCompileFromFile(L"background.hlsli", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorBlob);
+
+		if (FAILED(hr))
+		{
+			if (errorBlob)
+			{
+				HB_LOG((char*)errorBlob->GetBufferPointer());
+				HB_ASSERT(false, "ASSERTION FAILED");
+			}
+		}
+
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+		psoDesc.InputLayout = { inputDesc.data(), static_cast<uint32>(inputDesc.size()) };
+		psoDesc.pRootSignature = mRootSignature.Get();
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+		psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
+		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+		psoDesc.SampleMask = UINT_MAX;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.NumRenderTargets = 1;
+		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+		psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+		psoDesc.SampleDesc.Count = 1;
+		ThrowIfFailed(mDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mBackgroundPSO)));
+	}
+
 	// PSO for skeletal mesh
 	{
 		std::vector<D3D12_INPUT_ELEMENT_DESC> inputDesc;
@@ -778,6 +829,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("P3.png");
 	TEXTURE("Player_Name.png");
 	TEXTURE("Room_Message.png");
+	TEXTURE("Game_Background.png");
 }
 
 void Renderer::loadAssets()

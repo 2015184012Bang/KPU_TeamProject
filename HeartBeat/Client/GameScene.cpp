@@ -1519,6 +1519,14 @@ void GameScene::doBossBattleOccur()
 void GameScene::createUI()
 {
 	{
+		// 배경 이미지
+		Entity background = mOwner->CreateStaticMeshEntity(MESH("Plane.mesh"),
+			TEXTURE("Game_Background.png"));
+		background.RemoveComponent<Tag_StaticMesh>();
+		background.AddTag<Tag_Background>();
+	}
+
+	{
 		// 점수 표시 UI
 		auto score = mOwner->CreateSpriteEntity(230, 70, TEXTURE("Trophy.png"));
 		score.AddTag<Tag_UI>();

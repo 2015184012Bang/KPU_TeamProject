@@ -213,7 +213,7 @@ void Client::ResetCamera()
 	mFollowCameraTarget = {};
 	auto& cc = mMainCamera.GetComponent<CameraComponent>();
 	cc.Position = Vector3{ 0.0f, 500.0f, -500.0f };
-	cc.Target = Vector3::Zero;	
+	cc.Target = Vector3::Zero;
 }
 
 void Client::DeleteChildren(entt::registry& regi, entt::entity entity)
@@ -311,7 +311,7 @@ void Client::render()
 	drawSprite();
 
 	mActiveScene->Render(mRenderer);
-	
+
 	mRenderer->EndRender();
 
 	// D2D를 이용한 폰트 렌더링
@@ -512,6 +512,21 @@ void Client::drawSkeletalMesh()
 
 void Client::drawStaticMesh()
 {
+	// 배경 셰이더
+	gCmdList->SetPipelineState(mRenderer->GetBackgroundPSO().Get());
+	{
+		auto view = gRegistry.view<Tag_Background>();
+		for (auto entity : view)
+		{
+			Entity e = Entity{ entity };
+
+			TransformComponent& transform = e.GetComponent<TransformComponent>();
+			Helpers::BindWorldMatrix(transform.Position, transform.Rotation, transform.Scale, &transform.Buffer, &transform.bDirty);
+			MeshRendererComponent& meshRenderer = e.GetComponent<MeshRendererComponent>();
+			mRenderer->Submit(meshRenderer.Mesi, meshRenderer.Tex);
+		}
+	}
+
 	// 조명 미적용 셰이더
 	gCmdList->SetPipelineState(mRenderer->GetNoLightPSO().Get());
 	{
@@ -591,7 +606,7 @@ void Client::drawFont()
 	sentences.reserve(view.size());
 	for (auto [entity, text] : view.each())
 	{
-		sentences.emplace_back(&text.Sentence, (UINT32)text.Sentence.size(), text.X, 
+		sentences.emplace_back(&text.Sentence, (UINT32)text.Sentence.size(), text.X,
 			text.Y, text.FontSize);
 	}
 

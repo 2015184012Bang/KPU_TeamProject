@@ -58,6 +58,7 @@ public:
 	const ComPtr<ID3D12PipelineState>& GetSpritePSO() const { return mSpritePSO; }
 	const ComPtr<ID3D12PipelineState>& GetNoLightPSO() const { return mNoLightPSO; }
 	const ComPtr<ID3D12PipelineState>& GetFontPSO() const { return mFontPSO; }
+	const ComPtr<ID3D12PipelineState>& GetBackgroundPSO() const { return mBackgroundPSO; }
 
 private:
 	void loadPipeline();
@@ -102,6 +103,7 @@ private:
 	ComPtr<ID3D12PipelineState> mSpritePSO;
 	ComPtr<ID3D12PipelineState> mNoLightPSO;
 	ComPtr<ID3D12PipelineState> mFontPSO;
+	ComPtr<ID3D12PipelineState> mBackgroundPSO;
 
 	ComPtr<ID3D11DeviceContext> mD3D11DeviceContext;
 	ComPtr<ID3D11On12Device> mD3D11On12Device;

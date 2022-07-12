@@ -186,6 +186,7 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="background.hlsli" />
     <None Include="default.hlsli" />
     <None Include="font.hlsli" />
     <None Include="static.hlsli" />

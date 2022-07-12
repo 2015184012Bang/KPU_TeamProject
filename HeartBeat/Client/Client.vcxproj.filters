@@ -275,5 +275,8 @@
     <None Include="font.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="background.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
