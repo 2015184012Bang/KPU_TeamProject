@@ -91,6 +91,9 @@ private:
     bool mbIsGameOver = false;
 
     int mBossSpecialSkillUsageCount = 0;
+
+    float mPlayTime = 0.0f;
+    Entity mPlayTimeText = {};
 };
 
 string GetAttackAnimTrigger(bool isEnemy = false);

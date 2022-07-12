@@ -171,6 +171,12 @@ void GameScene::updateUI(float deltaTime)
 			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
 		}
 	}
+
+#ifdef _DEBUG
+	mPlayTime += deltaTime;
+	auto& pt = mPlayTimeText.GetComponent<TextComponent>();
+	pt.Sentence = std::to_wstring(mPlayTime);
+#endif
 }
 
 void GameScene::createMap(string_view mapFile)
@@ -1567,6 +1573,17 @@ void GameScene::createUI()
 		text.X = 150.0f;
 		text.Y = 83.0f;
 	}
+
+#ifdef _DEBUG
+	{
+		// 플레이타임 추적 텍스트
+		mPlayTimeText = Entity{ gRegistry.create() };
+		auto& text = mPlayTimeText.AddComponent<TextComponent>();
+		text.Sentence = std::to_wstring(mPlayTimeText);
+		text.X = 5.0f;
+		text.Y = 150.0f;
+	}
+#endif
 
 	// 플레이어 hp UI
 	createHpbar();
