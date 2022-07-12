@@ -145,7 +145,16 @@ void GameScene::Update(float deltaTime)
 		mOwner->GetPacketManager()->Send(reinterpret_cast<char*>(&packet), sizeof(packet));
 	}
 
+	updateLightPosition();
 	updateUI(deltaTime);
+}
+
+void GameScene::updateLightPosition()
+{
+	auto& light = mOwner->GetLight();
+	auto& lc = light.GetComponent<LightComponent>();
+	const auto& playerPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
+	lc.Light.LightPosition = Vector3{ playerPos.x , 1000.0f, playerPos.z };
 }
 
 void GameScene::updateUI(float deltaTime)
@@ -156,6 +165,11 @@ void GameScene::updateUI(float deltaTime)
 		mCooldown -= deltaTime;
 		auto& text = mCooldownText.GetComponent<TextComponent>();
 		text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
+		
+		if (mCooldown < 10.0f)
+		{
+			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
+		}
 	}
 }
 
@@ -922,6 +936,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 				SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
 			auto& tailTransform = tail.GetComponent<TransformComponent>();
 			tailTransform.Position = apoint.GetComponent<TransformComponent>().Position;
+			tailTransform.Rotation.y = 90.0f;
 
 			auto& tailAnimator = tail.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&tailAnimator, ANIM("Tail_Attack.anim"));
@@ -1039,8 +1054,16 @@ void GameScene::processNotifySkill(const PACKET& packet)
 			mCooldownText = Entity{ gRegistry.create() };
 			auto& text = mCooldownText.AddComponent<TextComponent>();
 			text.Sentence = std::to_wstring(static_cast<int>(mCooldown));
-			text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 35.0f;
-			text.Y = Application::GetScreenHeight() - 120.0f - 55.0f;
+
+			if (mCooldown < 10.0f)
+			{
+				text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 42.0f;
+			}
+			else
+			{
+				text.X = 39.0f + (404.0f * mOwner->GetClientID()) + 25.0f;
+			}
+			text.Y = Application::GetScreenHeight() - 120.0f - 57.5f;
 
 			Timer::AddEvent(mCooldown, [this]()
 				{
@@ -1300,6 +1323,8 @@ void GameScene::doBattleEnd()
 
 		auto& animator = wall.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
+		
+		SoundManager::PlaySound("WallDead.mp3");
 		});
 
 	Timer::AddEvent(11.0f, [this, dialogueWidth]() {
@@ -1494,42 +1519,48 @@ void GameScene::doBossBattleOccur()
 void GameScene::createUI()
 {
 	{
-		auto score = mOwner->CreateSpriteEntity(120, 48, TEXTURE("Trophy.png"));
+		// 점수 표시 UI
+		auto score = mOwner->CreateSpriteEntity(230, 70, TEXTURE("Trophy.png"));
 		score.AddTag<Tag_UI>();
 		auto& rect = score.GetComponent<RectTransformComponent>();
-		rect.Position.x = 10.0f;
-		rect.Position.y = 10.0f;
+		rect.Position.x = 5.0f;
+		rect.Position.y = 5.0f;
 	}
 
 	{
+		// 점수 텍스트
 		mScoreText = Entity{ gRegistry.create() };
 		mScoreText.AddTag<Tag_UI>();
 		auto& text = mScoreText.AddComponent<TextComponent>();
-		text.Sentence = L"0";
-		text.X = 50.0f;
-		text.Y = 10.0f;
+		text.Sentence = L"1234";
+		text.X = 82.5f;
+		text.Y = 17.5f;
 	}
 
 	{
-		auto tankPortrait = mOwner->CreateSpriteEntity(56, 48, TEXTURE("Tank_Portrait.png"));
+		// 탱크 초상화
+		auto tankPortrait = mOwner->CreateSpriteEntity(60, 60, TEXTURE("Tank_Portrait.png"));
 		auto& rect = tankPortrait.GetComponent<RectTransformComponent>();
-		rect.Position = { 10.0f, 60.0f };
+		rect.Position = { 5.0f, 78.0f };
 	}
 
 	{
+		// 탱크 체력 UI
+		auto heart = mOwner->CreateSpriteEntity(168, 60, TEXTURE("Heart.png"));
+		auto& rect = heart.GetComponent<RectTransformComponent>();
+		rect.Position = { 67.0f, 78.0f };
+	}
+
+	{
+		// 탱크 체력 텍스트
 		mTankHpText = Entity{ gRegistry.create() };
 		auto& text = mTankHpText.AddComponent<TextComponent>();
 		text.Sentence = L"50";
-		text.X = 68.0f;
-		text.Y = 60.0f;
+		text.X = 150.0f;
+		text.Y = 83.0f;
 	}
 
-	{
-		auto heart = mOwner->CreateSpriteEntity(56, 48, TEXTURE("Heart.png"));
-		auto& rect = heart.GetComponent<RectTransformComponent>();
-		rect.Position = { 68.0f, 60.0f };
-	}
-
+	// 플레이어 hp UI
 	createHpbar();
 }
 
@@ -1574,10 +1605,10 @@ void GameScene::createHpbar()
 		{
 			UpgradePreset preset = mOwner->GetPreset();
 			auto skillTex = GetSkillTexture(preset);
-			Entity skill = mOwner->CreateSpriteEntity(50, 50, skillTex);
+			Entity skill = mOwner->CreateSpriteEntity(70, 70, skillTex);
 			auto& cooldownRect = skill.GetComponent<RectTransformComponent>();
-			cooldownRect.Position.x = 39.0f + (404.0f * id) + 25.0f;
-			cooldownRect.Position.y = Application::GetScreenHeight() - 120.0f - 55.0f;
+			cooldownRect.Position.x = 39.0f + (404.0f * id) + 20.0f;
+			cooldownRect.Position.y = Application::GetScreenHeight() - 120.0f - 70.0f;
 		}
 	}
 }
@@ -1687,11 +1718,11 @@ void GameScene::createSkillEffect(const UINT32 entityID, const UINT8 preset)
 
 void GameScene::createDialogue(Texture* dia, int drawOrder)
 {
-	static constexpr INT32 dialogueWidth = 1000;
-	Entity diag = mOwner->CreateSpriteEntity(dialogueWidth, 250, dia, drawOrder);
+	static constexpr INT32 dialogueWidth = 800;
+	Entity diag = mOwner->CreateSpriteEntity(dialogueWidth, 210, dia, drawOrder);
 	diag.AddTag<Tag_Dialogue>();
 	auto& rect = diag.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 10.0f };
+	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - dialogueWidth / 2.0f, 5.0f };
 }
 
 void GameScene::clearDialogue()
