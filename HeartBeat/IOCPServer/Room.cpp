@@ -171,7 +171,7 @@ void Room::DoEnterUpgrade()
 		DoSetPreset(user, UpgradePreset::ATTACK);
 	}
 
-	Timer::AddEvent(30.0f, [this]() {
+	Timer::AddEvent(10.0f, [this]() {
 		DoEnterGame();
 		});
 }

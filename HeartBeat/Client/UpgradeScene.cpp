@@ -298,6 +298,10 @@ void UpgradeScene::createExplainUI(UpgradePreset preset)
 	Texture* jobExplainTex = nullptr;
 	Texture* skillExplainTex = nullptr;
 	float selectXPos = 0.0f;
+	int jobExlplainWidth = 0;
+	int jobExplainHeight = 0;
+	int skillExlplainWidth = 0;
+	int skillExplainHeight = 0;
 
 	switch (preset)
 	{
@@ -307,6 +311,10 @@ void UpgradeScene::createExplainUI(UpgradePreset preset)
 		jobExplainTex = TEXTURE("Attacker_Explain.png");
 		skillExplainTex = TEXTURE("Skill_1_Explain.png");
 		selectXPos = 352.0f;
+		jobExlplainWidth = 212;
+		jobExplainHeight = 155;
+		skillExlplainWidth = 171;
+		skillExplainHeight = 185;
 		break;
 	}
 
@@ -316,6 +324,10 @@ void UpgradeScene::createExplainUI(UpgradePreset preset)
 		jobExplainTex = TEXTURE("Healer_Explain.png");
 		skillExplainTex = TEXTURE("Skill_2_Explain.png");
 		selectXPos = 352.0f + 201.0f;
+		jobExlplainWidth = 223;
+		jobExplainHeight = 156;
+		skillExlplainWidth = 223;
+		skillExplainHeight = 154;
 		break;
 	}
 
@@ -325,6 +337,10 @@ void UpgradeScene::createExplainUI(UpgradePreset preset)
 		jobExplainTex = TEXTURE("Supporter_Explain.png");
 		skillExplainTex = TEXTURE("Skill_3_Explain.png");
 		selectXPos = 352.0f + 402.0f;
+		jobExlplainWidth = 212;
+		jobExplainHeight = 185;
+		skillExlplainWidth = 210;
+		skillExplainHeight = 215;
 		break;
 	}
 	}
@@ -332,22 +348,24 @@ void UpgradeScene::createExplainUI(UpgradePreset preset)
 	Entity jobBoard = mOwner->CreateSpriteEntity(226, 75, jobBoardTex);
 	jobBoard.AddTag<Tag_UI>();
 	auto& jbRect = jobBoard.GetComponent<RectTransformComponent>();
-	jbRect.Position = Vector2{ 64.0f, 180.0f };
+	jbRect.Position = Vector2{ 64.0f, 90.0f };
 
-	Entity jobExplain = mOwner->CreateSpriteEntity(226, 215, jobExplainTex);
+	Entity jobExplain = mOwner->CreateSpriteEntity(jobExlplainWidth, jobExplainHeight, 
+		jobExplainTex);
 	jobExplain.AddTag<Tag_UI>();
 	auto& jeRect = jobExplain.GetComponent<RectTransformComponent>();
-	jeRect.Position = Vector2{ 64.0f, 275.0f };
+	jeRect.Position = Vector2{ 64.0f, 230.0f };
 
 	Entity skillBoard = mOwner->CreateSpriteEntity(226, 75, TEXTURE("Skill_Board.png"));
 	skillBoard.AddTag<Tag_UI>();
 	auto& srect = skillBoard.GetComponent<RectTransformComponent>();
-	srect.Position = Vector2{ 988.0f, 180.0f };
+	srect.Position = Vector2{ 988.0f, 90.0f };
 
-	Entity skillExplain = mOwner->CreateSpriteEntity(226, 215, skillExplainTex);
+	Entity skillExplain = mOwner->CreateSpriteEntity(skillExlplainWidth, skillExplainHeight, 
+		skillExplainTex);
 	skillExplain.AddTag<Tag_UI>();
 	auto& seRect = skillExplain.GetComponent<RectTransformComponent>();
-	seRect.Position = Vector2{ 988.0f, 275.0f };
+	seRect.Position = Vector2{ 988.0f, 230.0f };
 
 	Entity sel = mOwner->CreateSpriteEntity(174, 159, TEXTURE("Select.png"), 110);
 	sel.AddTag<Tag_UI>();
