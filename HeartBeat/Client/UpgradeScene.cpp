@@ -27,6 +27,8 @@ void UpgradeScene::Enter()
 	SoundManager::PlaySound("ClockTick.mp3");
 
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
+	auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>();
+	myPos.Position.x = 2000.0f;
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
 	// 메인 카메라 위치 조정
