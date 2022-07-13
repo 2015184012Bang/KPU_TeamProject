@@ -318,8 +318,6 @@ void Room::DoGameOver(bool bWin /*= false*/)
 
 	clearAllUser();
 	clearGame();
-
-	GameServer::GetGameManager()->SendRoomState();
 }
 
 void Room::ChangeTileToRoad(INT32 row, INT32 col)
@@ -752,6 +750,8 @@ void Room::clearGame()
 	mPlayTimeSec = 0.0f;
 	bGameStart = false;
 	mRegistry.clear();
+
+	GameServer::GetGameManager()->SendRoomState();
 }
 
 Vector3 Room::getCellStartPosition(INT32 index)
