@@ -12,6 +12,7 @@
 #include "Tags.h"
 #include "SoundManager.h"
 #include "Timer.h"
+#include "Utils.h"
 
 using namespace std::string_view_literals;
 
@@ -28,8 +29,8 @@ void UpgradeScene::Enter()
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
 	HB_ASSERT(mPlayerCharacter, "Invalid entity!");
 
-	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 750.0f, -750.0f });
-	mOwner->SetBackgroundColor(Colors::Black);
+	// 메인 카메라 위치 조정
+	mOwner->SetFollowCameraTarget(mPlayerCharacter, Vector3{ 0.0f, 500.0f, -1000.0f });
 
 	createUI();
 }
@@ -38,6 +39,18 @@ void UpgradeScene::Exit()
 {
 	SoundManager::StopSound("ClockTick.mp3");
 	DestroyExclude<Tag_DontDestroyOnLoad>();
+}
+
+void UpgradeScene::Update(float deltaTime)
+{
+	mElapsedTime += deltaTime;
+	auto& text = mCountdownText.GetComponent<TextComponent>();
+	text.Sentence = std::to_wstring(static_cast<int>(mElapsedTime));
+
+	if (text.Sentence.size() > 1)
+	{
+		text.X = 610.0f;
+	}
 }
 
 void UpgradeScene::ProcessInput()
@@ -175,10 +188,47 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 
 void UpgradeScene::createUI()
 {
-	Vector2 startPos = Vector2{ Application::GetScreenWidth() / 2.0f - 150.0f, Application::GetScreenHeight() - 150.0f };
+	Entity background = mOwner->CreateSpriteEntity(Application::GetScreenWidth(),
+		Application::GetScreenHeight(),
+		TEXTURE("Upgrade_Background.png"), 90);
 
 	{
-		auto atkButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_1_Slash.png"));
+		// 타이머
+		Entity timer = mOwner->CreateSpriteEntity(136, 84, TEXTURE("Timer.png"));
+		auto& tRect = timer.GetComponent<RectTransformComponent>();
+		tRect.Position = Vector2{ (Application::GetScreenWidth() - 136) / 2.0f,
+			30.0f };
+
+		mCountdownText = Entity{ gRegistry.create() };
+		auto& text = mCountdownText.AddComponent<TextComponent>();
+		text.Sentence = std::to_wstring(static_cast<int>(mElapsedTime));
+		text.X = tRect.Position.x + 53.0f;
+		text.Y = 45.0f;
+	}
+
+	{
+		// 플레이어 닉네임
+		Entity playerName = mOwner->CreateSpriteEntity(237, 84, TEXTURE("Player_Name.png"));
+		auto& nameRect = playerName.GetComponent<RectTransformComponent>();
+		nameRect.Position = Vector2{ 522.0f, Application::GetScreenHeight() - 357.0f };
+
+		Entity nameText = Entity{ gRegistry.create() };
+		auto& text = nameText.AddComponent<TextComponent>();
+		text.Sentence = s2ws(mOwner->GetClientName());
+		text.X = nameRect.Position.x + 30.0f;
+		text.Y = Application::GetScreenHeight() - 334.0f;
+		text.FontSize = 30;
+	}
+
+	createExplainUI(UpgradePreset::ATTACK);
+	createButtons();
+}
+
+void UpgradeScene::createButtons()
+{
+	Vector2 startPos = Vector2{ 358.0f, 590.0f };
+	{
+		auto atkButton = mOwner->CreateSpriteEntity(162, 147, TEXTURE("Skill_1_Slash.png"));
 		auto& rect = atkButton.GetComponent<RectTransformComponent>();
 		rect.Position = startPos;
 
@@ -193,13 +243,14 @@ void UpgradeScene::createUI()
 
 			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
 			createChangeEffect(myPos);
+			createExplainUI(UpgradePreset::ATTACK);
 			});
 	}
 
 	{
-		auto healButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_2_Heal.png"));
+		auto healButton = mOwner->CreateSpriteEntity(162, 147, TEXTURE("Skill_2_Heal.png"));
 		auto& rect = healButton.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ startPos.x + 100.0f, startPos.y };
+		rect.Position = Vector2{ startPos.x + 201.0f, startPos.y };
 
 		healButton.AddComponent<ButtonComponent>([this]() {
 			SoundManager::StopSound("ChangePreset.mp3");
@@ -212,13 +263,14 @@ void UpgradeScene::createUI()
 
 			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
 			createChangeEffect(myPos);
+			createExplainUI(UpgradePreset::HEAL);
 			});
 	}
 
 	{
-		auto supButton = mOwner->CreateSpriteEntity(100, 100, TEXTURE("Skill_3_Power.png"));
+		auto supButton = mOwner->CreateSpriteEntity(162, 147, TEXTURE("Skill_3_Power.png"));
 		auto& rect = supButton.GetComponent<RectTransformComponent>();
-		rect.Position = Vector2{ startPos.x + 200.0f, startPos.y };
+		rect.Position = Vector2{ startPos.x + 402.0f, startPos.y };
 
 		supButton.AddComponent<ButtonComponent>([this]() {
 			SoundManager::StopSound("ChangePreset.mp3");
@@ -231,8 +283,74 @@ void UpgradeScene::createUI()
 
 			const auto& myPos = mPlayerCharacter.GetComponent<TransformComponent>().Position;
 			createChangeEffect(myPos);
+			createExplainUI(UpgradePreset::SUPPORT);
 			});
 	}
+}
+
+void UpgradeScene::createExplainUI(UpgradePreset preset)
+{
+	DestroyByComponent<Tag_UI>();
+
+	Texture* jobBoardTex = nullptr;
+	Texture* jobExplainTex = nullptr;
+	Texture* skillExplainTex = nullptr;
+	float selectXPos = 0.0f;
+
+	switch (preset)
+	{
+	case UpgradePreset::ATTACK:
+	{
+		jobBoardTex = TEXTURE("Attacker_Board.png");
+		jobExplainTex = TEXTURE("Attacker_Explain.png");
+		skillExplainTex = TEXTURE("Skill_1_Explain.png");
+		selectXPos = 352.0f;
+		break;
+	}
+
+	case UpgradePreset::HEAL:
+	{
+		jobBoardTex = TEXTURE("Healer_Board.png");
+		jobExplainTex = TEXTURE("Healer_Explain.png");
+		skillExplainTex = TEXTURE("Skill_2_Explain.png");
+		selectXPos = 352.0f + 201.0f;
+		break;
+	}
+
+	case UpgradePreset::SUPPORT:
+	{
+		jobBoardTex = TEXTURE("Supporter_Board.png");
+		jobExplainTex = TEXTURE("Supporter_Explain.png");
+		skillExplainTex = TEXTURE("Skill_3_Explain.png");
+		selectXPos = 352.0f + 402.0f;
+		break;
+	}
+	}
+
+	Entity jobBoard = mOwner->CreateSpriteEntity(226, 75, jobBoardTex);
+	jobBoard.AddTag<Tag_UI>();
+	auto& jbRect = jobBoard.GetComponent<RectTransformComponent>();
+	jbRect.Position = Vector2{ 64.0f, 180.0f };
+
+	Entity jobExplain = mOwner->CreateSpriteEntity(226, 215, jobExplainTex);
+	jobExplain.AddTag<Tag_UI>();
+	auto& jeRect = jobExplain.GetComponent<RectTransformComponent>();
+	jeRect.Position = Vector2{ 64.0f, 275.0f };
+
+	Entity skillBoard = mOwner->CreateSpriteEntity(226, 75, TEXTURE("Skill_Board.png"));
+	skillBoard.AddTag<Tag_UI>();
+	auto& srect = skillBoard.GetComponent<RectTransformComponent>();
+	srect.Position = Vector2{ 988.0f, 180.0f };
+
+	Entity skillExplain = mOwner->CreateSpriteEntity(226, 215, skillExplainTex);
+	skillExplain.AddTag<Tag_UI>();
+	auto& seRect = skillExplain.GetComponent<RectTransformComponent>();
+	seRect.Position = Vector2{ 988.0f, 275.0f };
+
+	Entity sel = mOwner->CreateSpriteEntity(174, 159, TEXTURE("Select.png"), 110);
+	sel.AddTag<Tag_UI>();
+	auto& selRect = sel.GetComponent<RectTransformComponent>();
+	selRect.Position = Vector2{ selectXPos, 584.0f };
 }
 
 void UpgradeScene::createChangeEffect(const Vector3& pos)

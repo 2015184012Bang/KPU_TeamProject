@@ -835,6 +835,19 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Hpbar_Red_3.png");
 	TEXTURE("Hpbar_Red_6.png");
 	TEXTURE("Hpbar_Red_10.png");
+	TEXTURE("Attacker_Board.png");
+	TEXTURE("Healer_Board.png");
+	TEXTURE("Supporter_Board.png");
+	TEXTURE("Skill_Board.png");
+	TEXTURE("Attacker_Explain.png");
+	TEXTURE("Healer_Explain.png");
+	TEXTURE("Supporter_Explain.png");
+	TEXTURE("Select.png");
+	TEXTURE("Skill_1_Explain.png");
+	TEXTURE("Skill_2_Explain.png");
+	TEXTURE("Skill_3_Explain.png");
+	TEXTURE("Timer.png");
+	TEXTURE("Upgrade_Background.png");
 }
 
 void Renderer::loadAssets()

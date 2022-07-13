@@ -14,11 +14,15 @@ public:
 
     virtual void Enter() override;
     virtual void Exit() override;
+    virtual void Update(float deltaTime) override;
     virtual void ProcessInput() override;
 
 private:
     void createUI();
-    void createChangeEffect(const Vector3& pos);
+	void createButtons();
+    void createExplainUI(UpgradePreset preset);
+
+	void createChangeEffect(const Vector3& pos);
 
     void equipPresetToCharacter(Entity& target, UpgradePreset preset);
     void processNotifyUpgrade(const PACKET& packet);
@@ -27,5 +31,8 @@ private:
 private:
     Entity mPlayerCharacter = {};
     bool mbChangeScene = false;
+
+    Entity mCountdownText = {};
+    float mElapsedTime = 0.0f;
 };
 
