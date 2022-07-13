@@ -792,9 +792,6 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Login_Form.png");
 	TEXTURE("Back_Button.png");
 	TEXTURE("Hp.png");
-	TEXTURE("Hpbar_Green.png");
-	TEXTURE("Hpbar_Pink.png");
-	TEXTURE("Hpbar_Red.png");
 	TEXTURE("Trophy.png");
 	TEXTURE("Skill_1_Slash.png");
 	TEXTURE("Skill_2_Heal.png");
@@ -826,6 +823,18 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Room_Message.png");
 	TEXTURE("Game_Background.png");
 	TEXTURE("Ready_Button.png");
+	TEXTURE("Hpbar_Green_0.png");
+	TEXTURE("Hpbar_Green_3.png");
+	TEXTURE("Hpbar_Green_6.png");
+	TEXTURE("Hpbar_Green_10.png");
+	TEXTURE("Hpbar_Pink_0.png");
+	TEXTURE("Hpbar_Pink_3.png");
+	TEXTURE("Hpbar_Pink_6.png");
+	TEXTURE("Hpbar_Pink_10.png");
+	TEXTURE("Hpbar_Red_0.png");
+	TEXTURE("Hpbar_Red_3.png");
+	TEXTURE("Hpbar_Red_6.png");
+	TEXTURE("Hpbar_Red_10.png");
 }
 
 void Renderer::loadAssets()

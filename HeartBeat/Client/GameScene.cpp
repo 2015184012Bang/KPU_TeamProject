@@ -1387,6 +1387,45 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 			mHps[clientID].push_back(hp);
 		}
 	}
+
+	updatePlayerPortrait(hp, clientID);
+}
+
+void GameScene::updatePlayerPortrait(const INT8 hp, int clientID)
+{
+	Texture* portrait = nullptr;
+
+	switch (clientID)
+	{
+	case 0:
+	{
+		if (hp > 6) portrait = TEXTURE("Hpbar_Green_10.png");
+		else if (hp > 3) portrait = TEXTURE("Hpbar_Green_6.png");
+		else if(hp > 0) portrait = TEXTURE("Hpbar_Green_3.png");
+		else portrait = TEXTURE("Hpbar_Green_0.png");
+		break;
+	}
+	case 1:
+	{
+		if (hp > 6) portrait = TEXTURE("Hpbar_Pink_10.png");
+		else if (hp > 3) portrait = TEXTURE("Hpbar_Pink_6.png");
+		else if (hp > 0) portrait = TEXTURE("Hpbar_Pink_3.png");
+		else portrait = TEXTURE("Hpbar_Pink_0.png");
+		break;
+	}
+	case 2:
+	{
+		if (hp > 6) portrait = TEXTURE("Hpbar_Red_10.png");
+		else if (hp > 3) portrait = TEXTURE("Hpbar_Red_6.png");
+		else if (hp > 0) portrait = TEXTURE("Hpbar_Red_3.png");
+		else portrait = TEXTURE("Hpbar_Red_0.png");
+		break;
+	}
+	}
+
+	auto hpbar = GetEntityByName("Hpbar" + std::to_string(clientID));
+	auto& mr = hpbar.GetComponent<SpriteRendererComponent>();
+	mr.Tex = portrait;
 }
 
 void GameScene::doBossBattleEnd()
@@ -1630,6 +1669,7 @@ void GameScene::createHpbar()
 		auto id = player.GetComponent<IDComponent>().ID;
 
 		Entity hpbar = mOwner->CreateSpriteEntity(394, 111, GetHpbarTexture(id));
+		hpbar.AddComponent<NameComponent>("Hpbar" + std::to_string(id));
 		auto& rect = hpbar.GetComponent<RectTransformComponent>();
 		rect.Position.x = 39.0f + (404.0f * id);
 		rect.Position.y = Application::GetScreenHeight() - 120.0f;
@@ -1900,9 +1940,9 @@ Texture* GetHpbarTexture(const int clientID)
 {
 	switch (clientID)
 	{
-	case 0: return TEXTURE("Hpbar_Green.png");
-	case 1: return TEXTURE("Hpbar_Pink.png");
-	case 2: return TEXTURE("Hpbar_Red.png");
+	case 0: return TEXTURE("Hpbar_Green_10.png");
+	case 1: return TEXTURE("Hpbar_Pink_10.png");
+	case 2: return TEXTURE("Hpbar_Red_10.png");
 	default: HB_ASSERT(false, "Unknown client id: {0}", clientID); return nullptr;
 	}
 }

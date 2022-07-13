@@ -69,6 +69,7 @@ private:
     void doBossSkill(const UINT8 skillType);
 
     void updateHpUI(const INT8 hp, int clientID);
+    void updatePlayerPortrait(const INT8 hp, int clientID);
     
 private:
     enum class StageCode
