@@ -851,6 +851,9 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Timer.png");
 	TEXTURE("Upgrade_Background.png");
 	TEXTURE("Boss_Skill_Effect.png");
+	TEXTURE("Game_Clear.png");
+	TEXTURE("Game_Over.png");
+	TEXTURE("Score_Board.png");
 }
 
 void Renderer::loadAssets()

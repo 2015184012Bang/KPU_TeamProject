@@ -969,9 +969,13 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 
 	NOTIFY_GAME_OVER_PACKET* ngoPacket = reinterpret_cast<NOTIFY_GAME_OVER_PACKET*>(packet.DataPtr);
 
+	Texture* titleTex = nullptr;
+
 	// 게임오버
 	if (!ngoPacket->IsWin)
 	{
+		titleTex = TEXTURE("Game_Over.png");
+
 		SoundManager::PlaySound("GameOver.mp3");
 
 		// 모든 플레이어의 체력을 0으로 표시한다.
@@ -985,14 +989,43 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 		auto& text = mTankHpText.GetComponent<TextComponent>();
 		text.Sentence = std::to_wstring(0);
 	}
-
+	else
 	{
-		Entity gameOverUI = Entity{ gRegistry.create() };
-		auto& text = gameOverUI.AddComponent<TextComponent>();
-		text.Sentence = L"Score: " + std::to_wstring(ngoPacket->Score) +
-			L" PlayTime: " + std::to_wstring(ngoPacket->PlayTimeSec) + L"sec";
-		text.X = 100.0f;
-		text.Y = 100.0f;
+		titleTex = TEXTURE("Game_Clear.png");
+	}
+
+	// 점수판 UI
+	{
+		Entity scoreBoard = mOwner->CreateSpriteEntity(858, 562,
+			TEXTURE("Score_Board.png"), 90);
+		auto& sbRect = scoreBoard.GetComponent<RectTransformComponent>();
+		sbRect.Position = Vector2{(Application::GetScreenWidth() - 858) / 2.0f, 78.0f};
+
+		Entity title = mOwner->CreateSpriteEntity(416, 67, titleTex);
+		auto& tRect = title.GetComponent<RectTransformComponent>();
+		tRect.Position = Vector2{ sbRect.Position.x + 229.0f, 93.0f };
+
+		Entity scoreText = Entity{ gRegistry.create() };
+		auto& stc = scoreText.AddComponent<TextComponent>();
+		stc.Sentence = std::to_wstring(ngoPacket->Score);
+		stc.X = sbRect.Position.x + 408.0f;
+		stc.Y = sbRect.Position.y + 168.0f;
+
+		Entity timeText = Entity{ gRegistry.create() };
+		auto& ttc = timeText.AddComponent<TextComponent>();
+		ttc.Sentence = std::to_wstring(ngoPacket->PlayTimeSec);
+		ttc.X = sbRect.Position.x + 408.0f;
+		ttc.Y = sbRect.Position.y + 271.0f;
+
+		Entity button = mOwner->CreateSpriteEntity(149, 54, TEXTURE("Back_Button.png"));
+		auto& rect = button.GetComponent<RectTransformComponent>();
+		rect.Position = Vector2{ (Application::GetScreenWidth() - 149) / 2.0f, 569.0f };
+
+		button.AddComponent<ButtonComponent>([this]() {
+			SoundManager::PlaySound("ButtonClick.mp3");
+			SoundManager::StopSound("GameOver.mp3");
+			doGameOver();
+			});
 	}
 
 	// 더이상 패킷 처리하지 않도록 flag 값 변경
@@ -1007,18 +1040,6 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	{
 		movement.Direction = Vector3::Zero;
 	}
-
-	// '나가기' 버튼 생성
-	Entity button = mOwner->CreateSpriteEntity(249, 78, TEXTURE("Next_Button.png"));
-	auto& rect = button.GetComponent<RectTransformComponent>();
-	rect.Position = Vector2{ Application::GetScreenWidth() / 2.0f - 124.0f,
-		Application::GetScreenHeight() - 250.0f };
-
-	button.AddComponent<ButtonComponent>([this]() {
-		SoundManager::PlaySound("ButtonClick.mp3");
-		SoundManager::StopSound("GameOver.mp3");
-		doGameOver();
-		});
 }
 
 void GameScene::processNotifySkill(const PACKET& packet)
