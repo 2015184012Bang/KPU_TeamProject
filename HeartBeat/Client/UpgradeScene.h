@@ -33,6 +33,6 @@ private:
     bool mbChangeScene = false;
 
     Entity mCountdownText = {};
-    float mElapsedTime = 0.0f;
+    float mElapsedTime = 10.0f;
 };
 

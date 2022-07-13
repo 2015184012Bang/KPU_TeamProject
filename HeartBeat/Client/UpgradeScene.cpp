@@ -45,7 +45,13 @@ void UpgradeScene::Exit()
 
 void UpgradeScene::Update(float deltaTime)
 {
-	mElapsedTime += deltaTime;
+	mElapsedTime -= deltaTime;
+
+	if (mElapsedTime <= 0.0f)
+	{
+		mElapsedTime = 0.0f;
+	}
+
 	auto& text = mCountdownText.GetComponent<TextComponent>();
 	text.Sentence = std::to_wstring(static_cast<int>(mElapsedTime));
 
