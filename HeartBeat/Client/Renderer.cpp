@@ -746,6 +746,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Attack_Effect.mesh");
 	MESH("Sweep_Area.mesh");
 	MESH("Boss_Attack_Effect.mesh");
+	MESH("Boss_Skill_Effect.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -770,6 +771,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Change_Effect.skel");
 	SKELETON("Attack_Effect.skel");
 	SKELETON("Boss_Attack_Effect.skel");
+	SKELETON("Boss_Skill_Effect.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");
@@ -848,6 +850,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Skill_3_Explain.png");
 	TEXTURE("Timer.png");
 	TEXTURE("Upgrade_Background.png");
+	TEXTURE("Boss_Skill_Effect.png");
 }
 
 void Renderer::loadAssets()

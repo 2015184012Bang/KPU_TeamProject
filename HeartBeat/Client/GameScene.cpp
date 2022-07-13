@@ -1525,6 +1525,23 @@ void GameScene::doBossSkill(const UINT8 skillType)
 			SoundManager::PlaySound("BossSpecial.mp3");
 			});
 
+		Timer::AddEvent(1.5f, [this]() {
+			auto boss = GetEntityByName("Boss");
+			Entity effect = mOwner->CreateSkeletalMeshEntity(MESH("Boss_Skill_Effect.mesh"),
+				TEXTURE("Boss_Skill_Effect.png"), SKELETON("Boss_Skill_Effect.skel"));
+			auto& effectTransform = effect.GetComponent<TransformComponent>();
+			effectTransform.Position = boss.GetComponent<TransformComponent>().Position;
+			effectTransform.Position.y = 2400.0f;
+			effectTransform.Rotation.y = -90.0f;
+
+			auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&effectAnimator, ANIM("Boss_Skill_Effect.anim"));
+
+			Timer::AddEvent(1.0f, [effect]() {
+				DestroyEntity(effect);
+				});
+			});
+
 		Timer::AddEvent(4.0f, [this]() {
 			auto boss = GetEntityByName("Boss");
 			auto& meshRenderer = boss.GetComponent<MeshRendererComponent>();
