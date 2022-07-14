@@ -747,6 +747,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Sweep_Area.mesh");
 	MESH("Boss_Attack_Effect.mesh");
 	MESH("Boss_Skill_Effect.mesh");
+	MESH("Shoot_Effect.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -772,6 +773,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Attack_Effect.skel");
 	SKELETON("Boss_Attack_Effect.skel");
 	SKELETON("Boss_Skill_Effect.skel");
+	SKELETON("Shoot_Effect.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");

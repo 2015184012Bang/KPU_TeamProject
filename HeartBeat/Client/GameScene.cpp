@@ -1335,21 +1335,33 @@ void GameScene::doBattleEnd()
 		transform.Position = tankPos + Vector3{ 0.0f, 512.0f, 0.0f };
 		auto& movement = missile.AddComponent<MovementComponent>(3200.0f);
 		movement.Direction = Vector3{ 1.0f, 0.0f, 0.0f };
-
 		SoundManager::PlaySound("MissileShot.mp3");
-		});
 
-	Timer::AddEvent(6.0f, [this]() {
-		auto missile = GetEntityByName("Missile");
-		DestroyEntity(missile);
+		auto effect = mOwner->CreateSkeletalMeshEntity(MESH("Shoot_Effect.mesh"),
+			TEXTURE("Shoot_Effect.png"), SKELETON("Shoot_Effect.skel"));
+		auto& effectTransform = effect.GetComponent<TransformComponent>();
+		effectTransform.Position = Vector3{ tankPos.x + 600.0f, tankPos.y + 520.0f,
+			tankPos.z };
+		effectTransform.Rotation.y += 90.0f;
+		auto& effectAnimator = effect.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&effectAnimator, ANIM("Shoot_Effect.anim"));
 
-		auto wall = GetEntityByName("Wall");
-		mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
+		Timer::AddEvent(0.5f, [effect]() {
+			DestroyEntity(effect);
+			});
 
-		auto& animator = wall.GetComponent<AnimatorComponent>();
-		Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
-		
-		SoundManager::PlaySound("WallDead.mp3");
+		Timer::AddEvent(1.0f, [this, missile]() {
+			auto missile = GetEntityByName("Missile");
+			DestroyEntity(missile);
+
+			auto wall = GetEntityByName("Wall");
+			mOwner->SetFollowCameraTarget(wall, Vector3{ 0.0f, 1500.0f, -2000.0f });
+
+			auto& animator = wall.GetComponent<AnimatorComponent>();
+			Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
+
+			SoundManager::PlaySound("WallDead.mp3");
+			});
 		});
 
 	Timer::AddEvent(11.0f, [this, dialogueWidth]() {

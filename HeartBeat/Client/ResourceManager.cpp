@@ -503,6 +503,9 @@ void ResourceManager::MakeAnimTransitions()
 
 		Animation* bossEffectAnim = ANIM("Boss_Attack_Effect.anim");
 		bossEffectAnim->SetLoop(false);
+
+		Animation* shootEffectAnim = ANIM("Shoot_Effect.anim");
+		shootEffectAnim->SetLoop(false);
 	}
 }
 
