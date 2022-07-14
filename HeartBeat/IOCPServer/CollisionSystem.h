@@ -13,7 +13,7 @@ public:
 
 	void Update();
 
-	pair<bool, EntityType> CheckAttackHit(const INT8 clientID);
+	tuple<bool, EntityType, UINT32> CheckAttackHit(const INT8 clientID);
 
 	void DoWhirlwind(const INT8 clientID);
 

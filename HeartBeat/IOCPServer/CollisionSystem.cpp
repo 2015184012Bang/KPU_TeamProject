@@ -44,7 +44,7 @@ void CollisionSystem::Update()
 	checkPlayerOutOfBound();
 }
 
-pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
+tuple<bool, EntityType, UINT32> CollisionSystem::CheckAttackHit(const INT8 clientID)
 {
 	auto character = GetEntityByID(mRegistry, clientID);
 	ASSERT(mRegistry.valid(character), "Invalid entity!");
@@ -68,14 +68,15 @@ pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 			auto& health = mRegistry.get<HealthComponent>(entity);
 			health.Health -= baseAttackDmg;
 
+			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+
 			if (health.Health <= 0)
 			{
-				const auto id = mRegistry.get<IDComponent>(entity).ID;
-				mOwner->SendDeleteEntityPacket(id, EntityType::VIRUS);
+				mOwner->SendDeleteEntityPacket(victimID, EntityType::VIRUS);
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return { true, EntityType::VIRUS };
+			return { true, EntityType::VIRUS, victimID };
 		}
 	}
 
@@ -88,14 +89,15 @@ pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 			auto& health = mRegistry.get<HealthComponent>(entity);
 			health.Health -= baseAttackDmg;
 
+			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+
 			if (health.Health <= 0)
 			{
-				const auto id = mRegistry.get<IDComponent>(entity).ID;
-				mOwner->SendDeleteEntityPacket(id, EntityType::DOG);
+				mOwner->SendDeleteEntityPacket(victimID, EntityType::DOG);
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return { true, EntityType::DOG };
+			return { true, EntityType::DOG, victimID };
 		}
 	}
 
@@ -118,7 +120,8 @@ pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 				mOwner->DoBossDie();
 			}
 
-			return { true, EntityType::BOSS };
+			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+			return { true, EntityType::BOSS, victimID };
 		}
 	}
 
@@ -134,6 +137,8 @@ pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 			auto& health = mRegistry.get<HealthComponent>(entity);
 			health.Health -= tileAttackDmg;
 
+			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+
 			if (health.Health <= 0)
 			{
 				// 그래프 속 타일 타입 갱신
@@ -146,16 +151,16 @@ pair<bool, EntityType> CollisionSystem::CheckAttackHit(const INT8 clientID)
 					createItem(transform.Position);
 				}
 
-				const auto id = mRegistry.get<IDComponent>(entity).ID;
-				mOwner->SendDeleteEntityPacket(id, EntityType::FAT);
+				
+				mOwner->SendDeleteEntityPacket(victimID, EntityType::FAT);
 				DestroyEntity(mRegistry, entity);
 			}
 
-			return { true, EntityType::FAT };
+			return { true, EntityType::FAT, victimID };
 		}
 	}
 
-	return { false, EntityType::END };
+	return { false, EntityType::END, 0 };
 }
 
 void CollisionSystem::DoWhirlwind(const INT8 clientID)

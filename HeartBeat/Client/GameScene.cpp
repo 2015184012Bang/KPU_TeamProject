@@ -576,8 +576,10 @@ void GameScene::processNotifyAttack(const PACKET& packet)
 		if (naPacket->Result == RESULT_CODE::ATTACK_SUCCESS &&
 			naPacket->EntityID == mOwner->GetClientID())
 		{
-			PlayHitSound(naPacket->EntityType);
+			PlayHitSound(naPacket->VictimType);
 			createAttackEffect(naPacket->EntityID);
+			changeHitTexture(static_cast<EntityType>(naPacket->VictimType), 
+				naPacket->VictimID);
 		}
 	}
 }
@@ -597,13 +599,9 @@ void GameScene::processNotifyEnemyAttack(const PACKET& packet)
 	animator.SetTrigger(GetAttackAnimTrigger(true));
 
 	// 적에게 맞은 플레이어가 나라면 사운드 재생
-	if (gRegistry.valid(mPlayerCharacter))
+	if (neaPacket->VictimID == mOwner->GetClientID())
 	{
-		const auto& playerID = mPlayerCharacter.GetComponent<IDComponent>().ID;
-		if (neaPacket->VictimID == playerID)
-		{
-			SoundManager::PlaySound("PlayerAttacked.mp3");
-		}
+		SoundManager::PlaySound("PlayerAttacked.mp3");
 	}
 
 	// Dog인 경우 공격 이후 삭제되도록 한다.
@@ -1114,16 +1112,6 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 
 	{
 		auto& text = mTankHpText.GetComponent<TextComponent>();
-
-		// 탱크 체력이 줄었다 -> 피격 당했다 -> 텍스쳐 변경
-		int curTankHealth = std::stoi(text.Sentence);
-		if (curTankHealth > nscPacket->TankHealth)
-		{
-			auto tank = GetEntityByName("Tank");
-			const auto tankID = tank.GetComponent<IDComponent>().ID;
-			changeHitTexture(EntityType::TANK, tankID);
-		}
-
 		text.Sentence = std::to_wstring(nscPacket->TankHealth);
 	}
 

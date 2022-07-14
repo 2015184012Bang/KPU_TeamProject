@@ -245,7 +245,8 @@ struct NOTIFY_ATTACK_PACKET : public PACKET_HEADER
 {
 	UINT32 EntityID;
 	UINT8 Result;
-	UINT8 EntityType;
+	UINT8 VictimType;
+	UINT32 VictimID;
 };
 
 struct NOTIFY_ENEMY_ATTACK_PACKET : public PACKET_HEADER
