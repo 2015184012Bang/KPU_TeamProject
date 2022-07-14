@@ -1114,6 +1114,16 @@ void GameScene::processNotifyStateChange(const PACKET& packet)
 
 	{
 		auto& text = mTankHpText.GetComponent<TextComponent>();
+
+		// 탱크 체력이 줄었다 -> 피격 당했다 -> 텍스쳐 변경
+		int curTankHealth = std::stoi(text.Sentence);
+		if (curTankHealth > nscPacket->TankHealth)
+		{
+			auto tank = GetEntityByName("Tank");
+			const auto tankID = tank.GetComponent<IDComponent>().ID;
+			changeHitTexture(EntityType::TANK, tankID);
+		}
+
 		text.Sentence = std::to_wstring(nscPacket->TankHealth);
 	}
 
@@ -1386,6 +1396,8 @@ void GameScene::updateHpUI(const INT8 hp, int clientID)
 
 	if (diff < 0)
 	{
+		changeHitTexture(EntityType::PLAYER, clientID);
+
 		for (int i = 0; i < abs(diff); ++i)
 		{
 			DestroyEntity(mHps[clientID].back());
@@ -1856,6 +1868,159 @@ void GameScene::clearDialogue()
 {
 	DestroyByComponent<Tag_Dialogue>();
 }
+
+
+void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
+{
+	const float durationSec = 0.65f;
+
+	switch (eType)
+	{
+	case EntityType::BOSS:
+	{
+		auto victim = GetEntityByID(entityID);
+		auto& mr = victim.GetComponent<MeshRendererComponent>();
+		const Texture* origTex = mr.Tex;
+		mr.Tex = TEXTURE("Boss_Hit.png");
+
+		Timer::AddEvent(durationSec, [entityID, origTex]() {
+			Entity entity = GetEntityByID(entityID);
+			auto& mr = entity.GetComponent<MeshRendererComponent>();
+			mr.Tex = origTex;
+			});
+		break;
+	}
+
+	case EntityType::DOG:
+	{
+		auto victim = GetEntityByID(entityID);
+		auto& mr = victim.GetComponent<MeshRendererComponent>();
+		mr.Tex = TEXTURE("Dog_Hit.png");
+
+		Timer::AddEvent(durationSec, [entityID]() {
+			Entity entity = GetEntityByID(entityID);
+			auto& mr = entity.GetComponent<MeshRendererComponent>();
+			mr.Tex = TEXTURE("Dog.png");
+			});
+		break;
+	}
+
+	case EntityType::VIRUS:
+	{
+		auto victim = GetEntityByID(entityID);
+		auto& mr = victim.GetComponent<MeshRendererComponent>();
+		mr.Tex = TEXTURE("Virus_Hit.png");
+
+		Timer::AddEvent(durationSec, [entityID]() {
+			Entity entity = GetEntityByID(entityID);
+			auto& mr = entity.GetComponent<MeshRendererComponent>();
+			mr.Tex = TEXTURE("Virus.png");
+			});
+		break;
+	}
+
+	case EntityType::TANK:
+	{
+		auto victim = GetEntityByID(entityID);
+		auto& mr = victim.GetComponent<MeshRendererComponent>();
+		if (mr.Tex == TEXTURE("Tank_Hit.png"))
+		{
+			return;
+		}
+		else
+		{
+			mr.Tex = TEXTURE("Tank_Hit.png");
+		}
+
+		Timer::AddEvent(durationSec, [entityID]() {
+			Entity entity = GetEntityByID(entityID);
+			auto& mr = entity.GetComponent<MeshRendererComponent>();
+			mr.Tex = TEXTURE("Tank.png");
+			});
+
+		auto cart = GetEntityByName("Cart");
+		auto& cartMr = cart.GetComponent<MeshRendererComponent>();
+		cartMr.Tex = TEXTURE("Cart_Hit.png");
+
+		Timer::AddEvent(durationSec, []() {
+			Entity entity = GetEntityByName("Cart");
+			auto& mr = entity.GetComponent<MeshRendererComponent>();
+			mr.Tex = TEXTURE("Cart.png");
+			});
+
+		break;
+	}
+
+	case EntityType::PLAYER:
+	{
+		switch (entityID)
+		{
+		case 0:
+		{
+			auto victim = GetEntityByID(entityID);
+			auto& mr = victim.GetComponent<MeshRendererComponent>();
+			if (mr.Tex == TEXTURE("Green_Hit.png"))
+			{
+				return;
+			}
+			else
+			{
+				mr.Tex = TEXTURE("Green_Hit.png");
+			}
+
+			Timer::AddEvent(durationSec, [entityID]() {
+				Entity entity = GetEntityByID(entityID);
+				auto& mr = entity.GetComponent<MeshRendererComponent>();
+				mr.Tex = TEXTURE("Character_Green.png");
+				});
+			break;
+		}
+		case 1:
+		{
+			auto victim = GetEntityByID(entityID);
+			auto& mr = victim.GetComponent<MeshRendererComponent>();
+			if (mr.Tex == TEXTURE("Pink_Hit.png"))
+			{
+				return;
+			}
+			else
+			{
+				mr.Tex = TEXTURE("Pink_Hit.png");
+			}
+
+			Timer::AddEvent(durationSec, [entityID]() {
+				Entity entity = GetEntityByID(entityID);
+				auto& mr = entity.GetComponent<MeshRendererComponent>();
+				mr.Tex = TEXTURE("Character_Pink.png");
+				});
+			break;
+		}
+		case 2:
+		{
+			auto victim = GetEntityByID(entityID);
+			auto& mr = victim.GetComponent<MeshRendererComponent>();
+			if (mr.Tex == TEXTURE("Red_Hit.png"))
+			{
+				return;
+			}
+			else
+			{
+				mr.Tex = TEXTURE("Red_Hit.png");
+			}
+
+			Timer::AddEvent(durationSec, [entityID]() {
+				Entity entity = GetEntityByID(entityID);
+				auto& mr = entity.GetComponent<MeshRendererComponent>();
+				mr.Tex = TEXTURE("Character_Red.png");
+				});
+			break;
+		}
+		}
+		break;
+	}
+	}
+}
+
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
 {

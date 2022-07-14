@@ -854,6 +854,14 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Game_Clear.png");
 	TEXTURE("Game_Over.png");
 	TEXTURE("Score_Board.png");
+	TEXTURE("Boss_Hit.png");
+	TEXTURE("Cart_Hit.png");
+	TEXTURE("Dog_Hit.png");
+	TEXTURE("Green_Hit.png");
+	TEXTURE("Pink_Hit.png");
+	TEXTURE("Red_Hit.png");
+	TEXTURE("Tank_Hit.png");
+	TEXTURE("Virus_Hit.png");
 }
 
 void Renderer::loadAssets()

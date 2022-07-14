@@ -47,6 +47,7 @@ private:
     void createSkillEffect(const UINT32 entityID, const UINT8 preset);
     void createDialogue(Texture* dia, int drawOrder);
     void clearDialogue();
+    void changeHitTexture(EntityType eType, const UINT32 entityID);
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();
