@@ -23,6 +23,8 @@ LoginScene::LoginScene(Client* owner)
 
 void LoginScene::Enter()
 {
+	SoundManager::PlaySound("LoginTheme.mp3", 0.25f);
+
 	// 배경화면 생성
 	mOwner->CreateSpriteEntity(Application::GetScreenWidth(), Application::GetScreenHeight(),
 		TEXTURE("Login_Background.png"), 10);

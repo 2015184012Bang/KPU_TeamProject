@@ -130,4 +130,5 @@ void SoundManager::loadAllSounds()
 	CreateSound("../Assets/Sounds/BossDead.mp3");
 	CreateSound("../Assets/Sounds/BossSpecial.mp3");
 	CreateSound("../Assets/Sounds/WallDead.mp3");
+	CreateSound("../Assets/Sounds/LoginTheme.mp3", true);
 }

@@ -27,7 +27,7 @@ GameScene::GameScene(Client* owner)
 
 void GameScene::Enter()
 {
-	SoundManager::PlaySound("NormalTheme.mp3", 0.15f);
+	SoundManager::PlaySound("NormalTheme.mp3", 0.4f);
 
 	// 내 캐릭터 알아두기
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());
@@ -1067,7 +1067,7 @@ void GameScene::processNotifySkill(const PACKET& packet)
 
 		if (nsPacket->EntityID == mOwner->GetClientID())
 		{
-			SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 0.3f);
+			SoundManager::PlaySound(GetSkillSound(nsPacket->Preset), 1.0f);
 
 			mCooldown = GetSkillCooldown(static_cast<UpgradePreset>(nsPacket->Preset));
 
@@ -1300,7 +1300,7 @@ void GameScene::doBattleOccur()
 		});
 
 	Timer::AddEvent(10.6f, [this]() {
-		SoundManager::PlaySound("BattleTheme.mp3", 0.1f);
+		SoundManager::PlaySound("BattleTheme.mp3", 0.4f);
 		clearDialogue();
 		});
 }
@@ -1379,7 +1379,7 @@ void GameScene::doBattleEnd()
 		cart.GetComponent<MovementComponent>().MaxSpeed = Values::TankSpeed;
 		clearDialogue();
 		SoundManager::StopSound("BattleTheme.mp3");
-		SoundManager::PlaySound("NormalTheme.mp3", 0.15f);
+		SoundManager::PlaySound("NormalTheme.mp3", 0.4f);
 		});
 }
 
@@ -1631,7 +1631,7 @@ void GameScene::doBossBattleOccur()
 
 	Timer::AddEvent(14.0f, [this]() {
 		clearDialogue();
-		SoundManager::PlaySound("BossTheme.mp3", 0.1f);
+		SoundManager::PlaySound("BossTheme.mp3", 0.4f);
 		});
 }
 
@@ -1659,7 +1659,7 @@ void GameScene::createUI()
 		mScoreText = Entity{ gRegistry.create() };
 		mScoreText.AddTag<Tag_UI>();
 		auto& text = mScoreText.AddComponent<TextComponent>();
-		text.Sentence = L"1234";
+		text.Sentence = L"0";
 		text.X = 82.5f;
 		text.Y = 17.5f;
 	}
@@ -1879,6 +1879,12 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 	case EntityType::BOSS:
 	{
 		auto victim = GetEntityByID(entityID);
+
+		if (!gRegistry.valid(victim))
+		{
+			return;
+		}
+
 		auto& mr = victim.GetComponent<MeshRendererComponent>();
 		const Texture* origTex = mr.Tex;
 		mr.Tex = TEXTURE("Boss_Hit.png");
@@ -1894,6 +1900,12 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 	case EntityType::DOG:
 	{
 		auto victim = GetEntityByID(entityID);
+
+		if (!gRegistry.valid(victim))
+		{
+			return;
+		}
+
 		auto& mr = victim.GetComponent<MeshRendererComponent>();
 		mr.Tex = TEXTURE("Dog_Hit.png");
 
@@ -1908,6 +1920,12 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 	case EntityType::VIRUS:
 	{
 		auto victim = GetEntityByID(entityID);
+
+		if (!gRegistry.valid(victim))
+		{
+			return;
+		}
+
 		auto& mr = victim.GetComponent<MeshRendererComponent>();
 		mr.Tex = TEXTURE("Virus_Hit.png");
 
@@ -1922,6 +1940,12 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 	case EntityType::TANK:
 	{
 		auto victim = GetEntityByID(entityID);
+
+		if (!gRegistry.valid(victim))
+		{
+			return;
+		}
+
 		auto& mr = victim.GetComponent<MeshRendererComponent>();
 		if (mr.Tex == TEXTURE("Tank_Hit.png"))
 		{
@@ -1953,11 +1977,16 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 
 	case EntityType::PLAYER:
 	{
+		auto victim = GetEntityByID(entityID);
+		if (!gRegistry.valid(victim))
+		{
+			return;
+		}
+
 		switch (entityID)
 		{
 		case 0:
 		{
-			auto victim = GetEntityByID(entityID);
 			auto& mr = victim.GetComponent<MeshRendererComponent>();
 			if (mr.Tex == TEXTURE("Green_Hit.png"))
 			{
@@ -1977,7 +2006,6 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 		}
 		case 1:
 		{
-			auto victim = GetEntityByID(entityID);
 			auto& mr = victim.GetComponent<MeshRendererComponent>();
 			if (mr.Tex == TEXTURE("Pink_Hit.png"))
 			{
@@ -1997,7 +2025,6 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 		}
 		case 2:
 		{
-			auto victim = GetEntityByID(entityID);
 			auto& mr = victim.GetComponent<MeshRendererComponent>();
 			if (mr.Tex == TEXTURE("Red_Hit.png"))
 			{
@@ -2197,7 +2224,7 @@ void PlayHitSound(const uint8 entityType)
 	case EntityType::FAT:
 	{
 		SoundManager::StopSound("FatHit.mp3");
-		SoundManager::PlaySound("FatHit.mp3", 1.0f); 
+		SoundManager::PlaySound("FatHit.mp3", 3.0f); 
 		break;
 	}
 	default: 
