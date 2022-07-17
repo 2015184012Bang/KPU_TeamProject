@@ -1363,6 +1363,25 @@ void GameScene::doBattleEnd()
 			Helpers::PlayAnimation(&animator, ANIM("Wall_Break.anim"));
 
 			SoundManager::PlaySound("WallDead.mp3");
+
+			const auto& wallPos = wall.GetComponent<TransformComponent>().Position;
+
+			for (int i = 0; i < 3; ++i)
+			{
+				auto bombEffect = mOwner->CreateSkeletalMeshEntity(MESH("Bomb.mesh"), TEXTURE("Bomb.png"),
+					SKELETON("Bomb.skel"));
+				auto& bombEffectPos = bombEffect.GetComponent<TransformComponent>().Position;
+				bombEffectPos = wallPos;
+				bombEffectPos.z = 800.0f + (i * 1600.0f);
+
+				auto& bombEffectAnimator = bombEffect.GetComponent<AnimatorComponent>();
+				Helpers::PlayAnimation(&bombEffectAnimator, ANIM("Bomb_Explode.anim"));
+
+				Timer::AddEvent(1.0f, [bombEffect]() {
+					DestroyEntity(bombEffect);
+					});
+			}
+
 			});
 		});
 
