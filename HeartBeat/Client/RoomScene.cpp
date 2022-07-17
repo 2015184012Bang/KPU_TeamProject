@@ -41,8 +41,6 @@ void RoomScene::Enter()
 
 void RoomScene::Exit()
 {
-	SoundManager::StopSound("LoginTheme.mp3");
-
 	DestroyExclude<Tag_DontDestroyOnLoad>();
 }
 

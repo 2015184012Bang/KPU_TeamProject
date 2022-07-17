@@ -24,6 +24,7 @@ UpgradeScene::UpgradeScene(Client* owner)
 
 void UpgradeScene::Enter()
 {
+	SoundManager::StopSound("LoginTheme.mp3");
 	SoundManager::PlaySound("ClockTick.mp3");
 
 	mPlayerCharacter = GetEntityByID(mOwner->GetClientID());

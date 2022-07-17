@@ -19,8 +19,6 @@ LobbyScene::LobbyScene(Client* owner)
 
 void LobbyScene::Enter()
 {
-	SoundManager::PlaySound("LoginTheme.mp3", 0.25f);
-
 	mOwner->SetBackgroundColor(Colors::CornflowerBlue);
 	
 	{

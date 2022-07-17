@@ -50,6 +50,7 @@ void GameScene::Exit()
 
 	SoundManager::StopSound("NormalTheme.mp3");
 	SoundManager::StopSound("BattleTheme.mp3");
+	SoundManager::PlaySound("LoginTheme.mp3", 0.25f);
 
 	DestroyExclude<Tag_DontDestroyOnLoad>();
 	DestroyByComponent<Tag_StaticMesh>();
