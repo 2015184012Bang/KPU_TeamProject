@@ -115,12 +115,13 @@ tuple<bool, EntityType, UINT32> CollisionSystem::CheckAttackHit(const INT8 clien
 			auto& health = mRegistry.get<HealthComponent>(entity);
 			health.Health -= 1; // 모든 공격은 보스에게 1의 피해를 준다.
 
+			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+
 			if (health.Health <= 0)
 			{
 				mOwner->DoBossDie();
 			}
-
-			const auto victimID = mRegistry.get<IDComponent>(entity).ID;
+			
 			return { true, EntityType::BOSS, victimID };
 		}
 	}

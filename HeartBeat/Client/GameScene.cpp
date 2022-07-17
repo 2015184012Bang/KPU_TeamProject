@@ -935,6 +935,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			default: tailTex = TEXTURE("Tail_3.png"); break;
 			}
 
+			SoundManager::PlaySound("BossAttack1.mp3");
+
 			auto tail = mOwner->CreateSkeletalMeshEntity(MESH("Tail.mesh"), 
 				tailTex,
 				SKELETON("Tail.skel"), "../Assets/Boxes/Tail.box");
@@ -995,11 +997,11 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 	// Á¡¼öÆÇ UI
 	{
 		Entity scoreBoard = mOwner->CreateSpriteEntity(858, 562,
-			TEXTURE("Score_Board.png"), 90);
+			TEXTURE("Score_Board.png"), 110);
 		auto& sbRect = scoreBoard.GetComponent<RectTransformComponent>();
 		sbRect.Position = Vector2{(Application::GetScreenWidth() - 858) / 2.0f, 78.0f};
 
-		Entity title = mOwner->CreateSpriteEntity(416, 67, titleTex);
+		Entity title = mOwner->CreateSpriteEntity(416, 67, titleTex, 120);
 		auto& tRect = title.GetComponent<RectTransformComponent>();
 		tRect.Position = Vector2{ sbRect.Position.x + 229.0f, 93.0f };
 
@@ -1015,7 +1017,7 @@ void GameScene::processNotifyGameOver(const PACKET& packet)
 		ttc.X = sbRect.Position.x + 408.0f;
 		ttc.Y = sbRect.Position.y + 271.0f;
 
-		Entity button = mOwner->CreateSpriteEntity(149, 54, TEXTURE("Back_Button.png"));
+		Entity button = mOwner->CreateSpriteEntity(149, 54, TEXTURE("Back_Button.png"), 120);
 		auto& rect = button.GetComponent<RectTransformComponent>();
 		rect.Position = Vector2{ (Application::GetScreenWidth() - 149) / 2.0f, 569.0f };
 
@@ -1509,6 +1511,8 @@ void GameScene::doBossSkill(const UINT8 skillType)
 	}
 	case 1:
 	{
+		SoundManager::PlaySound("BossAttack2.mp3");
+
 		auto boss = GetEntityByName("Boss");
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Attack2.anim"));
