@@ -909,6 +909,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			cc.Position = Vector3{ bossWallPosition.x - 5200.0f, 2000.0f, bossWallPosition.z };
 			cc.Target = Vector3{ bossWallPosition.x, 500.0f, bossWallPosition.z };
 
+			doCameraShake(4.0f);
+
 			auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
 
@@ -1384,6 +1386,10 @@ void GameScene::doBattleEnd()
 			}
 
 			});
+
+		Timer::AddEvent(1.2f, [this]() {
+			doCameraShake(1.0f, true);
+			});
 		});
 
 	Timer::AddEvent(11.0f, [this, dialogueWidth]() {
@@ -1483,6 +1489,24 @@ void GameScene::updatePlayerPortrait(const INT8 hp, int clientID)
 	mr.Tex = portrait;
 }
 
+void GameScene::doCameraShake(float timeSec, bool bShakeX /*= false*/)
+{
+	auto camera = mOwner->GetMainCamera();
+	const auto& cc = camera.GetComponent<CameraComponent>();
+
+	auto& cs = camera.AddComponent<CameraShakeComponent>();
+	cs.bShakeX = bShakeX;
+	cs.OrigCameraPos = cc.Position;
+	cs.OrigCameraTarget = cc.Target;
+	cs.TimeSec = timeSec;
+
+	Timer::AddEvent(timeSec, [this]()
+		{
+			auto mainCamera = mOwner->GetMainCamera();
+			mainCamera.RemoveComponent<CameraShakeComponent>();
+		});
+}
+
 void GameScene::doBossBattleEnd()
 {
 	SoundManager::StopSound("BossTheme.mp3");
@@ -1500,6 +1524,8 @@ void GameScene::doBossBattleEnd()
 
 	auto& animator = boss.GetComponent<AnimatorComponent>();
 	Helpers::PlayAnimation(&animator, ANIM("Boss_Dead.anim"));
+
+	doCameraShake(3.0f);
 
 	const auto id = boss.GetComponent<IDComponent>().ID;
 	mOwner->DestroyEntityAfter(id, 4.0f);
@@ -1578,8 +1604,9 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		auto& animator = boss.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Boss_Skill.anim"));
 
-		Timer::AddEvent(1.0f, []() {
+		Timer::AddEvent(1.0f, [this]() {
 			SoundManager::PlaySound("BossSpecial.mp3");
+			doCameraShake(1.0f, true);
 			});
 
 		Timer::AddEvent(1.5f, [this]() {

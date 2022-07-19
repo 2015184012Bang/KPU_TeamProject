@@ -207,3 +207,13 @@ struct FollowComponent
 
 	UINT32 TargetID = 0;
 };
+
+struct CameraShakeComponent
+{
+	CameraShakeComponent() = default;
+
+	bool bShakeX = false;
+	float TimeSec = 0.0f;
+	Vector3 OrigCameraPos = Vector3::Zero;
+	Vector3 OrigCameraTarget = Vector3::Zero;
+};

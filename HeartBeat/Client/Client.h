@@ -73,6 +73,7 @@ private:
     void updateScript(float deltaTime);
     void updateAnimation(float deltaTime);
     void updateCollisionBox(float deltaTime);
+    void updateCameraShake();
     void updateMainCamera();
 
     void drawSkeletalMesh();

@@ -271,11 +271,7 @@ void Client::update()
 	updateScript(deltaTime);
 	updateAnimation(deltaTime);
 	updateCollisionBox(deltaTime);
-
-	if (mFollowCameraTarget)
-	{
-		updateMainCamera();
-	}
+	updateMainCamera();
 
 	if (mActiveScene)
 	{
@@ -463,12 +459,46 @@ void Client::updateCollisionBox(float deltaTime)
 	}
 }
 
+void Client::updateCameraShake()
+{
+	auto view = gRegistry.view<CameraComponent, CameraShakeComponent>();
+
+	for (auto [entity, cc, cs] : view.each())
+	{
+		if (cs.bShakeX)
+		{
+			auto offset = Random::RandInt(-200, 200);
+			cc.Position = cs.OrigCameraPos;
+			cc.Position.x += offset;
+			cc.Target = cs.OrigCameraTarget;
+			cc.Target.x += offset;
+		}
+
+		else
+		{
+			auto offset = Random::RandInt(-200, 200);
+			cc.Position = cs.OrigCameraPos;
+			cc.Position.z += offset;
+			cc.Target = cs.OrigCameraTarget;
+			cc.Target.z += offset;
+		}
+	}
+}
+
 void Client::updateMainCamera()
 {
-	const auto& targetPosition = mFollowCameraTarget.GetComponent<TransformComponent>().Position;
-	auto& cc = mMainCamera.GetComponent<CameraComponent>();
-	cc.Target = targetPosition;
-	cc.Position = { targetPosition.x + mTargetOffset.x, mTargetOffset.y, targetPosition.z + mTargetOffset.z };
+	if (mMainCamera.HasComponent<CameraShakeComponent>())
+	{
+		updateCameraShake();
+	}
+
+	else if (mFollowCameraTarget)
+	{
+		const auto& targetPosition = mFollowCameraTarget.GetComponent<TransformComponent>().Position;
+		auto& cc = mMainCamera.GetComponent<CameraComponent>();
+		cc.Target = targetPosition;
+		cc.Position = { targetPosition.x + mTargetOffset.x, mTargetOffset.y, targetPosition.z + mTargetOffset.z };
+	}
 }
 
 void Client::drawSkeletalMesh()

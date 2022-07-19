@@ -71,6 +71,8 @@ private:
 
     void updateHpUI(const INT8 hp, int clientID);
     void updatePlayerPortrait(const INT8 hp, int clientID);
+
+    void doCameraShake(float timeSec, bool bShakeX = false);
     
 private:
     enum class StageCode
