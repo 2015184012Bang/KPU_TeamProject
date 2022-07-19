@@ -753,6 +753,11 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Door_Pillar2.mesh");
 	MESH("Wall_Pillar1.mesh");
 	MESH("Wall_Pillar2.mesh");
+	MESH("Barricade.mesh");
+	MESH("Digging.mesh");
+	MESH("NPC_Corpse.mesh");
+	MESH("Poison_Rock.mesh");
+	MESH("Virus_Corpse.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -780,6 +785,9 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Boss_Skill_Effect.skel");
 	SKELETON("Shoot_Effect.skel");
 	SKELETON("Crystal.skel");
+	SKELETON("Digging.skel");
+	SKELETON("NPC_Corpse.skel");
+	SKELETON("Virus_Corpse.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");

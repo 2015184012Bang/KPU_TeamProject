@@ -507,6 +507,12 @@ void ResourceManager::MakeAnimTransitions()
 		Animation* shootEffectAnim = ANIM("Shoot_Effect.anim");
 		shootEffectAnim->SetLoop(false);
 	}
+
+	// ²Ù¹Ò °´Ã¼
+	{
+		Animation* diggingAnim = ANIM("Digging.anim");
+		Animation* virusCorpseAnim = ANIM("Virus_Corpse.anim");
+	}
 }
 
 std::tuple<Mesh*, Texture*, Skeleton*> GetCharacterFiles(int clientID)
