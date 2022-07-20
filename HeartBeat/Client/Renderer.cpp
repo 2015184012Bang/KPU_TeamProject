@@ -758,6 +758,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("NPC_Corpse.mesh");
 	MESH("Poison_Rock.mesh");
 	MESH("Virus_Corpse.mesh");
+	MESH("Factory.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -788,6 +789,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Digging.skel");
 	SKELETON("NPC_Corpse.skel");
 	SKELETON("Virus_Corpse.skel");
+	SKELETON("Factory.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");

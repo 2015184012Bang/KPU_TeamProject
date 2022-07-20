@@ -512,6 +512,7 @@ void ResourceManager::MakeAnimTransitions()
 	{
 		Animation* diggingAnim = ANIM("Digging.anim");
 		Animation* virusCorpseAnim = ANIM("Virus_Corpse.anim");
+		Animation* factoryAnim = ANIM("Factory.anim");
 	}
 }
 
