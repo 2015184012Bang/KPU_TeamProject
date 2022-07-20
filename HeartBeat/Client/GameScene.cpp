@@ -909,7 +909,7 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			cc.Position = Vector3{ bossWallPosition.x - 5200.0f, 2000.0f, bossWallPosition.z };
 			cc.Target = Vector3{ bossWallPosition.x, 500.0f, bossWallPosition.z };
 
-			doCameraShake(4.0f);
+			doCameraShake(3.0f);
 
 			auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
@@ -1387,7 +1387,7 @@ void GameScene::doBattleEnd()
 
 			});
 
-		Timer::AddEvent(1.2f, [this]() {
+		Timer::AddEvent(1.3f, [this]() {
 			doCameraShake(1.0f, true);
 			});
 		});
@@ -1525,7 +1525,7 @@ void GameScene::doBossBattleEnd()
 	auto& animator = boss.GetComponent<AnimatorComponent>();
 	Helpers::PlayAnimation(&animator, ANIM("Boss_Dead.anim"));
 
-	doCameraShake(3.0f);
+	doCameraShake(2.0f);
 
 	const auto id = boss.GetComponent<IDComponent>().ID;
 	mOwner->DestroyEntityAfter(id, 4.0f);
