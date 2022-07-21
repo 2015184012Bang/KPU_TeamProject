@@ -68,6 +68,7 @@ private:
     void doBossBattleOccur();
     void doBossBattleEnd();
     void doBossSkill(const UINT8 skillType);
+    void createBossFakeWall(float timeSec);
 
     void updateHpUI(const INT8 hp, int clientID);
     void updatePlayerPortrait(const INT8 hp, int clientID);

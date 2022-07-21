@@ -914,6 +914,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 			auto& bossWallAnimator = bossWall.GetComponent<AnimatorComponent>();
 			Helpers::PlayAnimation(&bossWallAnimator, ANIM("BWall_Break.anim"));
 
+			createBossFakeWall(5.0f);
+
 			SoundManager::PlaySound("BossSpawn.mp3");
 			});
 	}
@@ -1520,6 +1522,8 @@ void GameScene::doBossBattleEnd()
 	cc.Position = Vector3{ bossPosition.x - 5200.0f, 2000.0f, bossPosition.z };
 	cc.Target = Vector3{ bossPosition.x, 500.0f, bossPosition.z };
 
+	createBossFakeWall(4.0f);
+
 	SoundManager::PlaySound("BossDead.mp3", 0.5f);
 
 	auto& animator = boss.GetComponent<AnimatorComponent>();
@@ -1639,6 +1643,36 @@ void GameScene::doBossSkill(const UINT8 skillType)
 		HB_LOG("Unknown boss skill type: {0}", skillType);
 		break;
 	}
+}
+
+void GameScene::createBossFakeWall(float timeSec)
+{
+	auto tank = GetEntityByName("Tank");
+
+	if (!gRegistry.valid(tank))
+	{
+		HB_LOG("createBossFakeWall(): Tank is not valid!");
+		return;
+	}
+
+	const auto& tankPos = tank.GetComponent<TransformComponent>().Position;
+
+	auto wall1 = mOwner->CreateStaticMeshEntity(MESH("Fake_Wall.mesh"),
+		TEXTURE("Fake_Wall.png"));
+	auto& w1Pos = wall1.GetComponent<TransformComponent>().Position;
+	w1Pos = tankPos;
+	w1Pos.z = -400.0f;
+
+	auto wall2 = mOwner->CreateStaticMeshEntity(MESH("Fake_Wall.mesh"),
+		TEXTURE("Fake_Wall.png"));
+	auto& w2Pos = wall2.GetComponent<TransformComponent>().Position;
+	w2Pos = tankPos;
+	w2Pos.z = 4400.0f;
+
+	Timer::AddEvent(timeSec, [wall1, wall2]() {
+		DestroyEntity(wall1);
+		DestroyEntity(wall2);
+		});
 }
 
 void GameScene::doBossBattleOccur()
