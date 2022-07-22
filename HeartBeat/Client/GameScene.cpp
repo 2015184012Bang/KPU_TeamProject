@@ -18,6 +18,7 @@
 #include "LobbyScene.h"
 #include "Timer.h"
 #include "Utils.h"
+#include "rapidcsv.h"
 
 GameScene::GameScene(Client* owner)
 	: Scene(owner)
@@ -39,7 +40,8 @@ void GameScene::Enter()
 	mOwner->SetBackgroundColor(Colors::CornflowerBlue);
 
 	// 맵 생성
-	createMap("../Assets/Maps/Map.csv");
+	createMap("../Assets/Maps/Map.csv"sv);
+	loadDecoObjects("../Assets/Maps/Object.csv"sv);
 
 	createUI();
 }
@@ -190,6 +192,114 @@ void GameScene::createMap(string_view mapFile)
 	}
 }
 
+void GameScene::loadDecoObjects(string_view decoFile)
+{
+	rapidcsv::Document doc(decoFile.data(), rapidcsv::LabelParams(-1, -1));
+
+	auto maxRow = doc.GetRowCount();
+
+	for (auto row = 0; row < maxRow; ++row)
+	{
+		vector<string> parsed = doc.GetRow<string>(row);
+
+		createDecoObject(parsed[0],
+			stof(parsed[1]),
+			stof(parsed[2]));
+	}
+}
+
+void GameScene::createDecoObject(string_view name, float xpos, float zpos)
+{
+	Entity obj = {};
+
+	if (name == "Barricade"sv)
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Barricade.mesh"),
+			TEXTURE("Barricade.png"));
+	}
+	else if (name == "Crystal"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Crystal.mesh"),
+			TEXTURE("Crystal.png"), SKELETON("Crystal.skel"));
+	}
+	else if (name == "Digging"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Digging.mesh"),
+			TEXTURE("Digging.png"), SKELETON("Digging.skel"));
+
+		auto& animator = obj.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Digging.anim"));
+	}
+	else if (name == "DP1"sv)
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Door_Pillar1.mesh"),
+			TEXTURE("Door_Pillar1.png"));
+	}
+	else if (name == "DP2"sv)
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Door_Pillar2.mesh"),
+			TEXTURE("Door_Pillar2.png"));
+	}
+	else if (name == "Factory"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Factory.mesh"),
+			TEXTURE("Factory.png"), SKELETON("Factory.skel"));
+
+		auto& animator = obj.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Factory.anim"));
+	}
+	else if (name == "NCorpse"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("NPC_Corpse.mesh"),
+			TEXTURE("NPC_Corpse.png"), SKELETON("NPC_Corpse.skel"));
+	}
+	else if (name == "PoisonRock"sv)
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Poison_Rock.mesh"),
+			TEXTURE("Poison_Rock.png"));
+	}
+	else if (name == "Tankhouse"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Tankhouse.mesh"),
+			TEXTURE("Tankhouse.png"), SKELETON("Tankhouse.skel"));
+	}
+	else if (name == "VCorpse"sv)
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Virus_Corpse.mesh"),
+			TEXTURE("Virus.png"), SKELETON("Virus_Corpse.skel"));
+
+		auto& animator = obj.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Virus_Corpse.anim"));
+	}
+	else if (name == "WP1")
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Wall_Pillar1.mesh"),
+			TEXTURE("Wall_Pillar1.png"));
+	}
+	else if (name == "WP2")
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Wall_Pillar2.mesh"),
+			TEXTURE("Wall_Pillar2.png"));
+	}
+	else if (name == "Warehouse")
+	{
+		obj = mOwner->CreateSkeletalMeshEntity(MESH("Warehouse.mesh"),
+			TEXTURE("Warehouse.png"), SKELETON("Warehouse.skel"));
+
+		auto& animator = obj.GetComponent<AnimatorComponent>();
+		Helpers::PlayAnimation(&animator, ANIM("Warehouse.anim"));
+	}
+	else
+	{
+		HB_ASSERT(false, "Unknown deco object!");
+	}
+
+	auto& transform = obj.GetComponent<TransformComponent>();
+	transform.Position.x = xpos;
+	transform.Position.z = zpos;
+	transform.Rotation.y = 180.0f;
+}
+
 void GameScene::createTile(const Tile& tile)
 {
 	switch (tile.TType)
@@ -249,18 +359,18 @@ void GameScene::createTile(const Tile& tile)
 
 void GameScene::createBlockedTile(const Tile& tile)
 {
-	const Texture* tileTex = GetTileTexture(tile.TType);
+	const Texture* tileTex = GetTileTexture(TileType::MOVABLE);
 
 	// BLOCKED 타일은 위아래, 두 개를 생성한다.
-	{
-		Entity top = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
-			tileTex);
-		top.AddTag<Tag_Tile>();
-		auto& transform = top.GetComponent<TransformComponent>();
-		transform.Position.x = tile.X;
-		transform.Position.y = 0.0f;
-		transform.Position.z = tile.Z;
-	}
+	//{
+	//	Entity top = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),
+	//		tileTex);
+	//	top.AddTag<Tag_Tile>();
+	//	auto& transform = top.GetComponent<TransformComponent>();
+	//	transform.Position.x = tile.X;
+	//	transform.Position.y = 0.0f;
+	//	transform.Position.z = tile.Z;
+	//}
 
 	{
 		Entity down = mOwner->CreateStaticMeshEntity(MESH("Cube.mesh"),

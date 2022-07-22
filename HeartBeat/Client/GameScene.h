@@ -40,6 +40,8 @@ private:
     void createDoorTile(const Tile& tile);
     void createWallTile(const Tile& tile);
     void createBossTile(const Tile& tile);
+    void loadDecoObjects(string_view decoFile);
+    void createDecoObject(string_view name, float xpos, float zpos);
 
     void createUI();
     void createHpbar();
