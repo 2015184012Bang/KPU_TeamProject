@@ -761,6 +761,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Factory.mesh");
 	MESH("Warehouse.mesh");
 	MESH("Fake_Wall.mesh");
+	MESH("Tankhouse.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");
@@ -793,6 +794,7 @@ void Renderer::loadAllAssetsFromFile()
 	SKELETON("Virus_Corpse.skel");
 	SKELETON("Factory.skel");
 	SKELETON("Warehouse.skel");
+	SKELETON("Tankhouse.skel");
 
 	BOX("Boss.box");
 	BOX("Cart.box");
