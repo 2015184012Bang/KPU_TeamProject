@@ -885,6 +885,7 @@ void Renderer::loadAllAssetsFromFile()
 	TEXTURE("Red_Hit.png");
 	TEXTURE("Tank_Hit.png");
 	TEXTURE("Virus_Hit.png");
+	TEXTURE("Rail_Door.png");
 }
 
 void Renderer::loadAssets()

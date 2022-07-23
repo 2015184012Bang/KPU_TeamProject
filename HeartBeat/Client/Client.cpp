@@ -244,10 +244,12 @@ void Client::processInput()
 {
 	Input::Update();
 
+#ifdef _DEBUG
 	if (Input::IsButtonPressed(KeyCode::ESCAPE))
 	{
 		gShouldClose = true;
 	}
+#endif
 
 	processButton();
 

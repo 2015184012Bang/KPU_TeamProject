@@ -2335,6 +2335,8 @@ Texture* GetTileTexture(TileType ttype)
 	case TileType::START_POINT:
 	case TileType::END_POINT:
 	case TileType::SCAR_BOSS:
+	case TileType::BATTLE_TRIGGER:
+	case TileType::BOSS_TRIGGER:
 		return TEXTURE("Rail.png");
 
 	case TileType::SCAR_WALL:
@@ -2355,6 +2357,9 @@ Texture* GetTileTexture(TileType ttype)
 
 	case TileType::DOOR:
 		return TEXTURE("Door.png");
+
+	case TileType::MID_POINT:
+		return TEXTURE("Rail_Door.png");
 
 	default:
 		return TEXTURE("Temp.png");

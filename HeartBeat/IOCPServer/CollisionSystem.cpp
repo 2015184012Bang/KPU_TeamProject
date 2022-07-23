@@ -510,13 +510,13 @@ INT32 GetBaseAttackDmg(UpgradePreset preset)
 	switch (preset)
 	{
 	case UpgradePreset::ATTACK:
-		return 3;
+		return Values::BaseAttackPower + 1;
 
 	case UpgradePreset::HEAL:
-		return 1;
+		return Values::BaseAttackPower;
 
 	case UpgradePreset::SUPPORT:
-		return 2;
+		return Values::BaseAttackPower;
 
 	default:
 		ASSERT(false, "Unknown preset!");

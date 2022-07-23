@@ -161,8 +161,8 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 			TEXTURE("Cotton_Swab.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("HealPack.mesh"),
 			TEXTURE("HealPack.png"), SKELETON("HealPack.skel"));
-		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
-			TEXTURE("Ringer.png"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
+			TEXTURE("Pill_Pack.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
@@ -180,8 +180,8 @@ void UpgradeScene::equipPresetToCharacter(Entity& target, UpgradePreset preset)
 			TEXTURE("Thermometer.png"));
 		Entity bag = mOwner->CreateSkeletalMeshEntity(MESH("Bag.mesh"),
 			TEXTURE("Bag02.png"), SKELETON("Bag.skel"));
-		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Pill_Pack.mesh"),
-			TEXTURE("Pill_Pack.png"));
+		Entity sup = mOwner->CreateStaticMeshEntity(MESH("Ringer.mesh"),
+			TEXTURE("Ringer.png"));
 
 		weapon.AddTag<Tag_DontDestroyOnLoad>();
 		bag.AddTag<Tag_DontDestroyOnLoad>();
