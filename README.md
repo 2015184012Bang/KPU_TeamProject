@@ -7,8 +7,15 @@
 ---
 ## 게임 테스트 영상(유튜브) 링크
 ---
-### https://youtu.be/WErB2xdRbEM (보스 잡기 실패)
-### https://youtu.be/kPgReRDL3lw (보스 잡기 성공)
+### 7월 23일
+#### https://www.youtube.com/watch?v=DToOUnNlSSA
+
+### 7월 16일
+#### https://www.youtube.com/watch?v=3eBQVEMvmNU
+
+### 7월 9일
+#### https://youtu.be/WErB2xdRbEM (보스 잡기 실패)
+#### https://youtu.be/kPgReRDL3lw (보스 잡기 성공)
 ---
 
 ## 데모 영상
