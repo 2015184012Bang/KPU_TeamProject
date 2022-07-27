@@ -762,6 +762,7 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Warehouse.mesh");
 	MESH("Fake_Wall.mesh");
 	MESH("Tankhouse.mesh");
+	MESH("Field.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");

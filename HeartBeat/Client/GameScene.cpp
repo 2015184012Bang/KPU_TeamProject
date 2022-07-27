@@ -217,6 +217,11 @@ void GameScene::createDecoObject(string_view name, float xpos, float zpos)
 		obj = mOwner->CreateStaticMeshEntity(MESH("Barricade.mesh"),
 			TEXTURE("Barricade.png"));
 	}
+	else if (name == "Field"sv)
+	{
+		obj = mOwner->CreateStaticMeshEntity(MESH("Field.mesh"),
+			TEXTURE("Fake_Wall.png"));
+	}
 	else if (name == "Crystal"sv)
 	{
 		obj = mOwner->CreateSkeletalMeshEntity(MESH("Crystal.mesh"),
