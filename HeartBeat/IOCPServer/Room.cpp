@@ -346,7 +346,9 @@ UINT32 Room::CreateCell(const Vector3& position, bool bWhiteCell /*= false*/)
 	else
 	{
 		mRegistry.emplace<Tag_RedCell>(cell);
-		mRegistry.emplace<MovementComponent>(cell, Vector3::Zero, Values::CellSpeed);
+		// 초기 Direction이 Zero가 아닌 이유: 
+		// Mid point에서 생성되는 세 개의 적혈구가 CO2를 들기 때문이다. 
+		mRegistry.emplace<MovementComponent>(cell, Vector3{-0.1f, 0.0f, 0.0f}, Values::CellSpeed);
 		mRegistry.emplace<PathFindComponent>(cell);
 		mRegistry.emplace<ScriptComponent>(cell, make_shared<RedCell>(mRegistry, cell));
 	}
