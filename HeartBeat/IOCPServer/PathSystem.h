@@ -9,11 +9,18 @@ struct Node
 	pair<INT32, INT32> Parent = { -1, -1 };
 	INT32 Row = -1;
 	INT32 Col = -1;
+	INT32 F = 0;
+	INT32 Depth = 0;
 
 	bool operator==(const Node& other) const
 	{
 		return Row == other.Row &&
 			Col == other.Col;
+	}
+
+	bool operator<(const Node& other) const
+	{
+		return F > other.F;
 	}
 };
 

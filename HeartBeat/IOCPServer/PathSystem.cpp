@@ -11,6 +11,11 @@
 INT32 dx[] = {1, -1, 0, 0};
 INT32 dy[] = {0, 0, 1, -1};
 
+INT32 GetHeuristics(const pair<INT32, INT32>& from, const pair<INT32, INT32>& to)
+{
+	return abs((from.first - to.first)) + abs((from.second - to.second));
+}
+
 PathSystem::PathSystem(entt::registry& registry, shared_ptr<Room>&& room)
 	: mRegistry{ registry }
 	, mOwner{ move(room) }
@@ -51,18 +56,18 @@ void PathSystem::Update()
 			continue;
 		}
 
-		queue<Node> q;
+		priority_queue<Node> q;
 
 		Node start = { {-1, -1}, getClosetNodeIndex(pathFind.TargetPosition.z)
-			, getClosetNodeIndex(pathFind.TargetPosition.x) };
+			, getClosetNodeIndex(pathFind.TargetPosition.x), 0, 0 };
 		q.push(start);
 
 		Node goal = { {-1, -1}, getClosetNodeIndex(pathFind.MyPosition.z)
-			, getClosetNodeIndex(pathFind.MyPosition.x) };
+			, getClosetNodeIndex(pathFind.MyPosition.x), 0, 0 };
 
 		while (!q.empty())
 		{
-			Node current = q.front();
+			Node current = q.top();
 			q.pop();
 
 			if (current == goal)
@@ -90,7 +95,8 @@ void PathSystem::Update()
 					if (mGraph[nx][ny] == ROAD && mVisited[nx][ny] == false)
 					{
 						mVisited[nx][ny] = true;
-						Node node = { {current.Row, current.Col}, nx, ny };
+						Node node = { {current.Row, current.Col}, nx, ny, 
+							GetHeuristics({nx, ny}, {goal.Row, goal.Col}) + node.Depth, node.Depth + 1 };
 						q.push(node);
 					}
 				}
