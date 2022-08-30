@@ -203,9 +203,10 @@ struct LightComponent
 struct FollowComponent
 {
 	FollowComponent() = default;
-	FollowComponent(const UINT32 targetID);
+	FollowComponent(const UINT32 targetID, const Vector3& offset = Vector3::Zero);
 
 	UINT32 TargetID = 0;
+	Vector3 Offset = Vector3::Zero;
 };
 
 struct CameraShakeComponent

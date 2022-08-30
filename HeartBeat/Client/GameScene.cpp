@@ -44,6 +44,12 @@ void GameScene::Enter()
 	loadDecoObjects("../Assets/Maps/Object.csv"sv);
 
 	createUI();
+
+	auto players = gRegistry.view<Tag_Player, IDComponent>();
+	for (auto [entity, id] : players.each())
+	{
+		addShadow(id.ID);
+	}
 }
 
 void GameScene::Exit()
@@ -924,6 +930,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Entity hammer = mOwner->CreateStaticMeshEntity(MESH("Hammer.mesh"),
 			TEXTURE("Hammer.png"));
 		Helpers::AttachBone(virus, hammer, "Weapon");
+
+		addShadow(ncePacket->EntityID);
 	}
 	break;
 
@@ -938,6 +946,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		dog.AddTag<Tag_Dog>();
 		auto& animator = dog.GetComponent<AnimatorComponent>();
 		Helpers::PlayAnimation(&animator, ANIM("Dog_Idle.anim"));
+
+		addShadow(ncePacket->EntityID);
 	}
 	break;
 
@@ -955,6 +965,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 		Entity o2 = mOwner->CreateStaticMeshEntity(MESH("O2.mesh"),
 			TEXTURE("O2.png"));
 		Helpers::AttachBone(cell, o2, "Weapon");
+
+		addShadow(ncePacket->EntityID, true);
 	}
 	break;
 
@@ -971,6 +983,8 @@ void GameScene::processNotifyCreateEntity(const PACKET& packet)
 
 		Entity bat = mOwner->CreateStaticMeshEntity(MESH("Bat.mesh"), TEXTURE("Bat.png"));
 		Helpers::AttachBone(cell, bat, "Weapon");
+
+		addShadow(ncePacket->EntityID, true);
 	}
 	break;
 
@@ -2248,6 +2262,23 @@ void GameScene::changeHitTexture(EntityType eType, const UINT32 entityID)
 	}
 }
 
+void GameScene::addShadow(const UINT32 entityID, bool bNPC /*= false*/)
+{
+	Mesh* mesh = nullptr;
+	Texture* tex = TEXTURE("Shadow.png");
+
+	if (bNPC)
+	{
+		mesh = MESH("Shadow_NPC.mesh");
+	}
+	else
+	{
+		mesh = MESH("Shadow_All.mesh");
+	}
+
+	Entity shadow = mOwner->CreateStaticMeshEntity(mesh, tex);
+	shadow.AddComponent<FollowComponent>(entityID, Vector3{ 0.0f, 10.0f, 0.0f });
+}
 
 string GetAttackAnimTrigger(bool isEnemy /*= false*/)
 {

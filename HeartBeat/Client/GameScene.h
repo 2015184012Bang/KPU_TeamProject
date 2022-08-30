@@ -50,6 +50,7 @@ private:
     void createDialogue(Texture* dia, int drawOrder);
     void clearDialogue();
     void changeHitTexture(EntityType eType, const UINT32 entityID);
+    void addShadow(const UINT32 entityID, bool bNPC = false);
 
 	bool pollKeyboardPressed();
 	bool pollKeyboardReleased();

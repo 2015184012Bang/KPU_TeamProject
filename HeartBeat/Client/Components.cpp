@@ -306,8 +306,9 @@ LightComponent::LightComponent()
 
 }
 
-FollowComponent::FollowComponent(const UINT32 targetID)
-	: TargetID{ targetID }
+FollowComponent::FollowComponent(const UINT32 targetID, const Vector3& offset /*= Vector3::Zero*/)
+	: TargetID(targetID)
+	, Offset(offset)
 {
 
 }

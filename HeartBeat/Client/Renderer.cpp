@@ -763,6 +763,8 @@ void Renderer::loadAllAssetsFromFile()
 	MESH("Fake_Wall.mesh");
 	MESH("Tankhouse.mesh");
 	MESH("Field.mesh");
+	MESH("Shadow_All.mesh");
+	MESH("Shadow_NPC.mesh");
 
 	SKELETON("Bag.skel");
 	SKELETON("Boss.skel");

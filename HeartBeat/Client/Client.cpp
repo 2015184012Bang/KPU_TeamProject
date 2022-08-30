@@ -416,13 +416,16 @@ void Client::updateMovement(float deltaTime)
 			auto target = GetEntityByID(follow.TargetID);
 			if (!gRegistry.valid(target))
 			{
+				DestroyEntity(entity);
 				continue;
 			}
 
 			const auto& targetPos = target.GetComponent<TransformComponent>().Position;
 
 			Helpers::UpdatePosition(&transform.Position,
-				Vector3{ targetPos.x, transform.Position.y, targetPos.z },
+				Vector3{ targetPos.x + follow.Offset.x,
+				targetPos.y + follow.Offset.y, 
+				targetPos.z + follow.Offset.z },
 				&transform.bDirty);
 		}
 	}
