@@ -1,7 +1,6 @@
 # KPU_TeamProject
 
-# 종합설계 최종발표 날짜: 2022년 08월 01일
-# 파일 업로드 날짜: 07.25(월)까지 / 자세한 내용 카페 참고: https://cafe.daum.net/kpugame/
+# '하트비트' 최종 결과물 유튜브 업로드: https://www.youtube.com/watch?v=FjzmG0p6f-Q
 
 
 ---
